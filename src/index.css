@@ -1,0 +1,133 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #ffd54f;
+  --color-secondary: #223b7d;
+  --color-secondary-light: #132c6e;
+  --color-secondary-dark: #0f1f4c;
+  --color-background: #fefefe;
+  --color-border-primary: #dfe1e6;
+  --color-body: #5a5c5f;
+
+  --font-inter: "Inter", sans-serif;
+  --font-fredoka: "Fredoka", cursive;
+
+  --breakpoint-2xl: 90rem;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  @apply bg-background font-inter;
+}
+/* .custom-radius {
+  border-bottom-left-radius: 50% 40%;
+  border-bottom-right-radius: 50% 20%;
+} */
+/* .custom-image-curve {
+  clip-path: ellipse(100% 100% at 66% 0%);
+} */
+
+.custom-image-curve {
+  /* Default (mobile-first) */
+  clip-path: ellipse(142% 98% at 60% 0%);
+}
+
+/* Tablet breakpoint (768px and up) */
+@media (min-width: 768px) {
+  .custom-image-curve {
+    clip-path: ellipse(107% 100% at 59% 0%);
+  }
+}
+
+/* Desktop breakpoint (1024px and up) */
+@media (min-width: 1024px) {
+  .custom-image-curve {
+    clip-path: ellipse(100% 100% at 60% 0%);
+  }
+}
+
+/* Footer Style */
+/* Mobile-first default */
+.clip-footer-top {
+  clip-path: ellipse(130% 100% at 27% 0%);
+  transform: scaleY(-1);
+}
+
+/* Tablet (≥768px) */
+@media (min-width: 768px) {
+  .clip-footer-top {
+    clip-path: ellipse(100% 100% at 27% 0%);
+  }
+}
+
+/* Desktop (≥1024px) */
+@media (min-width: 1024px) {
+  .clip-footer-top {
+    clip-path: ellipse(100% 100% at 27% 0%);
+  }
+}
+
+.arrow-down {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+
+  border-top: 10px solid #f6f6f6;
+}
+.gsap-hidden {
+  opacity: 0;
+}
+
+
+/* for modul  */
+
+
+.swal-popup {
+  width: 30rem; /* default desktop width */
+  padding: 1.5rem;
+ 
+  
+}
+  .swal2-confirm {
+  
+    background-color: #0f1f4c;
+   
+  }
+.swal2-confirm:hover {
+  background-color: #223b7d; /* color on hover */
+}
+/* Default icon size stays normal for desktop */
+.swal2-icon {
+  width: 80px;
+  height: 80px;
+}
+
+/* Mobile screens only */
+@media (max-width: 640px) {
+  .swal2-icon {
+    width: 60px !important;  /* smaller icon */
+    height: 60px !important; /* smaller icon */
+  }
+}
+@media (max-width: 640px) {
+  .swal-popup {
+    width:80% !important; /* mobile width */
+    padding:  .5rem !important;
+  }
+  .swal-title {
+    font-size: 16 !important;
+  }
+  .swal-html-container {
+    font-size: 16px !important;
+    background-color: white;
+  }
+  .swal2-confirm {
+    font-size: 0.875rem !important;
+    padding: 0.5rem 1rem !important;
+    background-color: #0f1f4c;
+    margin-bottom: 30px;
+  }
+}
