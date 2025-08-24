@@ -387,8 +387,8 @@ function YourPerfectPartyTab({
           </button>
           <button className="cursor-pointer rounded bg-[#223B7D] px-6 py-2 text-white">
             {" "}
-            <Download height={24} width={24} className="mr-2 inline" /> View
-            More Gifts
+            <Download height={24} width={24} className="mr-2 inline" /> Download
+            PDF
           </button>
         </div>
       </div>
