@@ -4,6 +4,13 @@ import * as ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 
+import DashboardLayout from "./Dashboard/DashboardLayout";
+import Booking from "./Dashboard/dashboardpages/Booking";
+import DefaultPage from "./Dashboard/dashboardpages/DefaultPage";
+import Earnings from "./Dashboard/dashboardpages/Earnings";
+import Messages from "./Dashboard/dashboardpages/Messages";
+import Reviews from "./Dashboard/dashboardpages/Reviews";
+import Services from "./Dashboard/dashboardpages/Services";
 import AuthLayout from "./Layout/Auth/AuthLayout";
 import LandingLayout from "./Layout/LandingLayout";
 import MainLayout from "./Layout/MainLayout";
@@ -11,6 +18,7 @@ import ForgotPassword from "./Pages/Authentication/ForgotPassword";
 import Login from "./Pages/Authentication/Login";
 import SignUp from "./Pages/Authentication/SignUp";
 import TestComponent from "./Pages/Authentication/TestComponent";
+import BecomeProvider from "./Pages/BecomeProvider";
 import Blog from "./Pages/Blog";
 import BlogDetails from "./Pages/BlogDetails";
 import DiyBoxDetails from "./Pages/DiyBoxDetails";
@@ -28,6 +36,7 @@ import ShopDetails from "./Pages/ShopDetails";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
+  // lanidng page routes
   {
     path: "/",
     element: <LandingLayout />,
@@ -38,6 +47,8 @@ const router = createBrowserRouter([
       },
     ],
   },
+
+  // authentication routes
   {
     path: "/auth",
     element: <AuthLayout />,
@@ -60,6 +71,8 @@ const router = createBrowserRouter([
       },
     ],
   },
+
+  // main application routes
   {
     path: "/home",
     element: <MainLayout />,
@@ -87,6 +100,10 @@ const router = createBrowserRouter([
       {
         path: "providers",
         element: <Provider />,
+      },
+      {
+        path: "become-provider",
+        element: <BecomeProvider />,
       },
       {
         path: "provider/:id",
@@ -122,6 +139,38 @@ const router = createBrowserRouter([
       },
     ],
   },
+
+  // admin routes can be added here
+  {
+    path: "/dashboard",
+    element: <DashboardLayout/>,
+    children: [
+      {
+        index: true,
+        element:<DefaultPage/>
+      },
+      {
+        path:'services',
+        element:<Services/>
+      },
+      {
+        path:'booking',
+        element:<Booking/>
+      },
+      {
+        path:'messages',
+        element:<Messages/>
+      },
+      {
+        path:'reviews',
+        element:<Reviews/>
+      },
+      {
+        path:'earnings',
+        element:<Earnings/>
+      },
+    ],
+  }
 ]);
 
 const rootElement = document.getElementById("root");
