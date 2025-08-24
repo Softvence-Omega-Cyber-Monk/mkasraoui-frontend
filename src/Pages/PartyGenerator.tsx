@@ -616,7 +616,7 @@ export default function PartyGenerator() {
                             const targetIndex = getStepIndex(step.id);
                             const currentIndex = getStepIndex(activeStep);
 
-                            // 🚫 Prevent skipping ahead
+                            //  Prevent skipping ahead
                             if (targetIndex > currentIndex) {
                               const currentStepFields =
                                 stepRequiredFields[activeStep] || [];
