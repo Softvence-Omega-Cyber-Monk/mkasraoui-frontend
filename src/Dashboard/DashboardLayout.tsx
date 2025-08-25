@@ -1,3 +1,4 @@
+import navLogo from "@/assets/navlogo.png";
 import {
   Menu,
   MenuButton,
@@ -5,183 +6,340 @@ import {
   MenuItems,
   Transition,
 } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Fragment, useState } from "react";
-import { Link, Outlet, NavLink } from "react-router-dom";
+import { Bars3Icon, ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Fragment, useEffect, useState } from "react";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard,
-  Wrench,
-  CalendarCheck,
-  Mail,
-  Star,
-  Wallet,
-} from "lucide-react";
-import React from "react";
+  BookingIcon,
+  DashboardIcon,
+  EarningsIcon,
+  MessagesIcon,
+  ReviewsIcon,
+  ServicesIcon,
+} from "./Icons";
 
 function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const location = useLocation();
+
+  // Close mobile sidebar on route change
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location]);
+
+  // Handle escape key for mobile sidebar
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') setSidebarOpen(false);
+    };
+    if (sidebarOpen) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [sidebarOpen]);
 
   const navLinks = [
-    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
-    { to: "/dashboard/services", label: "Service", icon: Wrench },
-    { to: "/dashboard/booking", label: "Booking", icon: CalendarCheck },
-    { to: "/dashboard/messages", label: "Messages", icon: Mail },
-    { to: "/dashboard/reviews", label: "Reviews", icon: Star },
-    { to: "/dashboard/earnings", label: "Earnings", icon: Wallet },
+    {
+      to: "/dashboard",
+      label: "Dashboard",
+      icon: DashboardIcon,
+      end: true,
+    },
+    {
+      to: "/dashboard/services",
+      label: "Services",
+      icon: ServicesIcon,
+    },
+    {
+      to: "/dashboard/booking",
+      label: "Bookings",
+      icon: BookingIcon,
+    },
+    {
+      to: "/dashboard/messages",
+      label: "Messages",
+      icon: MessagesIcon,
+      badge: 3, // Example notification badge
+    },
+    {
+      to: "/dashboard/reviews",
+      label: "Reviews",
+      icon: ReviewsIcon,
+    },
+    {
+      to: "/dashboard/earnings",
+      label: "Earnings",
+      icon: EarningsIcon,
+    },
   ];
 
-  const renderNavLink = (link: (typeof navLinks)[0]) => (
+  const NavItem = ({ link, onClick, collapsed = false }: { link: typeof navLinks[0], onClick: () => void, collapsed?: boolean }) => (
     <NavLink
-      key={link.to}
       to={link.to}
       end={link.end}
+      onClick={onClick}
       className={({ isActive }) =>
-        `py-2.5 px-4 flex items-center transition hover:bg-gray-100 ${
-          isActive ? "bg-gray-100" : ""
-        }`
+        `group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ease-in-out hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+          isActive
+            ? "bg-blue-50 text-blue-700 border-r-2 border-blue-600"
+            : "text-gray-700 hover:text-gray-900"
+        } ${collapsed ? "justify-center px-2" : ""}`
       }
     >
-      {({ isActive }) => {
-        const Icon = link.icon;
-        return (
-          <>
-            <Icon
-              size={18}
-              className={`mr-2 ${
-                isActive ? "text-blue-500" : "text-gray-500"
-              }`}
-            />
-            <span className={isActive ? "text-blue-500" : "text-gray-700"}>
-              {link.label}
+      {({ isActive }) => (
+        <>
+          <link.icon
+            className={`h-5 w-5 flex-shrink-0 transition-colors ${
+              isActive ? "text-blue-600" : "text-gray-500 group-hover:text-gray-700"
+            }`}
+            isActive={isActive}
+          />
+          {!collapsed && (
+            <>
+              <span className="truncate">{link.label}</span>
+              {link.badge && (
+                <span className="ml-auto inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
+                  {link.badge}
+                </span>
+              )}
+            </>
+          )}
+          {collapsed && link.badge && (
+            <span className="absolute -right-1 -top-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
+              {link.badge}
             </span>
-          </>
-        );
-      }}
+          )}
+        </>
+      )}
     </NavLink>
   );
 
-  return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Sidebar for desktop */}
-      <div className="hidden md:flex md:flex-shrink-0 w-64 bg-white shadow-md">
-        <div className="flex flex-col w-full">
-          <div className="p-4 border-b">
-            <img src="/logo.png" alt="Logo" className="h-12 mx-auto" />
-          </div>
-          <nav className="flex-1 overflow-y-auto mt-6 space-y-1">
-            {navLinks.map(renderNavLink)}
-          </nav>
+  const SidebarContent = ({ collapsed = false, onItemClick }: { collapsed?: boolean; onItemClick: () => void }) => (
+    <div className="flex h-full flex-col">
+      {/* Logo */}
+      <div className={`flex items-center justify-center bg-white ${collapsed ? "px-1 py-3" : "px-3 py-2"}`}>
+        <img
+          src={navLogo}
+          alt="Company Logo"
+          className={`transition-all duration-300 ${collapsed ? "h-10 w-10" : "h-16 w-auto"}`}
+        />
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto px-3 py-6">
+        <div className="space-y-1">
+          {navLinks.map((link) => (
+            <NavItem
+              key={link.to}
+              link={link}
+              onClick={onItemClick}
+              collapsed={collapsed}
+            />
+          ))}
         </div>
-      </div>
+      </nav>
 
-      {/* Mobile sidebar toggle */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="text-gray-600 p-2 bg-white rounded shadow focus:outline-none"
-        >
-          {sidebarOpen ? (
-            <XMarkIcon className="h-6 w-6" />
-          ) : (
-            <Bars3Icon className="h-6 w-6" />
-          )}
-        </button>
-      </div>
-
-      {/* Sidebar for mobile */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-40 flex md:hidden">
-          <div className="w-64 bg-white shadow-md p-4 space-y-4">
-            <img src="/logo.png" alt="Logo" className="h-12" />
-            {navLinks.map((link) =>
-              React.cloneElement(
-                renderNavLink(link),
-                {
-                  key: link.to,
-                  onClick: () => setSidebarOpen(false),
-                }
-              )
-            )}
-          </div>
-          <div
-            className="flex-grow bg-black bg-opacity-25"
-            onClick={() => setSidebarOpen(false)}
-          />
+      {/* Collapse Toggle (Desktop only) */}
+      {!collapsed && (
+        <div className="hidden lg:block border-t border-gray-200 p-3">
+          <button
+            onClick={() => setIsCollapsed(true)}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
+            aria-label="Collapse sidebar"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            </svg>
+            <span>Collapse</span>
+          </button>
         </div>
       )}
+    </div>
+  );
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-y-auto p-6">
-        {/* Header */}
-        <div className="flex justify-end items-center mb-4 relative">
-          <Menu as="div" className="relative">
-            <MenuButton className="flex items-center focus:outline-none">
-              <img
-                src="/user.jpg"
-                alt="User"
-                className="h-10 w-10 rounded-full mr-2 object-cover"
-              />
-              <div className="text-left">
-                <div className="font-medium text-sm">Sarah Miller</div>
-                <div className="text-gray-500 text-xs">Service Provider</div>
+  return (
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-gray-900/50 backdrop-blur-sm lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Mobile Sidebar */}
+      <Transition show={sidebarOpen} as={Fragment}>
+        <div className="fixed inset-y-0 left-0 z-50 w-64 lg:hidden">
+          <Transition.Child
+            as={Fragment}
+            enter="transition ease-in-out duration-300"
+            enterFrom="-translate-x-full"
+            enterTo="translate-x-0"
+            leave="transition ease-in-out duration-300"
+            leaveFrom="translate-x-0"
+            leaveTo="-translate-x-full"
+          >
+            <div className="flex h-full flex-col bg-white shadow-xl">
+              <div className="absolute right-0 top-0 -mr-12 pt-2">
+                <button
+                  type="button"
+                  className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <span className="sr-only">Close sidebar</span>
+                  <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                </button>
               </div>
-            </MenuButton>
+              <SidebarContent onItemClick={() => setSidebarOpen(false)} />
+            </div>
+          </Transition.Child>
+        </div>
+      </Transition>
 
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
+      {/* Desktop Sidebar */}
+      <div className={`hidden lg:flex lg:flex-shrink-0 transition-all duration-300 ${isCollapsed ? 'lg:w-16' : 'lg:w-64'}`}>
+        <div className="flex w-full flex-col bg-white shadow-sm border-r border-gray-200">
+          <SidebarContent collapsed={isCollapsed} onItemClick={() => {}} />
+          {isCollapsed && (
+            <div className="border-t border-gray-200 p-2">
+              <button
+                onClick={() => setIsCollapsed(false)}
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 transition-colors hover:bg-gray-50"
+                aria-label="Expand sidebar"
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex min-w-0 flex-1 flex-col">
+        {/* Top Header */}
+        <header className="relative z-10 flex h-16 flex-shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm lg:px-6">
+          {/* Mobile menu button */}
+          <button
+            type="button"
+            className="text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 lg:hidden"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Open sidebar"
+          >
+            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+          </button>
+
+          {/* Header content */}
+          <div className="flex flex-1 items-center justify-end gap-4">
+            {/* Notifications */}
+            {/* <button
+              type="button"
+              className="relative rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              aria-label="View notifications"
             >
-              <MenuItems className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1 z-50 ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <MenuItem>
-                  {({ active }) => (
-                    <Link
-                      to="/dashboard/profile"
-                      className={`block px-4 py-2 text-sm ${
-                        active ? "bg-gray-100 text-gray-900" : "text-gray-700"
-                      }`}
-                    >
-                      Profile
-                    </Link>
-                  )}
-                </MenuItem>
-                <MenuItem>
-                  {({ active }) => (
-                    <Link
-                      to="/dashboard/settings"
-                      className={`block px-4 py-2 text-sm ${
-                        active ? "bg-gray-100 text-gray-900" : "text-gray-700"
-                      }`}
-                    >
-                      Settings
-                    </Link>
-                  )}
-                </MenuItem>
-                <MenuItem>
-                  {({ active }) => (
-                    <button
-                      onClick={() => alert("Logging out...")}
-                      className={`w-full text-left px-4 py-2 text-sm ${
-                        active ? "bg-gray-100 text-gray-900" : "text-gray-700"
-                      }`}
-                    >
-                      Logout
-                    </button>
-                  )}
-                </MenuItem>
-              </MenuItems>
-            </Transition>
-          </Menu>
-        </div>
+              <BellIcon className="h-6 w-6" aria-hidden="true" />
+              <span className="absolute -right-1 -top-1 block h-3 w-3 rounded-full bg-red-400 ring-2 ring-white" />
+            </button> */}
 
-        {/* Outlet for nested routes */}
-        <div className="flex-1">
-          <Outlet />
-        </div>
+            {/* User Menu */}
+            <Menu as="div" className="relative">
+              <MenuButton className="flex items-center gap-3 rounded-lg cursor-pointer bg-white p-1.5 text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                <img
+                  className="h-8 w-8 rounded-full object-cover ring-2 ring-gray-200"
+                  src="https://i.pravatar.cc/40"
+                  alt="Sarah Miller"
+                />
+                <div className="hidden text-left lg:block">
+                  <p className="text-sm font-medium text-gray-900">Sarah Miller</p>
+                  <p className="text-xs text-gray-500">Service Provider</p>
+                </div>
+                <ChevronDownIcon className="hidden h-4 w-4 text-gray-400 lg:block" aria-hidden="true" />
+              </MenuButton>
+
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <MenuItems className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none">
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-900">Sarah Miller</p>
+                    <p className="text-sm text-gray-500">sarah@example.com</p>
+                  </div>
+                  <div className="py-1">
+                    <MenuItem>
+                      {({ focus }) => (
+                        <Link
+                          to="/dashboard/profile"
+                          className={`block px-4 py-2 text-sm transition-colors ${
+                            focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
+                          }`}
+                        >
+                          View Profile
+                        </Link>
+                      )}
+                    </MenuItem>
+                    <MenuItem>
+                      {({ focus }) => (
+                        <Link
+                          to="/dashboard/settings"
+                          className={`block px-4 py-2 text-sm transition-colors ${
+                            focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
+                          }`}
+                        >
+                          Settings
+                        </Link>
+                      )}
+                    </MenuItem>
+                    <MenuItem>
+                      {({ focus }) => (
+                        <Link
+                          to="/help"
+                          className={`block px-4 py-2 text-sm transition-colors ${
+                            focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
+                          }`}
+                        >
+                          Help & Support
+                        </Link>
+                      )}
+                    </MenuItem>
+                  </div>
+                  <div className="py-1 border-t border-gray-100">
+                    <MenuItem>
+                      {({ focus }) => (
+                        <button
+                          onClick={() => {
+                            // Handle logout logic
+                            console.log('Logging out...');
+                          }}
+                          className={`block w-full px-4 py-2 cursor-pointer text-left text-sm transition-colors ${
+                            focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
+                          }`}
+                        >
+                          Sign Out
+                        </button>
+                      )}
+                    </MenuItem>
+                  </div>
+                </MenuItems>
+              </Transition>
+            </Menu>
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <main className="flex-1 overflow-y-auto bg-gray-50 p-6 lg:p-8">
+          <div className="mx-auto w-full">
+            <Outlet />
+          </div>
+        </main>
       </div>
     </div>
   );
