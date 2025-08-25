@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { Upload, ChevronDown, ArrowLeft, X, Check } from "lucide-react";
@@ -70,7 +69,7 @@ function BecomeProvider() {
           Back to Providers
         </Link>
       </header>
-      <div className="px-4 py-6">
+      <div className="py-6">
         <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
           {/* Header */}
           <div className="mb-8 text-center">
