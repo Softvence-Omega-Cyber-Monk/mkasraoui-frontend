@@ -131,3 +131,9 @@ body {
     margin-bottom: 30px;
   }
 }
+
+ /* Add this to your global CSS (e.g., index.css, styles.css, etc.) */
+
+.custom-shadow {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
