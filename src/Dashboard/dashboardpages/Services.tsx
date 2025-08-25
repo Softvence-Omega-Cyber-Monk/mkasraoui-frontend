@@ -63,8 +63,8 @@ function Services() {
     <div>
       <ServiceTable />
       {/* from start here  */}
-      <div className="mt-8 px-4">
-        <div className="container mx-auto rounded-lg p-4">
+      <div className="mt-8">
+        <div className="w-full rounded-lg">
           {/* Header */}
           <h1 className="mb-8 text-2xl font-semibold text-gray-900">
             Add/Edit Service

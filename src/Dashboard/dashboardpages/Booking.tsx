@@ -81,8 +81,8 @@ function Booking() {
 
   return (
     <div>
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="container mx-auto">
+      <div className="bg-gray-50">
+        <div className="mx-auto w-full">
           {/* Header */}
           <div className="mb-6 flex items-center justify-between">
             <h1 className="text-3xl font-bold text-gray-900">Bookings</h1>

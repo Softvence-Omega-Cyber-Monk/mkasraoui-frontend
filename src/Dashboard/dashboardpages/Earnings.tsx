@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Landmark } from "lucide-react";
 import { SlPaypal } from "react-icons/sl";
 import { PiStripeLogo } from "react-icons/pi";
+import TransactionHistoryTable from "../components/earnings/TransactionHistoryTable";
 
 function Earnings() {
   type TabType = "This Week" | "This Month" | "Lifetime";
@@ -27,39 +28,6 @@ function Earnings() {
     },
   ];
 
-  const transactions = [
-    {
-      date: "07/15/2024",
-      client: "Tech Solutions Inc.",
-      amount: "$500",
-      status: "Paid",
-    },
-    {
-      date: "07/10/2024",
-      client: "Global Marketing LLC",
-      amount: "$750",
-      status: "Paid",
-    },
-    {
-      date: "07/05/2024",
-      client: "Innovative Designs Co.",
-      amount: "$400",
-      status: "Paid",
-    },
-    {
-      date: "06/30/2024",
-      client: "Creative Minds Agency",
-      amount: "$300",
-      status: "Paid",
-    },
-    {
-      date: "06/25/2024",
-      client: "Digital Dynamics Ltd.",
-      amount: "$500",
-      status: "Paid",
-    },
-  ];
-
   const earningsData = {
     "This Week": "$2,450",
     "This Month": "$8,750",
@@ -68,13 +36,12 @@ function Earnings() {
 
   return (
     <div>
-      <div className="bg-gray-50 p-6">
-        <div className="container mx-auto">
+      <div className="bg-gray-50">
+        <div className="mx-auto w-full">
           {/* Header */}
           <h1 className="mb-8 text-3xl font-bold text-[#121417]">
             Earnings & Payments
           </h1>
-
           {/* Earnings Summary */}
           <div className="mb-8">
             <h2 className="mb-4 text-2xl font-semibold text-gray-900">
@@ -108,7 +75,6 @@ function Earnings() {
               </div>
             </div>
           </div>
-
           {/* Payment Methods */}
           <div className="mb-8">
             <h2 className="mb-4 text-2xl font-bold text-gray-900">
@@ -140,65 +106,8 @@ function Earnings() {
               Withdraw Funds
             </button>
           </div>
-
-          {/* Transaction History */}
-          <div>
-            <h2 className="mb-4 text-lg font-medium text-gray-900">
-              Transaction History
-            </h2>
-
-            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                      Client
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                      Amount
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                      Payment Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100 bg-white">
-                  {transactions.map((transaction, index) => (
-                    <tr
-                      key={index}
-                      className="transition-colors hover:bg-gray-50"
-                    >
-                      <td className="px-6 py-4 font-medium whitespace-nowrap text-gray-900">
-                        {transaction.date}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-700">
-                        {transaction.client}
-                      </td>
-                      <td className="px-6 py-4 font-semibold whitespace-nowrap text-gray-900">
-                        {transaction.amount}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
-                            transaction.status === "Paid"
-                              ? "bg-green-100 text-green-700"
-                              : transaction.status === "Pending"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {transaction.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          {/* Transaction History table*/}
+          <TransactionHistoryTable />
         </div>
       </div>
     </div>
