@@ -96,8 +96,8 @@ export default function PartyGenerator() {
   const handleNext = () => {
     const currentStepFields = stepRequiredFields[activeStep] || [];
 
-    // Only validate steps before Preferences
-    if (activeStep === "Preferences") {
+    // ✅ Validation for Step 1 & 2
+    if (activeStep !== "Preferences") {
       for (const field of currentStepFields) {
         if (
           (formData as any)[field] === "" ||
@@ -106,6 +106,7 @@ export default function PartyGenerator() {
           const fieldName = field
             .replace(/([A-Z])/g, " $1")
             .replace(/^./, (str) => str.toUpperCase());
+
           Swal.fire({
             icon: "warning",
             title: "Required Field",
@@ -123,21 +124,36 @@ export default function PartyGenerator() {
       }
     }
 
-    // Final step: send data to backend (no validation)
+    // ✅ Validation for Step 3 (Preferences)
     if (activeStep === "Preferences") {
-      console.log("Hey Dev,I am ready to go backend", finalData);
+      if (!selectedTheme || selectedActivities.length === 0) {
+        Swal.fire({
+          icon: "warning",
+          title: "Required Field",
+          html: `Please select a <strong>Theme</strong> and at least one <strong>Activity</strong> before continuing.`,
+          confirmButtonColor: "#3085d6",
+          customClass: {
+            popup: "swal-popup",
+            title: "swal-title",
+            htmlContainer: "swal-html-container",
+            confirmButton: "swal2-confirm",
+          },
+        });
+        return;
+      }
 
-      // ✅ Move to next step immediately
+      // ✅ Step 3 is complete → Send data to backend
+      console.log("Hey Dev, I am ready to go backend 🚀", finalData);
+
       const currentIndex = getStepIndex(activeStep);
       const nextIndex = currentIndex + 1;
       if (nextIndex < steps.length) {
         setActiveStep(steps[nextIndex].id);
       }
-
       return;
     }
 
-    // Move to next step for non-final steps
+    // ✅ Default: Move to next step (for Step 1 & 2)
     const currentIndex = getStepIndex(activeStep);
     const nextIndex = currentIndex + 1;
     if (nextIndex < steps.length) {
@@ -600,7 +616,7 @@ export default function PartyGenerator() {
                             const targetIndex = getStepIndex(step.id);
                             const currentIndex = getStepIndex(activeStep);
 
-                            // 🚫 Prevent skipping ahead
+                            //  Prevent skipping ahead
                             if (targetIndex > currentIndex) {
                               const currentStepFields =
                                 stepRequiredFields[activeStep] || [];
