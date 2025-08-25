@@ -80,10 +80,10 @@ function DashboardLayout() {
       end={link.end}
       onClick={onClick}
       className={({ isActive }) =>
-        `group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ease-in-out hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+        `group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200 ease-in-out hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-secondary-light/60 focus:ring-offset-2 ${
           isActive
-            ? "bg-blue-50 text-blue-700 border-r-2 border-blue-600"
-            : "text-gray-700 hover:text-gray-900"
+            ? "bg-blue-50 text-secondary border-r-2 border-secondary font-bold"
+            : "text-gray-700 hover:text-gray-900 font-medium"
         } ${collapsed ? "justify-center px-2" : ""}`
       }
     >
@@ -91,7 +91,7 @@ function DashboardLayout() {
         <>
           <link.icon
             className={`h-5 w-5 flex-shrink-0 transition-colors ${
-              isActive ? "text-blue-600" : "text-gray-500 group-hover:text-gray-700"
+              isActive ? "text-secondary" : "text-gray-500 group-hover:text-gray-700"
             }`}
             isActive={isActive}
           />
@@ -128,7 +128,7 @@ function DashboardLayout() {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-6">
-        <div className="space-y-1">
+        <div className="space-y-3">
           {navLinks.map((link) => (
             <NavItem
               key={link.to}
@@ -225,7 +225,7 @@ function DashboardLayout() {
           {/* Mobile menu button */}
           <button
             type="button"
-            className="text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 lg:hidden"
+            className="text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-secondary-light/60 lg:hidden"
             onClick={() => setSidebarOpen(true)}
             aria-label="Open sidebar"
           >
@@ -246,7 +246,7 @@ function DashboardLayout() {
 
             {/* User Menu */}
             <Menu as="div" className="relative">
-              <MenuButton className="flex items-center gap-3 rounded-lg cursor-pointer bg-white p-1.5 text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+              <MenuButton className="flex items-center gap-3 rounded-lg cursor-pointer bg-white p-1.5 text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-secondary-light/60 focus:ring-offset-2">
                 <img
                   className="h-8 w-8 rounded-full object-cover ring-2 ring-gray-200"
                   src="https://i.pravatar.cc/40"
