@@ -39,7 +39,7 @@ function FavositesTab() {
   ];
   return (
     <div>
-      <div className="container mx-auto rounded-2xl bg-white p-6  border border-[#E6E6E6]">
+      <div className="container mx-auto rounded-2xl border border-[#E6E6E6] bg-white p-6">
         <h2 className="mb-6 text-2xl font-bold">Favourite Boxes</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {boxes.map((box) => (
@@ -64,7 +64,7 @@ function FavositesTab() {
                 </p>
               </div>
               <div className="mt-auto p-6 pt-0">
-                <button className="inline-flex w-full cursor-pointer items-center justify-center rounded-md border border-gray-300 bg-transparent py-2 text-base font-medium whitespace-nowrap text-gray-700 hover:bg-gray-50">
+                <button className="bg-secondary hover:bg-secondary-dark inline-flex w-full cursor-pointer items-center justify-center rounded-md py-2 text-base font-medium whitespace-nowrap text-white hover:bg-gray-50">
                   View
                 </button>
               </div>

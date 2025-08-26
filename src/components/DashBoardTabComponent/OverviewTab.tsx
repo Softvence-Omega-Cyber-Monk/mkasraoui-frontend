@@ -104,27 +104,27 @@ function OverviewTab() {
             <div className="grid flex-1 grid-cols-1 gap-x-4 gap-y-2 p-6 pt-0 sm:grid-cols-2 md:grid-cols-2">
               <Link
                 to={"/home/party-generator"}
-                className="border-input ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex h-36 cursor-pointer flex-col items-center justify-center rounded-md border border-[#E8E8E8] bg-transparent px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                className="border-input ring-offset-background hover:text-accent-foreground focus-visible:ring-ring inline-flex h-36 cursor-pointer flex-col items-center justify-center rounded-md border border-[#E8E8E8] bg-transparent px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
               >
                 <Plus className="mb-3 h-6 w-6" />
                 Generate Party
               </Link>
               <Link
                 to={"/home/diyboxes"}
-                className="border-input ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex h-36 cursor-pointer flex-col items-center justify-center rounded-md border border-[#E8E8E8] bg-transparent px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                className="border-input ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex h-36 cursor-pointer flex-col items-center justify-center rounded-md border border-[#E8E8E8] bg-transparent px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
               >
                 <Star className="mb-3 h-6 w-6" />
                 Browse Boxes
               </Link>
               <Link
                 to={"/home/party-invitations"}
-                className="border-input ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex h-36 cursor-pointer flex-col items-center justify-center rounded-md border border-[#E8E8E8] bg-transparent px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                className="border-input ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex h-36 cursor-pointer flex-col items-center justify-center rounded-md border border-[#E8E8E8] bg-transparent px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
               >
                 {/* <Send className="h-6 w-6" /> */}
                 <Calendar className="mb-3 h-6 w-6" />
                 Send Invitations
               </Link>
-              <button className="border-input ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex h-36 cursor-pointer flex-col items-center justify-center rounded-md border border-[#E8E8E8] bg-transparent px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50">
+              <button className="border-input ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex h-36 cursor-pointer flex-col items-center justify-center rounded-md border border-[#E8E8E8] bg-transparent px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50">
                 {/* <ClipboardList className="h-6 w-6 mb-3 " /> */}
                 <FaListCheck className="mb-3 h-6 w-6" />
                 Check List
