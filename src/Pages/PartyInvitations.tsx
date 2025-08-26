@@ -557,7 +557,7 @@ export default function PartyInvitations() {
       <MyHeader
         title="Party Invitations"
         subtitle=" Create beautiful invitations and manage your guest list effortlessly"
-        className="text-3xl leading-snug font-semibold sm:text-5xl md:text-6xl"
+        className="font-fredoka text-3xl leading-snug font-bold sm:text-5xl md:text-6xl"
       />
       {/* here is the my tab  */}
       <div className="relative mt-1">
