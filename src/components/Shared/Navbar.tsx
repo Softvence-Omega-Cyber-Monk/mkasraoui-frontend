@@ -36,10 +36,10 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-background relative container mx-auto flex max-w-[1440px] items-center justify-between border-b border-gray-200 px-4 py-3 lg:px-5">
+    <nav className="bg-background relative container mx-auto flex max-w-[1440px] items-center justify-between border-b border-gray-200 px-4 py-2 lg:px-5">
       {/* Left: Logo */}
-      <Link to="/" className="h-16 w-16">
-        <img src={logo} alt="Nav Logo" />
+      <Link to="/" >
+        <img src={logo} alt="Nav Logo" className="h-18 w-20"/>
       </Link>
 
       {/* Middle: Nav Links (Desktop) */}

@@ -33,6 +33,7 @@ import ProviderDetails from "./Pages/ProviderDetails";
 import RequestQuote from "./Pages/RequestQuote";
 import Shop from "./Pages/Shop";
 import ShopDetails from "./Pages/ShopDetails";
+import CheckList from "./Pages/CheckList";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -132,6 +133,10 @@ const router = createBrowserRouter([
       {
         path: "my-account",
         element: <MyAccount />,
+      },
+      {
+        path: "checklist",
+        element: <CheckList />,
       },
       {
         path: "premium-feature",

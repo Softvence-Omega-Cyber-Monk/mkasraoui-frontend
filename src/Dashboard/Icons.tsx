@@ -1,15 +1,15 @@
 // DashboardIcon.tsx
 export const DashboardIcon = ({ isActive, className }: { isActive: boolean; className: string }) => {
   return isActive ? (
-    <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 18 18" fill="none" className={className} >
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" className={className}>
   <path d="M2 8H6C7.1 8 8 7.1 8 6V2C8 0.9 7.1 0 6 0H2C0.9 0 0 0.9 0 2V6C0 7.1 0.9 8 2 8Z" fill="#223B7D"/>
   <path d="M2 18H6C7.1 18 8 17.1 8 16V12C8 10.9 7.1 10 6 10H2C0.9 10 0 10.9 0 12V16C0 17.1 0.9 18 2 18Z" fill="#223B7D"/>
   <path d="M10 2V6C10 7.1 10.9 8 12 8H16C17.1 8 18 7.1 18 6V2C18 0.9 17.1 0 16 0H12C10.9 0 10 0.9 10 2Z" fill="#223B7D"/>
   <path d="M12 18H16C17.1 18 18 17.1 18 16V12C18 10.9 17.1 10 16 10H12C10.9 10 10 10.9 10 12V16C10 17.1 10.9 18 12 18Z" fill="#223B7D"/>
 </svg>
   ) : (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none" className={className} > 
-  <path d="M3 3.5V11.5H11V3.5H3ZM9 9.5H5V5.5H9V9.5ZM3 13.5V21.5H11V13.5H3ZM9 19.5H5V15.5H9V19.5ZM13 3.5V11.5H21V3.5H13ZM19 9.5H15V5.5H19V9.5ZM13 13.5V21.5H21V13.5H13ZM19 19.5H15V15.5H19V19.5Z" fill="#666666"/>
+   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="19" viewBox="0 0 18 19" fill="none" className={className}>
+  <path d="M0 0.5V8.5H8V0.5H0ZM6 6.5H2V2.5H6V6.5ZM0 10.5V18.5H8V10.5H0ZM6 16.5H2V12.5H6V16.5ZM10 0.5V8.5H18V0.5H10ZM16 6.5H12V2.5H16V6.5ZM10 10.5V18.5H18V10.5H10ZM16 16.5H12V12.5H16V16.5Z" fill="#666666"/>
 </svg>
   );
 };
@@ -18,7 +18,7 @@ export const DashboardIcon = ({ isActive, className }: { isActive: boolean; clas
 // ServicesIcon.tsx
 export const ServicesIcon = ({ isActive, className }: { isActive: boolean; className: string }) => {
   return isActive ? (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={className}>
+   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={className}>
   <g clip-path="url(#clip0_11154_5573)">
     <path d="M12 3.46875C11.826 3.46875 11.659 3.53789 11.536 3.66096C11.4129 3.78403 11.3438 3.95095 11.3438 4.125V8.625C11.3438 8.79905 11.4129 8.96597 11.536 9.08904C11.659 9.21211 11.826 9.28125 12 9.28125C12.174 9.28125 12.341 9.21211 12.464 9.08904C12.5871 8.96597 12.6562 8.79905 12.6562 8.625V4.125C12.6562 3.95095 12.5871 3.78403 12.464 3.66096C12.341 3.53789 12.174 3.46875 12 3.46875Z" fill="#223B7D"/>
     <path d="M15.6562 8.62489C15.6565 7.69293 15.9898 6.79173 16.596 6.08389L16.623 6.05239C16.6791 5.98702 16.7218 5.91124 16.7487 5.82937C16.7755 5.74749 16.786 5.66113 16.7794 5.57522C16.7729 5.48931 16.7495 5.40553 16.7105 5.32866C16.6716 5.2518 16.6179 5.18336 16.5525 5.12726C16.4871 5.07109 16.4113 5.02835 16.3294 5.00147C16.2476 4.9746 16.1612 4.96411 16.0752 4.97063C15.9893 4.97714 15.9055 5.00052 15.8286 5.03942C15.7516 5.07833 15.6832 5.13201 15.627 5.19739L15.6 5.22889C14.7897 6.17488 14.3442 7.37931 14.3438 8.62489C14.3438 8.79891 14.413 8.96577 14.5361 9.08882C14.6591 9.21187 14.826 9.28104 15 9.28114C15.174 9.28104 15.3409 9.21187 15.4639 9.08882C15.587 8.96577 15.6562 8.79891 15.6562 8.62489Z" fill="#223B7D"/>
