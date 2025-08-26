@@ -124,11 +124,11 @@ function OverviewTab() {
                 <Calendar className="mb-3 h-6 w-6" />
                 Send Invitations
               </Link>
-              <button className="border-input ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex h-36 cursor-pointer flex-col items-center justify-center rounded-md border border-[#E8E8E8] bg-transparent px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50">
+              <Link to={"/home/checklist"} className="border-input ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex h-36 cursor-pointer flex-col items-center justify-center rounded-md border border-[#E8E8E8] bg-transparent px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50">
                 {/* <ClipboardList className="h-6 w-6 mb-3 " /> */}
                 <FaListCheck className="mb-3 h-6 w-6" />
                 Check List
-              </button>
+              </Link>
             </div>
           </div>
         </div>

@@ -2,7 +2,7 @@
 import React from "react";
 import { Upload, ChevronDown, ArrowLeft, X, Check } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function BecomeProvider() {
   const {
@@ -15,11 +15,14 @@ function BecomeProvider() {
   const [uploadedFiles, setUploadedFiles] = React.useState<any[]>([]);
   const [isDragOver, setIsDragOver] = React.useState(false);
 
+  const navigate = useNavigate();
+
   const onSubmit = (data: any) => {
     console.log("Form submitted:", {
       ...data,
-      uploadedFiles, // include files as well
+      uploadedFiles, 
     });
+    navigate("/dashboard");
   };
 
   // file handling helpers
@@ -337,7 +340,7 @@ function BecomeProvider() {
                 type="submit"
                 className="bg-secondary hover:bg-secondary-dark w-full cursor-pointer rounded-lg px-4 py-3 font-medium text-white transition-colors"
               >
-                Send Quote Request
+                Submit
               </button>
             </div>
           </form>

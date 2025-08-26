@@ -2,6 +2,7 @@ import allBgImg from "@/assets/party-al-bg.png";
 import ChecklistTabs from '@/components/CheckList/CheckListTabs';
 import Header from "@/components/CheckList/Header";
 import StatsMetrics from "@/components/CheckList/StatsMetrics";
+import type { ReactNode } from 'react';
 import { Suspense, lazy, useCallback, useState } from 'react';
 
 // Lazy load tab content components for better performance
@@ -11,7 +12,7 @@ const CategoryContent = lazy(() => import("@/components/CheckList/Contents/Categ
 
 // Loading fallback component
 const TabContentSkeleton = () => (
-  <div className="container animate-pulse space-y-4 p-4">
+  <div className="container min-h-screen mx-auto animate-pulse space-y-4 p-4">
     <div className="h-4 bg-gray-300 rounded w-3/4"></div>
     <div className="h-4 bg-gray-300 rounded w-1/2"></div>
     <div className="h-4 bg-gray-300 rounded w-5/6"></div>
@@ -19,8 +20,13 @@ const TabContentSkeleton = () => (
 );
 
 // Error boundary for tab content
-const TabContentErrorBoundary = ({ children, fallback = <div>Something went wrong</div> }) => {
-  return children; // In a real app, implement proper error boundary
+interface TabContentErrorBoundaryProps {
+  children: ReactNode;
+  fallback?: ReactNode;
+}
+
+const TabContentErrorBoundary = ({ children = <div>Something went wrong</div> }: TabContentErrorBoundaryProps) => {
+  return <>{children}</>; // In a real app, implement proper error boundary
 };
 
 const INITIAL_TAB = 'checklist';
@@ -29,7 +35,6 @@ type TabId = 'checklist' | 'timeline' | 'category';
 function CheckList() {
   const [activeTab, setActiveTab] = useState<TabId>(INITIAL_TAB);
   const handleTabChange = useCallback((tabId: TabId) => {
-    setActiveTab(tabId);
     setActiveTab(tabId);
     
     // Optional: Analytics tracking
@@ -42,7 +47,7 @@ function CheckList() {
   }, []);
 
   const renderTabContent = () => {
-    const contentComponents = {
+    const contentComponents: Record<TabId, ReactNode> = {
       checklist: <ChecklistContent />,
       timeline: <TimelineContent />,
       category: <CategoryContent />
@@ -71,7 +76,7 @@ function CheckList() {
       <main className="relative mt-1">
         {/* Background */}
         <div
-          className="absolute inset-0 z-0 bg-cover bg-center grayscale"
+          className="absolute inset-0 -z-10 bg-cover bg-center grayscale"
           style={{ backgroundImage: `url(${allBgImg})` }}
           role="presentation"
           aria-hidden="true"
