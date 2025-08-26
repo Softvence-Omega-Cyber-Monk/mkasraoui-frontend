@@ -118,13 +118,13 @@ function DashboardLayout() {
   const SidebarContent = ({ collapsed = false, onItemClick }: { collapsed?: boolean; onItemClick: () => void }) => (
     <div className="flex h-full flex-col">
       {/* Logo */}
-      <div className={`flex items-center justify-center bg-white ${collapsed ? "px-1 py-3" : "px-3 py-2"}`}>
+      <Link to={"/"} className={`flex items-center justify-center bg-white ${collapsed ? "px-1 py-3" : "px-3 py-2"}`}>
         <img
           src={navLogo}
           alt="Company Logo"
-          className={`transition-all duration-300 ${collapsed ? "h-10 w-10" : "h-16 w-auto"}`}
+          className={`transition-all duration-300 ${collapsed ? "h-10 w-10" : "h-20 w-auto"}`}
         />
-      </div>
+      </Link>
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-6">

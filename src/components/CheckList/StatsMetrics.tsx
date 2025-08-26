@@ -1,9 +1,9 @@
 export default function StatsMetrics() {
   const stats = [
-    { number: "5", label: "Parties Planned" },
-    { number: "47", label: "Invitations Sent" },
-    { number: "123", label: "Guests Invited" },
-    { number: "3", label: "Favourite Boxes" },
+    { number: "30%", label: "Complete" },
+    { number: "3", label: "Tasks Done" },
+    { number: "4", label: "Urgent" },
+    { number: "3", label: "Remaining" },
   ];
 
   return (
@@ -14,7 +14,7 @@ export default function StatsMetrics() {
             key={index}
             className="rounded-lg bg-[#E6EFFF] p-6 text-center sm:p-8"
           >
-            <div className="text-secondary font-fredoka font-bold mb-2 text-4xl sm:text-5xl">
+            <div className="text-secondary font-fredoka mb-2 text-4xl font-bold sm:text-5xl">
               {stat.number}
             </div>
             <div className="text-secondary text-base font-semibold sm:text-lg">
