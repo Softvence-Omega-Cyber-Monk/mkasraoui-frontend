@@ -1,8 +1,31 @@
 import { AlertCircle, Calendar, ChevronDown, Download, Share2 } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
+
+// Define types for the data structures
+interface Task {
+  id: number;
+  title: string;
+  category: string;
+  priority: string;
+  daysAhead: number;
+  completed: boolean;
+}
+
+interface Priority {
+  value: string;
+  label: string;
+  color: string;
+}
+
+interface NewTask {
+  title: string;
+  category: string;
+  priority: string;
+  daysAhead: string;
+}
 
 // Mock data for tasks
-const initialTasks = [
+const initialTasks: Task[] = [
   {
     id: 1,
     title: 'Book party venue',
@@ -85,35 +108,35 @@ const initialTasks = [
   }
 ];
 
-const categories = [
+const categories: string[] = [
   'Planning', 'Venue', 'Invitations', 'Food', 'Decorations', 'Activities', 'Entertainment'
 ];
 
-const priorities = [
+const priorities: Priority[] = [
   { value: 'high', label: 'High', color: 'bg-red-500' },
   { value: 'medium', label: 'Medium', color: 'bg-yellow-500' },
   { value: 'low', label: 'Low', color: 'bg-blue-400' }
 ];
 
-const daysAheadOptions = [
+const daysAheadOptions: string[] = [
   'Today', '1 day', '2 days', '3 days', '1 week', '2 weeks', '3 weeks'
 ];
 
 // Priority Badge Component
-const PriorityBadge = ({ priority }) => {
+const PriorityBadge = ({ priority }: { priority: string }) => {
   const priorityConfig = priorities.find(p => p.value === priority);
   return (
-    <span className={`px-3 py-1 rounded-full text-xs font-medium text-white ${priorityConfig?.color}`}>
+    <span className={`px-3 py-1 rounded-md text-xs font-medium text-white ${priorityConfig?.color}`}>
       {priorityConfig?.label}
     </span>
   );
 };
 
 // Task Item Component
-const TaskItem = ({ task, onToggle }) => {
+const TaskItem = ({ task, onToggle }: { task: Task; onToggle: (id: number) => void }) => {
   const isUrgent = task.daysAhead <= 2 && !task.completed;
   
-  const formatDaysAhead = (days) => {
+  const formatDaysAhead = (days: number) => {
     if (days === 0) return 'Today';
     if (days === 1) return '1 day ahead';
     return `${days} days ahead`;
@@ -124,13 +147,31 @@ const TaskItem = ({ task, onToggle }) => {
       task.completed ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'
     } ${task.completed ? 'opacity-75' : ''}`}>
       <div className="flex items-center gap-3">
-        <input
-          type="checkbox"
-          checked={task.completed}
-          onChange={() => onToggle(task.id)}
-          className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-        />
-        
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={task.completed}
+            onChange={() => onToggle(task.id)}
+            className="sr-only peer"
+          />
+          <div className={`w-5 h-5 rounded-sm border-2
+            ${task.completed ? 'bg-green-500 border-green-500' : 'border-gray-300'}
+            peer-checked:bg-green-500 peer-checked:border-green-500
+            flex items-center justify-center transition duration-200`}>
+            {task.completed && (
+              <svg
+                className="w-4 h-4 text-white"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+          </div>
+        </label>
+
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <h3 className={`font-medium ${task.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
@@ -140,7 +181,7 @@ const TaskItem = ({ task, onToggle }) => {
           </div>
           
           <div className="flex items-center gap-3 text-sm">
-            <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded border">
+            <span className="px-2 py-0.5 text-[#ADADAD] rounded-md border border-[#ADADAD]">
               {task.category}
             </span>
             <PriorityBadge priority={task.priority} />
@@ -155,8 +196,14 @@ const TaskItem = ({ task, onToggle }) => {
 };
 
 // Dropdown Component
-const Dropdown = ({ value, options, onChange, placeholder, renderOption }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const Dropdown = ({ value, options, onChange, placeholder, renderOption }: {
+  value: string;
+  options: string[];
+  onChange: (option: string) => void;
+  placeholder: string;
+  renderOption?: (option: string) => React.ReactNode;
+}) => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
     <div className="relative">
@@ -195,9 +242,9 @@ const Dropdown = ({ value, options, onChange, placeholder, renderOption }) => {
 };
 
 // Add Task Form Component
-const AddTaskForm = ({ onAdd }) => {
-  const [showForm, setShowForm] = useState(false);
-  const [newTask, setNewTask] = useState({
+const AddTaskForm = ({ onAdd }: { onAdd: (task: Task) => void }) => {
+  const [showForm, setShowForm] = useState<boolean>(false);
+  const [newTask, setNewTask] = useState<NewTask>({
     title: '',
     category: 'Planning',
     priority: 'medium',
@@ -206,7 +253,7 @@ const AddTaskForm = ({ onAdd }) => {
 
   const handleSubmit = () => {
     if (newTask.title.trim()) {
-      const daysMap = {
+      const daysMap: { [key: string]: number } = {
         'Today': 0, '1 day': 1, '2 days': 2, '3 days': 3,
         '1 week': 7, '2 weeks': 14, '3 weeks': 21
       };
@@ -223,7 +270,7 @@ const AddTaskForm = ({ onAdd }) => {
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSubmit();
     }
@@ -231,27 +278,27 @@ const AddTaskForm = ({ onAdd }) => {
 
   return (
     <div className="mb-6">
-      {/* Task Input with Dropdown Trigger */}
-      <div className="flex gap-4  overflow-hidden">
-        <input
-          type="text"
-          value={newTask.title}
-          onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-          onKeyPress={handleKeyPress}
-          placeholder="Add a new task..."
-          className="p-4 flex-1/2 text-gray-900 placeholder-gray-500 border-1 focus:outline-none focus:ring-0"
-        />
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="px-4 py-4 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-0 transition-colors"
-        >
-          <ChevronDown className={`w-5 h-5 text-gray-600 transition-transform ${showForm ? 'rotate-180' : ''}`} />
-        </button>
+      <div className="border border-gray-300 bg-white rounded-md">
+        <div className="flex gap-4 p-4 overflow-hidden">
+          <input
+            type="text"
+            value={newTask.title}
+            onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+            onKeyPress={handleKeyPress}
+            placeholder="Add a new task..."
+            className="p-4 flex-1/2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-0"
+          />
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="px-4 py-4 hover:bg-gray-100 focus:outline-none border cursor-pointer border-gray-300 rounded-md focus:ring-0 transition-colors"
+          >
+            <ChevronDown className={`w-5 h-5 text-gray-600 transition-transform ${showForm ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
       </div>
-
-      {/* Expanded Form */}
+      
       {showForm && (
-        <div className="mt-4 bg-gray-50 p-4 rounded-lg border">
+        <div className="mt-4 bg-white p-4 rounded-lg border border-gray-200">
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
@@ -296,13 +343,13 @@ const AddTaskForm = ({ onAdd }) => {
           <div className="flex gap-2">
             <button
               onClick={handleSubmit}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-6 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-light cursor-pointer focus:outline-none focus:ring-0"
             >
               Save
             </button>
             <button
               onClick={() => setShowForm(false)}
-              className="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="px-6 py-2 cursor-pointer bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-0"
             >
               Cancel
             </button>
@@ -315,15 +362,15 @@ const AddTaskForm = ({ onAdd }) => {
 
 // Main Component
 function ChecklistContent() {
-  const [tasks, setTasks] = useState(initialTasks);
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
-  const handleToggleTask = (taskId) => {
+  const handleToggleTask = (taskId: number) => {
     setTasks(tasks.map(task => 
       task.id === taskId ? { ...task, completed: !task.completed } : task
     ));
   };
 
-  const handleAddTask = (newTask) => {
+  const handleAddTask = (newTask: Task) => {
     setTasks([...tasks, newTask]);
   };
 
@@ -333,14 +380,13 @@ function ChecklistContent() {
   const completionPercentage = Math.round((completedCount / totalTasks) * 100);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen">
+      <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Tasks Section */}
           <div className="lg:col-span-2">
             <AddTaskForm onAdd={handleAddTask} />
             
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="bg-white rounded-lg border border-gray-300 p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">All Tasks</h2>
               
               <div className="space-y-2">
@@ -355,10 +401,8 @@ function ChecklistContent() {
             </div>
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
-            {/* Urgent Tasks */}
-            <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
               <h3 className="text-lg font-bold text-red-800 mb-4">Urgent Tasks</h3>
               <ul className="space-y-3">
                 {urgentTasks.map(task => (
@@ -370,30 +414,28 @@ function ChecklistContent() {
               </ul>
             </div>
 
-            {/* Quick Actions */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="bg-white rounded-lg border border-gray-300 p-6">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
               
               <div className="space-y-3">
-                <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center gap-2">
+                <button className="w-full bg-secondary cursor-pointer text-white py-3 px-4 rounded-lg hover:bg-secondary-light focus:outline-none focus:ring-0 flex items-center justify-center gap-2">
                   <Calendar className="w-4 h-4" />
                   Sync to Calendar
                 </button>
                 
-                <button className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center justify-center gap-2">
+                <button className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg cursor-pointer hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center justify-center gap-2">
                   <Download className="w-4 h-4" />
                   Download PDF
                 </button>
                 
-                <button className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center justify-center gap-2">
+                <button className="w-full bg-gray-100 text-gray-700 py-3 px-4 cursor-pointer rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center justify-center gap-2">
                   <Share2 className="w-4 h-4" />
                   Share Checklist
                 </button>
               </div>
             </div>
 
-            {/* Progress */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="bg-white rounded-lg border border-gray-300 p-6">
               <div className="text-center">
                 <div className="relative inline-flex items-center justify-center w-24 h-24">
                   <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">

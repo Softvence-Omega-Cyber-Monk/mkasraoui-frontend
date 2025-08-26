@@ -82,8 +82,8 @@ function CategoryContent() {
 
   return (
     <div>
-      <div className="bg-gray-50 p-6">
-        <div className="mx-auto max-w-6xl">
+      <div>
+        <div className="mx-auto container px-4">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {sections.map((section, sectionIndex) => {
               const completedCount = getCompletedCount(section.tasks);
@@ -92,7 +92,7 @@ function CategoryContent() {
               return (
                 <div
                   key={section.title}
-                  className="rounded-lg border-2 border-[#CECECE] bg-white p-6"
+                  className="rounded-lg border border-gray-300 bg-white p-6"
                 >
                   <div className="mb-4 flex items-center justify-between">
                     <h2 className="text-lg font-semibold text-gray-900">

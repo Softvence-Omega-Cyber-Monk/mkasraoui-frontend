@@ -1,6 +1,18 @@
+import type { ButtonHTMLAttributes, KeyboardEvent, MouseEvent } from 'react';
 import { memo } from 'react';
 
-const TabButton = memo(({ label, isActive, onClick, ...props }) => {
+// Define allowed tab IDs
+type TabId = 'checklist' | 'timeline' | 'category';
+
+// Props for TabButton
+interface TabButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  label: string;
+  isActive: boolean;
+  onClick: (event: MouseEvent<HTMLButtonElement>) => void;
+}
+
+// TabButton component
+const TabButton = memo(({ label, isActive, onClick, ...props }: TabButtonProps) => {
   return (
     <button
       onClick={onClick}
@@ -26,24 +38,34 @@ const TabButton = memo(({ label, isActive, onClick, ...props }) => {
 
 TabButton.displayName = 'TabButton';
 
-const TABS = [
+// Tabs definition
+const TABS: { id: TabId; label: string }[] = [
   { id: 'checklist', label: 'My Checklist' },
   { id: 'timeline', label: 'Timeline View' },
-  { id: 'category', label: 'By Category' }
+  { id: 'category', label: 'By Category' },
 ];
 
-const ChecklistTabs = ({ 
-  activeTab = 'checklist', 
-  onTabChange, 
+// Props for ChecklistTabs
+interface ChecklistTabsProps {
+  activeTab?: TabId;
+  onTabChange?: (tabId: TabId) => void;
+  className?: string;
+  disabled?: boolean;
+}
+
+// ChecklistTabs component
+const ChecklistTabs = ({
+  activeTab = 'checklist',
+  onTabChange,
   className = '',
-  disabled = false 
-}) => {
-  const handleTabClick = (tabId) => {
+  disabled = false,
+}: ChecklistTabsProps) => {
+  const handleTabClick = (tabId: TabId) => {
     if (disabled || activeTab === tabId) return;
     onTabChange?.(tabId);
   };
 
-  const handleKeyDown = (event, tabId) => {
+  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>, tabId: TabId) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       handleTabClick(tabId);
@@ -51,8 +73,8 @@ const ChecklistTabs = ({
   };
 
   return (
-    <div className={`w-full max-w-4xl mx-auto px-4 mb-6 ${className}`}>
-      <div 
+    <div className={`container mx-auto px-4 mb-6 ${className}`}>
+      <div
         className="flex bg-transparent rounded-lg overflow-hidden shadow-sm"
         role="tablist"
         aria-label="Checklist view options"
