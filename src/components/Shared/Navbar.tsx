@@ -14,21 +14,22 @@ const Navbar: React.FC = () => {
   // Define nav links based on user state
   const navLinks = user
     ? [
-        { name: "Home", to: "/" },
-        { name: "Party Generator", to: "/home/party-generator" },
-        { name: "DIY Boxes", to: "/home/diyboxes" },
-        { name: "Invitations", to: "/home/party-invitations" },
-        { name: "Providers", to: "/home/providers" },
-        { name: "Shop", to: "/home/shop" },
-        { name: "Blog", to: "/home/blog" },
-      ]
+      { name: "Home", to: "/" },
+      { name: "Party Generator", to: "/home/party-generator" },
+      { name: "DIY Boxes", to: "/home/diyboxes" },
+      { name: "Invitations", to: "/home/party-invitations" },
+      { name: "Providers", to: "/home/providers" },
+      { name: "Shop", to: "/home/shop" },
+      { name: "Blog", to: "/home/blog" },
+    ]
     : [
-        { name: "Home", to: "/" },
-        { name: "About", href: "#about" },
-        { name: "Services", href: "#services" },
-        { name: "Testimonial", href: "#testimonial" },
-        { name: "Blog", to: "/home/blog" },
-      ];
+      { name: "Home", to: "/" },
+      { name: "About", href: "#about" },
+      { name: "Services", href: "#services" },
+      { name: "Testimonial", href: "#testimonial" },
+      { name: "Shop", to: "/home/shop" },
+      { name: "Blog", to: "/home/blog" },
+    ];
 
   const handleLogout = () => {
     logout();
@@ -39,7 +40,7 @@ const Navbar: React.FC = () => {
     <nav className="bg-background relative container mx-auto flex max-w-[1440px] items-center justify-between border-b border-gray-200 px-4 py-2 lg:px-5">
       {/* Left: Logo */}
       <Link to="/" >
-        <img src={logo} alt="Nav Logo" className="h-18 w-20"/>
+        <img src={logo} alt="Nav Logo" className="h-18 w-20" />
       </Link>
 
       {/* Middle: Nav Links (Desktop) */}
