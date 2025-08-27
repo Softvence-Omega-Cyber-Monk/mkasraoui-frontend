@@ -1,4 +1,4 @@
-import { NavLogo } from "@/components/Icons";
+import  NavLogo  from "@/assets/navlogo-new.png";
 import {
   Menu,
   MenuButton,
@@ -117,12 +117,12 @@ function DashboardLayout() {
     <div className="flex h-full flex-col">
       {/* Logo */}
       <Link to={"/"} className={`flex items-center justify-center bg-white ${collapsed ? "px-1 py-3" : "px-3 py-2"}`}>
-        {/* <img
-          src={navLogo}
+        <img
+          src={NavLogo}
           alt="Company Logo"
           className={`transition-all duration-300 ${collapsed ? "h-10 w-10" : "h-20 w-auto"}`}
-        /> */}
-        <NavLogo className={`transition-all duration-300 ${collapsed ? "h-10" : "h-24 w-auto"}`} />
+        />
+        {/* <NavLogo className={`transition-all duration-300 ${collapsed ? "h-10" : "h-24 w-auto"}`} /> */}
       </Link>
 
       {/* Navigation */}

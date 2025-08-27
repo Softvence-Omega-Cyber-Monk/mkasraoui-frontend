@@ -2,7 +2,7 @@ import { useUserStore } from "@/store/useUserStore";
 import React, { useState } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
-import { NavLogo } from "../Icons";
+import logo from '../../assets/navlogo-new.png';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +40,8 @@ const Navbar: React.FC = () => {
     <nav className="bg-background relative container mx-auto flex max-w-[1440px] items-center justify-between border-b border-gray-200 px-4 lg:px-5">
       {/* Left: Logo */}
       <Link to="/" >
-        <NavLogo className="h-28" />
+        {/* <NavLogo className="w-24 h-16" /> */}
+        <img src={logo} className="h-20" alt="" />
       </Link>
 
       {/* Middle: Nav Links (Desktop) */}
