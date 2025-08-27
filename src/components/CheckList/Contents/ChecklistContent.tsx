@@ -126,7 +126,7 @@ const daysAheadOptions: string[] = [
 const PriorityBadge = ({ priority }: { priority: string }) => {
   const priorityConfig = priorities.find(p => p.value === priority);
   return (
-    <span className={`px-3 py-1 rounded-md text-xs font-medium text-white ${priorityConfig?.color}`}>
+    <span className={`px-2 sm:px-3 py-1 rounded-md text-xs font-medium text-white ${priorityConfig?.color}`}>
       {priorityConfig?.label}
     </span>
   );
@@ -143,7 +143,7 @@ const TaskItem = ({ task, onToggle }: { task: Task; onToggle: (id: number) => vo
   };
 
   return (
-    <div className={`p-4 rounded-lg border mb-3 ${
+    <div className={`p-3 sm:p-4 rounded-lg border mb-3 ${
       task.completed ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'
     } ${task.completed ? 'opacity-75' : ''}`}>
       <div className="flex items-center gap-3">
@@ -172,20 +172,22 @@ const TaskItem = ({ task, onToggle }: { task: Task; onToggle: (id: number) => vo
           </div>
         </label>
 
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <h3 className={`font-medium ${task.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start gap-2 sm:gap-3 mb-2">
+            <h3 className={`font-medium flex-1 ${task.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
               {task.title}
             </h3>
-            {isUrgent && <AlertCircle className="w-4 h-4 text-red-500" />}
+            {isUrgent && <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />}
           </div>
           
-          <div className="flex items-center gap-3 text-sm">
-            <span className="px-2 py-0.5 text-[#ADADAD] rounded-md border border-[#ADADAD]">
-              {task.category}
-            </span>
-            <PriorityBadge priority={task.priority} />
-            <span className="text-gray-600">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 text-sm">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <span className="px-2 py-0.5 text-[#ADADAD] rounded-md border border-[#ADADAD] text-xs">
+                {task.category}
+              </span>
+              <PriorityBadge priority={task.priority} />
+            </div>
+            <span className="text-gray-600 text-xs sm:text-sm">
               {formatDaysAhead(task.daysAhead)}
             </span>
           </div>
@@ -210,12 +212,12 @@ const Dropdown = ({ value, options, onChange, placeholder, renderOption }: {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-3 text-left bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 flex items-center justify-between"
+        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 flex items-center justify-between text-sm"
       >
         <span className={value ? 'text-gray-900' : 'text-gray-500'}>
           {value || placeholder}
         </span>
-        <ChevronDown className="w-5 h-5 text-gray-400" />
+        <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
       </button>
       
       {isOpen && (
@@ -229,7 +231,7 @@ const Dropdown = ({ value, options, onChange, placeholder, renderOption }: {
                   onChange(option);
                   setIsOpen(false);
                 }}
-                className="w-full px-4 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"
+                className="w-full px-3 sm:px-4 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none text-sm"
               >
                 {renderOption ? renderOption(option) : option}
               </button>
@@ -277,29 +279,29 @@ const AddTaskForm = ({ onAdd }: { onAdd: (task: Task) => void }) => {
   };
 
   return (
-    <div className="mb-6">
+    <div className="mb-4 sm:mb-6">
       <div className="border border-gray-300 bg-white rounded-md">
-        <div className="flex gap-4 p-4 overflow-hidden">
+        <div className="flex gap-2 sm:gap-4 p-3 sm:p-4 overflow-hidden">
           <input
             type="text"
             value={newTask.title}
             onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
             onKeyPress={handleKeyPress}
             placeholder="Add a new task..."
-            className="p-4 flex-1/2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-0"
+            className="p-3 sm:p-4 flex-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-0 text-sm sm:text-base"
           />
           <button
             onClick={() => setShowForm(!showForm)}
-            className="px-4 py-4 hover:bg-gray-100 focus:outline-none border cursor-pointer border-gray-300 rounded-md focus:ring-0 transition-colors"
+            className="px-3 sm:px-4 py-3 sm:py-4 hover:bg-gray-100 focus:outline-none border cursor-pointer border-gray-300 rounded-md focus:ring-0 transition-colors"
           >
-            <ChevronDown className={`w-5 h-5 text-gray-600 transition-transform ${showForm ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-4 h-4 sm:w-5 sm:h-5 text-gray-600 transition-transform ${showForm ? 'rotate-180' : ''}`} />
           </button>
         </div>
       </div>
       
       {showForm && (
-        <div className="mt-4 bg-white p-4 rounded-lg border border-gray-200">
-          <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="mt-4 bg-white p-3 sm:p-4 rounded-lg border border-gray-200">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
               <Dropdown
@@ -343,13 +345,13 @@ const AddTaskForm = ({ onAdd }: { onAdd: (task: Task) => void }) => {
           <div className="flex gap-2">
             <button
               onClick={handleSubmit}
-              className="px-6 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-light cursor-pointer focus:outline-none focus:ring-0"
+              className="px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer focus:outline-none focus:ring-0 text-sm"
             >
               Save
             </button>
             <button
               onClick={() => setShowForm(false)}
-              className="px-6 py-2 cursor-pointer bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-0"
+              className="px-4 sm:px-6 py-2 cursor-pointer bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-0 text-sm"
             >
               Cancel
             </button>
@@ -381,13 +383,13 @@ function ChecklistContent() {
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="lg:col-span-2 order-2 lg:order-1">
             <AddTaskForm onAdd={handleAddTask} />
             
-            <div className="bg-white rounded-lg border border-gray-300 p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">All Tasks</h2>
+            <div className="bg-white rounded-lg border border-gray-300 p-3 sm:p-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">All Tasks</h2>
               
               <div className="space-y-2">
                 {tasks.map(task => (
@@ -401,44 +403,44 @@ function ChecklistContent() {
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-              <h3 className="text-lg font-bold text-red-800 mb-4">Urgent Tasks</h3>
-              <ul className="space-y-3">
+          <div className="space-y-4 sm:space-y-6 order-1 lg:order-2">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-bold text-red-800 mb-3 sm:mb-4">Urgent Tasks</h3>
+              <ul className="space-y-2 sm:space-y-3">
                 {urgentTasks.map(task => (
-                  <li key={task.id} className="flex items-center text-red-700">
-                    <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
-                    {task.title}
+                  <li key={task.id} className="flex items-center text-red-700 text-sm">
+                    <div className="w-2 h-2 bg-red-500 rounded-full mr-3 flex-shrink-0"></div>
+                    <span className="break-words">{task.title}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-300 p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
+            <div className="bg-white rounded-lg border border-gray-300 p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">Quick Actions</h3>
               
-              <div className="space-y-3">
-                <button className="w-full bg-secondary cursor-pointer text-white py-3 px-4 rounded-lg hover:bg-secondary-light focus:outline-none focus:ring-0 flex items-center justify-center gap-2">
+              <div className="space-y-2 sm:space-y-3">
+                <button className="w-full bg-blue-600 cursor-pointer text-white py-2.5 sm:py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-0 flex items-center justify-center gap-2 text-sm">
                   <Calendar className="w-4 h-4" />
                   Sync to Calendar
                 </button>
                 
-                <button className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg cursor-pointer hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center justify-center gap-2">
+                <button className="w-full bg-gray-100 text-gray-700 py-2.5 sm:py-3 px-4 rounded-lg cursor-pointer hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center justify-center gap-2 text-sm">
                   <Download className="w-4 h-4" />
                   Download PDF
                 </button>
                 
-                <button className="w-full bg-gray-100 text-gray-700 py-3 px-4 cursor-pointer rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center justify-center gap-2">
+                <button className="w-full bg-gray-100 text-gray-700 py-2.5 sm:py-3 px-4 cursor-pointer rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center justify-center gap-2 text-sm">
                   <Share2 className="w-4 h-4" />
                   Share Checklist
                 </button>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-300 p-6">
+            <div className="bg-white rounded-lg border border-gray-300 p-4 sm:p-6">
               <div className="text-center">
-                <div className="relative inline-flex items-center justify-center w-24 h-24">
-                  <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+                <div className="relative inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24">
+                  <svg className="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90" viewBox="0 0 100 100">
                     <circle
                       cx="50"
                       cy="50"
@@ -460,11 +462,11 @@ function ChecklistContent() {
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-2xl font-bold text-gray-900">{completionPercentage}%</span>
+                    <span className="text-xl sm:text-2xl font-bold text-gray-900">{completionPercentage}%</span>
                   </div>
                 </div>
                 
-                <p className="mt-4 text-gray-600">
+                <p className="mt-3 sm:mt-4 text-gray-600 text-sm">
                   {completedCount} of {totalTasks} tasks complete
                 </p>
               </div>

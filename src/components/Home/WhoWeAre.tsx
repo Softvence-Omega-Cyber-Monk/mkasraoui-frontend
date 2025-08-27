@@ -76,7 +76,7 @@ const WhoWeAre: React.FC = () => {
           <div className="grid items-center gap-12 sm:gap-16 lg:grid-cols-2">
             {/* Left Content */}
             <div className="who-left max-w-2xl space-y-6 sm:space-y-8">
-              <div className="text-primary text-sm sm:text-base">
+              <div className="text-primary text-xl sm:text-2xl">
                 Who we are
               </div>
 

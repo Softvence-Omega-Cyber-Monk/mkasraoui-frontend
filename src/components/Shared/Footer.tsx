@@ -8,9 +8,71 @@ import {
   Youtube,
 } from "lucide-react";
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const Footer: React.FC = () => {
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  // Email validation function
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Handle email input change
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    
+    // Clear error when user starts typing
+    if (emailError) {
+      setEmailError("");
+    }
+  };
+
+  // Handle newsletter subscription
+  const handleSubscribe = () => {
+    // Validate email
+    if (!email.trim()) {
+      setEmailError("Email is required");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setEmailError("Please enter a valid email address");
+      return;
+    }
+
+    // Clear any existing errors
+    setEmailError("");
+
+    // Show SweetAlert2 confirmation
+    Swal.fire({
+      title: "Newsletter Subscription",
+      text: `Are you sure you want to subscribe with ${email}?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, subscribe!",
+      cancelButtonText: "Cancel"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show success message
+        Swal.fire({
+          title: "Subscribed!",
+          text: "Thank you for subscribing to our newsletter!",
+          icon: "success",
+          confirmButtonColor: "#3085d6"
+        });
+        
+        // Clear the email input
+        setEmail("");
+      }
+    });
+  };
 
   return (
     <div className="bg-secondary relative mt-48 w-full">
@@ -44,13 +106,13 @@ const Footer: React.FC = () => {
 
             {/* Center section with logo and social */}
             <div className="space-y-6 text-center">
-              <div className="flex justify-center">
+              <Link to={"/"} className="flex justify-center">
                 <img
                   src={footerlogo}
                   alt="Logo"
                   className="w-auto object-contain"
                 />
-              </div>
+              </Link>
 
               <h3 className="text-2xl font-medium">Let's fun together</h3>
 
@@ -79,14 +141,26 @@ const Footer: React.FC = () => {
                 or promotions.
               </p>
               <div className="space-y-4">
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="focus:ring-none w-full rounded-lg bg-white px-4 py-3 text-gray-800 placeholder-gray-500 focus:ring-2 focus:outline-none"
-                />
-                <button className="bg-secondary-dark hover:bg-secondary-light w-full cursor-pointer rounded-lg px-6 py-3 font-medium text-white transition-colors">
+                <div>
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    className={`focus:ring-none w-full rounded-lg bg-white px-4 py-3 text-gray-800 placeholder-gray-500 focus:ring-2 focus:outline-none ${
+                      emailError 
+                        ? "border-2 border-red-500 focus:ring-red-500" 
+                        : "focus:ring-blue-500"
+                    }`}
+                  />
+                  {emailError && (
+                    <p className="mt-2 text-sm text-red-300">{emailError}</p>
+                  )}
+                </div>
+                <button 
+                  onClick={handleSubscribe}
+                  className="bg-secondary-dark hover:bg-secondary-light w-full cursor-pointer rounded-lg px-6 py-3 font-medium text-white transition-colors"
+                >
                   Get Started For Free
                 </button>
               </div>

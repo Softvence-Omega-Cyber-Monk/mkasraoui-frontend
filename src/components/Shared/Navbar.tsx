@@ -1,17 +1,18 @@
-import logo from "@/assets/navlogo.png";
 import { useUserStore } from "@/store/useUserStore";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
+import { HashLink } from "react-router-hash-link"; 
+import logo from "../../assets/navlogo-new.png";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useUserStore();
   const navigate = useNavigate();
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  // Define nav links based on user state
   const navLinks = user
     ? [
       { name: "Home", to: "/" },
@@ -24,9 +25,9 @@ const Navbar: React.FC = () => {
     ]
     : [
       { name: "Home", to: "/" },
-      { name: "About", href: "#about" },
-      { name: "Services", href: "#services" },
-      { name: "Testimonial", href: "#testimonial" },
+      { name: "About", hash: "/#about" },
+      { name: "Services", hash: "/#services" },
+      { name: "Testimonial", hash: "/#testimonial" },
       { name: "Shop", to: "/home/shop" },
       { name: "Blog", to: "/home/blog" },
     ];
@@ -36,11 +37,30 @@ const Navbar: React.FC = () => {
     navigate("/auth/login");
   };
 
+  // 🔥 Detect outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
-    <nav className="bg-background relative container mx-auto flex max-w-[1440px] items-center justify-between border-b border-gray-200 px-4 py-2 lg:px-5">
+    <nav className="bg-background relative container mx-auto flex max-w-[1440px] items-center justify-between border-b border-gray-200 px-4 lg:px-5">
       {/* Left: Logo */}
-      <Link to="/" >
-        <img src={logo} alt="Nav Logo" className="h-18 w-20" />
+      <Link to="/">
+        <img src={logo} className="h-20" alt="Logo" />
       </Link>
 
       {/* Middle: Nav Links (Desktop) */}
@@ -55,12 +75,13 @@ const Navbar: React.FC = () => {
                 {link.name}
               </Link>
             ) : (
-              <a
-                href={link.href}
+              <HashLink
+                smooth
+                to={link.hash!}
                 className="hover:text-primary cursor-pointer transition"
               >
                 {link.name}
-              </a>
+              </HashLink>
             )}
           </li>
         ))}
@@ -82,7 +103,6 @@ const Navbar: React.FC = () => {
             >
               My Account
             </Link>
-            {/* Logout button */}
             <button
               onClick={handleLogout}
               className="cursor-pointer rounded-lg border border-red-400 px-4 py-2 text-center text-red-500 transition hover:bg-red-50"
@@ -111,7 +131,10 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="bg-background absolute top-full left-0 z-50 w-full border-t border-gray-200 shadow-lg transition lg:hidden">
+        <div
+          ref={menuRef}
+          className="bg-background absolute top-full left-0 z-50 w-full border-t border-gray-200 shadow-lg transition lg:hidden"
+        >
           <ul className="text-secondary flex flex-col gap-4 px-6 py-4 text-base font-medium">
             {navLinks.map((link) => (
               <li key={link.name}>
@@ -124,13 +147,14 @@ const Navbar: React.FC = () => {
                     {link.name}
                   </Link>
                 ) : (
-                  <a
-                    href={link.href}
+                  <HashLink
+                    smooth
+                    to={link.hash!}
                     onClick={toggleMenu}
                     className="hover:text-primary cursor-pointer transition"
                   >
                     {link.name}
-                  </a>
+                  </HashLink>
                 )}
               </li>
             ))}
@@ -149,7 +173,6 @@ const Navbar: React.FC = () => {
                   >
                     My Account
                   </Link>
-                  {/* Mobile Logout */}
                   <button
                     onClick={() => {
                       handleLogout();

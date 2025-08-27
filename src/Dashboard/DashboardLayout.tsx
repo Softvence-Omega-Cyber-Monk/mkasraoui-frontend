@@ -1,4 +1,4 @@
-import navLogo from "@/assets/navlogo.png";
+import  NavLogo  from "@/assets/navlogo-new.png";
 import {
   Menu,
   MenuButton,
@@ -80,19 +80,17 @@ function DashboardLayout() {
       end={link.end}
       onClick={onClick}
       className={({ isActive }) =>
-        `group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200 ease-in-out hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-secondary-light/60 focus:ring-offset-2 ${
-          isActive
-            ? "bg-blue-50 text-secondary border-r-2 border-secondary font-bold"
-            : "text-gray-700 hover:text-gray-900 font-medium"
+        `group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200 ease-in-out hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-secondary-light/60 focus:ring-offset-2 ${isActive
+          ? "bg-blue-50 text-secondary border-r-2 border-secondary font-bold"
+          : "text-gray-700 hover:text-gray-900 font-medium"
         } ${collapsed ? "justify-center px-2" : ""}`
       }
     >
       {({ isActive }) => (
         <>
           <link.icon
-            className={`h-5 w-5 flex-shrink-0 transition-colors ${
-              isActive ? "text-secondary" : "text-gray-500 group-hover:text-gray-700"
-            }`}
+            className={`h-5 w-5 flex-shrink-0 transition-colors ${isActive ? "text-secondary" : "text-gray-500 group-hover:text-gray-700"
+              }`}
             isActive={isActive}
           />
           {!collapsed && (
@@ -120,10 +118,11 @@ function DashboardLayout() {
       {/* Logo */}
       <Link to={"/"} className={`flex items-center justify-center bg-white ${collapsed ? "px-1 py-3" : "px-3 py-2"}`}>
         <img
-          src={navLogo}
+          src={NavLogo}
           alt="Company Logo"
           className={`transition-all duration-300 ${collapsed ? "h-10 w-10" : "h-20 w-auto"}`}
         />
+        {/* <NavLogo className={`transition-all duration-300 ${collapsed ? "h-10" : "h-24 w-auto"}`} /> */}
       </Link>
 
       {/* Navigation */}
@@ -201,7 +200,7 @@ function DashboardLayout() {
       {/* Desktop Sidebar */}
       <div className={`hidden lg:flex lg:flex-shrink-0 transition-all duration-300 ${isCollapsed ? 'lg:w-16' : 'lg:w-64'}`}>
         <div className="flex w-full flex-col bg-white shadow-sm border-r border-gray-200">
-          <SidebarContent collapsed={isCollapsed} onItemClick={() => {}} />
+          <SidebarContent collapsed={isCollapsed} onItemClick={() => { }} />
           {isCollapsed && (
             <div className="border-t border-gray-200 p-2">
               <button
@@ -274,42 +273,39 @@ function DashboardLayout() {
                     <p className="text-sm text-gray-500">sarah@example.com</p>
                   </div>
                   <div className="py-1">
-                    <MenuItem>
+                    {/* <MenuItem>
                       {({ focus }) => (
                         <Link
                           to="/dashboard/profile"
-                          className={`block px-4 py-2 text-sm transition-colors ${
-                            focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
-                          }`}
+                          className={`block px-4 py-2 text-sm transition-colors ${focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
+                            }`}
                         >
                           View Profile
                         </Link>
                       )}
-                    </MenuItem>
-                    <MenuItem>
+                    </MenuItem> */}
+                    {/* <MenuItem>
                       {({ focus }) => (
                         <Link
                           to="/dashboard/settings"
-                          className={`block px-4 py-2 text-sm transition-colors ${
-                            focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
-                          }`}
+                          className={`block px-4 py-2 text-sm transition-colors ${focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
+                            }`}
                         >
                           Settings
                         </Link>
                       )}
-                    </MenuItem>
-                    <MenuItem>
+                    </MenuItem> */}
+                    {/* <MenuItem>
                       {({ focus }) => (
                         <Link
                           to="/help"
-                          className={`block px-4 py-2 text-sm transition-colors ${
-                            focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
-                          }`}
+                          className={`block px-4 py-2 text-sm transition-colors ${focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
+                            }`}
                         >
                           Help & Support
                         </Link>
                       )}
-                    </MenuItem>
+                    </MenuItem> */}
                   </div>
                   <div className="py-1 border-t border-gray-100">
                     <MenuItem>
@@ -319,9 +315,8 @@ function DashboardLayout() {
                             // Handle logout logic
                             console.log('Logging out...');
                           }}
-                          className={`block w-full px-4 py-2 cursor-pointer text-left text-sm transition-colors ${
-                            focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
-                          }`}
+                          className={`block w-full px-4 py-2 cursor-pointer text-left text-sm transition-colors ${focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
+                            }`}
                         >
                           Sign Out
                         </button>

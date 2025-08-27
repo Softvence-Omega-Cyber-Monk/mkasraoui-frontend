@@ -142,8 +142,7 @@ export default function Blog() {
                 <option value="all">All Ages</option>
                 <option value="0-5">0-5</option>
                 <option value="6-12">6-12</option>
-                <option value="13-18">13-18</option>
-                <option value="18+">18+</option>
+               
               </select>
               {/* Use ChevronDown icon for select */}
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">

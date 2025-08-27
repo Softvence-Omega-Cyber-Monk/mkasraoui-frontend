@@ -13,7 +13,7 @@ export default function PartyInvitations() {
     { id: "Overview", label: "Overview" },
     { id: "My Parties", label: "My Parties" },
     { id: "Invitations", label: "Invitations" },
-    { id: "Favorite", label: "Favorite" },
+    { id: "Favourite", label: "Favourite" },
     { id: "Profile", label: "Profile" },
     // { id: "reviews", label: "Reviews" },
   ];
@@ -46,7 +46,7 @@ export default function PartyInvitations() {
            <InvitationsTab/>
           </div>
         );
-        case "Favorite": return(
+        case "Favourite": return(
           <div>
             <FavositesTab/>
           </div>
