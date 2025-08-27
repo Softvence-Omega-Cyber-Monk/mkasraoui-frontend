@@ -96,7 +96,7 @@ export default function WhatWeOffer() {
       <div className="mx-auto max-w-6xl text-center">
         {/* Header */}
         <div className="offer-header mb-8 flex flex-col items-center justify-center sm:flex-row sm:gap-2">
-          <span className="text-primary text-lg font-medium sm:text-xl">
+          <span className="text-primary text-xl font-medium sm:text-2xl">
             What we offer
           </span>
           <div className="offer-split relative mt-2 w-10 sm:-top-6 sm:left-8 sm:mt-0">

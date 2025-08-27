@@ -273,7 +273,7 @@ function DashboardLayout() {
                     <p className="text-sm text-gray-500">sarah@example.com</p>
                   </div>
                   <div className="py-1">
-                    <MenuItem>
+                    {/* <MenuItem>
                       {({ focus }) => (
                         <Link
                           to="/dashboard/profile"
@@ -283,8 +283,8 @@ function DashboardLayout() {
                           View Profile
                         </Link>
                       )}
-                    </MenuItem>
-                    <MenuItem>
+                    </MenuItem> */}
+                    {/* <MenuItem>
                       {({ focus }) => (
                         <Link
                           to="/dashboard/settings"
@@ -294,8 +294,8 @@ function DashboardLayout() {
                           Settings
                         </Link>
                       )}
-                    </MenuItem>
-                    <MenuItem>
+                    </MenuItem> */}
+                    {/* <MenuItem>
                       {({ focus }) => (
                         <Link
                           to="/help"
@@ -305,7 +305,7 @@ function DashboardLayout() {
                           Help & Support
                         </Link>
                       )}
-                    </MenuItem>
+                    </MenuItem> */}
                   </div>
                   <div className="py-1 border-t border-gray-100">
                     <MenuItem>

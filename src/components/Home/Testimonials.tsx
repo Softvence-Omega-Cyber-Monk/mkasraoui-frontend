@@ -159,7 +159,7 @@ export default function Testimonials() {
       <div className="mx-auto max-w-6xl text-center">
         {/* Header */}
         <div className="testimonials-header mb-8 flex flex-col items-center justify-center sm:flex-row sm:gap-2">
-          <span className="text-primary text-lg font-medium sm:text-xl">
+          <span className="text-primary text-xl font-medium sm:text-2xl">
             Testimonials
           </span>
           <div className="testimonials-split relative mt-2 w-10 sm:-top-6 sm:left-8 sm:mt-0">
@@ -241,9 +241,8 @@ export default function Testimonials() {
               <button
                 key={idx}
                 onClick={() => instanceRef.current?.moveToIdx(idx)}
-                className={`rounded-full ${
-                  currentSlide === idx ? "bg-primary" : "bg-gray-300"
-                } h-3 w-3 sm:h-2 sm:w-2`}
+                className={`rounded-full ${currentSlide === idx ? "bg-primary" : "bg-gray-300"
+                  } h-3 w-3 sm:h-2 sm:w-2`}
               />
             ))}
           </div>
