@@ -16,6 +16,9 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 export default function PartyInvitations() {
   const [activeTab, setActiveTab] = useState("Create Invitation");
   const [, setSelectedTemplate] = useState<string | null>(null);
@@ -37,7 +40,7 @@ export default function PartyInvitations() {
     customMessage: "",
   });
 
-  const ages = Array.from({ length: 13 }, (_, i) => i + 1);
+  const ages = Array.from({ length: 80 }, (_, i) => i + 1);
 
   const handleInputChange = (
     field: keyof typeof partyDetails,
@@ -54,8 +57,29 @@ export default function PartyInvitations() {
     setIsAgeDropdownOpen(false);
   };
 
+  // Inside your PartyInvitations component, before renderContent()
+  const [selectedDate, setSelectedDate] = useState<Date | null>(
+    partyDetails.partyDate ? new Date(partyDetails.partyDate) : null,
+  );
+
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+
+    // Save as yyyy-MM-dd (like <input type="date" /> would do)
+    const formattedDate = date ? date.toISOString().split("T")[0] : "";
+    handleInputChange("partyDate", formattedDate);
+  };
   // this handler for go to next tab renderContent()
 
+  //  this is handel previous button for go back
+  const handleBack = () => {
+    const currentIndex = tabs.findIndex((tab) => tab.id === activeTab);
+    if (currentIndex > 0) {
+      setActiveTab(tabs[currentIndex - 1].id);
+    }
+  };
+
+  // this handle function for go data in the backend
   const handleNext = () => {
     // Define required fields and their messages
     const requiredFields: { key: keyof typeof partyDetails; label: string }[] =
@@ -87,21 +111,15 @@ export default function PartyInvitations() {
         return; // stop here
       }
     }
-
+    console.log("hi dev All Party Details:", partyDetails);
     // ✅ All fields valid → go to next tab
     const currentIndex = tabs.findIndex((tab) => tab.id === activeTab);
     if (currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1].id);
     }
   };
-  //  this is handel previous button for go back
-  const handleBack = () => {
-    const currentIndex = tabs.findIndex((tab) => tab.id === activeTab);
-    if (currentIndex > 0) {
-      setActiveTab(tabs[currentIndex - 1].id);
-    }
-  };
 
+  // data for the last atb
   const templates = [
     {
       id: "superhero",
@@ -187,6 +205,7 @@ export default function PartyInvitations() {
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
+
   // this is tab content
   const renderContent = () => {
     switch (activeTab) {
@@ -300,17 +319,16 @@ export default function PartyInvitations() {
 
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-700">
-                        Party Date/ Time
+                        Party Date
                       </label>
                       <div className="relative">
-                        <input
-                          type="date"
-                          placeholder="dd/mm/yyyy"
-                          className="w-full rounded-lg border border-[#CECECE] px-3 py-2 pr-10 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0"
-                          value={partyDetails.partyDate}
-                          onChange={(e) =>
-                            handleInputChange("partyDate", e.target.value)
-                          }
+                        <DatePicker
+                          selected={selectedDate}
+                          onChange={handleDateChange}
+                          dateFormat="dd/MM/yyyy"
+                          placeholderText="dd/mm/yyyy"
+                          className="w-full rounded-lg border border-[#CECECE] px-3 py-2 pr-10 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          wrapperClassName="w-full" // 👈 THIS makes the wrapper stretch full width
                         />
                         <Calendar className="pointer-events-none absolute top-2.5 right-3 h-4 w-4 text-gray-400" />
                       </div>
