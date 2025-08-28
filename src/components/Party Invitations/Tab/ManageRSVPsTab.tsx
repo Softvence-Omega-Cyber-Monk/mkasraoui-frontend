@@ -14,6 +14,19 @@ interface Guest {
 
 interface ManageRSVPsProps {
   guests: Guest[];
+  newGuest: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  setNewGuest: React.Dispatch<
+    React.SetStateAction<{
+      name: string;
+      email: string;
+      phone: string;
+    }>
+  >;
+  handleAddGuest: () => void;
   getStatusStyles: (status: string) => string;
   handleBack: () => void;
 }
@@ -22,7 +35,12 @@ interface ManageRSVPsProps {
 const guestSchema = z.object({
   name: z.string().min(1, "Guest name is required"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().min(6, "Phone must be at least 6 characters"),
+  // optional: restrict to specific domains
+  //.regex(/@gmail\.com$/, "Email must be a Gmail address"),
+  phone: z
+    .string()
+    .min(6, "Phone must be at least 6 characters")
+    .regex(/^\+?\d{6,15}$/, "Phone must be a valid number"),
 });
 
 type GuestFormData = z.infer<typeof guestSchema>;
@@ -67,6 +85,7 @@ export default function ManageRSVPsTab({
                 <input
                   type="text"
                   placeholder="Guest name"
+                  required
                   {...register("name")}
                   className="h-12 w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
@@ -81,6 +100,7 @@ export default function ManageRSVPsTab({
                 <input
                   type="email"
                   placeholder="Email"
+                  required
                   {...register("email")}
                   className="h-12 w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
@@ -95,6 +115,7 @@ export default function ManageRSVPsTab({
                 <input
                   type="text"
                   placeholder="Phone"
+                  required
                   {...register("phone")}
                   className="h-12 w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />

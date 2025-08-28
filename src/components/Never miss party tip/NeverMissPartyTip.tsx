@@ -1,7 +1,7 @@
 // import bgImage from "@/assets/videobanner.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { EdgeWave } from "../Icons";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -54,6 +54,17 @@ const NeverMissPartyTip: React.FC = () => {
     return () => ctx.revert();
   }, []);
 
+  const [email, setEmail] = useState("");
+  const [confirmation, setConfirmation] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); // Prevent page reload
+    if (email.trim()) {
+      setConfirmation(`Thank you! We will notify ${email}.`);
+      setEmail(""); // Clear the input
+    }
+  };
+
   return (
     <div ref={sectionRef} className="mx-auto mt-16 w-full overflow-x-hidden">
       <section
@@ -82,27 +93,11 @@ const NeverMissPartyTip: React.FC = () => {
           </p>
 
           {/* Buttons */}
-          <div className="mt-0 md:mt-4 flex flex-col gap-4 sm:flex-row">
-            {/* <button
-              ref={(el) => {
-                buttonRefs.current[0] = el;
-              }}
-              className="gsap-hidden banner-button border-primary text-primary hover:bg-primary cursor-pointer rounded-lg border px-5 py-2 transition hover:text-white"
+          <div className="mt-0 flex flex-col gap-4 sm:flex-row md:mt-4">
+            <form
+              onSubmit={handleSubmit}
+              className="mx-auto mt-4 flex max-w-md flex-col gap-4 md:flex-row"
             >
-              Get Started for Free
-            </button>
-            <button
-              ref={(el) => {
-                buttonRefs.current[1] = el;
-              }}
-              className="gsap-hidden banner-button border-secondary hover:bg-secondary-light bg-secondary inline-flex cursor-pointer items-center rounded-lg border px-5 py-2 text-white transition"
-            >
-              Start Planning Now
-              <span className="ml-2 h-6">
-                <OutlineArrow />
-              </span>
-            </button> */}
-            <form className="mx-auto mt-4 flex max-w-md flex-col gap-4 md:flex-row">
               <label htmlFor="email-address" className="sr-only">
                 Email address
               </label>
@@ -112,20 +107,23 @@ const NeverMissPartyTip: React.FC = () => {
                 type="email"
                 autoComplete="email"
                 required
-                className="min-w-0 flex-auto rounded-lg bg-transparent border-1 border-black  px-3.5 py-3 text-black shadow-sm ring-1 ring-secondary outline-0 ring-inset focus:ring-2 focus:ring-blue-600  sm:text-sm sm:leading-6 md:min-w-md"
+                value={email} // bind input to state
+                onChange={(e) => setEmail(e.target.value)}
+                className="ring-secondary min-w-0 flex-auto rounded-lg border-1 border-black bg-transparent px-3.5 py-3 text-black shadow-sm ring-1 outline-0 ring-inset focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6 md:min-w-md"
                 placeholder="Enter your email"
               />
 
               <button
                 type="submit"
-
-                className="flex-none rounded-md cursor-pointer bg-[#223B7D] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-secondary-light focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-black"
-
+                className="hover:bg-secondary-light flex-none cursor-pointer rounded-md bg-[#223B7D] px-4 py-3 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-black"
               >
                 Notify me
               </button>
             </form>
           </div>
+          {confirmation && (
+            <p className="mt-3 font-medium text-green-600">{confirmation}</p>
+          )}
           <p className="mt-4 text-xs">
             Join 10,000+ parents who love our tips! ✨
           </p>

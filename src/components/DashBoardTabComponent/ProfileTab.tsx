@@ -1,6 +1,6 @@
-
 import user from "@/assets/profile-user.png";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 type Settings = {
   emailNotifications: boolean;
@@ -8,28 +8,25 @@ type Settings = {
   smsReminders: boolean;
 };
 
-
-
-
 function ProfileTab() {
-const [settings, setSettings] = useState<Settings>({
-  emailNotifications: true,
-  marketingEmails: false,
-  smsReminders: true,
-});
+  const [settings, setSettings] = useState<Settings>({
+    emailNotifications: true,
+    marketingEmails: false,
+    smsReminders: true,
+  });
 
-const toggleSetting = (key: keyof Settings) => {
-  setSettings((prev) => ({
-    ...prev,
-    [key]: !prev[key],
-  }));
-};
+  const toggleSetting = (key: keyof Settings) => {
+    setSettings((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
 
   return (
     <div>
-      <div className="flex flex-col items-start justify-center gap-6  p-4 md:p-6 lg:flex-row lg:p-8">
+      <div className="flex flex-col items-start justify-center gap-6 p-4 md:p-6 lg:flex-row lg:p-8">
         {/* Profile Information Card */}
-        <div className="w-full md:max-w-lg  bg-white rounded-2xl border-2 border-[#DFE1E6]">
+        <div className="w-full rounded-2xl border-2 border-[#DFE1E6] bg-white md:max-w-lg">
           <div className="p-6 pb-2">
             <h2 className="text-xl font-semibold text-gray-800">
               Profile Information
@@ -45,13 +42,13 @@ const toggleSetting = (key: keyof Settings) => {
                 />
               </div>
               <div className="grid gap-1">
-                <div className="text-lg font-medium text-gray-900 whitespace-nowrap">
+                <div className="text-lg font-medium whitespace-nowrap text-gray-900">
                   Sarah Johnson
                 </div>
                 <div className="text-sm text-gray-500">
                   Member since January 2024
                 </div>
-                <span className="inline-block w-full md:w-1/2 rounded-md whitespace-nowrap bg-[#C5FFD9] px-2 py-2 text-center text-xs font-medium text-[#39B42E]">
+                <span className="inline-block w-full rounded-md bg-[#C5FFD9] px-2 py-2 text-center text-xs font-medium whitespace-nowrap text-[#39B42E] md:w-1/2">
                   Pro Member
                 </span>
               </div>
@@ -105,7 +102,7 @@ const toggleSetting = (key: keyof Settings) => {
         </div>
 
         {/* Account Settings Card */}
-        <div className="w-full md:max-w-md rounded-2xl border-2 border-[#DFE1E6] bg-white ">
+        <div className="w-full rounded-2xl border-2 border-[#DFE1E6] bg-white md:max-w-md">
           <div className="p-6 pb-6">
             <h2 className="text-xl font-semibold text-gray-800">
               Account Settings
@@ -174,10 +171,11 @@ const toggleSetting = (key: keyof Settings) => {
                 )}
               </div>
             </div>
-
-            <button className="inline-flex h-10 w-full cursor-pointer items-center justify-center rounded-md bg-[#223B7D] px-4 py-2 text-sm font-medium whitespace-nowrap text-white transition-colors hover:bg-[#2C4890]/90">
-              Change Password
-            </button>
+            <Link to="/auth/reset-password">
+              <button className="inline-flex h-10 w-full cursor-pointer items-center justify-center rounded-md bg-[#223B7D] px-4 py-2 text-sm font-medium whitespace-nowrap text-white transition-colors hover:bg-[#2C4890]/90">
+                Change Password
+              </button>
+            </Link>
             <button className="inline-flex h-10 w-full cursor-pointer items-center justify-center rounded-md border border-[#FF5630] bg-transparent px-4 py-2 text-sm font-medium whitespace-nowrap text-[#EF4444] transition-colors hover:bg-[#EF4444]/5">
               Delete Account
             </button>

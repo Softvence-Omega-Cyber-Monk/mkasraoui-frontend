@@ -34,6 +34,7 @@ import RequestQuote from "./Pages/RequestQuote";
 import Shop from "./Pages/Shop";
 import ShopDetails from "./Pages/ShopDetails";
 import CheckList from "./Pages/CheckList";
+import ResetPassword from "./Pages/ResetPassword";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -69,6 +70,10 @@ const router = createBrowserRouter([
       {
         path: "/auth/test",
         element: <TestComponent />,
+      },
+      {
+        path: "/auth/reset-password",
+        element: <ResetPassword></ResetPassword>,
       },
     ],
   },
@@ -148,34 +153,34 @@ const router = createBrowserRouter([
   // admin routes can be added here
   {
     path: "/dashboard",
-    element: <DashboardLayout/>,
+    element: <DashboardLayout />,
     children: [
       {
         index: true,
-        element:<DefaultPage/>
+        element: <DefaultPage />,
       },
       {
-        path:'services',
-        element:<Services/>
+        path: "services",
+        element: <Services />,
       },
       {
-        path:'booking',
-        element:<Booking/>
+        path: "booking",
+        element: <Booking />,
       },
       {
-        path:'messages',
-        element:<Messages/>
+        path: "messages",
+        element: <Messages />,
       },
       {
-        path:'reviews',
-        element:<Reviews/>
+        path: "reviews",
+        element: <Reviews />,
       },
       {
-        path:'earnings',
-        element:<Earnings/>
+        path: "earnings",
+        element: <Earnings />,
       },
     ],
-  }
+  },
 ]);
 
 const rootElement = document.getElementById("root");
