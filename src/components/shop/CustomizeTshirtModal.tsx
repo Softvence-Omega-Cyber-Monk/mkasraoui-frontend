@@ -53,6 +53,7 @@ function CustomizeTshirtModal({ product, onClose }: CustomizeTshirtModalProps) {
     { id: "superheroes", label: "🦸 Superheroes" },
     { id: "jungle", label: "🌿 Jungle" },
     { id: "space", label: "🚀 Space" },
+    { id: "other", label: " Other" },
   ];
 
   // upload img handler
@@ -120,19 +121,21 @@ function CustomizeTshirtModal({ product, onClose }: CustomizeTshirtModalProps) {
             <div className="flex overflow-hidden rounded-lg">
               <button
                 onClick={() => setTshirtType("child")}
-                className={`flex-1 cursor-pointer px-4 py-3 text-sm font-medium transition-colors ${tshirtType === "child"
+                className={`flex-1 cursor-pointer px-4 py-3 text-sm font-medium transition-colors ${
+                  tshirtType === "child"
                     ? "bg-[#223B7D] text-white"
                     : "bg-[#D4D4D8] text-gray-700 hover:bg-gray-300"
-                  }`}
+                }`}
               >
                 Child
               </button>
               <button
                 onClick={() => setTshirtType("adult")}
-                className={`flex-1 cursor-pointer px-4 py-2 text-sm font-medium transition-colors ${tshirtType === "adult"
+                className={`flex-1 cursor-pointer px-4 py-2 text-sm font-medium transition-colors ${
+                  tshirtType === "adult"
                     ? "bg-[#223B7D] text-white"
                     : "bg-[#D4D4D8] text-gray-700 hover:bg-gray-300"
-                  }`}
+                }`}
               >
                 Adult
               </button>
@@ -199,10 +202,11 @@ function CustomizeTshirtModal({ product, onClose }: CustomizeTshirtModalProps) {
                 <button
                   key={color.name}
                   onClick={() => setSelectedColor(color.name)}
-                  className={`h-8 w-8 cursor-pointer rounded-full border-2 transition-all ${color.bg} ${selectedColor === color.name
+                  className={`h-8 w-8 cursor-pointer rounded-full border-2 transition-all ${color.bg} ${
+                    selectedColor === color.name
                       ? "border-blue-500 ring-2 ring-blue-200"
                       : color.border
-                    }`}
+                  }`}
                 ></button>
               ))}
             </div>
@@ -252,10 +256,11 @@ function CustomizeTshirtModal({ product, onClose }: CustomizeTshirtModalProps) {
                 <button
                   key={theme.id}
                   onClick={() => setSelectedTheme(theme.id)}
-                  className={`cursor-pointer rounded-lg border border-[#ADADAD] p-3 text-center text-xs transition-colors ${selectedTheme === theme.id
+                  className={`cursor-pointer rounded-lg border border-[#ADADAD] p-3 text-center text-xs transition-colors ${
+                    selectedTheme === theme.id
                       ? "border-[#223B7D] bg-blue-100 text-[#223B7D]"
                       : "hover:bg-gray-50"
-                    }`}
+                  }`}
                 >
                   {theme.label}
                 </button>
@@ -433,7 +438,6 @@ function CustomizeTshirtModal({ product, onClose }: CustomizeTshirtModalProps) {
 
               alert(`Added ${quantity} item(s) to cart for €${totalPrice}`);
             }}
-
             className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#223B7D] py-3 font-medium text-white transition-colors hover:bg-blue-700"
           >
             <img src={shopingTrolly} alt="" className="h-5 w-5" />

@@ -4,15 +4,15 @@ import { Link } from "react-router-dom";
 
 export default function RequestQuote() {
   const [formData, setFormData] = useState({
-    yourName: "Sarah Johnson",
-    emailAddress: "sarah@email.com",
-    phoneNumber: "(555) 123-4567",
-    birthdayChildName: "Emma",
+    yourName: "",
+    emailAddress: "",
+    phoneNumber: "",
+    birthdayChildName: "",
     ageTurning: "",
     partyDate: "",
     partyTime: "",
     numberOfGuests: "",
-    partyTheme: "Emma",
+    partyTheme: "",
     partyLocation: "",
     serviceType: "",
     budgetRange: "",
@@ -22,6 +22,7 @@ export default function RequestQuote() {
 
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [errors, setErrors] = useState<Partial<FormField>>({});
 
   interface FormField {
     yourName: string;
@@ -124,10 +125,39 @@ export default function RequestQuote() {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
-
   const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    console.log("Uploaded files:", uploadedFiles);
+    const newErrors: Partial<FormField> = {};
+
+    if (!formData.yourName.trim()) newErrors.yourName = "Your Name is required";
+    if (!formData.emailAddress.trim())
+      newErrors.emailAddress = "Email is required";
+    if (!formData.phoneNumber.trim())
+      newErrors.phoneNumber = "Phone number is required";
+    if (!formData.birthdayChildName.trim())
+      newErrors.birthdayChildName = "Child's name is required";
+    if (!formData.ageTurning) newErrors.ageTurning = "Age is required";
+    if (!formData.partyDate) newErrors.partyDate = "Party date is required";
+    if (!formData.numberOfGuests)
+      newErrors.numberOfGuests = "Number of guests is required";
+    if (!formData.partyLocation.trim())
+      newErrors.partyLocation = "Location is required";
+    if (!formData.serviceType)
+      newErrors.serviceType = "Service type is required";
+    if (!formData.partyTheme.trim())
+      newErrors.partyTheme = "Party Theme is required";
+    if (!formData.budgetRange)
+      newErrors.budgetRange = "Budget range is required";
+    if (!formData.specialRequests.trim())
+      newErrors.specialRequests = "Special requests are required";
+    // if (!formData.acceptTerms)
+    //   newErrors.acceptTerms = "You must accept the terms";
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      console.log("Form submitted:", formData);
+      console.log("Uploaded files:", uploadedFiles);
+    }
   };
 
   return (
@@ -172,6 +202,9 @@ export default function RequestQuote() {
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
                   placeholder="Sarah Johnson"
                 />
+                {errors.yourName && (
+                  <p className="mt-1 text-sm text-red-500">{errors.yourName}</p>
+                )}
               </div>
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -186,6 +219,11 @@ export default function RequestQuote() {
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
                   placeholder="sarah@email.com"
                 />
+                {errors.emailAddress && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.emailAddress}
+                  </p>
+                )}
               </div>
             </div>
             <div className="mt-4">
@@ -201,6 +239,11 @@ export default function RequestQuote() {
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 placeholder="(555) 123-4567"
               />
+              {errors.phoneNumber && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.phoneNumber}
+                </p>
+              )}
             </div>
           </div>
 
@@ -223,6 +266,11 @@ export default function RequestQuote() {
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
                   placeholder="Emma"
                 />
+                {errors.birthdayChildName && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.birthdayChildName}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -244,6 +292,11 @@ export default function RequestQuote() {
                     ))}
                   </select>
                   <ChevronDown className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+                  {errors.ageTurning && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.ageTurning}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -262,6 +315,11 @@ export default function RequestQuote() {
                     }
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
                   />
+                  {errors.partyDate && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.partyDate}
+                    </p>
+                  )}
                 </div>
               </div>
               <div>
@@ -277,6 +335,11 @@ export default function RequestQuote() {
                     }
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
                   />
+                  {errors.partyTime && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.partyTime}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -303,6 +366,11 @@ export default function RequestQuote() {
                   </select>
                   <ChevronDown className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                 </div>
+                {errors.numberOfGuests && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.numberOfGuests}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -317,6 +385,11 @@ export default function RequestQuote() {
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
                   placeholder="Emma"
                 />
+                {errors.partyTheme && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.partyTheme}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -333,6 +406,11 @@ export default function RequestQuote() {
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 placeholder="Home address, venue, or general area"
               />
+              {errors.partyLocation && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.partyLocation}
+                </p>
+              )}
             </div>
           </div>
 
@@ -362,6 +440,13 @@ export default function RequestQuote() {
                 </select>
                 <ChevronDown className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
               </div>
+
+              {/*  Show required error */}
+              {errors.serviceType && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.serviceType}
+                </p>
+              )}
             </div>
 
             <div className="mb-4">
@@ -384,6 +469,13 @@ export default function RequestQuote() {
                 </select>
                 <ChevronDown className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
               </div>
+
+              {/* ✅ Show required error */}
+              {errors.budgetRange && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.budgetRange}
+                </p>
+              )}
             </div>
 
             <div className="mb-4">
@@ -399,6 +491,11 @@ export default function RequestQuote() {
                 className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 placeholder="Any special requirements, dietary restrictions, design ideas, or other details you'd like to share..."
               />
+              {errors.specialRequests && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.specialRequests}
+                </p>
+              )}
             </div>
 
             {/* Upload Portfolio Images */}
@@ -486,6 +583,11 @@ export default function RequestQuote() {
                 }
                 className="focus:border-secondary mt-1 mr-3 h-4 w-4 cursor-pointer rounded border-gray-300 text-[#1a1a1a] outline-none hover:ring-blue-300"
               />
+              {errors.acceptTerms && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.acceptTerms}
+                </p>
+              )}
               <label htmlFor="terms" className="text-sm text-gray-700">
                 I accept the Terms of Service and Privacy Policy{" "}
                 <span className="text-red-500">*</span>

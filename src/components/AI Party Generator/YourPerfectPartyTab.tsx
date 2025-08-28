@@ -17,6 +17,7 @@ import QCode from "@/assets/Qcode.png";
 import musicImg1 from "@/assets/mic1.png";
 import musicImg2 from "@/assets/mic-2.png";
 import musicImg3 from "@/assets/mic-3.png";
+import { Link } from "react-router-dom";
 
 function YourPerfectPartyTab({
   setActiveStep,
@@ -375,11 +376,14 @@ function YourPerfectPartyTab({
             {" "}
             <Mail height={24} width={24} className="mr-2 inline" /> Email Plan
           </button>
-          <button className="cursor-pointer rounded border px-6 py-2">
-            {" "}
-            <ListChecks height={24} width={24} className="mr-2 inline" /> Create
-            Checklist
-          </button>
+          <Link to="/home/checklist">
+            <button className="cursor-pointer rounded border px-6 py-2">
+              {" "}
+              <ListChecks height={24} width={24} className="mr-2 inline" />{" "}
+              Create Checklist
+            </button>
+          </Link>
+
           <button className="cursor-pointer rounded border px-6 py-2">
             {" "}
             <Boxes height={24} width={24} className="mr-2 inline" /> View More
