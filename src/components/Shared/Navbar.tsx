@@ -1,8 +1,8 @@
-import { useUserStore } from "@/store/useUserStore";
+import { useCartStore, useUserStore } from "@/store/useUserStore";
 import React, { useEffect, useRef, useState } from "react";
-import { FiMenu, FiX } from "react-icons/fi";
+import { FiMenu, FiShoppingCart, FiX } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
-import { HashLink } from "react-router-hash-link"; 
+import { HashLink } from "react-router-hash-link";
 import logo from "../../assets/navlogo-new.png";
 
 const Navbar: React.FC = () => {
@@ -10,27 +10,29 @@ const Navbar: React.FC = () => {
   const { user, logout } = useUserStore();
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement>(null);
-
   const toggleMenu = () => setIsOpen(!isOpen);
+  const cart = useCartStore((state) => state.cart);
+  // console.log("my store card", cart);
 
   const navLinks = user
     ? [
-      { name: "Home", to: "/" },
-      { name: "Party Generator", to: "/home/party-generator" },
-      { name: "DIY Boxes", to: "/home/diyboxes" },
-      { name: "Invitations", to: "/home/party-invitations" },
-      { name: "Providers", to: "/home/providers" },
-      { name: "Shop", to: "/home/shop" },
-      { name: "Blog", to: "/home/blog" },
-    ]
+        { name: "Home", to: "/" },
+        { name: "Party Generator", to: "/home/party-generator" },
+        { name: "DIY Boxes", to: "/home/diyboxes" },
+        { name: "Invitations", to: "/home/party-invitations" },
+        { name: "Providers", to: "/home/providers" },
+        { name: "Shop", to: "/home/shop" },
+        { name: "Blog", to: "/home/blog" },
+        // { name: "My Cart", to: "/home/my-cart" },
+      ]
     : [
-      { name: "Home", to: "/" },
-      { name: "About", hash: "/#about" },
-      { name: "Services", hash: "/#services" },
-      { name: "Testimonial", hash: "/#testimonial" },
-      { name: "Shop", to: "/home/shop" },
-      { name: "Blog", to: "/home/blog" },
-    ];
+        { name: "Home", to: "/" },
+        { name: "About", hash: "/#about" },
+        { name: "Services", hash: "/#services" },
+        { name: "Testimonial", hash: "/#testimonial" },
+        { name: "Shop", to: "/home/shop" },
+        { name: "Blog", to: "/home/blog" },
+      ];
 
   const handleLogout = () => {
     logout();
@@ -91,6 +93,18 @@ const Navbar: React.FC = () => {
       <div className="hidden items-center gap-4 lg:flex">
         {user ? (
           <>
+            <Link
+              to="/home/my-cart"
+              className="relative flex items-center gap-1"
+            >
+              <FiShoppingCart size={24} />
+              My Cart
+              {cart.length > 0 && (
+                <span className="absolute -top-2 -right-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                  {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                </span>
+              )}
+            </Link>
             <Link
               to={"/home/premium-feature"}
               className="bg-secondary hover:bg-secondary-light cursor-pointer rounded-lg border px-4 py-2 text-white transition"

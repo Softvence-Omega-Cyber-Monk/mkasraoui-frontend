@@ -14,8 +14,8 @@ interface CustomizeTshirtModalProps {
     description: string;
     rating: number;
     reviews: number;
-    currentPrice: string;
-    originalPrice: string;
+    currentPrice: number;
+    originalPrice: number;
     tags: string[];
     buttonText: string;
     buttonVariant: string;

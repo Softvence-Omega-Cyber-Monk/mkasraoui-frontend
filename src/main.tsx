@@ -35,6 +35,8 @@ import Shop from "./Pages/Shop";
 import ShopDetails from "./Pages/ShopDetails";
 import CheckList from "./Pages/CheckList";
 import ResetPassword from "./Pages/ResetPassword";
+import MyCart from "./Pages/MyCart";
+import { Toaster } from "react-hot-toast";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -147,6 +149,10 @@ const router = createBrowserRouter([
         path: "premium-feature",
         element: <PremiumFeature />,
       },
+      {
+        path: "my-cart",
+        element: <MyCart></MyCart>,
+      },
     ],
   },
 
@@ -192,5 +198,6 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <RouterProvider router={router} />
+    <Toaster position="top-right" reverseOrder={false} />
   </React.StrictMode>,
 );
