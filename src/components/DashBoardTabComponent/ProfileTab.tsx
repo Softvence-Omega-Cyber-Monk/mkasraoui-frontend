@@ -95,7 +95,7 @@ function ProfileTab() {
                 type="tel"
               />
             </div>
-            <button className="inline-flex h-10 w-full cursor-pointer items-center justify-center rounded-md bg-[#223B7D] px-4 py-2 text-sm font-medium whitespace-nowrap text-white transition-colors hover:bg-[#2C4890]/90">
+            <button className="mt-2 inline-flex h-10 w-full cursor-pointer items-center justify-center rounded-md bg-[#223B7D] px-4 py-2 text-sm font-medium whitespace-nowrap text-white transition-colors hover:bg-[#2C4890]/90">
               Update Profile
             </button>
           </div>

@@ -9,12 +9,13 @@ import videoImg from "@/assets/videobanner.jpg";
 import { CircleCheckBig, Clock, Play } from "lucide-react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 // import bannerImg from "@/assets/party-banner-bg.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PremiumBanner from "@/components/Home/PremiumBanner";
 import MyHeader from "@/components/MyHeader/MyHeader";
 
 export default function DiyBoxDetails() {
   const { id } = useParams();
+
   // fak data for map
   const activities = [
     {
@@ -122,6 +123,10 @@ export default function DiyBoxDetails() {
   ];
 
   const activity = activities.find((item) => item.id === Number(id));
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [id]);
 
   // this is for show rating
   const renderStars = (rating: number) => {

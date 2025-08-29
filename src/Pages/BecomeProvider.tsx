@@ -490,7 +490,17 @@ function BecomeProvider() {
                   placeholder="Sarah Johnson"
                   {...register("businessName", {
                     required: "Business Name is required",
+                    pattern: {
+                      value: /^[A-Za-z\s]*$/, // only letters and spaces
+                      message: "Only letters are allowed",
+                    },
                   })}
+                  onInput={(e) => {
+                    e.currentTarget.value = e.currentTarget.value.replace(
+                      /[^A-Za-z\s]/g,
+                      "",
+                    );
+                  }}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {errors.businessName && (
@@ -510,7 +520,17 @@ function BecomeProvider() {
                   placeholder="John Doe"
                   {...register("contactName", {
                     required: "Contact Name is required",
+                    pattern: {
+                      value: /^[A-Za-z\s]*$/, // only letters and spaces
+                      message: "Only letters are allowed",
+                    },
                   })}
+                  onInput={(e) => {
+                    e.currentTarget.value = e.currentTarget.value.replace(
+                      /[^A-Za-z\s]/g,
+                      "",
+                    );
+                  }}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {errors.contactName && (
@@ -548,7 +568,18 @@ function BecomeProvider() {
                   placeholder="+1 234 567 890"
                   {...register("phone", {
                     required: "Phone Number is required",
+                    pattern: {
+                      value: /^[0-9+ ]*$/, // only numbers, spaces, and + allowed
+                      message: "Only numbers are allowed",
+                    },
                   })}
+                  onInput={(e) => {
+                    // allow only numbers, spaces, and plus sign
+                    e.currentTarget.value = e.currentTarget.value.replace(
+                      /[^0-9+ ]/g,
+                      "",
+                    );
+                  }}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {errors.phone && (
@@ -634,18 +665,27 @@ function BecomeProvider() {
                 </p>
               )}
             </div>
-
-            {/* Price Range */}
+            {/* Price Range * */}
             <div className="mt-6">
               <label className="mb-2 block text-sm font-medium text-gray-700">
                 Price Range *
               </label>
               <input
                 type="text"
-                placeholder="e.g. $100-300"
+                placeholder="e.g. 100-300"
                 {...register("priceRange", {
                   required: "Price Range is required",
+                  pattern: {
+                    value: /^[0-9-]*$/, // only numbers and dash
+                    message: "Only numbers and '-' are allowed",
+                  },
                 })}
+                onInput={(e) => {
+                  e.currentTarget.value = e.currentTarget.value.replace(
+                    /[^0-9-]/g,
+                    "",
+                  );
+                }}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.priceRange && (

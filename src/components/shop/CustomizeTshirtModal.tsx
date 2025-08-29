@@ -221,7 +221,13 @@ function CustomizeTshirtModal({ product, onClose }: CustomizeTshirtModalProps) {
               <input
                 type="text"
                 value={childName}
-                onChange={(e) => setChildName(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // allow only letters and spaces
+                  if (/^[A-Za-z\s]*$/.test(value)) {
+                    setChildName(value);
+                  }
+                }}
                 placeholder="Enter child's name"
                 className="w-full cursor-pointer rounded-lg border border-[#ADADAD] p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />

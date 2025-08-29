@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Mail } from "lucide-react";
+import { Mail, Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -86,7 +86,18 @@ export default function ManageRSVPsTab({
                   type="text"
                   placeholder="Guest name"
                   required
-                  {...register("name")}
+                  {...register("name", {
+                    pattern: {
+                      value: /^[A-Za-z\s]*$/, // only letters and spaces
+                      message: "Only letters are allowed",
+                    },
+                  })}
+                  onInput={(e) => {
+                    e.currentTarget.value = e.currentTarget.value.replace(
+                      /[^A-Za-z\s]/g,
+                      "",
+                    );
+                  }}
                   className="h-12 w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
                 {errors.name && (
@@ -116,7 +127,18 @@ export default function ManageRSVPsTab({
                   type="text"
                   placeholder="Phone"
                   required
-                  {...register("phone")}
+                  {...register("phone", {
+                    pattern: {
+                      value: /^[0-9]*$/, // only numbers
+                      message: "Only numbers are allowed",
+                    },
+                  })}
+                  onInput={(e) => {
+                    e.currentTarget.value = e.currentTarget.value.replace(
+                      /[^0-9]/g,
+                      "",
+                    );
+                  }}
                   className="h-12 w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
                 {errors.phone && (
@@ -163,6 +185,9 @@ export default function ManageRSVPsTab({
                     </span>
                     <button className="hover:bg-secondary-dark flex h-10 w-10 cursor-pointer items-center justify-center rounded-md bg-[#223B7D] text-white transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none">
                       <Mail className="h-4 w-4" />
+                    </button>
+                    <button className="hover:bg-secondary-dark flex h-10 w-10 cursor-pointer items-center justify-center rounded-md bg-[#223B7D] text-white transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none">
+                      <Trash className="h-4 w-4" />
                     </button>
                   </div>
                 </div>

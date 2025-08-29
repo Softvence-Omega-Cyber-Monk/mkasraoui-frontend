@@ -196,9 +196,14 @@ export default function RequestQuote() {
                 <input
                   type="text"
                   value={formData.yourName}
-                  onChange={(e) =>
-                    handleInputChange("yourName", e.target.value)
-                  }
+                  onChange={(e) => {
+                    // Remove anything that's not a letter or space
+                    const onlyLetters = e.target.value.replace(
+                      /[^A-Za-z\s]/g,
+                      "",
+                    );
+                    handleInputChange("yourName", onlyLetters);
+                  }}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
                   placeholder="Sarah Johnson"
                 />
@@ -233,11 +238,13 @@ export default function RequestQuote() {
               <input
                 type="tel"
                 value={formData.phoneNumber}
-                onChange={(e) =>
-                  handleInputChange("phoneNumber", e.target.value)
-                }
+                onChange={(e) => {
+                  // remove anything that's not a number
+                  const onlyNumbers = e.target.value.replace(/[^0-9]/g, "");
+                  handleInputChange("phoneNumber", onlyNumbers);
+                }}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                placeholder="(555) 123-4567"
+                placeholder="5551234567"
               />
               {errors.phoneNumber && (
                 <p className="mt-1 text-sm text-red-500">
@@ -260,9 +267,14 @@ export default function RequestQuote() {
                 <input
                   type="text"
                   value={formData.birthdayChildName}
-                  onChange={(e) =>
-                    handleInputChange("birthdayChildName", e.target.value)
-                  }
+                  onChange={(e) => {
+                    // allow only letters and spaces
+                    const onlyLetters = e.target.value.replace(
+                      /[^A-Za-z\s]/g,
+                      "",
+                    );
+                    handleInputChange("birthdayChildName", onlyLetters);
+                  }}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
                   placeholder="Emma"
                 />

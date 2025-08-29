@@ -121,7 +121,7 @@ export default function WhatWeOffer() {
           {offerItems.map((item, idx) => (
             <div
               key={idx}
-              className="offer-card rounded-2xl bg-[#F6F6F6] p-5 text-center shadow-sm sm:p-6 md:p-8"
+              className="offer-card rounded-2xl bg-[#F6F6F6]/50 p-5 text-center sm:p-6 md:p-8"
             >
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl sm:mb-6 md:h-16 md:w-16">
                 {item.icon}

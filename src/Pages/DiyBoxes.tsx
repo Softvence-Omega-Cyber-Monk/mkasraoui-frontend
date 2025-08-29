@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Search, Clock, Users, ShoppingCart, ChevronDown } from "lucide-react";
 import boxImg1 from "@/assets/box-img-1.jpg";
@@ -11,11 +10,14 @@ import { Link } from "react-router-dom";
 import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
 import MyHeader from "@/components/MyHeader/MyHeader";
 import PremiumBanner from "@/components/Home/PremiumBanner";
+import { useCartStore } from "@/store/useUserStore";
+import toast from "react-hot-toast";
 
 export default function DiyBoxes() {
   const [searchTerm, setSearchTerm] = useState("");
   const [ageRange, setAgeRange] = useState("");
   const [theme, setTheme] = useState("");
+  const addToCart = useCartStore((state) => state.addToCart);
 
   const activities = [
     {
@@ -143,15 +145,15 @@ export default function DiyBoxes() {
     return stars;
   };
   return (
-    <div className="mx-auto w-full ">
-       <MyHeader
-              title="DIY Party Boxes"
-              subtitle="Everything you need for an amazing party, curated by experts and
+    <div className="mx-auto w-full">
+      <MyHeader
+        title="DIY Party Boxes"
+        subtitle="Everything you need for an amazing party, curated by experts and
               delivered to your door"
-              className="text-3xl sm:text-5xl md:text-6xl"
-            ></MyHeader>
+        className="text-3xl sm:text-5xl md:text-6xl"
+      ></MyHeader>
       {/* this section for search and  cart  */}
-      <div className="container  mx-auto">
+      <div className="container mx-auto">
         {/* Search and Filter Bar */}
         <div className="mb-8 rounded-lg bg-white p-6 shadow-sm">
           <div className="flex flex-col items-center gap-4 md:flex-row">
@@ -206,8 +208,8 @@ export default function DiyBoxes() {
         </div>
 
         {/* Activity Cards Grid */}
-        <div className="container mx-auto ">
-          <div className="mt-20 grid grid-cols-1 gap-6 pb-14 md:grid-cols-2 lg:grid-cols-3 mx-auto px-4">
+        <div className="container mx-auto">
+          <div className="mx-auto mt-20 grid grid-cols-1 gap-6 px-4 pb-14 md:grid-cols-2 lg:grid-cols-3">
             {activities.map((activity) => (
               <div
                 key={activity.id}
@@ -280,11 +282,24 @@ export default function DiyBoxes() {
                       to={`/home/diyboxe/details/${activity.id}`}
                       className="flex-1"
                     >
-                      <button className="w-full cursor-pointer rounded-lg bg-[#223B7D] px-4 py-3 font-medium text-white transition-colors hover:bg-secondary-light">
+                      <button className="hover:bg-secondary-light w-full cursor-pointer rounded-lg bg-[#223B7D] px-4 py-3 font-medium text-white transition-colors">
                         View Details
                       </button>
                     </Link>
-                    <button className="cursor-pointer rounded-lg border border-[#223B7D] p-3 transition-colors hover:bg-gray-50">
+                    <button
+                      onClick={() => {
+                        addToCart({
+                          id: activity?.id,
+                          title: activity?.title,
+                          price: activity?.price,
+                          quantity: 1,
+                          image: activity?.image,
+                          rating: activity?.rating,
+                        });
+                        toast.success(`${activity?.title} added to cart!`);
+                      }}
+                      className="cursor-pointer rounded-lg border border-[#223B7D] p-3 transition-colors hover:bg-gray-50"
+                    >
                       <ShoppingCart className="h-5 w-5 text-gray-600" />
                     </button>
                   </div>
@@ -296,7 +311,7 @@ export default function DiyBoxes() {
       </div>
       {/* Love this theme?  section start here  */}
       <div>
-        <PremiumBanner/>
+        <PremiumBanner />
       </div>
     </div>
   );

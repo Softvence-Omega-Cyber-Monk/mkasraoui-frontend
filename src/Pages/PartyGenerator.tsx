@@ -8,13 +8,14 @@ import { FiChevronDown } from "react-icons/fi";
 import MyHeader from "@/components/MyHeader/MyHeader";
 import Swal from "sweetalert2";
 import YourPerfectPartyTab from "@/components/AI Party Generator/YourPerfectPartyTab";
+import DatePicker from "react-datepicker";
 // import { Calendar, ChevronDown } from 'lucide-react';
 interface FormData {
   childName: string;
   childAge: string;
   guestCount: string;
   budget: string;
-  date: string;
+  date: Date | null;
   location: string;
   selectedTheme: string;
   selectedActivities: string[]; // <-- important
@@ -31,7 +32,7 @@ export default function PartyGenerator() {
     // for second tab
     guestCount: "",
     budget: "",
-    date: "",
+    date: null,
     location: "",
     // for select theme
     selectedTheme: "",
@@ -261,9 +262,10 @@ export default function PartyGenerator() {
                       type="text"
                       id="childName"
                       value={formData.childName}
-                      onChange={(e) =>
-                        setFormData({ ...formData, childName: e.target.value })
-                      }
+                      onChange={(e) => {
+                        const onlyText = e.target.value.replace(/[0-9]/g, ""); // remove numbers
+                        setFormData({ ...formData, childName: onlyText });
+                      }}
                       required
                       placeholder="Child's Name"
                       className="w-full rounded-xl border border-[#C9C9C9] px-4 py-3 transition-all duration-200 outline-none focus:border-transparent focus:ring-2"
@@ -379,22 +381,20 @@ export default function PartyGenerator() {
                 </div>
 
                 {/* Party Date */}
-                <div>
+                <div className="w-full">
                   <label className="mb-2 block text-sm font-medium text-gray-700">
                     Party Date
                   </label>
-                  <div className="relative">
-                    <input
-                      type="date"
-                      value={formData.date}
-                      onChange={(e) =>
-                        setFormData({ ...formData, date: e.target.value })
-                      }
-                      className="w-full rounded-xl border border-[#C9C9C9] bg-white px-4 py-3 text-gray-700"
-                      placeholder="dd/mm/yy"
-                    />
-                    {/* <FiCalendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" /> */}
-                  </div>
+                  <DatePicker
+                    selected={formData.date}
+                    onChange={(date: Date | null) =>
+                      setFormData({ ...formData, date })
+                    }
+                    placeholderText="dd/mm/yyyy"
+                    className="w-full rounded-xl border border-[#C9C9C9] bg-white px-4 py-3 text-gray-700"
+                    wrapperClassName="w-full" // ✅ ensures outer wrapper div is full width
+                    dateFormat="dd/MM/yyyy"
+                  />
                 </div>
 
                 {/* Location */}
