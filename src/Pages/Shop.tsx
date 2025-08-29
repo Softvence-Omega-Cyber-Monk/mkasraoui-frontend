@@ -18,11 +18,14 @@ import printBrash from "@/assets/printBrash.png";
 import shopingTrolly from "@/assets/shopping-cart.png";
 import CustomizeTshirtModal from "@/components/shop/CustomizeTshirtModal";
 import MyHeader from "@/components/MyHeader/MyHeader";
+import { useCartStore } from "@/store/useUserStore";
+import toast from "react-hot-toast";
 
 export default function Shop() {
   const [searchTerm, setSearchTerm] = useState("");
   const [ageRange, setAgeRange] = useState("");
   const [theme, setTheme] = useState("");
+  const addToCart = useCartStore((state) => state.addToCart);
 
   // Simulate a search or filter action whenever parameters change
   useEffect(() => {
@@ -60,8 +63,8 @@ export default function Shop() {
         "Custom birthday t-shirt with child's name, age, and fun themes",
       rating: 4.9,
       reviews: 824,
-      currentPrice: "$12.9",
-      originalPrice: "$16.9",
+      currentPrice: 12.9,
+      originalPrice: 16.9,
       tags: ["Premium cotton", "Custom design", "Fast delivery"],
       buttonText: "Customize T-Shirt",
       buttonVariant: "orange" as const,
@@ -80,8 +83,8 @@ export default function Shop() {
         "Transform into a superhero with this premium cape and mask combo",
       rating: 4.9,
       reviews: 124,
-      currentPrice: "$49.99",
-      originalPrice: "$49.99",
+      currentPrice: 49.99,
+      originalPrice: 49.99,
       tags: ["Satin cape", "Felt mask", "Adjustable straps"],
       buttonText: "Buy Now",
       buttonVariant: "blue" as const,
@@ -95,8 +98,8 @@ export default function Shop() {
         "Build a shark, squid, or anglerfish with this amazing 3-in-1 set",
       rating: 4.9,
       reviews: 124,
-      currentPrice: "$49.99",
-      originalPrice: "$49.99",
+      currentPrice: 49.99,
+      originalPrice: 49.99,
       tags: ["50+ supplies", "Project guide", "Storage box"],
       buttonText: "Buy Now",
       buttonVariant: "blue" as const,
@@ -110,8 +113,8 @@ export default function Shop() {
         "Build a shark, squid, or anglerfish with this amazing 3-in-1 set",
       rating: 4.9,
       reviews: 124,
-      currentPrice: "$49.99",
-      originalPrice: "$49.99",
+      currentPrice: 49.99,
+      originalPrice: 49.99,
       tags: ["100+ activities", "Parental controls", "Durable design"],
       buttonText: "Buy Now",
       buttonVariant: "blue" as const,
@@ -120,13 +123,13 @@ export default function Shop() {
       id: 5,
       image: shop5,
       imageAlt: "LEGO Creator 3-in-1 Deep Sea Creatures",
-      title: "LEGO Creator 3-in-1 Deep Sea ",
+      title: "LEGO Creator 3-in-1 Deep Sea",
       description:
         "Build a shark, squid, or anglerfish with this amazing 3-in-1 set",
       rating: 4.9,
       reviews: 124,
-      currentPrice: "$49.99",
-      originalPrice: "$49.99",
+      currentPrice: 49.99,
+      originalPrice: 49.99,
       tags: ["230 pieces", "3 models in 1", "Ages 7+ case"],
       buttonText: "Buy Now",
       buttonVariant: "blue" as const,
@@ -140,8 +143,8 @@ export default function Shop() {
         "Build a shark, squid, or anglerfish with this amazing 3-in-1 set",
       rating: 4.9,
       reviews: 124,
-      currentPrice: "$49.99",
-      originalPrice: "$49.99",
+      currentPrice: 49.99,
+      originalPrice: 49.99,
       tags: ["200+ beads", "Elastic string", "Storage case"],
       buttonText: "Buy Now",
       buttonVariant: "blue" as const,
@@ -337,7 +340,20 @@ export default function Shop() {
                   alt={item.title}
                   className="h-full w-full object-cover"
                 />
-                <button className="absolute top-3 right-3 cursor-pointer rounded-sm bg-white p-2 shadow-sm hover:bg-gray-50">
+                <button
+                  onClick={() => {
+                    addToCart({
+                      id: item?.id,
+                      title: item?.title,
+                      price: item?.currentPrice,
+                      quantity: 1,
+                      image: item?.image,
+                      rating: item?.rating,
+                    });
+                    toast.success(`${item?.title} added to cart!`);
+                  }}
+                  className="absolute top-3 right-3 cursor-pointer rounded-sm bg-white p-2 shadow-sm hover:bg-gray-50"
+                >
                   <BookmarkIcon />
                 </button>
               </div>
