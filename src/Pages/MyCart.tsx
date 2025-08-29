@@ -49,7 +49,7 @@ function MyCart() {
                           .updateQuantity(item.id, item.quantity - 1)
                       }
                       disabled={item.quantity <= 1}
-                      className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-slate-400 text-white"
+                      className="flex h-[18px] w-[18px] cursor-pointer items-center justify-center rounded-full bg-slate-400 text-white"
                     >
                       -
                     </button>
@@ -62,7 +62,7 @@ function MyCart() {
                           .getState()
                           .updateQuantity(item.id, item.quantity + 1)
                       }
-                      className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-slate-800 text-white"
+                      className="flex h-[18px] w-[18px] cursor-pointer items-center justify-center rounded-full bg-slate-800 text-white"
                     >
                       +
                     </button>
@@ -71,7 +71,7 @@ function MyCart() {
                     onClick={() =>
                       useCartStore.getState().removeFromCart(item.id)
                     }
-                    className="mt-2 text-sm text-red-600 hover:text-red-800"
+                    className="mt-2 cursor-pointer text-sm text-red-600 hover:text-red-800"
                   >
                     Remove
                   </button>
@@ -112,10 +112,10 @@ function MyCart() {
               </li>
             </ul>
             <div className="mt-8 space-y-4">
-              <button className="w-full rounded-md bg-slate-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-900">
+              <button className="w-full cursor-pointer rounded-md bg-slate-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-900">
                 Buy Now
               </button>
-              <button className="w-full rounded-md border border-gray-300 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-900 hover:bg-slate-100">
+              <button className="w-full cursor-pointer rounded-md border border-gray-300 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-900 hover:bg-slate-100">
                 Continue Shopping
               </button>
             </div>
