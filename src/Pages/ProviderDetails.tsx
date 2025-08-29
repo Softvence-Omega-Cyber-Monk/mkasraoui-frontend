@@ -214,9 +214,9 @@ export default function ProviderDetails() {
             >
               Request Quote
             </Link>
-            <button className="w-full cursor-pointer rounded-lg border border-gray-300 px-4 py-2 font-medium text-[#1a1a1a] transition-colors hover:bg-gray-50">
+            {/* <button className="w-full cursor-pointer rounded-lg border border-gray-300 px-4 py-2 font-medium text-[#1a1a1a] transition-colors hover:bg-gray-50">
               Ask A Question
-            </button>
+            </button> */}
           </div>
 
           {/* Contact Information */}

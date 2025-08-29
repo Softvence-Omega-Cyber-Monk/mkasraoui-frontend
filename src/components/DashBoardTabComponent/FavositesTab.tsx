@@ -40,7 +40,7 @@ function FavositesTab() {
   return (
     <div>
       <div className="container mx-auto rounded-2xl border border-[#E6E6E6] bg-white p-6">
-        <h2 className="mb-6 text-2xl font-bold">Favourite Boxes</h2>
+        <h2 className="mb-6 text-2xl font-bold">Favorite Boxes</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {boxes.map((box) => (
             <div
