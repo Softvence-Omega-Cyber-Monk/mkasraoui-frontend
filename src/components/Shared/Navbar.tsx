@@ -30,6 +30,7 @@ const Navbar: React.FC = () => {
         { name: "About", hash: "/#about" },
         { name: "Services", hash: "/#services" },
         { name: "Testimonial", hash: "/#testimonial" },
+        { name: "Providers", to: "/home/providers" },
         { name: "Shop", to: "/home/shop" },
         { name: "Blog", to: "/home/blog" },
       ];
@@ -95,7 +96,7 @@ const Navbar: React.FC = () => {
           <>
             <Link
               to="/home/my-cart"
-              className="relative flex items-center gap-1"
+              className="relative mr-2 flex items-center gap-1"
             >
               <FiShoppingCart size={24} />
               My Cart
@@ -175,6 +176,18 @@ const Navbar: React.FC = () => {
             <li>
               {user ? (
                 <div className="flex flex-col gap-2">
+                  <Link
+                    to="/home/my-cart"
+                    className="relative mr-2 flex items-center gap-1"
+                  >
+                    <FiShoppingCart size={24} />
+                    My Cart
+                    {cart.length > 0 && (
+                      <span className="absolute -top-2 -right-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                        {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                      </span>
+                    )}
+                  </Link>
                   <Link
                     to={"/home/premium-feature"}
                     className="bg-secondary hover:bg-secondary-dark rounded-lg border px-4 py-2 text-white transition"

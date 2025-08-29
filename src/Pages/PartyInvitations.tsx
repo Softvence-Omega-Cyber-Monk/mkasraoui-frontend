@@ -266,13 +266,17 @@ export default function PartyInvitations() {
                       </label>
                       <input
                         type="text"
-                        placeholder="Enter your you name"
+                        placeholder="Enter your name"
                         required
                         className="w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
                         value={partyDetails.childName}
-                        onChange={(e) =>
-                          handleInputChange("childName", e.target.value)
-                        }
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          //  allow only letters and spaces
+                          if (/^[A-Za-z\s]*$/.test(value)) {
+                            handleInputChange("childName", value);
+                          }
+                        }}
                       />
                     </div>
 

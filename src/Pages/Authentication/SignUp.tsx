@@ -3,6 +3,7 @@ import partyKids from "@/assets/auth/partyKids-2.jpg";
 import { Check, Eye, EyeOff, Lock, Mail, Phone, User, X } from "lucide-react";
 import { type ChangeEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { GiPostOffice } from "react-icons/gi";
 
 import { DownArrow } from "@/components/Icons";
 import { countryCodes } from "@/utils/countryCodes";
@@ -14,6 +15,7 @@ type FormData = {
   phone: string;
   password: string;
   confirmPassword: string;
+  postalCode: string;
 };
 
 type Errors = Partial<Record<keyof FormData, string>>;
@@ -26,6 +28,7 @@ export default function SignUp() {
     phone: "",
     password: "",
     confirmPassword: "",
+    postalCode: "",
   });
 
   const [errors, setErrors] = useState<Errors>({});
@@ -173,6 +176,7 @@ export default function SignUp() {
         phone: "",
         password: "",
         confirmPassword: "",
+        postalCode: "",
       });
       console.log(formData);
     } catch (error) {
@@ -477,7 +481,35 @@ export default function SignUp() {
                 </p>
               )}
             </div>
-
+            {/* postal code  */}
+            <div className="relative flex-1">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                {/* You can replace Phone icon with a postal/zipcode icon if you have one */}
+                <span className="h-4 w-4 text-gray-400">
+                  <GiPostOffice />
+                </span>
+              </div>
+              <input
+                id="postalCode"
+                type="text"
+                required
+                value={formData.postalCode}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  handleInputChange("postalCode", e.target.value)
+                }
+                placeholder="Enter postal code"
+                className={`w-full rounded-lg border py-3 pr-4 pl-10 transition-all duration-200 focus:ring-2 focus:outline-none ${
+                  errors.postalCode
+                    ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+                    : "border-gray-300 focus:border-blue-500 focus:ring-blue-200"
+                }`}
+              />
+              {formData.postalCode && !errors.postalCode && (
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                  <Check className="h-4 w-4 text-green-500" />
+                </div>
+              )}
+            </div>
             {/* Submit Button */}
             <button
               type="button"

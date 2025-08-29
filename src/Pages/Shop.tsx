@@ -189,7 +189,7 @@ export default function Shop() {
           <div className="mb-6 flex items-center gap-2 text-[#223B7D]">
             {/* <Sparkles className="h-5 w-5 " /> */}
             <img src={shopIcon} alt="shop-con" className="h-7 w-7" />
-            <h2 className="text-2xl font-bold">Invitation Preview Dans shop</h2>
+            <h2 className="text-2xl font-bold">AI Recommended for You</h2>
           </div>
           {/* remove this part and map it when come data from api */}
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

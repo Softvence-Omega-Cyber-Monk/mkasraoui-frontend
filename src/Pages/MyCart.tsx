@@ -6,7 +6,7 @@ function MyCart() {
   return (
     <div>
       <div className="mx-auto max-w-5xl p-4 max-lg:max-w-2xl">
-        <h1 className="text-xl font-semibold text-slate-900">Shopping Cart</h1>
+        <h1 className="text-xl font-semibold text-slate-900">My Cart</h1>
         <div className="mt-6 grid gap-x-6 gap-y-8 lg:grid-cols-3 lg:gap-x-8">
           <div className="space-y-6 lg:col-span-2">
             {cart.length === 0 && (

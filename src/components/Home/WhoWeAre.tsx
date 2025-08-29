@@ -2,7 +2,6 @@ import whoImg from "@/assets/who.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import React, { useLayoutEffect, useRef } from "react";
-import { Link } from "react-router-dom";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -76,9 +75,7 @@ const WhoWeAre: React.FC = () => {
           <div className="grid items-center gap-12 sm:gap-16 lg:grid-cols-2">
             {/* Left Content */}
             <div className="who-left max-w-2xl space-y-6 sm:space-y-8">
-              <div className="text-primary text-xl sm:text-2xl">
-                Who we are
-              </div>
+              <div className="text-primary text-xl sm:text-2xl">Who we are</div>
 
               <h1 className="font-fredoka text-3xl leading-snug font-medium text-black sm:text-4xl lg:text-5xl">
                 There's nothing more magical than a child's imagination
@@ -90,13 +87,13 @@ const WhoWeAre: React.FC = () => {
                 AI.
               </p>
 
-              <Link
+              {/* <Link
                 to={"/home/party-generator"}
                 ref={buttonRef}
                 className="who-button bg-secondary hover:bg-secondary-dark cursor-pointer rounded-lg px-6 py-3 text-base text-white transition-colors sm:px-8 sm:py-3.5"
               >
                 Plan My Party With AI
-              </Link>
+              </Link> */}
             </div>
 
             {/* Right Content - Party Image */}
