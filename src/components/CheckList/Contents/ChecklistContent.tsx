@@ -205,7 +205,7 @@ const TaskItem = ({
             )}
           </div>
         </label>
-        <div className="min-w-0 flex-1">
+        <div className="mr-4 min-w-0 flex-1">
           <div className="mb-2 flex items-start gap-2 sm:gap-3">
             <h3
               className={`flex-1 font-medium ${task.completed ? "text-gray-500 line-through" : "text-gray-900"}`}
@@ -230,8 +230,9 @@ const TaskItem = ({
           </div>
         </div>
         <div>
-          <button className="cursor-pointer">
-            <Trash color="#FC6168" />
+          <button className="cursor-pointer rounded-full bg-red-100 p-2 hover:bg-red-200">
+            {/* <Trash color="#FC6168" /> */}
+            <Trash color="#FC6168" size={16} />
           </button>
         </div>
       </div>

@@ -11,7 +11,14 @@ type FormValues = {
 };
 
 function Services() {
-  const { register, handleSubmit, setValue } = useForm<FormValues>();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isValid },
+  } = useForm<FormValues>({
+    mode: "onChange", // enables live validation for isValid
+  });
   const [isDragOver, setIsDragOver] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -84,9 +91,14 @@ function Services() {
                   type="text"
                   id="title"
                   placeholder="Enter service title"
-                  {...register("title")}
+                  {...register("title", { required: "Title is required" })}
                   className="w-full rounded-xl border border-[#DBE0E5] bg-[#FFFFFF] px-3 py-2 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
+                {errors.title && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.title.message}
+                  </p>
+                )}
               </div>
 
               {/* Description Field */}
@@ -100,9 +112,16 @@ function Services() {
                 <textarea
                   id="description"
                   rows={4}
-                  {...register("description")}
+                  {...register("description", {
+                    required: "Description is required",
+                  })}
                   className="w-full resize-none rounded-xl border border-[#DBE0E5] bg-[#FFFFFF] px-3 py-2 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
+                {errors.description && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.description.message}
+                  </p>
+                )}
               </div>
 
               {/* Package Inclusions Field */}
@@ -117,9 +136,16 @@ function Services() {
                   type="text"
                   id="packageInclusions"
                   placeholder="List package inclusions"
-                  {...register("packageInclusions")}
+                  {...register("packageInclusions", {
+                    required: "Package inclusions are required",
+                  })}
                   className="w-full rounded-xl border border-[#DBE0E5] bg-[#FFFFFF] px-3 py-2 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
+                {errors.packageInclusions && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.packageInclusions.message}
+                  </p>
+                )}
               </div>
 
               {/* Price Field */}
@@ -131,12 +157,21 @@ function Services() {
                   Price
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   id="price"
                   placeholder="Enter price"
-                  {...register("price")}
+                  {...register("price", {
+                    valueAsNumber: true,
+                    required: "Price is required",
+                    min: { value: 0, message: "Price must be positive" },
+                  })}
                   className="w-full rounded-xl border border-[#DBE0E5] bg-[#FFFFFF] px-3 py-2 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
+                {errors.price && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.price.message}
+                  </p>
+                )}
               </div>
 
               {/* Photos/Videos Upload Area */}
@@ -202,7 +237,12 @@ function Services() {
             <div className="mt-8 flex justify-end space-x-3">
               <button
                 type="submit"
-                className="hover:bg-secondary-dark cursor-pointer rounded-xl border border-transparent bg-[#0D80F2] px-6 py-2 text-sm font-medium text-white focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+                disabled={!isValid}
+                className={`cursor-pointer rounded-xl px-6 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none ${
+                  isValid
+                    ? "hover:bg-secondary-dark bg-[#0D80F2] text-white"
+                    : "cursor-not-allowed bg-gray-300 text-gray-500"
+                } `}
               >
                 Save
               </button>

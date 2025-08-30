@@ -126,14 +126,28 @@ body {
     font-size: 16px !important;
     background-color: white;
   }
-  .swal2-confirm {
-    font-size: 0.875rem !important;
-    padding: 0.5rem 1rem !important;
-    background-color: #0f1f4c;
-    margin-bottom: 30px;
-  }
+ .swal2-confirm {
+  font-size: 0.875rem !important;
+  padding: 0.5rem 0.5rem !important;
+  background-color: #0f1f4c;
+  margin-bottom: 30px;
+}
 }
 
+/* Mobile: stack buttons in column */
+@media (max-width: 640px) {
+  .swal2-actions {
+    display: flex !important;
+    flex-direction: column !important; /* stack vertically */
+    align-items: stretch !important;   /* make buttons full width */
+    gap: 10px; /* spacing between buttons */
+  }
+  
+  .swal2-confirm,
+  .swal2-cancel {
+    width: 100% !important;
+  }
+}
  /* Add this to your global CSS (e.g., index.css, styles.css, etc.) */
 
 .custom-shadow {
