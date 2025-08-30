@@ -25,7 +25,7 @@ const Footer: React.FC = () => {
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEmail(value);
-    
+
     // Clear error when user starts typing
     if (emailError) {
       setEmailError("");
@@ -57,7 +57,7 @@ const Footer: React.FC = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, subscribe!",
-      cancelButtonText: "Cancel"
+      cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
         // Show success message
@@ -65,9 +65,9 @@ const Footer: React.FC = () => {
           title: "Subscribed!",
           text: "Thank you for subscribing to our newsletter!",
           icon: "success",
-          confirmButtonColor: "#3085d6"
+          confirmButtonColor: "#3085d6",
         });
-        
+
         // Clear the email input
         setEmail("");
       }
@@ -106,7 +106,11 @@ const Footer: React.FC = () => {
 
             {/* Center section with logo and social */}
             <div className="space-y-6 text-center">
-              <Link to={"/"} className="flex justify-center">
+              <Link
+                to="/"
+                className="flex justify-center"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              >
                 <img
                   src={footerlogo}
                   alt="Logo"
@@ -148,8 +152,8 @@ const Footer: React.FC = () => {
                     value={email}
                     onChange={handleEmailChange}
                     className={`focus:ring-none w-full rounded-lg bg-white px-4 py-3 text-gray-800 placeholder-gray-500 focus:ring-2 focus:outline-none ${
-                      emailError 
-                        ? "border-2 border-red-500 focus:ring-red-500" 
+                      emailError
+                        ? "border-2 border-red-500 focus:ring-red-500"
                         : "focus:ring-blue-500"
                     }`}
                   />
@@ -157,7 +161,7 @@ const Footer: React.FC = () => {
                     <p className="mt-2 text-sm text-red-300">{emailError}</p>
                   )}
                 </div>
-                <button 
+                <button
                   onClick={handleSubscribe}
                   className="bg-secondary-dark hover:bg-secondary-light w-full cursor-pointer rounded-lg px-6 py-3 font-medium text-white transition-colors"
                 >

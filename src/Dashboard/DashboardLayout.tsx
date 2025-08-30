@@ -1,4 +1,4 @@
-import  NavLogo  from "@/assets/navlogo-new.png";
+import NavLogo from "@/assets/navlogo-new.png";
 import {
   Menu,
   MenuButton,
@@ -6,7 +6,11 @@ import {
   MenuItems,
   Transition,
 } from "@headlessui/react";
-import { Bars3Icon, ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  ChevronDownIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { Fragment, useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import {
@@ -17,10 +21,12 @@ import {
   ReviewsIcon,
   ServicesIcon,
 } from "./Icons";
+import { useNavigate } from "react-router-dom";
 
 function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const navigate = useNavigate();
   const location = useLocation();
 
   // Close mobile sidebar on route change
@@ -31,11 +37,11 @@ function DashboardLayout() {
   // Handle escape key for mobile sidebar
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') setSidebarOpen(false);
+      if (e.key === "Escape") setSidebarOpen(false);
     };
     if (sidebarOpen) {
-      document.addEventListener('keydown', handleEscape);
-      return () => document.removeEventListener('keydown', handleEscape);
+      document.addEventListener("keydown", handleEscape);
+      return () => document.removeEventListener("keydown", handleEscape);
     }
   }, [sidebarOpen]);
 
@@ -74,23 +80,35 @@ function DashboardLayout() {
     },
   ];
 
-  const NavItem = ({ link, onClick, collapsed = false }: { link: typeof navLinks[0], onClick: () => void, collapsed?: boolean }) => (
+  const NavItem = ({
+    link,
+    onClick,
+    collapsed = false,
+  }: {
+    link: (typeof navLinks)[0];
+    onClick: () => void;
+    collapsed?: boolean;
+  }) => (
     <NavLink
       to={link.to}
       end={link.end}
       onClick={onClick}
       className={({ isActive }) =>
-        `group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200 ease-in-out hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-secondary-light/60 focus:ring-offset-2 ${isActive
-          ? "bg-blue-50 text-secondary border-r-2 border-secondary font-bold"
-          : "text-gray-700 hover:text-gray-900 font-medium"
+        `group focus:ring-secondary-light/60 relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200 ease-in-out hover:bg-gray-50 hover:text-gray-900 focus:ring-2 focus:ring-offset-2 focus:outline-none ${
+          isActive
+            ? "text-secondary border-secondary border-r-2 bg-blue-50 font-bold"
+            : "font-medium text-gray-700 hover:text-gray-900"
         } ${collapsed ? "justify-center px-2" : ""}`
       }
     >
       {({ isActive }) => (
         <>
           <link.icon
-            className={`h-5 w-5 flex-shrink-0 transition-colors ${isActive ? "text-secondary" : "text-gray-500 group-hover:text-gray-700"
-              }`}
+            className={`h-5 w-5 flex-shrink-0 transition-colors ${
+              isActive
+                ? "text-secondary"
+                : "text-gray-500 group-hover:text-gray-700"
+            }`}
             isActive={isActive}
           />
           {!collapsed && (
@@ -104,7 +122,7 @@ function DashboardLayout() {
             </>
           )}
           {collapsed && link.badge && (
-            <span className="absolute -right-1 -top-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
+            <span className="absolute -top-1 -right-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
               {link.badge}
             </span>
           )}
@@ -113,10 +131,19 @@ function DashboardLayout() {
     </NavLink>
   );
 
-  const SidebarContent = ({ collapsed = false, onItemClick }: { collapsed?: boolean; onItemClick: () => void }) => (
+  const SidebarContent = ({
+    collapsed = false,
+    onItemClick,
+  }: {
+    collapsed?: boolean;
+    onItemClick: () => void;
+  }) => (
     <div className="flex h-full flex-col">
       {/* Logo */}
-      <Link to={"/"} className={`flex items-center justify-center bg-white ${collapsed ? "px-1 py-3" : "px-3 py-2"}`}>
+      <Link
+        to={"/"}
+        className={`flex items-center justify-center bg-white ${collapsed ? "px-1 py-3" : "px-3 py-2"}`}
+      >
         <img
           src={NavLogo}
           alt="Company Logo"
@@ -141,14 +168,24 @@ function DashboardLayout() {
 
       {/* Collapse Toggle (Desktop only) */}
       {!collapsed && (
-        <div className="hidden lg:block border-t border-gray-200 p-3">
+        <div className="hidden border-t border-gray-200 p-3 lg:block">
           <button
             onClick={() => setIsCollapsed(true)}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
             aria-label="Collapse sidebar"
           >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
+              />
             </svg>
             <span>Collapse</span>
           </button>
@@ -158,7 +195,7 @@ function DashboardLayout() {
   );
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-gray-50">
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
@@ -181,14 +218,17 @@ function DashboardLayout() {
             leaveTo="-translate-x-full"
           >
             <div className="flex h-full flex-col bg-white shadow-xl">
-              <div className="absolute right-0 top-0 -mr-12 pt-2">
+              <div className="absolute top-0 right-0 -mr-12 pt-2">
                 <button
                   type="button"
-                  className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                  className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:ring-2 focus:ring-white focus:outline-none focus:ring-inset"
                   onClick={() => setSidebarOpen(false)}
                 >
                   <span className="sr-only">Close sidebar</span>
-                  <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                  <XMarkIcon
+                    className="h-6 w-6 text-white"
+                    aria-hidden="true"
+                  />
                 </button>
               </div>
               <SidebarContent onItemClick={() => setSidebarOpen(false)} />
@@ -198,9 +238,11 @@ function DashboardLayout() {
       </Transition>
 
       {/* Desktop Sidebar */}
-      <div className={`hidden lg:flex lg:flex-shrink-0 transition-all duration-300 ${isCollapsed ? 'lg:w-16' : 'lg:w-64'}`}>
-        <div className="flex w-full flex-col bg-white shadow-sm border-r border-gray-200">
-          <SidebarContent collapsed={isCollapsed} onItemClick={() => { }} />
+      <div
+        className={`hidden transition-all duration-300 lg:flex lg:flex-shrink-0 ${isCollapsed ? "lg:w-16" : "lg:w-64"}`}
+      >
+        <div className="flex w-full flex-col border-r border-gray-200 bg-white shadow-sm">
+          <SidebarContent collapsed={isCollapsed} onItemClick={() => {}} />
           {isCollapsed && (
             <div className="border-t border-gray-200 p-2">
               <button
@@ -208,8 +250,18 @@ function DashboardLayout() {
                 className="flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 transition-colors hover:bg-gray-50"
                 aria-label="Expand sidebar"
               >
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 5l7 7-7 7M5 5l7 7-7 7"
+                  />
                 </svg>
               </button>
             </div>
@@ -224,7 +276,7 @@ function DashboardLayout() {
           {/* Mobile menu button */}
           <button
             type="button"
-            className="text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-secondary-light/60 lg:hidden"
+            className="focus:ring-secondary-light/60 text-gray-500 focus:ring-2 focus:outline-none focus:ring-inset lg:hidden"
             onClick={() => setSidebarOpen(true)}
             aria-label="Open sidebar"
           >
@@ -245,17 +297,22 @@ function DashboardLayout() {
 
             {/* User Menu */}
             <Menu as="div" className="relative">
-              <MenuButton className="flex items-center gap-3 rounded-lg cursor-pointer bg-white p-1.5 text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-secondary-light/60 focus:ring-offset-2">
+              <MenuButton className="focus:ring-secondary-light/60 flex cursor-pointer items-center gap-3 rounded-lg bg-white p-1.5 text-sm hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:outline-none">
                 <img
                   className="h-8 w-8 rounded-full object-cover ring-2 ring-gray-200"
                   src="https://i.pravatar.cc/40"
                   alt="Sarah Miller"
                 />
                 <div className="hidden text-left lg:block">
-                  <p className="text-sm font-medium text-gray-900">Sarah Miller</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    Sarah Miller
+                  </p>
                   <p className="text-xs text-gray-500">Service Provider</p>
                 </div>
-                <ChevronDownIcon className="hidden h-4 w-4 text-gray-400 lg:block" aria-hidden="true" />
+                <ChevronDownIcon
+                  className="hidden h-4 w-4 text-gray-400 lg:block"
+                  aria-hidden="true"
+                />
               </MenuButton>
 
               <Transition
@@ -268,9 +325,25 @@ function DashboardLayout() {
                 leaveTo="transform opacity-0 scale-95"
               >
                 <MenuItems className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none">
-                  <div className="px-4 py-3 border-b border-gray-100">
-                    <p className="text-sm font-medium text-gray-900">Sarah Miller</p>
+                  <div className="border-b border-gray-100 px-4 py-3">
+                    <p className="text-sm font-medium text-gray-900">
+                      Sarah Miller
+                    </p>
                     <p className="text-sm text-gray-500">sarah@example.com</p>
+                  </div>
+                  <div className="px-4">
+                    <button
+                      onClick={() =>
+                        navigate("/home/my-account", {
+                          state: { initialTab: "Profile" },
+                        })
+                      }
+                      className="block w-full cursor-pointer py-2 text-left text-sm text-gray-500 transition-colors"
+                    >
+                      My Profile
+                    </button>
+
+                    {/* Render PartyInvitations only when button is clicked */}
                   </div>
                   <div className="py-1">
                     {/* <MenuItem>
@@ -307,16 +380,17 @@ function DashboardLayout() {
                       )}
                     </MenuItem> */}
                   </div>
-                  <div className="py-1 border-t border-gray-100">
+                  <div className="border-t border-gray-100 py-1">
                     <MenuItem>
                       {({ focus }) => (
                         <button
                           onClick={() => {
                             // Handle logout logic
-                            console.log('Logging out...');
+                            console.log("Logging out...");
                           }}
-                          className={`block w-full px-4 py-2 cursor-pointer text-left text-sm transition-colors ${focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
-                            }`}
+                          className={`block w-full cursor-pointer px-4 py-2 text-left text-sm transition-colors ${
+                            focus ? "bg-gray-50 text-gray-900" : "text-gray-700"
+                          }`}
                         >
                           Sign Out
                         </button>

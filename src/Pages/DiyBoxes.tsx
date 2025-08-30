@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Search, Clock, Users, ShoppingCart, ChevronDown } from "lucide-react";
+import {
+  Search,
+  Clock,
+  Users,
+  ShoppingCart,
+  ChevronDown,
+  Heart,
+} from "lucide-react";
 import boxImg1 from "@/assets/box-img-1.jpg";
 import boxImg2 from "@/assets/box-img-2.jpg";
 import boxImg3 from "@/assets/box-img-3.jpg";
@@ -17,7 +24,9 @@ export default function DiyBoxes() {
   const [searchTerm, setSearchTerm] = useState("");
   const [ageRange, setAgeRange] = useState("");
   const [theme, setTheme] = useState("");
+
   const addToCart = useCartStore((state) => state.addToCart);
+  const [likedItems, setLikedItems] = useState<{ [key: number]: boolean }>({});
 
   const activities = [
     {
@@ -124,6 +133,7 @@ export default function DiyBoxes() {
     },
   ];
 
+  // this for star
   const renderStars = (rating: number) => {
     const stars = [];
     const fullStars = Math.floor(rating);
@@ -144,6 +154,25 @@ export default function DiyBoxes() {
 
     return stars;
   };
+
+  const toggleLike = (item: (typeof activities)[0]) => {
+    setLikedItems((prev) => ({
+      ...prev,
+      [item.id]: !prev[item.id], // toggle only this item
+    }));
+
+    addToCart({
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      quantity: 1,
+      image: item.image,
+      rating: item.rating,
+    });
+
+    toast.success(`${item.title} added to cart!`);
+  };
+
   return (
     <div className="mx-auto w-full">
       <MyHeader
@@ -225,6 +254,15 @@ export default function DiyBoxes() {
                   <div className="absolute top-3 right-3 rounded-full bg-[#223B7D] px-3 py-1 text-sm text-white">
                     {activity.tag}
                   </div>
+                  <button
+                    className="absolute top-3 left-3 cursor-pointer rounded-full bg-[#223B7D] p-2 text-sm text-white"
+                    onClick={() => toggleLike(activity)}
+                  >
+                    <Heart
+                      color={likedItems[activity.id] ? "red" : "white"}
+                      fill={likedItems[activity.id] ? "red" : "none"}
+                    />
+                  </button>
                 </div>
 
                 {/* Content */}

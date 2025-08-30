@@ -101,6 +101,13 @@ export default function SignUp() {
     return { level: "strong", color: "bg-green-500" };
   };
 
+  const validatePostalCode = (postalCode: string): string => {
+    if (!postalCode.trim()) return "Postal address is required";
+    if (postalCode.trim().length < 5)
+      return "Postal address must be at least 5 characters";
+    return "";
+  };
+
   const handleInputChange = (field: keyof FormData, value: string): void => {
     setFormData((prev) => ({ ...prev, [field]: value }));
 
@@ -134,6 +141,8 @@ export default function SignUp() {
       case "confirmPassword":
         errorMessage = validateConfirmPassword(value, formData.password);
         break;
+      case "postalCode": // 👈 add this
+        errorMessage = validatePostalCode(value);
     }
 
     setErrors((prev) => ({
@@ -152,6 +161,7 @@ export default function SignUp() {
         formData.confirmPassword,
         formData.password,
       ),
+      postalCode: validatePostalCode(formData.postalCode),
     };
 
     setErrors(newErrors);
@@ -483,12 +493,19 @@ export default function SignUp() {
             </div>
             {/* postal code  */}
             <div className="relative flex-1">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                {/* You can replace Phone icon with a postal/zipcode icon if you have one */}
-                <span className="h-4 w-4 text-gray-400">
-                  <GiPostOffice />
-                </span>
+              <label
+                htmlFor="postalCode"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
+                Postal Address <span className="text-red-500">*</span>
+              </label>
+
+              {/* Left Icon */}
+              <div className="absolute top-9 left-0 flex items-center pl-3">
+                <GiPostOffice className="h-5 w-5 text-gray-400" />
               </div>
+
+              {/* Input Field */}
               <input
                 id="postalCode"
                 type="text"
@@ -497,19 +514,27 @@ export default function SignUp() {
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   handleInputChange("postalCode", e.target.value)
                 }
-                placeholder="Enter postal code"
-                className={`w-full rounded-lg border py-3 pr-4 pl-10 transition-all duration-200 focus:ring-2 focus:outline-none ${
+                placeholder="Enter your full postal address"
+                className={`w-full rounded-lg border px-10 py-2.5 text-sm transition-all duration-200 focus:ring-2 focus:outline-none ${
                   errors.postalCode
                     ? "border-red-300 focus:border-red-500 focus:ring-red-200"
                     : "border-gray-300 focus:border-blue-500 focus:ring-blue-200"
                 }`}
               />
+
+              {/* Success Icon */}
               {formData.postalCode && !errors.postalCode && (
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                  <Check className="h-4 w-4 text-green-500" />
+                  <Check className="h-5 w-5 text-green-500" />
                 </div>
               )}
+
+              {/* Error Message */}
+              {errors.postalCode && (
+                <p className="mt-1 text-xs text-red-500">{errors.postalCode}</p>
+              )}
             </div>
+
             {/* Submit Button */}
             <button
               type="button"

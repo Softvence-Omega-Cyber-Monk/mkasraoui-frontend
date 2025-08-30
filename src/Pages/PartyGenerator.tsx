@@ -485,10 +485,10 @@ export default function PartyGenerator() {
                 </div>
               </div>
 
-              {/* Favourite Activities Section */}
+              {/* Favorite  Activities Section */}
               <div className="mb-12">
                 <h2 className="mb-2 text-2xl font-bold text-gray-900">
-                  Favourite Activities
+                  Favorite Activities
                 </h2>
                 <p className="mb-8 text-gray-600">
                   Would you like to add one or more specific activities?

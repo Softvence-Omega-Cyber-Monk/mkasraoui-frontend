@@ -1,12 +1,30 @@
 import allBgImg from "@/assets/party-al-bg.png";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import OverviewTab from "../DashBoardTabComponent/OverviewTab";
 import MyParties from "../DashBoardTabComponent/MyParties";
 import InvitationsTab from "../DashBoardTabComponent/InvitationsTab";
 import FavositesTab from "../DashBoardTabComponent/FavositesTab";
 import ProfileTab from "../DashBoardTabComponent/ProfileTab";
+import { useLocation } from "react-router-dom";
 export default function PartyInvitations() {
-  const [activeTab, setActiveTab] = useState("Overview");
+  // const [activeTab, setActiveTab] = useState("Overview");
+  const location = useLocation();
+  const initialTab = location.state?.initialTab || "Overview";
+  const [activeTab, setActiveTab] = useState(initialTab);
+  // Ref for the main content (or the tab section)
+
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (initialTab === "Profile" && profileRef.current) {
+      setTimeout(() => {
+        profileRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 0);
+    }
+  }, [initialTab]);
 
   const tabs = [
     { id: "Overview", label: "Overview" },
@@ -48,7 +66,7 @@ export default function PartyInvitations() {
         );
       case "Profile":
         return (
-          <div>
+          <div ref={profileRef}>
             <ProfileTab />
           </div>
         );

@@ -18,6 +18,7 @@ export default function RequestQuote() {
     budgetRange: "",
     specialRequests: "",
     acceptTerms: false,
+    postalAddress: "",
   });
 
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
@@ -39,6 +40,7 @@ export default function RequestQuote() {
     budgetRange: string;
     specialRequests: string;
     acceptTerms: boolean;
+    postalAddress: string;
   }
 
   const handleInputChange = (
@@ -137,10 +139,13 @@ export default function RequestQuote() {
       newErrors.birthdayChildName = "Child's name is required";
     if (!formData.ageTurning) newErrors.ageTurning = "Age is required";
     if (!formData.partyDate) newErrors.partyDate = "Party date is required";
+    if (!formData.partyTime) newErrors.partyTime = "Party time is required";
     if (!formData.numberOfGuests)
       newErrors.numberOfGuests = "Number of guests is required";
     if (!formData.partyLocation.trim())
       newErrors.partyLocation = "Location is required";
+    if (!formData.postalAddress.trim())
+      newErrors.postalAddress = "Postal Address is required";
     if (!formData.serviceType)
       newErrors.serviceType = "Service type is required";
     if (!formData.partyTheme.trim())
@@ -149,9 +154,9 @@ export default function RequestQuote() {
       newErrors.budgetRange = "Budget range is required";
     if (!formData.specialRequests.trim())
       newErrors.specialRequests = "Special requests are required";
+
     // if (!formData.acceptTerms)
     //   newErrors.acceptTerms = "You must accept the terms";
-
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
@@ -404,25 +409,46 @@ export default function RequestQuote() {
                 )}
               </div>
             </div>
-
-            <div className="mt-4">
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Party Location <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={formData.partyLocation}
-                onChange={(e) =>
-                  handleInputChange("partyLocation", e.target.value)
-                }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                placeholder="Home address, venue, or general area"
-              />
-              {errors.partyLocation && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.partyLocation}
-                </p>
-              )}
+            <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="mt-4">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  Party Location <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.partyLocation}
+                  onChange={(e) =>
+                    handleInputChange("partyLocation", e.target.value)
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                  placeholder="Home address, venue, or general area"
+                />
+                {errors.partyLocation && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.partyLocation}
+                  </p>
+                )}
+              </div>
+              {/* postal code  */}
+              <div className="mt-4">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  Postal Address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.postalAddress}
+                  onChange={(e) =>
+                    handleInputChange("postalAddress", e.target.value)
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                  placeholder="Postal code or full address"
+                />
+                {errors.postalAddress && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.postalAddress}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
