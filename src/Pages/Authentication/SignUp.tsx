@@ -361,7 +361,49 @@ export default function SignUp() {
                 </p>
               )}
             </div>
+            {/* postal code  */}
+            <div className="relative flex-1">
+              <label
+                htmlFor="postalCode"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
+                Postal Address <span className="text-gray-700">*</span>
+              </label>
 
+              {/* Left Icon */}
+              <div className="absolute top-9 left-0 flex items-center pl-3">
+                <GiPostOffice className="h-5 w-5 text-gray-400" />
+              </div>
+
+              {/* Input Field */}
+              <input
+                id="postalCode"
+                type="text"
+                required
+                value={formData.postalCode}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  handleInputChange("postalCode", e.target.value)
+                }
+                placeholder="Enter your full postal address"
+                className={`w-full rounded-lg border px-10 py-2.5 text-sm transition-all duration-200 focus:ring-2 focus:outline-none ${
+                  errors.postalCode
+                    ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+                    : "border-gray-300 focus:border-blue-500 focus:ring-blue-200"
+                }`}
+              />
+
+              {/* Success Icon */}
+              {formData.postalCode && !errors.postalCode && (
+                <div className="absolute top-12 right-0 flex -translate-y-1/2 items-center pr-3">
+                  <Check className="h-5 w-5 text-green-500" />
+                </div>
+              )}
+
+              {/* Error Message */}
+              {errors.postalCode && (
+                <p className="mt-1 text-xs text-red-500">{errors.postalCode}</p>
+              )}
+            </div>
             {/* Password Field */}
             <div>
               <label
@@ -489,49 +531,6 @@ export default function SignUp() {
                   <X className="mr-1 h-3 w-3" />
                   {errors.confirmPassword}
                 </p>
-              )}
-            </div>
-            {/* postal code  */}
-            <div className="relative flex-1">
-              <label
-                htmlFor="postalCode"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                Postal Address <span className="text-red-500">*</span>
-              </label>
-
-              {/* Left Icon */}
-              <div className="absolute top-9 left-0 flex items-center pl-3">
-                <GiPostOffice className="h-5 w-5 text-gray-400" />
-              </div>
-
-              {/* Input Field */}
-              <input
-                id="postalCode"
-                type="text"
-                required
-                value={formData.postalCode}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange("postalCode", e.target.value)
-                }
-                placeholder="Enter your full postal address"
-                className={`w-full rounded-lg border px-10 py-2.5 text-sm transition-all duration-200 focus:ring-2 focus:outline-none ${
-                  errors.postalCode
-                    ? "border-red-300 focus:border-red-500 focus:ring-red-200"
-                    : "border-gray-300 focus:border-blue-500 focus:ring-blue-200"
-                }`}
-              />
-
-              {/* Success Icon */}
-              {formData.postalCode && !errors.postalCode && (
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                  <Check className="h-5 w-5 text-green-500" />
-                </div>
-              )}
-
-              {/* Error Message */}
-              {errors.postalCode && (
-                <p className="mt-1 text-xs text-red-500">{errors.postalCode}</p>
               )}
             </div>
 

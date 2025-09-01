@@ -165,7 +165,7 @@ const Footer: React.FC = () => {
                   onClick={handleSubscribe}
                   className="bg-secondary-dark hover:bg-secondary-light w-full cursor-pointer rounded-lg px-6 py-3 font-medium text-white transition-colors"
                 >
-                  Get Started For Free
+                  I Subscribe
                 </button>
               </div>
             </div>
