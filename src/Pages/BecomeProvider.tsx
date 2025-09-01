@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import React, { useState } from "react";
 import { Upload, ChevronDown, ArrowLeft, X, Check } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,21 +8,40 @@ function BecomeProvider() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm();
 
   const [uploadedFiles, setUploadedFiles] = React.useState<any[]>([]);
   const [isDragOver, setIsDragOver] = React.useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
 
   const navigate = useNavigate();
 
-  const onSubmit = (data: any) => {
-    console.log("Form submitted:", {
-      ...data,
-      uploadedFiles,
-    });
-    navigate("/dashboard");
-  };
+  const [value, setLocalValue] = useState("");
+  // const [primaryValue, setPrimaryLocalValue] = useState("");
+  const [isOpen, setIsOpen] = useState<null | "service" | "primary">(null);
+
+  const options = [
+    { value: "", label: "Select" },
+    { value: "dj", label: "DJ Services" },
+    { value: "catering", label: "Catering" },
+    { value: "photography", label: "Photography" },
+    { value: "decoration", label: "Decoration" },
+    { value: "entertainment", label: "Entertainment" },
+  ];
+
+  const [primaryValue, setPrimaryValue] = useState("");
+  const primaryOptions = [
+    { value: "", label: "Select" },
+    { value: "new-york", label: "New York" },
+    { value: "los-angeles", label: "Los Angeles" },
+    { value: "chicago", label: "Chicago" },
+    { value: "houston", label: "Houston" },
+    { value: "phoenix", label: "Phoenix" },
+  ];
+
+  // change isOpen from boolean to string | null
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -60,6 +79,15 @@ function BecomeProvider() {
 
   const formatFileSize = (size: number) => {
     return (size / 1024).toFixed(1) + " KB";
+  };
+
+  // handel submit fun
+  const onSubmit = (data: any) => {
+    console.log("Form submitted:", {
+      ...data,
+      uploadedFiles,
+    });
+    navigate("/dashboard");
   };
 
   return (
@@ -196,26 +224,64 @@ function BecomeProvider() {
               </div>
 
               {/* Service Category */}
+
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Service Category *
+                  Service Category <span className="text-gray-700">*</span>
                 </label>
+
+                {/* Hidden input for react-hook-form */}
+                <input
+                  type="hidden"
+                  {...register("serviceCategory", {
+                    required: "Service Category is required",
+                  })}
+                  value={value}
+                />
+
                 <div className="relative">
-                  <select
-                    {...register("serviceCategory", {
-                      required: "Service Category is required",
-                    })}
-                    className="w-full appearance-none rounded-md border border-[#ADADAD] bg-white px-3 py-2 pr-10 focus:ring-2 focus:ring-blue-500"
+                  {/* Custom trigger */}
+                  <div
+                    onClick={() =>
+                      setIsOpen(isOpen === "service" ? null : "service")
+                    }
+                    className="w-full cursor-pointer appearance-none rounded-md border border-[#ADADAD] bg-white px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">Select</option>
-                    <option value="dj">DJ Services</option>
-                    <option value="catering">Catering</option>
-                    <option value="photography">Photography</option>
-                    <option value="decoration">Decoration</option>
-                    <option value="entertainment">Entertainment</option>
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+                    {value
+                      ? options.find((o) => o.value === value)?.label
+                      : "Select"}
+                    <ChevronDown className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+                  </div>
+
+                  {/* Dropdown */}
+                  {isOpen === "service" && (
+                    <div className="absolute right-0 left-0 z-10 mt-1 rounded-md border border-gray-200 bg-white shadow-lg">
+                      <ul className="max-h-48 overflow-y-auto text-sm">
+                        {options.map((opt) => (
+                          <li
+                            key={opt.value}
+                            onClick={() => {
+                              setLocalValue(opt.value); // update local state for display
+                              setValue("serviceCategory", opt.value); // update react-hook-form
+                              setIsOpen(null); // close dropdown
+                            }}
+                            className="cursor-pointer px-3 py-2 hover:bg-blue-100"
+                          >
+                            {opt.label}
+                          </li>
+                        ))}
+                      </ul>
+                      <button
+                        type="button"
+                        onClick={() => setIsOpen(null)}
+                        className="bg-secondary-dark hover:bg-secondary w-full rounded-b-md px-4 py-2 text-sm font-medium text-white transition"
+                      >
+                        OK
+                      </button>
+                    </div>
+                  )}
                 </div>
+
                 {errors.serviceCategory && (
                   <p className="mt-1 text-sm text-red-500">
                     {String(errors.serviceCategory.message)}
@@ -228,22 +294,58 @@ function BecomeProvider() {
                 <label className="mb-2 block text-sm font-medium text-gray-700">
                   Primary Service Area *
                 </label>
+
+                {/* Hidden input for react-hook-form */}
+                <input
+                  type="hidden"
+                  {...register("primaryServiceArea", {
+                    required: "Primary Service Area is required",
+                  })}
+                  value={primaryValue}
+                />
+
                 <div className="relative">
-                  <select
-                    {...register("primaryServiceArea", {
-                      required: "Primary Service Area is required",
-                    })}
-                    className="w-full appearance-none rounded-md border border-[#ADADAD] bg-white px-3 py-2 pr-10 focus:ring-2 focus:ring-blue-500"
+                  <div
+                    onClick={() =>
+                      setIsOpen(isOpen === "primary" ? null : "primary")
+                    }
+                    className="w-full cursor-pointer appearance-none rounded-md border border-[#ADADAD] bg-white px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">Select</option>
-                    <option value="new-york">New York</option>
-                    <option value="los-angeles">Los Angeles</option>
-                    <option value="chicago">Chicago</option>
-                    <option value="houston">Houston</option>
-                    <option value="phoenix">Phoenix</option>
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+                    {primaryValue
+                      ? primaryOptions.find((o) => o.value === primaryValue)
+                          ?.label
+                      : "Select"}
+                    <ChevronDown className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+                  </div>
+
+                  {isOpen === "primary" && (
+                    <div className="absolute right-0 left-0 z-10 mt-1 rounded-md border border-gray-200 bg-white shadow-lg">
+                      <ul className="max-h-48 overflow-y-auto text-sm">
+                        {primaryOptions.map((opt) => (
+                          <li
+                            key={opt.value}
+                            onClick={() => {
+                              setPrimaryValue(opt.value); // local state
+                              setValue("primaryServiceArea", opt.value); // update form state
+                              setIsOpen(null); // close dropdown
+                            }}
+                            className="cursor-pointer px-3 py-2 hover:bg-blue-100"
+                          >
+                            {opt.label}
+                          </li>
+                        ))}
+                      </ul>
+                      <button
+                        type="button"
+                        onClick={() => setIsOpen(null)}
+                        className="bg-secondary-dark hover:bg-secondary w-full rounded-b-md px-4 py-2 text-sm font-medium text-white transition"
+                      >
+                        OK
+                      </button>
+                    </div>
+                  )}
                 </div>
+
                 {errors.primaryServiceArea && (
                   <p className="mt-1 text-sm text-red-500">
                     {String(errors.primaryServiceArea.message)}
