@@ -173,7 +173,7 @@ export default function ProviderDirectory() {
                   className="overflow-hidden rounded-lg border border-[#DFE1E6] bg-white"
                 >
                   <div className="p-5 pb-0">
-                    <span className="text-secorndary bg-secondary inline-block rounded-lg px-3 py-1 text-sm text-white">
+                    <span className="text-secorndary inline-block rounded-lg border border-gray-300 bg-gray-50 px-3 py-1 text-sm text-black">
                       {provider.type}
                     </span>
                     <div className="float-right flex items-center gap-1">
@@ -226,13 +226,13 @@ export default function ProviderDirectory() {
                     <div className="flex flex-col gap-3 xl:flex-row">
                       <Link
                         to={"/home/provider/1"}
-                        className="flex-1 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-center text-gray-700 hover:bg-gray-50"
+                        className="flex-1 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-center text-gray-700 hover:bg-gray-500 hover:text-white"
                       >
                         View Profile
                       </Link>
                       <Link
                         to={"/home/request-quote"}
-                        className="bg-secondary hover:bg-secondary-dark flex-1 cursor-pointer rounded-lg px-4 py-2 text-center text-white"
+                        className="hover:bg-secondary-dark flex-1 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-center text-black hover:text-white"
                       >
                         Request Quote
                       </Link>
@@ -262,7 +262,6 @@ export default function ProviderDirectory() {
                 title="Dhaka Map"
               ></iframe>
 
-             
               {/* Map controls */}
               <div className="absolute top-4 right-4 space-y-2">
                 <button className="rounded-lg bg-white p-2 shadow-lg hover:bg-gray-50">
@@ -273,8 +272,6 @@ export default function ProviderDirectory() {
                 </button>
               </div>
             </div>
-
-           
           </div>
         )}
       </div>

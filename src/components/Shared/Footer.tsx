@@ -2,8 +2,8 @@ import footerlogo from "@/assets/footerlogo.png";
 import {
   Facebook,
   Instagram,
-  Mail,
-  Phone,
+  // Mail,
+  // Phone,
   Twitter,
   Youtube,
 } from "lucide-react";
@@ -93,13 +93,30 @@ const Footer: React.FC = () => {
                   <br />
                   Indonesia
                 </div>
-                <div className="flex items-center gap-3">
+                {/* <div className="flex items-center gap-3">
                   <Mail className="h-5 w-5" />
                   <span>hello@yourdomain.com</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Phone className="h-5 w-5" />
                   <span>+6221.2002.2012</span>
+                </div> */}
+                <div>
+                  <ul className="py-2">
+                    <li className="cursor-pointer hover:underline">
+                      Terms & Condation
+                    </li>
+                    <li className="cursor-pointer hover:underline">
+                      Legal Notice
+                    </li>
+                    <li className="cursor-pointer hover:underline">
+                      Privacy Policy & GDPR
+                    </li>
+                    <li className="cursor-pointer hover:underline">
+                      Contact Us
+                    </li>
+                    <li className="cursor-pointer hover:underline">FAQ</li>
+                  </ul>
                 </div>
               </div>
             </div>
