@@ -126,12 +126,26 @@ const Navbar: React.FC = () => {
             </button>
           </>
         ) : (
-          <Link
-            to="/auth/login"
-            className="border-primary text-primary hover:bg-primary cursor-pointer rounded-lg border px-5 py-2 transition hover:text-white"
-          >
-            Get Started for Free
-          </Link>
+          <>
+            <Link
+              to="/home/my-cart"
+              className="relative mr-2 flex items-center gap-1"
+            >
+              <FiShoppingCart size={24} />
+              My Cart
+              {cart.length > 0 && (
+                <span className="absolute -top-2 -right-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                  {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                </span>
+              )}
+            </Link>
+            <Link
+              to="/auth/login"
+              className="border-primary text-primary hover:bg-primary cursor-pointer rounded-lg border px-5 py-2 transition hover:text-white"
+            >
+              Get Started for Free
+            </Link>
+          </>
         )}
       </div>
 
@@ -178,7 +192,8 @@ const Navbar: React.FC = () => {
                 <div className="flex flex-col gap-2">
                   <Link
                     to="/home/my-cart"
-                    className="relative mr-2 flex items-center gap-1"
+                    onClick={toggleMenu}
+                    className="relative mr-2 mb-2 flex items-center"
                   >
                     <FiShoppingCart size={24} />
                     My Cart
@@ -211,13 +226,28 @@ const Navbar: React.FC = () => {
                   </button>
                 </div>
               ) : (
-                <Link
-                  to="/auth/login"
-                  onClick={toggleMenu}
-                  className="border-primary text-primary hover:bg-primary mt-2 w-full rounded-lg border px-5 py-2 transition hover:text-white"
-                >
-                  Get Started for Free
-                </Link>
+                <>
+                  <Link
+                    to="/home/my-cart"
+                    onClick={toggleMenu}
+                    className="relative mr-2 mb-6 flex items-center gap-1"
+                  >
+                    <FiShoppingCart size={24} />
+                    My Cart
+                    {cart.length > 0 && (
+                      <span className="absolute -top-2 -right-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                        {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                      </span>
+                    )}
+                  </Link>
+                  <Link
+                    to="/auth/login"
+                    onClick={toggleMenu}
+                    className="border-primary text-primary hover:bg-primary mt-2 w-full rounded-lg border px-5 py-2 transition hover:text-white"
+                  >
+                    Get Started for Free
+                  </Link>
+                </>
               )}
             </li>
           </ul>
