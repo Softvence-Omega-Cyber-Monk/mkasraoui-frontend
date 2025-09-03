@@ -37,6 +37,7 @@ import CheckList from "./Pages/CheckList";
 import ResetPassword from "./Pages/ResetPassword";
 import MyCart from "./Pages/MyCart";
 import { Toaster } from "react-hot-toast";
+import CustomTShirt from "./Pages/CustomTShirt";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -152,6 +153,10 @@ const router = createBrowserRouter([
       {
         path: "my-cart",
         element: <MyCart></MyCart>,
+      },
+      {
+        path: "custom-t-shirt",
+        element: <CustomTShirt />,
       },
     ],
   },
