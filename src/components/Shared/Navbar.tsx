@@ -4,6 +4,7 @@ import { FiChevronDown, FiMenu, FiShoppingCart, FiUser, FiX } from "react-icons/
 import { Link, useNavigate } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import logo from "../../assets/navlogo-new.png";
+import { CgProfile } from "react-icons/cg";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +14,6 @@ const Navbar: React.FC = () => {
   const menuRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const cart = useCartStore((state) => state.cart);
-
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
@@ -27,6 +27,7 @@ const Navbar: React.FC = () => {
       { name: "Shop", to: "/home/shop" },
       { name: "Blog", to: "/home/blog" },
     ]
+
     : [
       { name: "Home", to: "/" },
       { name: "About", hash: "/#about" },
@@ -62,6 +63,7 @@ const Navbar: React.FC = () => {
     };
   }, [isOpen]);
 
+
   // Handle outside click for dropdown menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -84,6 +86,7 @@ const Navbar: React.FC = () => {
   const getTotalCartItems = () => {
     return cart.reduce((sum, item) => sum + item.quantity, 0);
   };
+
 
   return (
     <nav className="bg-background relative container mx-auto flex max-w-[1440px] items-center justify-between border-b border-gray-200 px-4 lg:px-5">
@@ -116,6 +119,7 @@ const Navbar: React.FC = () => {
         ))}
       </ul>
 
+
       {/* Right: Cart, User Actions (Desktop) */}
       <div className="hidden items-center gap-4 lg:flex">
         {/* Cart - Always visible */}
@@ -131,14 +135,22 @@ const Navbar: React.FC = () => {
           )}
         </Link>
 
+
         {user ? (
           <>
             {/* Premium Button */}
             <Link
+
               to="/home/premium-feature"
               className="bg-secondary hover:bg-secondary-light cursor-pointer rounded-lg border px-4 py-2 text-white transition"
             >
-              Premium
+              <FiShoppingCart size={24} />
+              My Cart
+              {cart.length > 0 && (
+                <span className="absolute -top-2 -right-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                  {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                </span>
+              )}
             </Link>
 
             {/* User Dropdown */}
@@ -182,14 +194,8 @@ const Navbar: React.FC = () => {
                 </div>
               )}
             </div>
+
           </>
-        ) : (
-          <Link
-            to="/auth/login"
-            className="border-primary text-primary hover:bg-primary cursor-pointer rounded-lg border px-5 py-2 transition hover:text-white"
-          >
-            Get Started for Free
-          </Link>
         )}
       </div>
 
@@ -244,12 +250,12 @@ const Navbar: React.FC = () => {
                 )}
               </li>
             ))}
-
             {/* User Actions in Mobile */}
             {user ? (
               <>
                 <hr className="border-gray-200 my-2" />
                 <li>
+
                   <Link
                     to="/home/premium-feature"
                     onClick={toggleMenu}
@@ -295,6 +301,7 @@ const Navbar: React.FC = () => {
                 </li>
               </>
             )}
+
           </ul>
         </div>
       )}
