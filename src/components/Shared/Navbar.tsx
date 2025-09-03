@@ -4,6 +4,7 @@ import { FiMenu, FiShoppingCart, FiX } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import logo from "../../assets/navlogo-new.png";
+import { CgProfile } from "react-icons/cg";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +13,10 @@ const Navbar: React.FC = () => {
   const menuRef = useRef<HTMLDivElement>(null);
   const toggleMenu = () => setIsOpen(!isOpen);
   const cart = useCartStore((state) => state.cart);
+  // For account dropdown
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement>(null);
+
   // console.log("my store card", cart);
 
   const navLinks = user
@@ -23,7 +28,7 @@ const Navbar: React.FC = () => {
         { name: "Providers", to: "/home/providers" },
         { name: "Shop", to: "/home/shop" },
         { name: "Blog", to: "/home/blog" },
-        // { name: "My Cart", to: "/home/my-cart" },
+        { name: "Customize T-Shirt", to: "custom-t-shirt" },
       ]
     : [
         { name: "Home", to: "/" },
@@ -59,6 +64,21 @@ const Navbar: React.FC = () => {
     };
   }, [isOpen]);
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        accountRef.current &&
+        !accountRef.current.contains(event.target as Node)
+      ) {
+        setAccountOpen(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside); // ← change here
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
   return (
     <nav className="bg-background relative container mx-auto flex max-w-[1440px] items-center justify-between border-b border-gray-200 px-4 lg:px-5">
       {/* Left: Logo */}
@@ -91,7 +111,7 @@ const Navbar: React.FC = () => {
       </ul>
 
       {/* Right: Buttons (Desktop) */}
-      <div className="hidden items-center gap-4 lg:flex">
+      <div className="hidden items-center gap-2 lg:flex">
         {user ? (
           <>
             <Link
@@ -106,24 +126,39 @@ const Navbar: React.FC = () => {
                 </span>
               )}
             </Link>
-            <Link
-              to={"/home/premium-feature"}
-              className="bg-secondary hover:bg-secondary-light cursor-pointer rounded-lg border px-4 py-2 text-white transition"
-            >
-              Premium
-            </Link>
-            <Link
-              to={"/home/my-account"}
-              className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-center text-gray-700 transition hover:bg-gray-50"
-            >
-              My Account
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="cursor-pointer rounded-lg border border-red-400 px-4 py-2 text-center text-red-500 transition hover:bg-red-50"
-            >
-              Logout
-            </button>
+
+            <div className="relative z-50" ref={accountRef}>
+              <button
+                onClick={() => setAccountOpen(!accountOpen)}
+                className="cursor-pointer rounded-lg px-4 py-2 text-center text-gray-700 transition hover:bg-gray-50"
+              >
+                <CgProfile className="text-3xl" />
+              </button>
+
+              {accountOpen && (
+                <div
+                  className="absolute right-0 z-[9999] mt-2 w-40 rounded-lg border bg-white py-3 shadow-lg transition-all duration-200"
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
+                  <Link
+                    to="/home/my-account"
+                    className="block rounded-xl px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={() => setAccountOpen(false)}
+                  >
+                    My Account
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setAccountOpen(false);
+                    }}
+                    className="block w-full rounded-xl px-4 py-2 text-left text-red-500 hover:bg-red-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </>
         ) : (
           <>
@@ -195,7 +230,7 @@ const Navbar: React.FC = () => {
                     onClick={toggleMenu}
                     className="relative mr-2 mb-2 flex items-center"
                   >
-                    <FiShoppingCart size={24} />
+                    <FiShoppingCart size={24} className="mr-2" />
                     My Cart
                     {cart.length > 0 && (
                       <span className="absolute -top-2 -right-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
