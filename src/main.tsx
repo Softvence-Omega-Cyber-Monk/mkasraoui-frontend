@@ -38,6 +38,12 @@ import ResetPassword from "./Pages/ResetPassword";
 import MyCart from "./Pages/MyCart";
 import { Toaster } from "react-hot-toast";
 import CustomTShirt from "./Pages/CustomTShirt";
+import TermsConditions from "./Pages/TermsConditions";
+import LegalNotice from "./Pages/LegalNotice";
+import PrivacyPolicy from "./Pages/PrivacyPolicy";
+import Faq from "./Pages/Faq";
+import ContactUs from "./Pages/ContactUs";
+import MyWishlist from "./Pages/MyWishlist";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -157,6 +163,30 @@ const router = createBrowserRouter([
       {
         path: "custom-t-shirt",
         element: <CustomTShirt />,
+      },
+      {
+        path: "terms-conditions",
+        element: <TermsConditions />,
+      },
+      {
+        path: "legal-notice",
+        element: <LegalNotice />,
+      },
+      {
+        path: "privacy-policy",
+        element: <PrivacyPolicy />,
+      },
+      {
+        path: "faq",
+        element: <Faq />,
+      },
+      {
+        path: "contact-us",
+        element: <ContactUs />,
+      },
+      {
+        path: "wishlist",
+        element: <MyWishlist />,
       },
     ],
   },

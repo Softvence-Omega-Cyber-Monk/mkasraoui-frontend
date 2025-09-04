@@ -17,7 +17,7 @@ import { Link } from "react-router-dom";
 import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
 import MyHeader from "@/components/MyHeader/MyHeader";
 import PremiumBanner from "@/components/Home/PremiumBanner";
-import { useCartStore } from "@/store/useUserStore";
+import { useCartStore, useWishStore } from "@/store/useUserStore";
 import toast from "react-hot-toast";
 
 export default function DiyBoxes() {
@@ -27,6 +27,7 @@ export default function DiyBoxes() {
 
   const addToCart = useCartStore((state) => state.addToCart);
   const [likedItems, setLikedItems] = useState<{ [key: number]: boolean }>({});
+  const { addToWishlist } = useWishStore();
 
   const activities = [
     {
@@ -161,16 +162,15 @@ export default function DiyBoxes() {
       [item.id]: !prev[item.id], // toggle only this item
     }));
 
-    addToCart({
+    addToWishlist({
       id: item.id,
       title: item.title,
       price: item.price,
-      quantity: 1,
       image: item.image,
       rating: item.rating,
     });
 
-    toast.success(`${item.title} added to cart!`);
+    toast.success(`${item.title} added to wish list!`);
   };
 
   return (

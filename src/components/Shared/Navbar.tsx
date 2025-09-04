@@ -1,4 +1,4 @@
-import { useCartStore, useUserStore } from "@/store/useUserStore";
+import { useCartStore, useUserStore, useWishStore } from "@/store/useUserStore";
 import React, { useEffect, useRef, useState } from "react";
 import { FiMenu, FiShoppingCart, FiX } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
@@ -16,6 +16,7 @@ const Navbar: React.FC = () => {
   // For account dropdown
   const [accountOpen, setAccountOpen] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
+  const wishlistLength = useWishStore((state) => state.wishlist.length);
 
   // console.log("my store card", cart);
 
@@ -146,6 +147,13 @@ const Navbar: React.FC = () => {
                     onClick={() => setAccountOpen(false)}
                   >
                     My Account
+                  </Link>
+                  <Link
+                    to="/home/wishlist"
+                    className="block rounded-xl px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={() => setAccountOpen(false)}
+                  >
+                    My Wish list ({wishlistLength})
                   </Link>
                   <button
                     onClick={() => {

@@ -100,7 +100,7 @@ const PremiumBanner: React.FC = () => {
                 }}
                 className="gsap-hidden banner-button border-secondary hover:bg-secondary-light bg-secondary inline-flex cursor-pointer items-center rounded-lg border px-5 py-2 text-white transition"
               >
-                Plan your party
+                Discover the Premium Experience
                 <span className="ml-2 h-6">
                   <OutlineArrow />
                 </span>

@@ -103,19 +103,29 @@ const Footer: React.FC = () => {
                 </div> */}
                 <div>
                   <ul className="py-2">
-                    <li className="cursor-pointer hover:underline">
-                      Terms & Condation
-                    </li>
-                    <li className="cursor-pointer hover:underline">
-                      Legal Notice
-                    </li>
-                    <li className="cursor-pointer hover:underline">
-                      Privacy Policy & GDPR
-                    </li>
-                    <li className="cursor-pointer hover:underline">
-                      Contact Us
-                    </li>
-                    <li className="cursor-pointer hover:underline">FAQ</li>
+                    <Link to="/home/terms-conditions">
+                      <li className="cursor-pointer hover:underline">
+                        Terms & Conditions
+                      </li>
+                    </Link>
+                    <Link to="/home/legal-notice">
+                      <li className="cursor-pointer hover:underline">
+                        Legal Notice
+                      </li>
+                    </Link>
+                    <Link to="/home/privacy-policy">
+                      <li className="cursor-pointer hover:underline">
+                        Privacy Policy & GDPR
+                      </li>
+                    </Link>
+                    <Link to="/home/contact-us">
+                      <li className="cursor-pointer hover:underline">
+                        Contact Us
+                      </li>
+                    </Link>
+                    <Link to="/home/faq">
+                      <li className="cursor-pointer hover:underline">FAQ</li>
+                    </Link>
                   </ul>
                 </div>
               </div>
