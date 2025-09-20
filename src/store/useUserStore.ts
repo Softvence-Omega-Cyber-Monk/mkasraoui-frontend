@@ -60,3 +60,46 @@ export const useCartStore = create<CartStore>((set) => ({
 
   clearCart: () => set({ cart: [] }),
 }));
+// -------------------------- wish card ------------
+
+// Type for a product
+export type ProductItem = {
+  id: number;
+  title: string;
+  price: number;
+  image?: string;
+  rating?: number;
+  description?: string;
+};
+
+// Store for favorites/wishlist
+type WishStore = {
+  wishlist: ProductItem[];
+  addToWishlist: (item: ProductItem) => void;
+  removeFromWishlist: (id: number) => void;
+  clearWishlist: () => void;
+  isInWishlist: (id: number) => boolean;
+};
+
+export const useWishStore = create<WishStore>((set, get) => ({
+  wishlist: [],
+
+  addToWishlist: (item) =>
+    set((state) => {
+      // Avoid duplicates
+      const exists = state.wishlist.find((i) => i.id === item.id);
+      if (exists) return state;
+      return { wishlist: [...state.wishlist, item] };
+    }),
+
+  removeFromWishlist: (id) =>
+    set((state) => ({
+      wishlist: state.wishlist.filter((item) => item.id !== id),
+    })),
+
+  clearWishlist: () => set({ wishlist: [] }),
+
+  isInWishlist: (id) => {
+    return get().wishlist.some((item) => item.id === id);
+  },
+}));

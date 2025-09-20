@@ -1,4 +1,4 @@
-import { useCartStore, useUserStore } from "@/store/useUserStore";
+import { useCartStore, useUserStore, useWishStore } from "@/store/useUserStore";
 import React, { useEffect, useRef, useState } from "react";
 import { FiChevronDown, FiMenu, FiShoppingCart, FiUser, FiX } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
@@ -14,8 +14,14 @@ const Navbar: React.FC = () => {
   const menuRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const cart = useCartStore((state) => state.cart);
-  const toggleMenu = () => setIsOpen(!isOpen);
-  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+
+  // For account dropdown
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement>(null);
+  const wishlistLength = useWishStore((state) => state.wishlist.length);
+
+  // console.log("my store card", cart);
+
 
   const navLinks = user
     ? [
@@ -170,27 +176,35 @@ const Navbar: React.FC = () => {
                 />
               </button>
 
-              {/* Dropdown Menu */}
-              {isDropdownOpen && (
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                  <div className="py-2">
-                    <Link
-                      to="/home/my-account"
-                      onClick={() => setIsDropdownOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition"
-                    >
-                      <FiUser size={16} />
-                      My Account
-                    </Link>
-                    <hr className="my-1 border-gray-100" />
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center gap-2 w-full px-4 py-2 text-red-500 hover:bg-red-50 transition text-left"
-                    >
-                      <FiX size={16} />
-                      Logout
-                    </button>
-                  </div>
+              {accountOpen && (
+                <div
+                  className="absolute right-0 z-[9999] mt-2 w-40 rounded-lg border bg-white py-3 shadow-lg transition-all duration-200"
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
+                  <Link
+                    to="/home/my-account"
+                    className="block rounded-xl px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={() => setAccountOpen(false)}
+                  >
+                    My Account
+                  </Link>
+                  <Link
+                    to="/home/wishlist"
+                    className="block rounded-xl px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={() => setAccountOpen(false)}
+                  >
+                    My Wish list ({wishlistLength})
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setAccountOpen(false);
+                    }}
+                    className="block w-full rounded-xl px-4 py-2 text-left text-red-500 hover:bg-red-100"
+                  >
+                    Logout
+                  </button>
+
                 </div>
               )}
             </div>

@@ -18,14 +18,15 @@ import printBrash from "@/assets/printBrash.png";
 import shopingTrolly from "@/assets/shopping-cart.png";
 import CustomizeTshirtModal from "@/components/shop/CustomizeTshirtModal";
 import MyHeader from "@/components/MyHeader/MyHeader";
-import { useCartStore } from "@/store/useUserStore";
+import { useWishStore } from "@/store/useUserStore";
 import toast from "react-hot-toast";
 
 export default function Shop() {
   const [searchTerm, setSearchTerm] = useState("");
   const [ageRange, setAgeRange] = useState("");
   const [theme, setTheme] = useState("");
-  const addToCart = useCartStore((state) => state.addToCart);
+  // const addToCart = useCartStore((state) => state.addToCart); // for add to cart
+  const { addToWishlist } = useWishStore(); //for wish list
 
   // Simulate a search or filter action whenever parameters change
   useEffect(() => {
@@ -342,15 +343,14 @@ export default function Shop() {
                 />
                 <button
                   onClick={() => {
-                    addToCart({
+                    addToWishlist({
                       id: item?.id,
                       title: item?.title,
                       price: item?.currentPrice,
-                      quantity: 1,
                       image: item?.image,
                       rating: item?.rating,
                     });
-                    toast.success(`${item?.title} added to cart!`);
+                    toast.success(`${item?.title} added to wish list!`);
                   }}
                   className="absolute top-3 right-3 cursor-pointer rounded-sm bg-white p-2 shadow-sm hover:bg-gray-50"
                 >
