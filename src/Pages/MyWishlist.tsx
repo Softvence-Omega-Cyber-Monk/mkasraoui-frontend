@@ -20,7 +20,7 @@ function MyWishlist() {
           {wishlist.length === 0 ? (
             <div className="flex h-full min-h-[60vh] items-center justify-center">
               <p className="text-xl text-gray-700 dark:text-gray-300">
-                Your wishlist is emptyy 😢
+                Your wishlist is empty 😢
               </p>
             </div>
           ) : (
