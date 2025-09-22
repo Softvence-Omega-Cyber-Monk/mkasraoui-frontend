@@ -44,6 +44,7 @@ import PrivacyPolicy from "./Pages/PrivacyPolicy";
 import Faq from "./Pages/Faq";
 import ContactUs from "./Pages/ContactUs";
 import MyWishlist from "./Pages/MyWishlist";
+import ReduxProviderWrapper from "./redux/readux-provider/reduxProviderWrapper";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -232,7 +233,9 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
-    <Toaster position="top-right" reverseOrder={false} />
+    <ReduxProviderWrapper>
+      <RouterProvider router={router} />
+      <Toaster position="top-right" reverseOrder={false} />
+    </ReduxProviderWrapper>
   </React.StrictMode>,
 );
