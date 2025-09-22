@@ -1,17 +1,16 @@
-"use client";
-import React from "react";
-import { Provider } from "react-redux";
-import { persistor, store } from "../store";
-import { PersistGate } from "redux-persist/integration/react";
+import type React from "react"
+import { useEffect } from "react"
+import { Provider } from "react-redux"
+import { store } from "../store"
+import { loadUserFromToken } from "../features/auth/authSlice"
 
 const ReduxProviderWrapper = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        {children}
-      </PersistGate>
-    </Provider>
-  );
-};
+  useEffect(() => {
+    // Load user from token on app initialization
+    store.dispatch(loadUserFromToken())
+  }, [])
 
-export default ReduxProviderWrapper;
+  return <Provider store={store}>{children}</Provider>
+}
+
+export default ReduxProviderWrapper
