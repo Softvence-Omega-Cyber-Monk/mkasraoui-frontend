@@ -13,7 +13,7 @@ const rawBaseQuery = fetchBaseQuery({
   prepareHeaders: (headers) => {
     const token = Cookies.get("token");
     if (token) {
-      headers.set("Authorization", `${token}`);
+      headers.set("Authorization", `Bearer ${token}`);
     }
     headers.set("Content-Type", "application/json");
     return headers;
@@ -23,7 +23,7 @@ const rawBaseQuery = fetchBaseQuery({
 const baseQueryWithErrorHandler: typeof rawBaseQuery = async (
   args,
   api,
-  extraOptions
+  extraOptions,
 ) => {
   try {
     const result = await rawBaseQuery(args, api, extraOptions);
