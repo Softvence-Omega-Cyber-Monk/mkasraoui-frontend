@@ -353,9 +353,6 @@ const Navbar: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const cart = useCartStore((state) => state.cart);
   const wishlistLength = useWishStore((state) => state.wishlist.length);
-
-  console.log(user, "from navbar");
-
   const navLinks = user
     ? [
       { name: "Home", to: "/" },
