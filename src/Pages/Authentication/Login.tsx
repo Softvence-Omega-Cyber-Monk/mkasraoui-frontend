@@ -1,8 +1,10 @@
 import loginHeader from "@/assets/auth/loginHeader.png";
 import partyKids from "@/assets/auth/partyKids-2.jpg";
+import { useLoginMutation } from "@/redux/features/auth/authApi";
 import { useUserStore } from "@/store/useUserStore";
 import { Check, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 
 type Errors = {
@@ -14,6 +16,8 @@ export default function Login() {
   const setUser = useUserStore((state) => state.setUser);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+
+  const [login] = useLoginMutation();
 
   const [email, setEmail] = useState("user@example.com");
   const [password, setPassword] = useState("password");
@@ -54,7 +58,7 @@ export default function Login() {
       }));
     };
 
-  const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const newErrors = validateAll();
@@ -63,6 +67,12 @@ export default function Login() {
     const hasErrors = Object.values(newErrors).some((error) => error !== "");
     if (hasErrors) return;
 
+    const res = await login({ email, password }).unwrap();
+    localStorage.setItem("access_token", res.data.accessToken);
+    localStorage.setItem("userName", res.data.user.name);
+    console.log(res);
+
+    toast.success("Login Successful");
     // If no errors
     setUser(true);
     navigate("/home/my-account");
@@ -102,9 +112,8 @@ export default function Login() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={handleChange("email")}
-                  className={`w-full rounded-lg border ${
-                    errors.email ? "border-red-500" : "border-gray-300"
-                  } py-3 pr-10 pl-10 transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none`}
+                  className={`w-full rounded-lg border ${errors.email ? "border-red-500" : "border-gray-300"
+                    } py-3 pr-10 pl-10 transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none`}
                 />
                 {email.trim() && !errors.email && (
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -135,9 +144,8 @@ export default function Login() {
                   placeholder="Enter your password"
                   value={password}
                   onChange={handleChange("password")}
-                  className={`w-full rounded-lg border ${
-                    errors.password ? "border-red-500" : "border-gray-300"
-                  } py-3 pr-10 pl-10 transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none`}
+                  className={`w-full rounded-lg border ${errors.password ? "border-red-500" : "border-gray-300"
+                    } py-3 pr-10 pl-10 transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none`}
                 />
                 <button
                   type="button"

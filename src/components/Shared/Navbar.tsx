@@ -327,7 +327,7 @@
 
 // export default Navbar;
 
-import { useCartStore, useUserStore, useWishStore } from "@/store/useUserStore";
+import { useCartStore, useWishStore } from "@/store/useUserStore";
 import React, { useEffect, useRef, useState } from "react";
 import {
   FiChevronDown,
@@ -339,40 +339,46 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import logo from "../../assets/navlogo-new.png";
+import { User } from "lucide-react";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { user, logout } = useUserStore();
+  const storedUser = localStorage.getItem("user");
+  const userName = localStorage.getItem("userName");
+  const user = storedUser ? JSON.parse(storedUser) : null;
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const cart = useCartStore((state) => state.cart);
   const wishlistLength = useWishStore((state) => state.wishlist.length);
 
+  console.log(user, "from navbar");
+
   const navLinks = user
     ? [
-        { name: "Home", to: "/" },
-        { name: "Party Generator", to: "/home/party-generator" },
-        { name: "DIY Boxes", to: "/home/diyboxes" },
-        { name: "Invitations", to: "/home/party-invitations" },
-        { name: "Providers", to: "/home/providers" },
-        { name: "Shop", to: "/home/shop" },
-        { name: "Blog", to: "/home/blog" },
-      ]
+      { name: "Home", to: "/" },
+      { name: "Party Generator", to: "/home/party-generator" },
+      { name: "DIY Boxes", to: "/home/diyboxes" },
+      { name: "Invitations", to: "/home/party-invitations" },
+      { name: "Providers", to: "/home/providers" },
+      { name: "Shop", to: "/home/shop" },
+      { name: "Blog", to: "/home/blog" },
+    ]
     : [
-        { name: "Home", to: "/" },
-        { name: "About", hash: "/#about" },
-        { name: "Services", hash: "/#services" },
-        { name: "Testimonial", hash: "/#testimonial" },
-        { name: "Providers", to: "/home/providers" },
-        { name: "Shop", to: "/home/shop" },
-        { name: "Blog", to: "/home/blog" },
-      ];
+      { name: "Home", to: "/" },
+      { name: "About", hash: "/#about" },
+      { name: "Services", hash: "/#services" },
+      { name: "Testimonial", hash: "/#testimonial" },
+      { name: "Providers", to: "/home/providers" },
+      { name: "Shop", to: "/home/shop" },
+      { name: "Blog", to: "/home/blog" },
+    ];
 
   const handleLogout = () => {
-    logout();
+    localStorage.removeItem("user");
+    localStorage.removeItem("access_token")
     navigate("/auth/login");
     setAccountOpen(false);
     setIsDropdownOpen(false);
@@ -462,13 +468,17 @@ const Navbar: React.FC = () => {
             </span>
           )}
         </Link>
-        <Link
-          to="/auth/login"
-          onClick={toggleMenu}
-          className="border-primary text-primary hover:bg-primary block rounded-lg border px-5 py-2 text-center transition hover:text-white"
-        >
-          Get Started for Free
-        </Link>
+        {
+          !user && (
+            <Link
+              to="/auth/login"
+              onClick={toggleMenu}
+              className="border-primary text-primary hover:bg-primary block rounded-lg border px-5 py-2 text-center transition hover:text-white"
+            >
+              Get Started for Free
+            </Link>
+          )
+        }
 
         {user && (
           <>
@@ -490,13 +500,10 @@ const Navbar: React.FC = () => {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={toggleDropdown}
-                className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-300 p-1 transition hover:bg-gray-50"
+                className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-300 p-1 px-2 transition hover:bg-gray-50"
               >
-                <img
-                  src={"https://i.pravatar.cc/150?img=3"}
-                  alt="User Avatar"
-                  className="h-8 w-8 rounded-full object-cover"
-                />
+                <User />
+                {userName?.split(" ")[0]}
                 <FiChevronDown
                   size={16}
                   className={`transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}

@@ -2,13 +2,13 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  role: "admin" | "client" | "distributor" | "accountant";
-  businessName?: string;
-  address_Pickup_Location?: string;
+  role: "ADMIN" | "PROVIDER" | "USER";
+  address?: string;
   phone?: string;
 };
 
 export type LoginResponse = {
+  token: string;
   success: boolean;
   message: string;
   data: {
@@ -30,8 +30,7 @@ export type TAuth = {
 
 export type RegisterRequest = {
   name: string;
-  businessName: string;
-  address_Pickup_Location: string;
+  address: string;
   phone: string;
   email: string;
   password: string;
