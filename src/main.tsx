@@ -20,7 +20,7 @@ import SignUp from "./Pages/Authentication/SignUp";
 import TestComponent from "./Pages/Authentication/TestComponent";
 import BecomeProvider from "./Pages/BecomeProvider";
 import Blog from "./Pages/Blog";
-import BlogDetails from "./Pages/BlogDetails";
+// import BlogDetails from "./Pages/BlogDetails";
 import DiyBoxDetails from "./Pages/DiyBoxDetails";
 import DiyBoxes from "./Pages/DiyBoxes";
 import LandingPage from "./Pages/LandingPage";
@@ -45,6 +45,8 @@ import Faq from "./Pages/Faq";
 import ContactUs from "./Pages/ContactUs";
 import MyWishlist from "./Pages/MyWishlist";
 import ReduxProviderWrapper from "./redux/readux-provider/reduxProviderWrapper";
+// import BlogDetails from "./Pages/BlogDetails";
+import BlogDetails from "./components/Blog/BlogDetails";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
