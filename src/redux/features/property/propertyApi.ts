@@ -1,108 +1,70 @@
+import { baseApi } from "@/redux/hooks/baseApi";
+import type { Provider, ProvidersResponse } from "@/redux/types/property.type";
+
+export const propertyApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    getProviders: builder.query<
+      ProvidersResponse,
+      {
+        limit?: number;
+        page?: number;
+        search?: string;
+        priceRange?: string;
+        serviceCategory?: string;
+      }
+    >({
+      query: ({ limit = 10, page = 1, search, priceRange, serviceCategory }) => {
+        const params = new URLSearchParams();
+        params.append("limit", String(limit));
+        params.append("page", String(page));
+        if (search) params.append("search", search);
+        if (priceRange) params.append("priceRange", priceRange);
+        if (serviceCategory) params.append("serviceCategory", serviceCategory);
+
+        return {
+          url: `/user/providers?${params.toString()}`,
+          method: "GET",
+        };
+      },
+      providesTags: ["Providers"],
+    }),
+
+    getProviderById: builder.query<Provider, string>({
+      query: (id) => ({
+        url: `/user/providers/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["Providers"],
+    }),
+  }),
+});
+
+export const { useGetProvidersQuery, useGetProviderByIdQuery } = propertyApi;
+
+
+
+// // src/redux/features/property/propertyApi.ts
 // import { baseApi } from "@/redux/hooks/baseApi";
-// import { Plan, PlanFormData } from "@/redux/types/venue.type";
+// import type { Provider, ProvidersResponse } from "@/redux/types/property.type";
 
-// export const planApi = baseApi.injectEndpoints({
-//   endpoints: (build) => ({
-//     getPlans: build.query<Plan[], void>({
-//       query: () => ({
-//         url: "/plans",
+
+// export const propertyApi = baseApi.injectEndpoints({
+//   endpoints: (builder) => ({
+//     getProviders: builder.query<ProvidersResponse, { limit?: number; page?: number }>({
+//       query: ({ limit = 10, page = 1 }) => ({
+//         url: `/user/providers?limit=${limit}&page=${page}`,
 //         method: "GET",
 //       }),
-//       transformResponse: (response: { data: Plan[] }) => response.data, // unwrap the data
-//       providesTags: (result) =>
-//         result
-//           ? [
-//               ...result.map(({ id }) => ({ type: "Plan" as const, id })),
-//               { type: "Plan" },
-//             ]
-//           : [{ type: "Plan" }],
+//       providesTags: ["Providers"],
 //     }),
-
-//     // getPlans: build.query<Plan[], void>({
-//     //   query: () => ({
-//     //     url: "/plans",
-//     //     method: "GET",
-//     //   }),
-//     //   providesTags: (result) =>
-//     //     result
-//     //       ? [
-//     //           ...result.map(({ id }) => ({ type: "Plan" as const, id })),
-//     //           { type: "Plan" },
-//     //         ]
-//     //       : [{ type: "Plan" }],
-//     // }),
-
-//     getPlanById: build.query<Plan, string>({
+//     getProviderById: builder.query<Provider, string>({
 //       query: (id) => ({
-//         url: `/plans/${id}`,
+//         url: `/user/providers/${id}`,
 //         method: "GET",
 //       }),
-//       providesTags: (_result, _error, id) => [{ type: "Plan", id }],
-//     }),
-//     createPlan: build.mutation<Plan, PlanFormData>({
-//       query: ({ isPopular, ...data }) => ({
-//         url: "/plans",
-//         method: "POST",
-//         body: {
-//           ...data,
-//           price: Number(data.price),
-//           features: data.features?.filter(Boolean) || [],
-//         },
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//       }),
-//       invalidatesTags: [{ type: "Plan" }],
-//     }),
-
-//     // updatePlan: build.mutation<
-//     //   Plan,
-//     //   { id: string; data: Partial<PlanFormData> }
-//     // >({
-//     //   query: ({ id, data }) => ({
-//     //     url: `/plans/${id}`,
-//     //     method: "PATCH",
-//     //     body: {
-//     //       ...data,
-//     //       price: data.price !== undefined ? Number(data.price) : undefined,
-//     //       features: data.features ? data.features.filter(Boolean) : undefined,
-//     //     },
-//     //     headers: {
-//     //       "Content-Type": "application/json",
-//     //     },
-//     //   }),
-//     //   invalidatesTags: (_result, _error, { id }) => [
-//     //     { type: "Plan", id },
-//     //     { type: "Plan" },
-//     //   ],
-//     // }),
-
-//     updatePlan: build.mutation<Plan, { id: string; data: PlanFormData }>({
-//       query: ({ id, data }) => ({
-//         url: `/plans/${id}`,
-//         method: "PATCH",
-//         body: data,
-//       }),
-//       invalidatesTags: (_result, _error, { id }) => [{ type: "Plan", id }],
-//     }),
-
-//     deletePlan: build.mutation<void, string>({
-//       query: (id) => ({
-//         url: `/plans/${id}`,
-//         method: "DELETE",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//       }),
-//       invalidatesTags: (_result, _error, id) => [{ type: "Plan", id }],
+//       providesTags: ["Providers"],
 //     }),
 //   }),
 // });
 
-// export const {
-//   useGetPlansQuery,
-//   useGetPlanByIdQuery,
-//   useCreatePlanMutation,
-//   useUpdatePlanMutation,
-//   useDeletePlanMutation,
-// } = planApi;
+// export const { useGetProvidersQuery, useGetProviderByIdQuery } = propertyApi;
