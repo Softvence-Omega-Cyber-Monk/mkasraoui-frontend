@@ -48,17 +48,24 @@ export const propertyApi = baseApi.injectEndpoints({
       providesTags: ["Providers"],
     }),
 
-    // getProviderById: builder.query<Provider, string>({
-    //   query: (id) => ({
-    //     url: `/user/providers/${id}`,
-    //     method: "GET",
-    //   }),
-    //   providesTags: ["Providers"],
-    // }),
+    requestProvider: builder.mutation<ProviderResponse, FormData>({
+      query: (formData) => ({
+        url: "/user/request-provider",
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: ["Providers"],
+    }),
+
+
   }),
 });
 
-export const { useGetProvidersQuery, useGetProviderByIdQuery } = propertyApi;
+export const {
+  useGetProvidersQuery,
+  useGetProviderByIdQuery,
+  useRequestProviderMutation,
+} = propertyApi;
 
 // // src/redux/features/property/propertyApi.ts
 // import { baseApi } from "@/redux/hooks/baseApi";
