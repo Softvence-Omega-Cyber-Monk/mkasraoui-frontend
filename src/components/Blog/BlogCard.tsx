@@ -228,7 +228,7 @@ export default function BlogCard() {
 
             <div className="mt-auto p-4 pt-0">
               <Link to={`/home/blog/${item.id}`}>
-                <button className="flex w-full items-center justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white hover:bg-[#343f5c]">
+                <button className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white hover:bg-[#343f5c]">
                   Read item?
                   <ArrowUpRight className="h-5 w-5" />
                 </button>

@@ -3,6 +3,7 @@ import { baseApi } from "./hooks/baseApi";
 import authReducer from "./features/auth/authSlice";
 import propertyReducer from "./features/property/propertySlice";
 import quotesReducer from "./features/quotes/quotesSlice";
+import providerReviewReducer from "./features/review/providerReviewSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     auth: authReducer,
     property: propertyReducer,
     quotes: quotesReducer,
+    providerReview: providerReviewReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

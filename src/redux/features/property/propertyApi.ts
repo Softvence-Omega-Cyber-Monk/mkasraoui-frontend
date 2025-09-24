@@ -1,5 +1,9 @@
 import { baseApi } from "@/redux/hooks/baseApi";
-import type { Provider, ProvidersResponse } from "@/redux/types/property.type";
+import type {
+  Provider,
+  ProviderResponse,
+  ProvidersResponse,
+} from "@/redux/types/property.type";
 
 export const propertyApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,7 +17,13 @@ export const propertyApi = baseApi.injectEndpoints({
         serviceCategory?: string;
       }
     >({
-      query: ({ limit = 10, page = 1, search, priceRange, serviceCategory }) => {
+      query: ({
+        limit = 10,
+        page = 1,
+        search,
+        priceRange,
+        serviceCategory,
+      }) => {
         const params = new URLSearchParams();
         params.append("limit", String(limit));
         params.append("page", String(page));
@@ -34,19 +44,25 @@ export const propertyApi = baseApi.injectEndpoints({
         url: `/user/providers/${id}`,
         method: "GET",
       }),
+      transformResponse: (response: ProviderResponse) => response.data, // ✅ directly return Provider
       providesTags: ["Providers"],
     }),
+
+    // getProviderById: builder.query<Provider, string>({
+    //   query: (id) => ({
+    //     url: `/user/providers/${id}`,
+    //     method: "GET",
+    //   }),
+    //   providesTags: ["Providers"],
+    // }),
   }),
 });
 
 export const { useGetProvidersQuery, useGetProviderByIdQuery } = propertyApi;
 
-
-
 // // src/redux/features/property/propertyApi.ts
 // import { baseApi } from "@/redux/hooks/baseApi";
 // import type { Provider, ProvidersResponse } from "@/redux/types/property.type";
-
 
 // export const propertyApi = baseApi.injectEndpoints({
 //   endpoints: (builder) => ({
