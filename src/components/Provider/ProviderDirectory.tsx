@@ -156,8 +156,9 @@ export default function ProviderDirectory() {
                         {provider.bussinessName}
                       </h3>
                     </div>
+
                     <p className="mb-4 text-xs leading-relaxed text-[#5A5C5F]">
-                      {provider.description}
+                      {provider.description.split(" ").slice(0, 20).join(" ")}
                     </p>
                     <div className="mb-4 space-y-2">
                       <div className="flex items-center gap-2 text-gray-600">
@@ -176,13 +177,6 @@ export default function ProviderDirectory() {
                       >
                         View Profile
                       </Link>
-                      {/* <Link
-                        to={"/home/request-quote"}
-                        className="hover:bg-secondary-dark flex-1 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-center text-black hover:text-white"
-                      >
-                        Request Quote
-                      </Link> */}
-
                       <Link
                         to={`/home/request-quote?providerId=${provider.id}`}
                         className="hover:bg-secondary-dark flex-1 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-center text-black hover:text-white"
