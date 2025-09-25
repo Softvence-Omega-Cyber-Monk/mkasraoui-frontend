@@ -15,7 +15,7 @@ const rawBaseQuery = fetchBaseQuery({
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
-    headers.set("Content-Type", "application/json");
+    // headers.set("Content-Type", "application/json");
     return headers;
   },
 });
@@ -50,6 +50,6 @@ const baseQueryWithErrorHandler: typeof rawBaseQuery = async (
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithErrorHandler,
-  tagTypes: ["User","DIY", "Cart", "Wishlist", "Bookings"],
+  tagTypes: ["User", "Providers", "Quotes", "ProviderReviews", "Products", "DIY", "Cart", "Wishlist", "Bookings"],
   endpoints: () => ({}),
 });

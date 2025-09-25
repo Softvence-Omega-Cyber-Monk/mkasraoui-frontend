@@ -1,8 +1,13 @@
-import { configureStore } from "@reduxjs/toolkit"
-import { baseApi } from "./hooks/baseApi"
-import authReducer from "./features/auth/authSlice"
+
 import cartReducer from "./features/cart/cartSlice"
 import wishlistReducer from "./features/wishlist/wishlistSlice"
+import { configureStore } from "@reduxjs/toolkit";
+import { baseApi } from "./hooks/baseApi";
+import authReducer from "./features/auth/authSlice";
+import propertyReducer from "./features/property/propertySlice";
+import quotesReducer from "./features/quotes/quotesSlice";
+import providerReviewReducer from "./features/review/providerReviewSlice";
+import productReducer from "./features/product/productSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +15,10 @@ export const store = configureStore({
     auth: authReducer,
     cart: cartReducer,
     wishlist: wishlistReducer,
+    property: propertyReducer,
+    quotes: quotesReducer,
+    providerReview: providerReviewReducer,
+    product: productReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -17,7 +26,7 @@ export const store = configureStore({
         ignoredActions: [],
       },
     }).concat(baseApi.middleware),
-})
+});
 
-export type AppRootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type AppRootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

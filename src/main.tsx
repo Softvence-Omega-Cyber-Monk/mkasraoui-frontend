@@ -20,7 +20,7 @@ import SignUp from "./Pages/Authentication/SignUp";
 import TestComponent from "./Pages/Authentication/TestComponent";
 import BecomeProvider from "./Pages/BecomeProvider";
 import Blog from "./Pages/Blog";
-import BlogDetails from "./Pages/BlogDetails";
+// import BlogDetails from "./Pages/BlogDetails";
 import DiyBoxDetails from "./Pages/DiyBoxDetails";
 import DiyBoxes from "./Pages/DiyBoxes";
 import LandingPage from "./Pages/LandingPage";
@@ -45,6 +45,12 @@ import Faq from "./Pages/Faq";
 import ContactUs from "./Pages/ContactUs";
 import MyWishlist from "./Pages/MyWishlist";
 import ReduxProviderWrapper from "./redux/readux-provider/reduxProviderWrapper";
+// import BlogDetails from "./Pages/BlogDetails";
+import BlogDetails from "./components/Blog/BlogDetails";
+import AdminLayout from "./Layout/AdminLayout";
+import AdminDashboardPage from "./Pages/Admin/AdminDashboardPage";
+import AdminAddProductPage from "./Pages/Admin/AdminAddProductPage";
+import AdminAllUsersPage from "./Pages/Admin/AdminAllUsersPage";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -208,6 +214,41 @@ const router = createBrowserRouter([
       {
         path: "booking",
         element: <Booking />,
+      },
+      {
+        path: "messages",
+        element: <Messages />,
+      },
+      {
+        path: "reviews",
+        element: <Reviews />,
+      },
+      {
+        path: "earnings",
+        element: <Earnings />,
+      },
+    ],
+  },
+  // admin Dashboard routes can be added here
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [
+      {
+        index: true,
+        element: <DefaultPage />,
+      },
+      {
+        path: "dashboard",
+        element: <AdminDashboardPage />,
+      },
+      {
+        path: "all-users",
+        element: <AdminAllUsersPage />,
+      },
+      {
+        path: "add-product",
+        element: <AdminAddProductPage />,
       },
       {
         path: "messages",
