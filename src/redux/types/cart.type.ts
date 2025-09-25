@@ -1,29 +1,14 @@
-import type { DIYProduct } from "./diy.types";
+// src/types/cart.ts
 
 export interface CartItem {
-  productId: string;
-  title?: string;    
+  id: string | number;
+  title: string;
+  price: number;
   quantity: number;
-  price?: number;
   image?: string;
-  product?: DIYProduct
+  rating?: number;
 }
 
-export interface CartResponse {
+export interface CartState {
   items: CartItem[];
-  total: number;
-}
-
-export interface AddToCartRequest {
-  productId: string;
-  quantity: number;
-}
-
-export interface UpdateCartRequest {
-  productId: string;
-  quantity: number;
-}
-
-export interface RemoveCartRequest {
-  productId: string;
 }

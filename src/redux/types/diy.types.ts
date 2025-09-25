@@ -1,8 +1,11 @@
-export interface Activity {
+export interface Review {
   id: string;
-  title: string;
-  description: string;
+  rating: number;
+  description: string; // note: your API uses "description" for the comment
   productId: string;
+  userId: string;
+  createdAt: string; // ISO string
+  updatedAt: string; // ISO string
 }
 
 export interface DIYProduct {
@@ -20,7 +23,16 @@ export interface DIYProduct {
   createdAt: string;
   updatedAt: string;
   activities: Activity[];
+  reviews: Review[];
 }
+
+export interface Activity {
+  id: string;
+  title: string;
+  description: string;
+  productId: string;
+}
+
 
 export interface DIYResponse {
   statusCode: number;

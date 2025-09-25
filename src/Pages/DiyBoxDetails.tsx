@@ -5,11 +5,14 @@ import { useEffect, useState } from "react";
 
 import PremiumBanner from "@/components/Home/PremiumBanner";
 import MyHeader from "@/components/MyHeader/MyHeader";
-import { useGetDIYProductByIdQuery } from "@/redux/features/diyProducts/diyProductsApi";
+import { useGetDIYProductByIdQuery,useCreateReviewMutation  } from "@/redux/features/diyProducts/diyProductsApi";
 
 export default function DiyBoxDetails() {
   const { id } = useParams();
-  const { data, isLoading, error } = useGetDIYProductByIdQuery(id!);
+  const { data, isLoading, error, refetch } = useGetDIYProductByIdQuery(id!);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [createReview, { isLoading: isSubmitting }] = useCreateReviewMutation();
 
   // Scroll to top when ID changes
   useEffect(() => {
@@ -50,6 +53,22 @@ export default function DiyBoxDetails() {
     return <div className="text-center py-10">Something went wrong.</div>;
 
   const product = data;
+
+  const handleSubmitReview = async () => {
+    if (!comment.trim()) return;
+    try {
+      await createReview({
+        productId: product.id,
+        rating,
+        description: comment,
+      }).unwrap();
+      setComment("");
+      setRating(5);
+      refetch(); // Refresh product data
+    } catch (err) {
+      console.error("Failed to submit review", err);
+    }
+  };
 
   // Tab content
   const renderContent = () => {
@@ -116,8 +135,62 @@ export default function DiyBoxDetails() {
         );
       case "reviews":
         return (
-          <div className="text-center text-gray-500 py-10">
-            Reviews integration coming soon...
+          <div className="rounded-xl border border-[#DFE1E6] bg-white p-6">
+            <h2 className="mb-6 text-2xl font-semibold text-gray-900">Customer Reviews</h2>
+
+            {/* Reviews List */}
+            {!product.reviews.length ? (
+              <p className="text-center text-gray-500 py-10">No reviews yet. Be the first to review!</p>
+            ) : (
+              <div className="space-y-6 mb-6">
+                {product.reviews.map((review) => (
+                  <div key={review.id} className="border-b border-gray-200 pb-6 last:border-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-semibold text-gray-900">Anonymous User</span>
+                      <span className="text-sm text-gray-500">
+                        {new Date(review.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mb-2">
+                      {renderStars(review.rating)}
+                      <span className="text-sm text-gray-600">{review.rating.toFixed(1)}</span>
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">{review.description}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Add Review */}
+            <div className="mt-6 border-t pt-6">
+              <h3 className="mb-2 text-lg font-medium">Leave a Review</h3>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm font-medium">Rating:</span>
+                <select
+                  value={rating}
+                  onChange={(e) => setRating(Number(e.target.value))}
+                  className="rounded border border-gray-300 px-2 py-1"
+                >
+                  {[5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1, 0.5].map((r) => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+              <textarea
+                className="w-full rounded border border-gray-300 p-2"
+                rows={4}
+                placeholder="Write your review..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              />
+              <button
+                onClick={handleSubmitReview}
+                disabled={isSubmitting}
+                className="mt-2 w-full rounded bg-[#223B7D] px-4 py-2 font-semibold text-white hover:bg-blue-800 disabled:opacity-50"
+              >
+                {isSubmitting ? "Submitting..." : "Submit Review"}
+              </button>
+            </div>
           </div>
         );
       default:
@@ -190,7 +263,7 @@ export default function DiyBoxDetails() {
                   {renderStars(product.avg_rating ?? 0)}
                 </div>
                 <span className="font-semibold text-gray-900">
-                  {product.avg_rating}
+                  {product.avg_rating.toFixed(2)}
                 </span>
                 <span className="text-gray-500">
                   ({product.total_review} reviews)
@@ -221,11 +294,10 @@ export default function DiyBoxDetails() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 cursor-pointer px-6 py-3 text-center font-medium transition-colors duration-200 ${
-                  activeTab === tab.id
-                    ? "rounded-md bg-[#223B7D] text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
+                className={`flex-1 cursor-pointer px-6 py-3 text-center font-medium transition-colors duration-200 ${activeTab === tab.id
+                  ? "rounded-md bg-[#223B7D] text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
               >
                 {tab.label}
               </button>
