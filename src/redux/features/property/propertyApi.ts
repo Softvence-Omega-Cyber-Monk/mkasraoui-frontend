@@ -57,7 +57,24 @@ export const propertyApi = baseApi.injectEndpoints({
       invalidatesTags: ["Providers"],
     }),
 
+    // ---- New mutations for approve / reject provider requests ----
+    approveProviderRequest: builder.mutation<ProviderResponse, string>({
+      query: (id) => ({
+        url: `/user/provider-requests/${id}/approve`,
+        method: "PATCH",
+      }),
+      // refresh list after approving
+      invalidatesTags: ["Providers"],
+    }),
 
+    rejectProviderRequest: builder.mutation<ProviderResponse, string>({
+      query: (id) => ({
+        url: `/user/provider-requests/${id}/reject`,
+        method: "DELETE",
+      }),
+      // refresh list after rejecting
+      invalidatesTags: ["Providers"],
+    }),
   }),
 });
 
@@ -65,6 +82,8 @@ export const {
   useGetProvidersQuery,
   useGetProviderByIdQuery,
   useRequestProviderMutation,
+  useApproveProviderRequestMutation,
+  useRejectProviderRequestMutation,
 } = propertyApi;
 
 // // src/redux/features/property/propertyApi.ts
