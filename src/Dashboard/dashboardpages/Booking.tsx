@@ -4,7 +4,7 @@ import type { Booking } from "@/redux/types/booking.type";
 import toast from "react-hot-toast";
 
 interface BookingPageProps {
-  role: "PROVIDER" | "USER"; // passed from auth/user store
+  role: "PROVIDER" | "USER" | "ADMIN" ; // passed from auth/user store
 }
 
 function BookingPage({ role }: BookingPageProps) {

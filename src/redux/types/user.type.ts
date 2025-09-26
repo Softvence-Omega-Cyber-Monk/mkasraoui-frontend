@@ -18,6 +18,7 @@ confirm_inviation?: number;
 confirmation_token?: string | null;
 address?: string | null;
 stripe_customer_id?: string | null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 subscription?: any[];
 }
 
@@ -34,4 +35,11 @@ role?: UserRole;
 export interface UpdateUserRequest {
 id: string;
 data: Partial<Omit<CreateUserRequest, "password">>;
+}
+
+export interface ApiResponse<T> {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: T;
 }
