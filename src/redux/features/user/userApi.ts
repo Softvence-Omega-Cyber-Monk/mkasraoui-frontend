@@ -5,6 +5,7 @@ import type {
   User,
   CreateUserRequest,
   UpdateUserRequest,
+  ApiResponse,
 } from "@/redux/types/user.type";
 
 export const userApi = baseApi.injectEndpoints({
@@ -42,6 +43,7 @@ export const userApi = baseApi.injectEndpoints({
     // GET /user/me -> current user
     getMe: build.query<User, void>({
       query: () => "/user/me",
+      transformResponse: (response: ApiResponse<User>) => response.data,
       providesTags: (result) =>
         result ? [{ type: "User" as const, id: result.id }] : [],
     }),
