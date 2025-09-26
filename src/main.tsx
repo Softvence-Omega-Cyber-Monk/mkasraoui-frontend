@@ -54,6 +54,7 @@ import Plan from "./Pages/Plan";
 import BookingParent from "./Dashboard/dashboardpages/BookingParent";
 import AdminProviderManagementPage from "./Pages/Admin/AdminProviderManagementPage";
 import SubscriptionPlanPage from "./Pages/Admin/SubscriptionPlanPage";
+import CheckoutPage from "./Pages/Checkout";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -202,6 +203,12 @@ const router = createBrowserRouter([
         path: "plan",
         element: <Plan />,
       },
+      
+     
+      {
+        path: "checkout",
+        element: <CheckoutPage />
+      }
     ],
   },
 
