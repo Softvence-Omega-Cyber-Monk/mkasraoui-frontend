@@ -1,5 +1,6 @@
 import { create } from "zustand";
 
+/* ---------------- User Store ---------------- */
 type UserStore = {
   user: boolean;
   setUser: (value: boolean) => void;
@@ -12,9 +13,9 @@ export const useUserStore = create<UserStore>((set) => ({
   logout: () => set({ user: false }),
 }));
 
-// for add to cart
+/* ---------------- Cart Store ---------------- */
 export type CartItem = {
-  id: number;
+  id: string;
   title: string;
   price: number;
   quantity: number;
@@ -25,8 +26,8 @@ export type CartItem = {
 type CartStore = {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
-  removeFromCart: (id: number) => void;
-  updateQuantity: (id: number, quantity: number) => void;
+  removeFromCart: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
 };
 
@@ -39,9 +40,7 @@ export const useCartStore = create<CartStore>((set) => ({
       if (existing) {
         return {
           cart: state.cart.map((i) =>
-            i.id === item.id
-              ? { ...i, quantity: i.quantity + item.quantity }
-              : i,
+            i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i,
           ),
         };
       }
@@ -49,7 +48,9 @@ export const useCartStore = create<CartStore>((set) => ({
     }),
 
   removeFromCart: (id) =>
-    set((state) => ({ cart: state.cart.filter((item) => item.id !== id) })),
+    set((state) => ({
+      cart: state.cart.filter((item) => item.id !== id),
+    })),
 
   updateQuantity: (id, quantity) =>
     set((state) => ({
@@ -60,11 +61,10 @@ export const useCartStore = create<CartStore>((set) => ({
 
   clearCart: () => set({ cart: [] }),
 }));
-// -------------------------- wish card ------------
 
-// Type for a product
+/* ---------------- Wishlist Store ---------------- */
 export type ProductItem = {
-  id: number;
+  id: string;
   title: string;
   price: number;
   image?: string;
@@ -72,13 +72,12 @@ export type ProductItem = {
   description?: string;
 };
 
-// Store for favorites/wishlist
 type WishStore = {
   wishlist: ProductItem[];
   addToWishlist: (item: ProductItem) => void;
-  removeFromWishlist: (id: number) => void;
+  removeFromWishlist: (id: string) => void;
   clearWishlist: () => void;
-  isInWishlist: (id: number) => boolean;
+  isInWishlist: (id: string) => boolean;
 };
 
 export const useWishStore = create<WishStore>((set, get) => ({
@@ -86,9 +85,8 @@ export const useWishStore = create<WishStore>((set, get) => ({
 
   addToWishlist: (item) =>
     set((state) => {
-      // Avoid duplicates
-      const exists = state.wishlist.find((i) => i.id === item.id);
-      if (exists) return state;
+      const exists = state.wishlist.some((i) => i.id === item.id);
+      if (exists) return state; // avoid duplicates
       return { wishlist: [...state.wishlist, item] };
     }),
 
@@ -99,7 +97,5 @@ export const useWishStore = create<WishStore>((set, get) => ({
 
   clearWishlist: () => set({ wishlist: [] }),
 
-  isInWishlist: (id) => {
-    return get().wishlist.some((item) => item.id === id);
-  },
+  isInWishlist: (id) => get().wishlist.some((item) => item.id === id),
 }));

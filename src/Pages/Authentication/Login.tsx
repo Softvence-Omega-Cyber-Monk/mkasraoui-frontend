@@ -17,7 +17,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  const [login] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
 
   const [email, setEmail] = useState("user@example.com");
   const [password, setPassword] = useState("password");
@@ -184,7 +184,7 @@ export default function Login() {
               type="submit"
               className="bg-secondary hover:bg-secondary-dark w-full cursor-pointer rounded-lg py-3 text-white shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl focus:ring-4 focus:ring-blue-200"
             >
-              Log In
+              {isLoading ? "Logging in..." : "Log In"}
             </button>
           </form>
 

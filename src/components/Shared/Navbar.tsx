@@ -327,7 +327,6 @@
 
 // export default Navbar;
 
-import { useCartStore, useWishStore } from "@/store/useUserStore";
 import React, { useEffect, useRef, useState } from "react";
 import {
   FiChevronDown,
@@ -340,6 +339,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import logo from "../../assets/navlogo-new.png";
 import { User } from "lucide-react";
+import { useSelector } from "react-redux";
+import type { AppRootState } from "@/redux/store";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -351,34 +352,34 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const cart = useCartStore((state) => state.cart);
-  const wishlistLength = useWishStore((state) => state.wishlist.length);
 
-  console.log(user, "from navbar");
+  // ✅ Redux selectors
+  const cart = useSelector((state: AppRootState) => state.cart.items);
+  const wishlist = useSelector((state: AppRootState) => state.wishlist.items);
 
   const navLinks = user
     ? [
-      { name: "Home", to: "/" },
-      { name: "Party Generator", to: "/home/party-generator" },
-      { name: "DIY Boxes", to: "/home/diyboxes" },
-      { name: "Invitations", to: "/home/party-invitations" },
-      { name: "Providers", to: "/home/providers" },
-      { name: "Shop", to: "/home/shop" },
-      { name: "Blog", to: "/home/blog" },
-    ]
+        { name: "Home", to: "/" },
+        { name: "Party Generator", to: "/home/party-generator" },
+        { name: "DIY Boxes", to: "/home/diyboxes" },
+        { name: "Invitations", to: "/home/party-invitations" },
+        { name: "Providers", to: "/home/providers" },
+        { name: "Shop", to: "/home/shop" },
+        { name: "Blog", to: "/home/blog" },
+      ]
     : [
-      { name: "Home", to: "/" },
-      { name: "About", hash: "/#about" },
-      { name: "Services", hash: "/#services" },
-      { name: "Testimonial", hash: "/#testimonial" },
-      { name: "Providers", to: "/home/providers" },
-      { name: "Shop", to: "/home/shop" },
-      { name: "Blog", to: "/home/blog" },
-    ];
+        { name: "Home", to: "/" },
+        { name: "About", hash: "/#about" },
+        { name: "Services", hash: "/#services" },
+        { name: "Testimonial", hash: "/#testimonial" },
+        { name: "Providers", to: "/home/providers" },
+        { name: "Shop", to: "/home/shop" },
+        { name: "Blog", to: "/home/blog" },
+      ];
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    localStorage.removeItem("access_token")
+    localStorage.removeItem("access_token");
     navigate("/auth/login");
     setAccountOpen(false);
     setIsDropdownOpen(false);
@@ -468,74 +469,58 @@ const Navbar: React.FC = () => {
             </span>
           )}
         </Link>
-        {
-          !user && (
-            <Link
-              to="/auth/login"
-              onClick={toggleMenu}
-              className="border-primary text-primary hover:bg-primary block rounded-lg border px-5 py-2 text-center transition hover:text-white"
-            >
-              Get Started for Free
-            </Link>
-          )
-        }
+
+        {!user && (
+          <Link
+            to="/auth/login"
+            onClick={toggleMenu}
+            className="border-primary text-primary hover:bg-primary block rounded-lg border px-5 py-2 text-center transition hover:text-white"
+          >
+            Get Started for Free
+          </Link>
+        )}
 
         {user && (
-          <>
-            {/* Premium Button */}
-            {/* <Link
-              to="/home/premium-feature"
-              className="bg-secondary hover:bg-secondary-light relative cursor-pointer rounded-lg border px-4 py-2 text-white transition"
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={toggleDropdown}
+              className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-300 p-1 px-2 transition hover:bg-gray-50"
             >
-              <FiShoppingCart size={24} />
-              My Cart
-              {cart.length > 0 && (
-                <span className="absolute -top-2 -right-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                  {getTotalCartItems()}
-                </span>
-              )}
-            </Link> */}
+              <User />
+              {userName?.split(" ")[0]}
+              <FiChevronDown
+                size={16}
+                className={`transition-transform ${
+                  isDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
 
-            {/* User Dropdown */}
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={toggleDropdown}
-                className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-300 p-1 px-2 transition hover:bg-gray-50"
-              >
-                <User />
-                {userName?.split(" ")[0]}
-                <FiChevronDown
-                  size={16}
-                  className={`transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
-                />
-              </button>
-
-              {accountOpen && (
-                <div className="absolute right-0 z-[9999] mt-2 w-40 rounded-lg border bg-white py-3 shadow-lg transition-all duration-200">
-                  <Link
-                    to="/home/my-account"
-                    className="block rounded-xl px-4 py-2 text-gray-700 hover:bg-gray-100"
-                    onClick={() => setAccountOpen(false)}
-                  >
-                    My Account
-                  </Link>
-                  <Link
-                    to="/home/wishlist"
-                    className="block rounded-xl px-4 py-2 text-gray-700 hover:bg-gray-100"
-                    onClick={() => setAccountOpen(false)}
-                  >
-                    My Wish list ({wishlistLength})
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full rounded-xl px-4 py-2 text-left text-red-500 hover:bg-red-100"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          </>
+            {accountOpen && (
+              <div className="absolute right-0 z-[9999] mt-2 w-40 rounded-lg border bg-white py-3 shadow-lg transition-all duration-200">
+                <Link
+                  to="/home/my-account"
+                  className="block rounded-xl px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  onClick={() => setAccountOpen(false)}
+                >
+                  My Account
+                </Link>
+                <Link
+                  to="/home/wishlist"
+                  className="block rounded-xl px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  onClick={() => setAccountOpen(false)}
+                >
+                  My Wishlist ({wishlist.length})
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full rounded-xl px-4 py-2 text-left text-red-500 hover:bg-red-100"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         )}
       </div>
 
@@ -594,21 +579,21 @@ const Navbar: React.FC = () => {
                 <hr className="my-2 border-gray-200" />
                 <li>
                   <Link
-                    to="/home/premium-feature"
-                    onClick={toggleMenu}
-                    className="bg-secondary hover:bg-secondary-light block rounded-lg px-4 py-2 text-center text-white transition"
-                  >
-                    Premium
-                  </Link>
-                </li>
-                <li>
-                  <Link
                     to="/home/my-account"
                     onClick={toggleMenu}
                     className="hover:text-primary flex items-center gap-2 py-2 text-gray-700 transition"
                   >
                     <FiUser size={18} />
                     My Account
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/home/wishlist"
+                    onClick={toggleMenu}
+                    className="hover:text-primary flex items-center gap-2 py-2 text-gray-700 transition"
+                  >
+                    ❤️ Wishlist ({wishlist.length})
                   </Link>
                 </li>
                 <li>
@@ -646,3 +631,4 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+

@@ -1,8 +1,11 @@
-import { useCartStore } from "@/store/useUserStore";
+// src/components/MyCart.tsx
+import { useAppDispatch, useAppSelector } from "@/redux/hooks/redux-hook";
+import { removeFromCart, updateQuantity } from "@/redux/features/cart/cartSlice";
 
 function MyCart() {
-  const cart = useCartStore((state) => state.cart);
-  console.log("my store card", cart);
+  const cart = useAppSelector((state) => state.cart.items);
+  const dispatch = useAppDispatch();
+
   return (
     <div>
       <div className="mx-auto max-w-5xl p-4 max-lg:max-w-2xl">
@@ -44,9 +47,12 @@ function MyCart() {
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() =>
-                        useCartStore
-                          .getState()
-                          .updateQuantity(item.id, item.quantity - 1)
+                        dispatch(
+                          updateQuantity({
+                            id: item.id,
+                            quantity: item.quantity - 1,
+                          })
+                        )
                       }
                       disabled={item.quantity <= 1}
                       className="flex h-[18px] w-[18px] cursor-pointer items-center justify-center rounded-full bg-slate-400 text-white"
@@ -58,9 +64,12 @@ function MyCart() {
                     </span>
                     <button
                       onClick={() =>
-                        useCartStore
-                          .getState()
-                          .updateQuantity(item.id, item.quantity + 1)
+                        dispatch(
+                          updateQuantity({
+                            id: item.id,
+                            quantity: item.quantity + 1,
+                          })
+                        )
                       }
                       className="flex h-[18px] w-[18px] cursor-pointer items-center justify-center rounded-full bg-slate-800 text-white"
                     >
@@ -68,9 +77,7 @@ function MyCart() {
                     </button>
                   </div>
                   <button
-                    onClick={() =>
-                      useCartStore.getState().removeFromCart(item.id)
-                    }
+                    onClick={() => dispatch(removeFromCart(item.id))}
                     className="mt-2 cursor-pointer text-sm text-red-600 hover:text-red-800"
                   >
                     Remove
@@ -80,6 +87,7 @@ function MyCart() {
             ))}
           </div>
 
+          {/* Order Summary */}
           <div className="h-max rounded-md border border-gray-200 bg-white px-4 py-6 shadow-sm">
             <ul className="space-y-4 font-medium text-slate-500">
               <li className="flex justify-between text-sm">
@@ -92,8 +100,7 @@ function MyCart() {
                 </span>
               </li>
               <li className="flex justify-between text-sm">
-                Shipping{" "}
-                <span className="font-semibold text-slate-900">$2.00</span>
+                Shipping <span className="font-semibold text-slate-900">$2.00</span>
               </li>
               <li className="flex justify-between text-sm">
                 Tax <span className="font-semibold text-slate-900">$4.00</span>
