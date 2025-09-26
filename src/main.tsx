@@ -51,6 +51,7 @@ import AdminLayout from "./Layout/AdminLayout";
 import AdminDashboardPage from "./Pages/Admin/AdminDashboardPage";
 import AdminAddProductPage from "./Pages/Admin/AdminAddProductPage";
 import AdminAllUsersPage from "./Pages/Admin/AdminAllUsersPage";
+import AdminProviderManagementPage from "./Pages/Admin/AdminProviderManagementPage";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -236,7 +237,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <DefaultPage />,
+        element: <AdminDashboardPage />,
       },
       {
         path: "dashboard",
@@ -245,6 +246,10 @@ const router = createBrowserRouter([
       {
         path: "all-users",
         element: <AdminAllUsersPage />,
+      },
+      {
+        path: "provider-management",
+        element: <AdminProviderManagementPage />,
       },
       {
         path: "add-product",

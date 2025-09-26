@@ -66,6 +66,11 @@ function AdminLayout() {
       icon: BookingIcon,
     },
     {
+      to: "/admin-dashboard/provider-management",
+      label: "Provider Management",
+      icon: BookingIcon,
+    },
+    {
       to: "/admin-dashboard/add-product",
       label: "Add Product",
       icon: ServicesIcon,
