@@ -4,7 +4,7 @@ import type { Booking, BookingResponse } from "@/redux/types/booking.type";
 
 export const bookingApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        getBookings: builder.query<Booking[], { role: "PROVIDER" | "USER" }>({
+        getBookings: builder.query<Booking[], { role: "PROVIDER" | "USER" | "ADMIN" }>({
             query: () => ({
                 url: "/quotes/my",
                 method: "GET",

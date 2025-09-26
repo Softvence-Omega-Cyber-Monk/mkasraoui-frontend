@@ -55,35 +55,40 @@ function AdminLayout() {
 
   const navLinks = [
     {
-      to: "/admin/dashboard",
+      to: "/admin-dashboard/dashboard",
       label: "Dashboard",
       icon: DashboardIcon,
       end: true,
     },
     {
-      to: "/admin/all-users",
+      to: "/admin-dashboard/all-users",
       label: "All Users",
       icon: BookingIcon,
     },
     {
-      to: "/admin/add-product",
+      to: "/admin-dashboard/provider-management",
+      label: "Provider Management",
+      icon: BookingIcon,
+    },
+    {
+      to: "/admin-dashboard/add-product",
       label: "Add Product",
       icon: ServicesIcon,
     },
 
     {
-      to: "/admin/messages",
+      to: "/admin-dashboard/messages",
       label: "Messages",
       icon: MessagesIcon,
       badge: 3, // Example notification badge
     },
     {
-      to: "/admin/reviews",
+      to: "/admin-dashboard/reviews",
       label: "Reviews",
       icon: ReviewsIcon,
     },
     {
-      to: "/admin/earnings",
+      to: "/admin-dashboard/earnings",
       label: "Earnings",
       icon: EarningsIcon,
     },
