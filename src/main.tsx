@@ -231,7 +231,7 @@ const router = createBrowserRouter([
   },
   // admin Dashboard routes can be added here
   {
-    path: "/admin",
+    path: "/admin-dashboard",
     element: <AdminLayout />,
     children: [
       {

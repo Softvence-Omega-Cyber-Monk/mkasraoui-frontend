@@ -23,7 +23,12 @@ interface FormDataType {
 
 const AdminProductTable: React.FC = () => {
   const { data, isLoading, isFetching } = useGetProductsQuery();
-  const products: Product[] = data?.data ?? [];
+  // const products: Product[] = data?.data ?? [];
+
+  const products: Product[] = [
+    ...(data?.data?.diyBoxes ?? []),
+    ...(data?.data?.gifts ?? []),
+  ];
 
   const [deleteProduct] = useDeleteProductMutation();
   const [addProduct] = useAddProductMutation();
