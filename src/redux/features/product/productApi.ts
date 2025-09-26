@@ -4,7 +4,18 @@ import type { ApiResponse, Product } from "@/redux/types/product.type";
 
 export const productApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getProducts: builder.query<ApiResponse<Product[]>, void>({
+    // getProducts: builder.query<ApiResponse<Product[]>, void>({
+    //   query: () => ({
+    //     url: "/products",
+    //     method: "GET",
+    //   }),
+    //   providesTags: ["Products"],
+    // }),
+
+    getProducts: builder.query<
+      ApiResponse<{ diyBoxes: Product[]; gifts: Product[] }>,
+      void
+    >({
       query: () => ({
         url: "/products",
         method: "GET",
