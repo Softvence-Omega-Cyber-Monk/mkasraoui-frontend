@@ -50,6 +50,19 @@ const baseQueryWithErrorHandler: typeof rawBaseQuery = async (
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithErrorHandler,
-  tagTypes: ["User", "Providers", "Quotes", "ProviderReviews", "Products", "DIY", "Cart", "Wishlist", "Bookings", "ProviderPlans"],
+  tagTypes: [
+    "User",
+    "Providers",
+    "Quotes",
+    "ProviderReviews",
+    "Products",
+    "DIY",
+    "Cart",
+    "Wishlist",
+    "Bookings",
+    "Plan",
+    "ProviderPlans",
+  ],
+
   endpoints: () => ({}),
 });
