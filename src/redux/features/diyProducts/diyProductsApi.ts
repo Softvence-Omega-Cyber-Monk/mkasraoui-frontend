@@ -1,27 +1,76 @@
 import { baseApi } from "@/redux/hooks/baseApi";
-import type { DIYResponse, DIYProduct, Review } from "@/redux/types/diy.types";
+import type { 
+  DIYResponse, 
+  SingleProductResponse, 
+  DIYProduct, 
+  Review, 
+  ProductsData 
+} from "@/redux/types/diy.types";
 
 export const diyProductApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        getDIYProducts: builder.query<DIYProduct | DIYProduct[], void>({
+        // Get all products (returns both DIY boxes and gifts)
+        getDIYProducts: builder.query<ProductsData, void>({
             query: () => "/products",
-            transformResponse: (response: DIYResponse) => response.data as DIYProduct[],
+            transformResponse: (response: DIYResponse) => response.data,
             providesTags: ["DIY"]
         }),
+        
+        // Get only DIY boxes
+        getDIYBoxes: builder.query<DIYProduct[], void>({
+            query: () => "/products",
+            transformResponse: (response: DIYResponse) => response.data.diyBoxes,
+            providesTags: ["DIY"]
+        }),
+        
+        // Get only gifts
+        getGifts: builder.query<DIYProduct[], void>({
+            query: () => "/products",
+            transformResponse: (response: DIYResponse) => response.data.gifts,
+            providesTags: ["DIY"]
+        }),
+        
+        // Get all products as a single flattened array
+        getAllProductsFlat: builder.query<DIYProduct[], void>({
+            query: () => "/products",
+            transformResponse: (response: DIYResponse) => [
+                ...response.data.diyBoxes,
+                ...response.data.gifts
+            ],
+            providesTags: ["DIY"]
+        }),
+        
+        // Get product by ID (assuming single product endpoint exists)
         getDIYProductById: builder.query<DIYProduct, string>({
             query: (id) => `/products/${id}`,
-            transformResponse: (response: DIYResponse) => response.data as DIYProduct,
-            providesTags: ["DIY"]
+            transformResponse: (response: SingleProductResponse) => response.data,
+            providesTags: (result, error, id) => [{ type: "DIY" as const, id }]
         }),
-        createReview: builder.mutation<Review, { productId: string; rating: number; description: string }>({
+        
+        // Create review
+        createReview: builder.mutation<Review, { 
+            productId: string; 
+            rating: number; 
+            description: string 
+        }>({
             query: (body) => ({
                 url: `/review`,
                 method: "POST",
                 body,
             }),
-            invalidatesTags: (result, error, { productId }) => [{ type: "DIY", id: productId }],
+            invalidatesTags: (result, error, { productId }) => [
+                { type: "DIY" as const, id: productId },
+                "DIY"
+            ],
         }),
     })
-})
+});
 
-export const { useGetDIYProductsQuery, useGetDIYProductByIdQuery, useCreateReviewMutation  } = diyProductApi
+export const { 
+    useGetDIYProductsQuery,
+    useGetDIYBoxesQuery,
+    useGetGiftsQuery,
+    useGetAllProductsFlatQuery,
+    useGetDIYProductByIdQuery, 
+    useCreateReviewMutation  
+} = diyProductApi;

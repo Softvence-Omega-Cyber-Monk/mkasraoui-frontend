@@ -1,27 +1,43 @@
-// PricingPlans.tsx
 import React, { useState } from "react";
 import { useGetActivePlansQuery } from "@/redux/features/plan/planApi";
+import { useCreateSubscriptionMutation } from "@/redux/features/subscription/subscriptionApi";
 import type { Plan } from "@/redux/types/plan.types";
 
 const PricingPlans: React.FC = () => {
   const [isYearly, setIsYearly] = useState(false);
 
   const { data, isLoading, error } = useGetActivePlansQuery();
+  console.log(data)
+  const [createSubscription, { isLoading: isSubscribing }] = useCreateSubscriptionMutation();
 
   if (isLoading) return <p className="text-center">Loading plans...</p>;
   if (error) return <p className="text-center text-red-500">Failed to load plans</p>;
 
-  // Separate plans into monthly & yearly
   const monthlyPlans = data?.filter((p) => p.plan_duration === "MONTHLY") || [];
   const yearlyPlans = data?.filter((p) => p.plan_duration === "YEARLY") || [];
 
-  // Get Non-Subscriber and Premium plans depending on toggle
   const nonSubPlan: Plan | undefined = (isYearly ? yearlyPlans : monthlyPlans).find(
     (p) => p.name === "Non-Subscriber"
   );
   const premiumPlan: Plan | undefined = (isYearly ? yearlyPlans : monthlyPlans).find(
     (p) => p.name === "Premium Subscriber"
   );
+
+  const handleSubscribe = async (plan: Plan) => {
+    try {
+      const res = await createSubscription({
+        priceId: "price_1RuIseCiM0crZsfwqv3vZZGj", 
+        pland_id: plan.id,
+      }).unwrap();
+
+      if (res?.data?.url) {
+        window.location.href = res.data.url;
+      }
+    } catch (err) {
+      console.error("Subscription failed:", err);
+      alert("Subscription failed. Please try again.");
+    }
+  };
 
   const getCheckIcon = () => (
     <svg
@@ -31,12 +47,7 @@ const PricingPlans: React.FC = () => {
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={3}
-        d="M5 13l4 4L19 7"
-      />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
     </svg>
   );
 
@@ -46,9 +57,7 @@ const PricingPlans: React.FC = () => {
         {getCheckIcon()}
         <span className="text-body ml-2 text-xs sm:text-sm">{label}</span>
       </div>
-      <span className="text-right text-xs font-medium text-[#191919] sm:text-sm">
-        {value}
-      </span>
+      <span className="text-right text-xs font-medium text-[#191919] sm:text-sm">{value}</span>
     </li>
   );
 
@@ -65,24 +74,28 @@ const PricingPlans: React.FC = () => {
           <h3 className="text-2xl font-bold text-gray-800">{plan.name}</h3>
           <div className="mt-4 flex items-baseline">
             <span className="text-4xl font-bold text-gray-800">{plan.price}€</span>
-            <span className="ml-1 text-gray-500">
-              {isYearly ? "/year" : "/month"}
-            </span>
+            <span className="ml-1 text-gray-500">{isYearly ? "/year" : "/month"}</span>
           </div>
           <ul className="mt-8 space-y-4">
             {plan.features.map((f) => renderFeature(f.name, f.limit))}
           </ul>
         </div>
-        <a
-          href="#"
-          className={`mt-8 block rounded-xl border px-5 py-3 text-center text-sm font-medium ${
-            isPremium
-              ? "border-secondary bg-secondary text-white hover:bg-secondary-dark"
-              : "border-secondary text-secondary bg-white hover:bg-gray-50"
-          }`}
-        >
-          {isPremium ? "Subscribe" : "Get Started For Free"}
-        </a>
+        {isPremium ? (
+          <button
+            onClick={() => handleSubscribe(plan)}
+            disabled={isSubscribing}
+            className="mt-8 block rounded-xl border border-secondary bg-secondary px-5 py-3 text-center text-sm font-medium text-white hover:bg-secondary-dark disabled:opacity-50"
+          >
+            {isSubscribing ? "Redirecting..." : "Subscribe"}
+          </button>
+        ) : (
+          <a
+            href="#"
+            className="mt-8 block rounded-xl border border-secondary bg-white px-5 py-3 text-center text-sm font-medium text-secondary hover:bg-gray-50"
+          >
+            Get Started For Free
+          </a>
+        )}
       </div>
     );
   };
@@ -97,12 +110,8 @@ const PricingPlans: React.FC = () => {
     >
       <div className="container mx-auto max-w-5xl px-4">
         <div className="mb-12 text-center">
-          <h2 className="text-secondary font-fredoka text-5xl font-semibold">
-            Choose Your Plan
-          </h2>
-          <p className="mt-4 text-[#63657E]">
-            Only €69/year get 2 months free compared to the monthly plan.
-          </p>
+          <h2 className="text-secondary font-fredoka text-5xl font-semibold">Choose Your Plan</h2>
+          <p className="mt-4 text-[#63657E]">Only €69/year get 2 months free compared to the monthly plan.</p>
           <div className="mt-8 inline-flex items-center rounded-lg bg-[#D4D4D8]">
             <button
               onClick={() => setIsYearly(false)}

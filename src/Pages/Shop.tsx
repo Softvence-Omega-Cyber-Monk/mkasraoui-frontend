@@ -16,13 +16,13 @@ import MyHeader from "@/components/MyHeader/MyHeader";
 
 import toast from "react-hot-toast";
 
-// Redux imports (matches your DiyBoxes pattern)
+// Redux imports
 import { useAppDispatch, useAppSelector } from "@/redux/hooks/redux-hook";
 import { addToCart } from "@/redux/features/cart/cartSlice";
 import { addToWishlist, removeFromWishlist } from "@/redux/features/wishlist/wishlistSlice";
 
-// RQ / RTK Query hook + type
-import { useGetDIYProductsQuery } from "@/redux/features/diyProducts/diyProductsApi";
+// Updated RTK Query hooks for new API structure
+import { useGetAllProductsFlatQuery } from "@/redux/features/diyProducts/diyProductsApi";
 import type { DIYProduct } from "@/redux/types/diy.types";
 import { useAddToWishlistApiMutation, useRemoveFromWishlistApiMutation } from "@/redux/features/wishlist/wishlistApi";
 
@@ -31,39 +31,38 @@ export default function Shop(): JSX.Element {
   const [searchTerm, setSearchTerm] = useState("");
   const [ageRange, setAgeRange] = useState("");
   const [theme, setTheme] = useState("");
+  const [productType, setProductType] = useState<"" | "DIY_BOX" | "GIFT">("");
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   
-  // Fixed: Properly access wishlist and cart from Redux state
+  // Redux state
   const wishlist = useAppSelector((state: any) => state.wishlist?.items ?? []);
   const cart = useAppSelector((state: any) => state.cart?.items ?? []);
 
-  // Fixed: Properly initialize API mutations
+  // API mutations
   const [addToWishlistApi] = useAddToWishlistApiMutation();
   const [removeFromWishlistApi] = useRemoveFromWishlistApiMutation();
 
-  // Modal state (we store original DIYProduct and transform when passing into modal)
+  // Modal state
   const [openModal, setOpenModal] = useState(false);
   const [selectedDIYProduct, setSelectedDIYProduct] = useState<DIYProduct | null>(null);
 
-  // Fixed: Add loading states for individual items
+  // Loading states for individual items
   const [wishlistLoadingStates, setWishlistLoadingStates] = useState<{[key: string]: boolean}>({});
 
-  // Fetch DIY products
-  const { data, isLoading, isError } = useGetDIYProductsQuery();
-  const diyProducts: DIYProduct[] = Array.isArray(data) ? data : data ? [data] : [];
+  // Updated: Use the new API hook that returns flattened array
+  const { data: diyProducts = [], isLoading, isError } = useGetAllProductsFlatQuery();
 
-  // Debug: log search params (keeps behavior from previous file)
+  // Debug: log search params
   useEffect(() => {
-    console.log("Search params:", { searchTerm, ageRange, theme });
-  }, [searchTerm, ageRange, theme]);
+    console.log("Search params:", { searchTerm, ageRange, theme, productType });
+  }, [searchTerm, ageRange, theme, productType]);
 
   // ---------- Helpers & transformers ----------
 
-  // Map the raw DIYProduct into a UI-friendly card object (and a shape compatible with your modal)
   type CardItem = {
-    id: string; // Fixed: Changed to string to match your slice expectation
+    id: string;
     image: string;
     imageAlt: string;
     title: string;
@@ -72,32 +71,36 @@ export default function Shop(): JSX.Element {
     reviews: number;
     currentPrice: number;
     originalPrice: number;
+    discountedPrice?: number;
     tags: string[];
     buttonText: string;
     buttonVariant: "orange" | "blue";
     tag?: string;
     age_range?: string;
     product_type?: string;
+    theme?: string;
     raw: DIYProduct;
   };
 
   const mapToCardItem = (p: DIYProduct): CardItem => {
     return {
-      id: String((p as any).id ?? p.id ?? "0"), // Fixed: Ensure ID is always a string
-      image: (p as any).imges?.[0] || "/placeholder.svg",
+      id: String(p.id),
+      image: p.imges?.[0] || "/placeholder.svg",
       imageAlt: p.title || "Product",
       title: p.title || "Untitled",
       description: p.description || "",
-      rating: (p as any).avg_rating ?? (p as any).rating ?? 5,
-      reviews: (p as any).total_review ?? (p as any).reviews ?? 0,
-      currentPrice: (p as any).price ?? (p as any).currentPrice ?? 0,
-      originalPrice: (p as any).originalPrice ?? (p as any).price ?? 0,
-      tags: [p.product_type ?? "", p.age_range ?? ""].filter(Boolean),
-      buttonText: p.product_type === "tshirt" ? "Customize T-Shirt" : "Add to Cart",
-      buttonVariant: p.product_type === "tshirt" ? "orange" : "blue",
-      tag: (p as any).tag ?? undefined,
+      rating: p.avg_rating ?? 5,
+      reviews: p.total_review ?? 0,
+      currentPrice: p.discounted_price ?? p.price ?? 0,
+      originalPrice: p.price ?? 0,
+      discountedPrice: p.discounted_price!,
+      tags: [p.product_type ?? "", p.age_range ?? "", p.theme ?? ""].filter(Boolean),
+      buttonText: "Add to Cart",
+      buttonVariant: "blue",
+      tag: p.theme ?? undefined,
       age_range: p.age_range,
       product_type: p.product_type,
+      theme: p.theme,
       raw: p,
     };
   };
@@ -121,23 +124,23 @@ export default function Shop(): JSX.Element {
 
   const transformForModal = (p: DIYProduct): ModalProduct => {
     return {
-      id: Number((p as any).id ?? p.id ?? 0), // Keep as number for modal compatibility
-      image: (p as any).imges?.[0] || "/placeholder.svg",
+      id: Number(p.id ?? 0),
+      image: p.imges?.[0] || "/placeholder.svg",
       imageAlt: p.title || "Product",
       title: p.title || "Untitled",
       description: p.description || "",
-      rating: (p as any).avg_rating ?? (p as any).rating ?? 5,
-      reviews: (p as any).total_review ?? (p as any).reviews ?? 0,
-      currentPrice: (p as any).price ?? (p as any).currentPrice ?? 0,
-      originalPrice: (p as any).originalPrice ?? (p as any).price ?? 0,
-      tags: [p.product_type ?? "", p.age_range ?? ""].filter(Boolean),
+      rating: p.avg_rating ?? 5,
+      reviews: p.total_review ?? 0,
+      currentPrice: p.discounted_price ?? p.price ?? 0,
+      originalPrice: p.price ?? 0,
+      tags: [p.product_type ?? "", p.age_range ?? "", p.theme ?? ""].filter(Boolean),
       buttonText: "Customize T-Shirt",
       buttonVariant: "orange",
-      tag: (p as any).tag ?? undefined,
+      tag: p.theme ?? undefined,
     };
   };
 
-  // Render stars (keeps your previous behavior)
+  // Render stars
   const renderStars = (rating: number) => {
     const stars = [];
     const fullStars = Math.floor(rating);
@@ -170,7 +173,7 @@ export default function Shop(): JSX.Element {
     e?.stopPropagation();
     dispatch(
       addToCart({
-        id: item.id, // Now properly string
+        id: item.id,
         title: item.title,
         price: item.currentPrice,
         quantity: 1,
@@ -183,10 +186,9 @@ export default function Shop(): JSX.Element {
 
   const handleCheckout = (item: CardItem, e?: React.MouseEvent) => {
     e?.stopPropagation();
-    // Add to cart then navigate to checkout
     dispatch(
       addToCart({
-        id: item.id, // Now properly string
+        id: item.id,
         title: item.title,
         price: item.currentPrice,
         quantity: 1,
@@ -195,33 +197,23 @@ export default function Shop(): JSX.Element {
       })
     );
     toast.success(`${item.title} added to cart — redirecting to checkout`);
-    navigate("/checkout"); // adapt route if different in your app
+    navigate("/checkout");
   };
 
-  // Fixed: Proper wishlist toggle functionality with API integration
   const handleWishlistToggle = async (item: CardItem, e?: React.MouseEvent) => {
     e?.stopPropagation();
     
     const isInWishlist = wishlist.some((w: any) => String(w.id) === String(item.id));
-
-    // Set loading state for this specific item
     setWishlistLoadingStates(prev => ({ ...prev, [item.id]: true }));
 
     try {
       if (isInWishlist) {
-        // Remove from wishlist
         const result = await removeFromWishlistApi(item.id).unwrap();
-        
-        // Only update local state if API call was successful
         dispatch(removeFromWishlist(item.id));
         toast.success(`${item.title} removed from wishlist!`);
-        
         console.log('Removed from wishlist:', result);
       } else {
-        // Add to wishlist
         const result = await addToWishlistApi({ product_id: item.id }).unwrap();
-        
-        // Only update local state if API call was successful
         dispatch(
           addToWishlist({
             id: item.id,
@@ -231,21 +223,15 @@ export default function Shop(): JSX.Element {
           })
         );
         toast.success(`${item.title} added to wishlist!`);
-        
         console.log('Added to wishlist:', result);
       }
     } catch (error) {
-      // Handle API errors
       console.error('Wishlist API error:', error);
-      
-      // Show appropriate error message
       const errorMessage = isInWishlist 
         ? `Failed to remove ${item.title} from wishlist. Please try again.`
         : `Failed to add ${item.title} to wishlist. Please try again.`;
-      
       toast.error(errorMessage);
       
-      // Optional: You might want to handle specific error cases
       if (error && typeof error === 'object' && 'status' in error) {
         if (error.status === 401) {
           toast.error('Please log in to manage your wishlist');
@@ -254,7 +240,6 @@ export default function Shop(): JSX.Element {
         }
       }
     } finally {
-      // Clear loading state for this item
       setWishlistLoadingStates(prev => ({ ...prev, [item.id]: false }));
     }
   };
@@ -265,7 +250,7 @@ export default function Shop(): JSX.Element {
     setOpenModal(true);
   };
 
-  const handleCardClick = (id: string) => { // Fixed: Changed parameter type to string
+  const handleCardClick = (id: string) => {
     navigate(`/home/diyboxe/details/${id}`);
   };
 
@@ -278,7 +263,6 @@ export default function Shop(): JSX.Element {
     return cart.some((c: any) => String(c.id) === String(itemId));
   };
 
-  // Fixed: Helper to check if item is loading in wishlist operations
   const isWishlistLoading = (itemId: string): boolean => {
     return wishlistLoadingStates[itemId] || false;
   };
@@ -286,14 +270,20 @@ export default function Shop(): JSX.Element {
   // ---------- Build card data ----------
   const cardItems: CardItem[] = diyProducts.map(mapToCardItem);
 
-  // ---------- Filtered items ----------
-  const filteredItems = cardItems.filter((it) => {
-    const matchesSearch = it.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesAge =
-      !ageRange || ageRange === "all" ? true : (it.age_range ?? "").includes(ageRange);
-    const matchesTheme =
-      !theme || theme === "all" ? true : (it.product_type ?? "").toLowerCase().includes(theme.toLowerCase());
-    return matchesSearch && matchesAge && matchesTheme;
+  // ---------- Updated filtering logic ----------
+  const filteredItems = cardItems.filter((item) => {
+    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesAge = !ageRange || ageRange === "all" || 
+                      (item.age_range ?? "").toLowerCase().includes(ageRange.toLowerCase());
+    
+    const matchesTheme = !theme || theme === "all" || 
+                        (item.theme ?? "").toLowerCase().includes(theme.toLowerCase());
+    
+    const matchesProductType = !productType || item.product_type === productType;
+    
+    return matchesSearch && matchesAge && matchesTheme && matchesProductType;
   });
 
   // ---------- Loading / Error UI ----------
@@ -327,7 +317,7 @@ export default function Shop(): JSX.Element {
         subtitle="Discover the perfect gifts with AI-powered recommendations"
       />
 
-      {/* ---------- AI Recommended Section (re-added) ---------- */}
+      {/* ---------- AI Recommended Section ---------- */}
       <section className="mt-6">
         <div className="mx-auto max-w-7xl rounded-xl bg-[#BBDEFB] p-4 md:p-6">
           <div className="mb-6 flex items-center gap-2 text-[#223B7D]">
@@ -426,6 +416,23 @@ export default function Shop(): JSX.Element {
             />
           </div>
 
+          {/* Product Type Filter */}
+          <div className="relative w-full sm:w-[140px]">
+            <select
+              value={productType}
+              onChange={(e) => setProductType(e.target.value as "" | "DIY_BOX" | "GIFT")}
+              className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+              aria-label="Select product type"
+            >
+              <option value="">All Products</option>
+              <option value="DIY_BOX">DIY Boxes</option>
+              <option value="GIFT">Gifts</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <ChevronDown className="h-4 w-4" />
+            </div>
+          </div>
+
           <div className="relative w-full sm:w-[140px]">
             <select
               value={ageRange}
@@ -435,8 +442,13 @@ export default function Shop(): JSX.Element {
             >
               <option value="">Age Range</option>
               <option value="all">All Ages</option>
-              <option value="0-5">0-5</option>
-              <option value="6-12">6-12</option>
+              <option value="3-6">3-6 years</option>
+              <option value="5+">5+ years</option>
+              <option value="6-10">6-10 years</option>
+              <option value="8-12">8-12 years</option>
+              <option value="9-12">9-12 years</option>
+              <option value="10+">10+ years</option>
+              <option value="13+">13+ years</option>
             </select>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
               <ChevronDown className="h-4 w-4" />
@@ -452,6 +464,7 @@ export default function Shop(): JSX.Element {
             >
               <option value="">Theme</option>
               <option value="all">All Themes</option>
+              <option value="SUPERHERO">Superhero</option>
               <option value="adventure">Adventure</option>
               <option value="education">Education</option>
               <option value="creative">Creative</option>
@@ -466,130 +479,148 @@ export default function Shop(): JSX.Element {
 
       {/* ---------- Products Grid ---------- */}
       <section className="mx-auto max-w-7xl">
-        <div className="mt-20 grid grid-cols-1 gap-6 pb-14 md:grid-cols-2 lg:grid-cols-3">
-          {filteredItems.map((item) => {
-            const liked = isInWishlist(item.id);
-            const inCart = isInCart(item.id);
-            const wishlistLoading = isWishlistLoading(item.id);
-            
-            return (
-              <article
-                key={item.id}
-                role="button"
-                tabIndex={0}
-                onClick={() => handleCardClick(item.id)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleCardClick(item.id);
-                }}
-                className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
-                aria-label={`Open details for ${item.title}`}
-              >
-                {/* Image + wishlist button */}
-                <div className="relative h-64 w-auto">
-                  <img
-                    src={item.image}
-                    alt={item.imageAlt}
-                    className="h-full w-full object-cover"
-                  />
+        {filteredItems.length === 0 ? (
+          <div className="mt-20 text-center p-10">
+            <p className="text-gray-600">No products found matching your criteria.</p>
+          </div>
+        ) : (
+          <div className="mt-20 grid grid-cols-1 gap-6 pb-14 md:grid-cols-2 lg:grid-cols-3">
+            {filteredItems.map((item) => {
+              const liked = isInWishlist(item.id);
+              const inCart = isInCart(item.id);
+              const wishlistLoading = isWishlistLoading(item.id);
+              
+              return (
+                <article
+                  key={item.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleCardClick(item.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleCardClick(item.id);
+                  }}
+                  className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+                  aria-label={`Open details for ${item.title}`}
+                >
+                  {/* Image + wishlist button */}
+                  <div className="relative h-64 w-auto">
+                    <img
+                      src={item.image}
+                      alt={item.imageAlt}
+                      className="h-full w-full object-cover"
+                    />
 
-                  {/* Fixed: Wishlist heart with proper toggle functionality and loading state */}
-                  <button
-                    onClick={(e) => handleWishlistToggle(item, e)}
-                    disabled={wishlistLoading}
-                    aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
-                    className={`absolute top-3 right-3 rounded-full bg-white p-2 shadow-sm transition-colors ${
-                      wishlistLoading 
-                        ? "opacity-50 cursor-not-allowed" 
-                        : "hover:bg-gray-50"
-                    }`}
-                  >
-                    {wishlistLoading ? (
-                      // Show loading spinner when API call is in progress
-                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-red-500" />
-                    ) : (
-                      <HeartIcon 
-                        fill={liked ? "red" : "none"} 
-                        color={liked ? "red" : "currentColor"} 
-                        className="h-5 w-5"
-                      />
-                    )}
-                  </button>
-                </div>
-
-                {/* Content */}
-                <div className="flex flex-grow flex-col p-6">
-                  <h3 className="mb-2 text-xl font-semibold text-[#191919]">
-                    {item.title}
-                  </h3>
-
-                  <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
-                    {item.description}
-                  </p>
-
-                  {/* Rating */}
-                  <div className="mb-4 flex items-center gap-2">
-                    <div className="flex items-center">{renderStars(item.rating)}</div>
-                    <span className="text-sm font-medium text-gray-900">{item.rating}</span>
-                    <span className="text-sm text-gray-500">({item.reviews} reviews)</span>
-                  </div>
-
-                  {/* Tags & Price */}
-                  <div className="mt-3 mb-4 flex items-center justify-between">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-xl font-bold text-gray-900">${item.currentPrice}</span>
-                      {item.originalPrice !== item.currentPrice && (
-                        <span className="text-sm text-gray-500 line-through">${item.originalPrice}</span>
-                      )}
-                    </div>
-                    <span className="inline-flex items-center rounded-full bg-[#58C0644D] px-3 py-1 text-xs font-normal text-[#19AE19]">
-                      {item.age_range ?? "All ages"}
-                    </span>
-                  </div>
-
-                  {/* Action buttons (stop propagation) */}
-                  <div className="mt-auto flex gap-3">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        // If product is a tshirt, open customize modal; otherwise add to cart
-                        if (item.buttonText === "Customize T-Shirt") {
-                          openCustomizeModal(item.raw, e);
-                        } else {
-                          handleAddToCart(item, e);
-                        }
-                      }}
-                      className={`flex-1 rounded-lg px-4 py-3 font-medium text-white transition-colors ${getButtonClasses(item.buttonVariant)} ${
-                        inCart && item.buttonText !== "Customize T-Shirt" ? "opacity-75" : ""
-                      }`}
-                      disabled={inCart && item.buttonText !== "Customize T-Shirt"}
-                    >
-                      {/* Icon */}
-                      <span className="mr-2 inline-block align-middle">
-                        {item.buttonText === "Customize T-Shirt" ? (
-                          <img src={printBrash} alt="" className="h-5 inline-block" />
-                        ) : (
-                          <img src={shopingTrolly} alt="" className="h-5 inline-block" />
-                        )}
+                    {/* Product type badge */}
+                    <div className="absolute top-3 left-3">
+                      <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
+                        item.product_type === 'DIY_BOX' 
+                          ? 'bg-blue-100 text-blue-800' 
+                          : 'bg-green-100 text-green-800'
+                      }`}>
+                        {item.product_type === 'DIY_BOX' ? 'DIY Box' : 'Gift'}
                       </span>
-                      {inCart && item.buttonText !== "Customize T-Shirt" ? "In Cart" : item.buttonText}
-                    </button>
+                    </div>
 
+                    {/* Wishlist heart */}
                     <button
-                      onClick={(e) => handleCheckout(item, e)}
-                      className="rounded-lg border border-[#223B7D] px-4 py-3 text-[#223B7D] hover:bg-gray-50 transition-colors"
+                      onClick={(e) => handleWishlistToggle(item, e)}
+                      disabled={wishlistLoading}
+                      aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
+                      className={`absolute top-3 right-3 rounded-full bg-white p-2 shadow-sm transition-colors ${
+                        wishlistLoading 
+                          ? "opacity-50 cursor-not-allowed" 
+                          : "hover:bg-gray-50"
+                      }`}
                     >
-                      Checkout
+                      {wishlistLoading ? (
+                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-red-500" />
+                      ) : (
+                        <HeartIcon 
+                          fill={liked ? "red" : "none"} 
+                          color={liked ? "red" : "currentColor"} 
+                          className="h-5 w-5"
+                        />
+                      )}
                     </button>
                   </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+
+                  {/* Content */}
+                  <div className="flex flex-grow flex-col p-6">
+                    <h3 className="mb-2 text-xl font-semibold text-[#191919]">
+                      {item.title}
+                    </h3>
+
+                    <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
+                      {item.description}
+                    </p>
+
+                    {/* Rating */}
+                    <div className="mb-4 flex items-center gap-2">
+                      <div className="flex items-center">{renderStars(item.rating)}</div>
+                      <span className="text-sm font-medium text-gray-900">{item.rating}</span>
+                      <span className="text-sm text-gray-500">({item.reviews} reviews)</span>
+                    </div>
+
+                    {/* Tags & Price */}
+                    <div className="mt-3 mb-4 flex items-center justify-between">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-xl font-bold text-gray-900">
+                          ${item.currentPrice}
+                        </span>
+                        {item.discountedPrice && item.originalPrice !== item.currentPrice && (
+                          <span className="text-sm text-gray-500 line-through">
+                            ${item.originalPrice}
+                          </span>
+                        )}
+                      </div>
+                      <span className="inline-flex items-center rounded-full bg-[#58C0644D] px-3 py-1 text-xs font-normal text-[#19AE19]">
+                        {item.age_range ?? "All ages"}
+                      </span>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="mt-auto flex gap-3">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (item.buttonText === "Customize T-Shirt") {
+                            openCustomizeModal(item.raw, e);
+                          } else {
+                            handleAddToCart(item, e);
+                          }
+                        }}
+                        className={`flex-1 rounded-lg px-4 py-3 font-medium text-white transition-colors ${getButtonClasses(item.buttonVariant)} ${
+                          inCart && item.buttonText !== "Customize T-Shirt" ? "opacity-75" : ""
+                        }`}
+                        disabled={inCart && item.buttonText !== "Customize T-Shirt"}
+                      >
+                        <span className="mr-2 inline-block align-middle">
+                          {item.buttonText === "Customize T-Shirt" ? (
+                            <img src={printBrash} alt="" className="h-5 inline-block" />
+                          ) : (
+                            <img src={shopingTrolly} alt="" className="h-5 inline-block" />
+                          )}
+                        </span>
+                        {inCart && item.buttonText !== "Customize T-Shirt" ? "In Cart" : item.buttonText}
+                      </button>
+
+                      <button
+                        onClick={(e) => handleCheckout(item, e)}
+                        className="rounded-lg border border-[#223B7D] px-4 py-3 text-[#223B7D] hover:bg-gray-50 transition-colors"
+                      >
+                        Checkout
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
 
         <div className="mb-20 flex justify-center md:justify-end">
           <button
-            onClick={() => navigate("/shop")} // or your "view all" route
+            onClick={() => navigate("/shop")}
             className="rounded-lg border border-[#223B7D] px-6 py-3 text-[#223B7D] hover:bg-gray-50 transition-colors"
           >
             View all
