@@ -5,7 +5,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 
 import DashboardLayout from "./Dashboard/DashboardLayout";
-import Booking from "./Dashboard/dashboardpages/Booking";
 import DefaultPage from "./Dashboard/dashboardpages/DefaultPage";
 import Earnings from "./Dashboard/dashboardpages/Earnings";
 import Messages from "./Dashboard/dashboardpages/Messages";
@@ -51,6 +50,8 @@ import AdminLayout from "./Layout/AdminLayout";
 import AdminDashboardPage from "./Pages/Admin/AdminDashboardPage";
 import AdminAddProductPage from "./Pages/Admin/AdminAddProductPage";
 import AdminAllUsersPage from "./Pages/Admin/AdminAllUsersPage";
+import Plan from "./Pages/Plan";
+import BookingParent from "./Dashboard/dashboardpages/BookingParent";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -195,6 +196,10 @@ const router = createBrowserRouter([
         path: "wishlist",
         element: <MyWishlist />,
       },
+      {
+        path: "plan",
+        element: <Plan />
+      }
     ],
   },
 
@@ -213,7 +218,7 @@ const router = createBrowserRouter([
       },
       {
         path: "booking",
-        element: <Booking />,
+        element: <BookingParent />,
       },
       {
         path: "messages",

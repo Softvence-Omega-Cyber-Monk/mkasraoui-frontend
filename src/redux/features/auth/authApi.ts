@@ -10,6 +10,7 @@ export const authApi = baseApi.injectEndpoints({
         method: "POST",
         body: credentials,
       }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       transformResponse: (response: any): LoginResponse => {
         return {
           ...response,

@@ -359,23 +359,23 @@ const Navbar: React.FC = () => {
 
   const navLinks = user
     ? [
-        { name: "Home", to: "/" },
-        { name: "Party Generator", to: "/home/party-generator" },
-        { name: "DIY Boxes", to: "/home/diyboxes" },
-        { name: "Invitations", to: "/home/party-invitations" },
-        { name: "Providers", to: "/home/providers" },
-        { name: "Shop", to: "/home/shop" },
-        { name: "Blog", to: "/home/blog" },
-      ]
+      { name: "Home", to: "/" },
+      { name: "Party Generator", to: "/home/party-generator" },
+      { name: "DIY Boxes", to: "/home/diyboxes" },
+      { name: "Invitations", to: "/home/party-invitations" },
+      { name: "Providers", to: "/home/providers" },
+      { name: "Shop", to: "/home/shop" },
+      { name: "Blog", to: "/home/blog" },
+    ]
     : [
-        { name: "Home", to: "/" },
-        { name: "About", hash: "/#about" },
-        { name: "Services", hash: "/#services" },
-        { name: "Testimonial", hash: "/#testimonial" },
-        { name: "Providers", to: "/home/providers" },
-        { name: "Shop", to: "/home/shop" },
-        { name: "Blog", to: "/home/blog" },
-      ];
+      { name: "Home", to: "/" },
+      { name: "About", hash: "/#about" },
+      { name: "Services", hash: "/#services" },
+      { name: "Testimonial", hash: "/#testimonial" },
+      { name: "Providers", to: "/home/providers" },
+      { name: "Shop", to: "/home/shop" },
+      { name: "Blog", to: "/home/blog" },
+    ];
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -481,7 +481,12 @@ const Navbar: React.FC = () => {
         )}
 
         {user && (
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative flex gap-3" ref={dropdownRef}>
+            <Link to="/home/premium-feature">
+              <button className="cursor-pointer py-2 px-5 bg-secondary text-white rounded-3xl">
+                Premium
+              </button>
+            </Link>
             <button
               onClick={toggleDropdown}
               className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-300 p-1 px-2 transition hover:bg-gray-50"
@@ -490,9 +495,8 @@ const Navbar: React.FC = () => {
               {userName?.split(" ")[0]}
               <FiChevronDown
                 size={16}
-                className={`transition-transform ${
-                  isDropdownOpen ? "rotate-180" : ""
-                }`}
+                className={`transition-transform ${isDropdownOpen ? "rotate-180" : ""
+                  }`}
               />
             </button>
 
