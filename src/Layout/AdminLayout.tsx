@@ -75,6 +75,11 @@ function AdminLayout() {
       label: "Add Product",
       icon: ServicesIcon,
     },
+    {
+      to: "/admin-dashboard/subscription-plan",
+      label: "Subscription Plan",
+      icon: ServicesIcon,
+    },
 
     {
       to: "/admin-dashboard/messages",

@@ -8,6 +8,7 @@ import quotesReducer from "./features/quotes/quotesSlice";
 import providerReviewReducer from "./features/review/providerReviewSlice";
 import productReducer from "./features/product/productSlice";
 import userReducer from "./features/user/userSlice";
+import planReducer from "./features/subscribtionPlan/planSlice";
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
     providerReview: providerReviewReducer,
     product: productReducer,
     user: userReducer,
+    plan: planReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

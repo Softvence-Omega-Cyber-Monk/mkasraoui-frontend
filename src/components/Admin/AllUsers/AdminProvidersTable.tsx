@@ -96,14 +96,14 @@ const AdminProvidersTable: React.FC = () => {
                 setPage(1);
               }}
               placeholder="Search business name, contact, area..."
-              className="rounded-md border px-3 py-2 text-sm"
+              className="rounded-xl border border-[#DBE0E5] px-3 py-2 text-sm"
             />
-            <button
+            {/* <button
               onClick={() => refetch()}
               className="rounded-md bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
             >
               Refresh
-            </button>
+            </button> */}
           </div>
         </div>
 
