@@ -185,6 +185,12 @@ export default function ProviderDetails() {
             >
               Request Quote
             </Link>
+            <Link
+              to={`/home/request-quote?providerId=${provider.id}`}
+              className="bg-secondary hover:bg-secondary-dark mb-4 inline-block w-full cursor-pointer rounded-lg px-4 py-3 text-center font-medium text-white transition-colors"
+            >
+              Request Quote
+            </Link>
           </div>
 
           {/* Contact Info */}

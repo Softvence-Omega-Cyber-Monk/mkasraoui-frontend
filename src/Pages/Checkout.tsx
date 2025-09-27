@@ -1,28 +1,12 @@
-"use client"
-
 import type React from "react"
 
 import { useState } from "react"
 import { ArrowLeft, Truck, Shield, MapPin, User, Mail, Phone, AlertCircle, Package } from "lucide-react"
 import toast from "react-hot-toast"
-
-// Mock cart data - replace with your actual cart state management
-const mockCartItems = [
-  {
-    id: "1",
-    title: "DIY Electronics Kit",
-    price: 29.99,
-    quantity: 2,
-    image: "/electronics-kit.jpg",
-  },
-  {
-    id: "2",
-    title: "Woodworking Starter Set",
-    price: 45.0,
-    quantity: 1,
-    image: "/woodworking-tools.jpg",
-  },
-]
+import { useGetMeQuery } from "@/redux/features/user/userApi"
+import { useAppSelector } from "@/redux/hooks/redux-hook"
+import { useNavigate } from "react-router-dom"
+import { useCreateOrderMutation } from "@/redux/features/checkout/checkoutApi"
 
 // 2. Define the structure for the form data state
 interface CheckoutFormData {
@@ -51,7 +35,13 @@ interface FormErrors {
 }
 
 function CheckoutPage() {
-  const cart = mockCartItems
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const cart = cartItems
+  const { data } = useGetMeQuery();
+  const isSubscribed = data?.subscription?.length ? true : false
+  const navigate = useNavigate()
+  const [createOrder] = useCreateOrderMutation();
+
 
   // Form states
   const [formData, setFormData] = useState<CheckoutFormData>({
@@ -69,9 +59,24 @@ function CheckoutPage() {
   const [errors, setErrors] = useState<FormErrors>({})
   const [isProcessing, setIsProcessing] = useState(false)
 
-  // Calculate totals
-  const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
-  const shippingFee = subtotal > 50 ? 0 : 5.99 // Free shipping over $50
+  // Calculate subtotals for both original and discounted prices
+  const calculateOriginalSubtotal = () => {
+    return cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
+  }
+
+  const calculateDiscountedSubtotal = () => {
+    return cart.reduce((acc, item) => {
+      const price = item.discounted_price || item.price
+      return acc + price * item.quantity
+    }, 0)
+  }
+
+  const originalSubtotal = calculateOriginalSubtotal()
+  const discountedSubtotal = calculateDiscountedSubtotal()
+
+  // Calculate totals based on subscription status
+  const subtotal = isSubscribed ? discountedSubtotal : originalSubtotal
+  const shippingFee = isSubscribed ? 0 : (subtotal > 50 ? 0 : 5.99) // Free shipping for subscribers or orders over $50
   const tax = subtotal * 0.08 // 8% tax
   const total = subtotal + shippingFee + tax
 
@@ -85,11 +90,11 @@ function CheckoutPage() {
           <p className="text-gray-600 mb-6">Add some DIY boxes to your cart before checkout</p>
           <button
             onClick={() => {
-              /* navigate('/home/diyboxes') */
+              navigate('/home/shop')
             }}
             className="bg-[#223B7D] text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Browse DIY Boxes
+            Browse Products
           </button>
         </div>
       </div>
@@ -157,6 +162,7 @@ function CheckoutPage() {
     return Object.keys(newErrors).length === 0
   }
 
+
   const handleCheckout = async () => {
     if (!validateForm()) {
       toast.error("Please fill in all required fields")
@@ -165,15 +171,16 @@ function CheckoutPage() {
 
     setIsProcessing(true)
 
+    console.log(formData)
+
     try {
-      // Prepare data for API
-      const checkoutData = {
+      const orderPayload = {
         items: cart.map((item) => ({
-          productId: item.id,
+          productId: String(item.id),
           quantity: item.quantity,
         })),
-        totalPrice: Number.parseFloat(total.toFixed(2)),
-        shippingFee: Number.parseFloat(shippingFee.toFixed(2)),
+        totalPrice: discountedSubtotal ?? originalSubtotal,
+        shippingFee: shippingFee,
         shippingInfo: {
           name: formData.name,
           email: formData.email,
@@ -183,36 +190,17 @@ function CheckoutPage() {
           zipCode: formData.zipCode,
           address: formData.address,
         },
-        additionalNotes: formData.additionalNotes || "",
+        additionalNotes: formData.additionalNotes,
+      };
+
+      const res = await createOrder(orderPayload).unwrap();
+
+      if (res.success) {
+        console.log("✅ Order Created:", res.data);
+        window.location.href = res.data.checkoutUrl;
       }
-
-      console.log("Checkout data to be sent:", checkoutData)
-
-      // Here you would call your checkout API
-      // const response = await fetch('/api/checkout', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(checkoutData)
-      // });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      // After successful API call, you would typically:
-      // 1. Get Stripe session URL from response
-      // 2. Clear cart
-      // 3. Redirect to Stripe
-
-      // For demo purposes:
-      toast.success("Redirecting to payment...")
-
-      // window.location.href = stripeSessionUrl; // Redirect to Stripe
-      alert(`Order data prepared successfully! In production, this would redirect to Stripe with session data.`)
-    } catch (error) {
-      console.error("Checkout error:", error)
-      toast.error("There was an error processing your order. Please try again.")
-    } finally {
-      setIsProcessing(false)
+    } catch (err) {
+      console.error("❌ Checkout Failed:", err);
     }
   }
 
@@ -220,7 +208,7 @@ function CheckoutPage() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8 flex items-center gap-4">
+        <div className="mb-8 flex flex-row-reverse justify-between gap-4">
           <button
             onClick={() => {
               /* navigate('/cart') */
@@ -232,7 +220,14 @@ function CheckoutPage() {
           </button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Checkout</h1>
-            <p className="text-gray-600">Complete your DIY box order</p>
+            <p className="text-gray-600">Complete your order</p>
+            {isSubscribed && (
+              <div className="mt-2 rounded-md bg-green-50 border border-green-200 px-3 py-2">
+                <p className="text-sm text-green-700 font-medium">
+                  🎉 Subscription Active: Enjoy discounted prices and free shipping!
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -256,9 +251,8 @@ function CheckoutPage() {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#223B7D] focus:border-transparent ${
-                      errors.name ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#223B7D] focus:border-transparent ${errors.name ? "border-red-500" : "border-gray-300"
+                      }`}
                     placeholder="Enter your full name"
                   />
                   {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
@@ -274,9 +268,8 @@ function CheckoutPage() {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#223B7D] focus:border-transparent ${
-                      errors.email ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#223B7D] focus:border-transparent ${errors.email ? "border-red-500" : "border-gray-300"
+                      }`}
                     placeholder="Enter your email"
                   />
                   {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
@@ -292,9 +285,8 @@ function CheckoutPage() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#223B7D] focus:border-transparent ${
-                      errors.phone ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#223B7D] focus:border-transparent ${errors.phone ? "border-red-500" : "border-gray-300"
+                      }`}
                     placeholder="Enter your phone number"
                   />
                   {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
@@ -310,9 +302,8 @@ function CheckoutPage() {
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#223B7D] focus:border-transparent ${
-                      errors.address ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#223B7D] focus:border-transparent ${errors.address ? "border-red-500" : "border-gray-300"
+                      }`}
                     placeholder="Enter your complete address"
                   />
                   {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
@@ -325,9 +316,8 @@ function CheckoutPage() {
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
-                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#223B7D] focus:border-transparent ${
-                      errors.city ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#223B7D] focus:border-transparent ${errors.city ? "border-red-500" : "border-gray-300"
+                      }`}
                     placeholder="Enter city"
                   />
                   {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
@@ -339,9 +329,8 @@ function CheckoutPage() {
                     name="state"
                     value={formData.state}
                     onChange={handleInputChange}
-                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#223B7D] focus:border-transparent ${
-                      errors.state ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#223B7D] focus:border-transparent ${errors.state ? "border-red-500" : "border-gray-300"
+                      }`}
                   >
                     <option value="">Select State</option>
                     <option value="AL">Alabama</option>
@@ -361,9 +350,8 @@ function CheckoutPage() {
                     name="zipCode"
                     value={formData.zipCode}
                     onChange={handleInputChange}
-                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#223B7D] focus:border-transparent ${
-                      errors.zipCode ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#223B7D] focus:border-transparent ${errors.zipCode ? "border-red-500" : "border-gray-300"
+                      }`}
                     placeholder="Enter ZIP code"
                   />
                   {errors.zipCode && <p className="text-red-500 text-sm mt-1">{errors.zipCode}</p>}
@@ -422,12 +410,26 @@ function CheckoutPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{item.title}</p>
-                      <p className="text-sm text-gray-600">
-                        Qty: {item.quantity} × ${item.price.toFixed(2)}
-                      </p>
+                      <div className="text-sm text-gray-600">
+                        <div>Qty: {item.quantity}</div>
+
+                      </div>
                     </div>
-                    <div className="text-sm font-semibold text-gray-900">
-                      ${(item.price * item.quantity).toFixed(2)}
+                    <div className="text-sm font-semibold">
+                      {isSubscribed ? (
+                        <div className="text-right">
+                          <div className="line-through text-gray-400 text-xs">
+                            ${(item.price * item.quantity).toFixed(2)}
+                          </div>
+                          <div className="text-green-600">
+                            ${((item.discounted_price || item.price) * item.quantity).toFixed(2)}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-gray-900">
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -437,35 +439,76 @@ function CheckoutPage() {
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Subtotal ({cart.length} items)</span>
-                  <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                  <span className="font-semibold">
+                    {isSubscribed ? (
+                      <div className="flex items-center gap-2">
+                        <span className="line-through text-gray-400">
+                          ${originalSubtotal.toFixed(2)}
+                        </span>
+                        <span className="text-green-600">
+                          ${discountedSubtotal.toFixed(2)}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-gray-900">${originalSubtotal.toFixed(2)}</span>
+                    )}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Shipping</span>
-                  <span className="font-semibold">{shippingFee === 0 ? "Free" : `$${shippingFee.toFixed(2)}`}</span>
+                  <span className="font-semibold">
+                    {isSubscribed ? (
+                      <div className="flex items-center gap-2">
+                        <span className="line-through text-gray-400">$5.99</span>
+                        <span className="text-green-600">FREE</span>
+                      </div>
+                    ) : (
+                      <span className="text-gray-900">
+                        {shippingFee === 0 ? "Free" : `$${shippingFee.toFixed(2)}`}
+                      </span>
+                    )}
+                  </span>
                 </div>
-                {shippingFee > 0 && (
+                {!isSubscribed && shippingFee > 0 && (
                   <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
                     Add ${(50 - subtotal).toFixed(2)} more for free shipping!
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Tax</span>
-                  <span className="font-semibold">${tax.toFixed(2)}</span>
+                  <span className="font-semibold text-gray-900">${tax.toFixed(2)}</span>
                 </div>
                 <hr className="border-gray-200" />
                 <div className="flex justify-between text-lg font-bold">
                   <span className="text-gray-900">Total</span>
-                  <span className="text-[#223B7D]">${total.toFixed(2)}</span>
+                  <span>
+                    {isSubscribed ? (
+                      <div className="flex items-center gap-2">
+                        <span className="line-through text-gray-400 text-base">
+                          ${(originalSubtotal + (originalSubtotal < 50 ? 5.99 : 0) + (originalSubtotal * 0.08)).toFixed(2)}
+                        </span>
+                        <span className="text-[#223B7D]">
+                          ${total.toFixed(2)}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-[#223B7D]">${total.toFixed(2)}</span>
+                    )}
+                  </span>
                 </div>
+                {isSubscribed && (
+                  <div className="text-xs text-green-600 text-center bg-green-50 p-2 rounded">
+                    You saved ${((originalSubtotal - discountedSubtotal) + (originalSubtotal < 50 ? 5.99 : 0)).toFixed(2)} with your subscription!
+                  </div>
+                )}
               </div>
 
               {/* Checkout Button */}
               <button
                 onClick={handleCheckout}
                 disabled={isProcessing}
-                className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
-                  isProcessing ? "bg-gray-400 cursor-not-allowed" : "bg-[#223B7D] hover:bg-blue-700"
-                } text-white flex items-center justify-center gap-2`}
+                className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${isProcessing ? "bg-gray-400 cursor-not-allowed" : "bg-[#223B7D] hover:bg-blue-700"
+                  } text-white flex items-center justify-center gap-2`}
               >
                 {isProcessing ? (
                   <>

@@ -365,6 +365,7 @@ const Navbar: React.FC = () => {
       { name: "Invitations", to: "/home/party-invitations" },
       { name: "Providers", to: "/home/providers" },
       { name: "Shop", to: "/home/shop" },
+      { name: "Custom T-Shirt", to: "/home/custom-t-shirt"},
       { name: "Blog", to: "/home/blog" },
     ]
     : [

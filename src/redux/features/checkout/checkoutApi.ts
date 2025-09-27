@@ -1,33 +1,45 @@
 // src/redux/features/checkout/checkoutApi.ts
 import { baseApi } from "@/redux/hooks/baseApi";
 
-export interface CheckoutItem {
-  id: string | number;
-  title: string;
-  price: number;
+export interface OrderItem {
+  productId: string;
   quantity: number;
-  image?: string;
 }
 
-
-export interface CheckoutRequest {
-  items: CheckoutItem[];
+export interface ShippingInfo {
+  name: string;
+  email: string;
+  phone: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  address: string;
 }
 
-export interface CheckoutResponse {
+export interface OrderRequest {
+  items: OrderItem[];
+  totalPrice: number;
+  shippingFee: number;
+  shippingInfo: ShippingInfo;
+  additionalNotes?: string;
+}
+
+export interface OrderResponse {
   statusCode: number;
   success: boolean;
   message: string;
   data: {
-    url: string;
+    checkoutUrl: string;
+    orderId: string;
+    paymentUrl?: string; // if API gives redirect link
   };
 }
 
 export const checkoutApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    createCheckout: builder.mutation<CheckoutResponse, CheckoutRequest>({
+    createOrder: builder.mutation<OrderResponse, OrderRequest>({
       query: (body) => ({
-        url: "/checkout/payment",
+        url: "/orders",
         method: "POST",
         body,
       }),
@@ -35,4 +47,4 @@ export const checkoutApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useCreateCheckoutMutation } = checkoutApi;
+export const { useCreateOrderMutation } = checkoutApi;
