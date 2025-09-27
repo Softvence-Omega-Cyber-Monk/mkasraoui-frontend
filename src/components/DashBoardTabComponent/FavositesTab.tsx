@@ -81,9 +81,7 @@
 import {
   useGetWishlistQuery,
   useRemoveFromWishlistApiMutation,
-} from "@/redux/features/wishlist/wishlistApi";
-import type {
-  WishlistItem
+  type WishlistItem,
 } from "@/redux/features/wishlist/wishlistApi";
 import { useDispatch } from "react-redux";
 import { addToCart } from "@/redux/features/cart/cartSlice";
@@ -93,6 +91,7 @@ function MyWishlist() {
   const [removeFromWishlist] = useRemoveFromWishlistApiMutation();
   const dispatch = useDispatch();
 
+  // The core functionality remains untouched
   const handleAddToCart = async (item: WishlistItem) => {
     dispatch(
       addToCart({
@@ -109,7 +108,7 @@ function MyWishlist() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-700 dark:text-gray-300">Loading wishlist...</p>
+        <p className="text-gray-700">Loading Favorites...</p>
       </div>
     );
   }
@@ -117,7 +116,7 @@ function MyWishlist() {
   if (!wishlist.length) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-center text-lg text-gray-700 dark:text-gray-300">
+        <p className="text-center text-lg text-gray-700">
           Your wishlist is empty 😢
         </p>
       </div>
@@ -125,42 +124,74 @@ function MyWishlist() {
   }
 
   return (
-    <div className="bg-gray-50 py-8 dark:bg-gray-900">
-      <div className="mx-auto max-w-6xl px-4">
-        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    // Removed dark:bg-gray-900
+    <div className="bg-gray-50 py-12 rounded-xl"> 
+      <div className="mx-auto px-8">
+        {/* Added a title for context */}
+        <h2 className="mb-8 text-3xl font-extrabold text-gray-900 tracking-tight">Your Wishlist ({wishlist.length})</h2>
+        <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {wishlist.map((item) => (
             <div
               key={item.id}
-              className="flex flex-col rounded-lg border border-gray-200 bg-white shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+              // --- UPDATED CARD DESIGN CLASSES ---
+              // Removed dark: classes
+              className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg transition-all duration-300 hover:shadow-xl hover:border-blue-400"
+              // ------------------------------------
             >
-              <img
-                className="h-64 w-full rounded-t-lg object-cover md:h-48 lg:h-56"
-                src={item.prodcut.imges?.[0] || "/placeholder.png"}
-                alt={item.prodcut.title}
-              />
-              <div className="flex flex-1 flex-col justify-between p-4">
-                <h5 className="mb-2 line-clamp-2 text-lg font-bold text-gray-900 dark:text-white">
-                  {item.prodcut.title}
-                </h5>
-                <p className="mb-3 line-clamp-3 text-gray-700 dark:text-gray-400">
-                  {item.prodcut.description}
-                </p>
-                <div className="mt-auto flex items-center justify-between gap-2">
-                  <span className="text-lg font-bold">${item.prodcut.price}</span>
+              {/* Image */}
+              <div className="relative overflow-hidden">
+                <img
+                  // --- UPDATED IMAGE CLASSES ---
+                  className="h-60 w-full object-cover transition-transform duration-500 hover:scale-105"
+                  // -----------------------------
+                  src={item.prodcut.imges?.[0] || "/placeholder.png"}
+                  alt={item.prodcut.title}
+                />
+              </div>
+              
+              {/* Content */}
+              <div className="flex flex-1 flex-col justify-between p-5">
+                <div>
+                  <h5 
+                    // Removed dark:text-white
+                    className="mb-1 line-clamp-2 text-xl font-semibold text-gray-800" 
+                  >
+                    {item.prodcut.title}
+                  </h5>
+                  <p 
+                    // Removed dark:text-gray-400
+                    className="mb-4 text-sm line-clamp-3 text-gray-500" 
+                  >
+                    {item.prodcut.description}
+                  </p>
                 </div>
-                <div className="mt-3 flex items-center justify-between gap-2">
-                  <button
-                    onClick={() => handleAddToCart(item)}
-                    className="rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
-                  >
-                    Add to Cart
-                  </button>
-                  <button
-                    onClick={() => removeFromWishlist(item.id)}
-                    className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
-                  >
-                    Remove
-                  </button>
+                
+                {/* Price and Action Buttons */}
+                <div className="mt-auto pt-4 border-t border-gray-100">
+                  <span className="block mb-3 text-2xl font-extrabold text-secondary">
+                    ${item.prodcut.price}
+                  </span>
+                  
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                    {/* Add to Cart Button */}
+                    <button
+                      onClick={() => handleAddToCart(item)}
+                      // --- UPDATED BUTTON CLASSES ---
+                      className="w-full sm:w-auto flex-1 rounded-lg bg-secondary px-4 py-2 text-white font-medium text-sm shadow-md transition-colors duration-200 hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+                      // ------------------------------
+                    >
+                      🛒 Add to Cart
+                    </button>
+                    {/* Remove Button */}
+                    <button
+                      onClick={() => removeFromWishlist(item.id)}
+                      // --- UPDATED BUTTON CLASSES ---
+                      className="w-full sm:w-auto rounded-lg bg-white px-4 py-2 text-sm font-medium text-red-600 border border-red-500 transition-colors duration-200 hover:bg-red-50 hover:text-red-700"
+                      // ------------------------------
+                    >
+                      ✕ Remove
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

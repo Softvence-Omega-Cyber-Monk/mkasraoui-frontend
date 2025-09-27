@@ -69,8 +69,8 @@ export default function Shop(): JSX.Element {
     description: string;
     rating: number;
     reviews: number;
+    price: number;
     currentPrice: number;
-    originalPrice: number;
     discountedPrice?: number;
     tags: string[];
     buttonText: string;
@@ -92,7 +92,7 @@ export default function Shop(): JSX.Element {
       rating: p.avg_rating ?? 5,
       reviews: p.total_review ?? 0,
       currentPrice: p.discounted_price ?? p.price ?? 0,
-      originalPrice: p.price ?? 0,
+      price: p.price ?? 0,
       discountedPrice: p.discounted_price!,
       tags: [p.product_type ?? "", p.age_range ?? "", p.theme ?? ""].filter(Boolean),
       buttonText: "Add to Cart",
@@ -170,12 +170,14 @@ export default function Shop(): JSX.Element {
   // ---------- Action handlers ----------
 
   const handleAddToCart = (item: CardItem, e?: React.MouseEvent) => {
+    console.log(item)
     e?.stopPropagation();
     dispatch(
       addToCart({
         id: item.id,
         title: item.title,
-        price: item.currentPrice,
+        price: item.price,
+        discounted_price: item.discountedPrice ?? item.price,
         quantity: 1,
         image: item.image,
         rating: item.rating,
@@ -191,6 +193,7 @@ export default function Shop(): JSX.Element {
         id: item.id,
         title: item.title,
         price: item.currentPrice,
+        discounted_price: item.discountedPrice ?? item.price,
         quantity: 1,
         image: item.image,
         rating: item.rating,
@@ -567,9 +570,9 @@ export default function Shop(): JSX.Element {
                         <span className="text-xl font-bold text-gray-900">
                           ${item.currentPrice}
                         </span>
-                        {item.discountedPrice && item.originalPrice !== item.currentPrice && (
+                        {item.discountedPrice && item.price !== item.currentPrice && (
                           <span className="text-sm text-gray-500 line-through">
-                            ${item.originalPrice}
+                            ${item.price}
                           </span>
                         )}
                       </div>

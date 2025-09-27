@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import Cookies from "js-cookie";
 
-const baseURL = import.meta.env.VITE_API_ENDPOINT;
+const baseURL = import.meta.env.VITE_API_AI_ENDPOINT;
 
 if (!baseURL) {
   throw new Error("VITE_API_ENDPOINT is not defined in environment variables");
@@ -47,9 +47,9 @@ const baseQueryWithErrorHandler: typeof rawBaseQuery = async (
   }
 };
 
-export const baseApi = createApi({
-  reducerPath: "baseApi",
+export const baseApiForAi = createApi({
+  reducerPath: "baseApiForAi",
   baseQuery: baseQueryWithErrorHandler,
-  tagTypes: ["User", "Providers", "Quotes", "ProviderReviews", "Products", "DIY", "Cart", "Wishlist", "Bookings", "ProviderPlans", "Provider","Conversation"],
+  tagTypes: [],
   endpoints: () => ({}),
 });

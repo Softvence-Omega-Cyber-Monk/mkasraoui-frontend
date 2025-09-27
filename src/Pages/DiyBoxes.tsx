@@ -322,7 +322,8 @@ export default function DiyBoxes() {
                                 addToCart({
                                   id: String(activity.id),
                                   title: activity.title,
-                                  price: activity.discounted_price || activity.price,
+                                  price: activity.price,
+                                  discounted_price: activity.discounted_price ?? activity.price,
                                   quantity: 1,
                                   image: activity.imges?.[0] || "",
                                   rating: activity.avg_rating,

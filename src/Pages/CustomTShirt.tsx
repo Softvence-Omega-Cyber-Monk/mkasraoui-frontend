@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import tShirt from "@/assets/t-shirt/white-t-shirt-mockup.png";
+import tShirtPlaceholder from "@/assets/t-shirt/white-t-shirt-mockup.png";
 import TShirtPreviewNew from "@/components/Customize-t-shirt/TShirtPreviewNew";
 import MyHeader from "@/components/MyHeader/MyHeader";
+import { useGenerateTShirtMutation } from "@/redux/features/tShirt/tshirtApi";
 
 function CustomTShirt() {
   const [tshirtType, setTshirtType] = useState("child");
@@ -12,11 +13,16 @@ function CustomTShirt() {
   const [age, setAge] = useState("");
   const [selectedTheme, setSelectedTheme] = useState("unicorns");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [optionalMessage, setOptionalMessage] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+
   const [showSizeDropdown, setShowSizeDropdown] = useState(false);
   const [showGenderDropdown, setShowGenderDropdown] = useState(false);
   const [showAgeDropdown, setShowAgeDropdown] = useState(false);
+
+  const [generateTShirt, { isLoading }] = useGenerateTShirtMutation();
 
   const colors = [
     { name: "white", bg: "bg-white", border: "border-gray-300" },
@@ -36,39 +42,43 @@ function CustomTShirt() {
     { id: "space", name: "Space", icon: "🚀" },
   ];
 
-  const sizes = [
-    "2-3 years",
-    "4-5 years",
-    "6-7 years",
-    "8-9 years",
-    "10-11 years",
-    "12-13 years",
-  ];
-  const genders = ["Boy", "Girl", "Unisex"];
-  const ages = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "11",
-    "12",
-    "13",
-  ];
+  const sizes = ["S", "M", "L", "XL", "2-3 years", "4-5 years", "6-7 years", "8-9 years", "10-11 years", "12-13 years"];
+  const genders = ["male", "female", "unisex"];
+  const ages = Array.from({ length: 13 }, (_, i) => String(i + 1));
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setUploadedFile(file);
       const reader = new FileReader();
       reader.onload = (e) => {
         setUploadedImage(e.target?.result as string);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleGenerate = async () => {
+    if (!size || !gender || !age) {
+      alert("Please select size, gender, and age before generating.");
+      return;
+    }
+    try {
+      const response = await generateTShirt({
+        t_shirt_type: tshirtType,
+        t_shirt_size: size,
+        gender,
+        t_shirt_color: selectedColor,
+        age: parseInt(age, 10),
+        t_shirt_theme: selectedTheme,
+        optional_description: optionalMessage || undefined,
+        img_file: uploadedFile || null,
+      }).unwrap();
+
+      setGeneratedImage(response.image_url);
+    } catch (err) {
+      console.error("Error generating t-shirt:", err);
+      alert("Failed to generate t-shirt. Please try again.");
     }
   };
 
@@ -78,7 +88,7 @@ function CustomTShirt() {
         title="Custom T-Shirt Designer"
         subtitle="Create unique, personalized t-shirts for your child's special day. Choose from our collection of themes and make it truly memorable!"
         className="text-3xl sm:text-5xl md:text-6xl"
-      ></MyHeader>
+      />
       <div className="container mx-auto -mt-20 bg-white p-6">
         <h1 className="mb-14 text-center text-2xl font-bold text-gray-800">
           Create Your Personalized Birthday T-Shirt
@@ -119,19 +129,18 @@ function CustomTShirt() {
               </div>
             </div>
 
-            {/* Size and Gender */}
+            {/* Size & Gender */}
             <div className="grid grid-cols-2 gap-4">
+              {/* Size */}
               <div>
                 <div className="mb-2 flex items-center">
                   <span className="mr-2 text-sm text-gray-600">📏</span>
-                  <span className="text-sm font-medium text-gray-700">
-                    Size
-                  </span>
+                  <span className="text-sm font-medium text-gray-700">Size</span>
                 </div>
                 <div className="relative">
                   <button
                     onClick={() => setShowSizeDropdown(!showSizeDropdown)}
-                    className="w-full rounded-lg border border-gray-300 bg-white p-3 text-left text-sm text-gray-600 hover:border-gray-400 focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-lg border border-gray-300 bg-white p-3 text-left text-sm text-gray-600"
                   >
                     {size || "Select a size"}
                     <span className="float-right">▼</span>
@@ -155,6 +164,7 @@ function CustomTShirt() {
                 </div>
               </div>
 
+              {/* Gender */}
               <div>
                 <div className="mb-2 flex items-center">
                   <span className="mr-2 text-sm text-gray-600">👤</span>
@@ -165,7 +175,7 @@ function CustomTShirt() {
                 <div className="relative">
                   <button
                     onClick={() => setShowGenderDropdown(!showGenderDropdown)}
-                    className="w-full rounded-lg border border-gray-300 bg-white p-3 text-left text-sm text-gray-600 hover:border-gray-400 focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-lg border border-gray-300 bg-white p-3 text-left text-sm text-gray-600"
                   >
                     {gender || "Select"}
                     <span className="float-right">▼</span>
@@ -213,7 +223,7 @@ function CustomTShirt() {
               </div>
             </div>
 
-            {/* Child's Name and Age */}
+            {/* Child Name & Age */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -224,10 +234,9 @@ function CustomTShirt() {
                   value={childName}
                   onChange={(e) => setChildName(e.target.value)}
                   placeholder="Enter child's name"
-                  className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-lg border border-gray-300 p-3 text-sm"
                 />
               </div>
-
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
                   Age
@@ -235,7 +244,7 @@ function CustomTShirt() {
                 <div className="relative">
                   <button
                     onClick={() => setShowAgeDropdown(!showAgeDropdown)}
-                    className="w-full rounded-lg border border-gray-300 bg-white p-3 text-left text-sm text-gray-600 hover:border-gray-400 focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-lg border border-gray-300 bg-white p-3 text-left text-sm text-gray-600"
                   >
                     {age || "Select age"}
                     <span className="float-right">▼</span>
@@ -271,7 +280,7 @@ function CustomTShirt() {
                   <button
                     key={theme.id}
                     onClick={() => setSelectedTheme(theme.id)}
-                    className={`rounded-lg border p-4 text-center transition-colors ${
+                    className={`rounded-lg border p-4 text-center ${
                       selectedTheme === theme.id
                         ? "border-blue-500 bg-blue-50 text-blue-700"
                         : "border-gray-300 hover:border-gray-400"
@@ -327,14 +336,25 @@ function CustomTShirt() {
                 onChange={(e) => setOptionalMessage(e.target.value)}
                 placeholder="e.g. It's My Party Time SOFIA"
                 rows={3}
-                className="w-full resize-none rounded-lg border border-gray-300 p-3 text-sm focus:border-blue-500 focus:outline-none"
+                className="w-full resize-none rounded-lg border border-gray-300 p-3 text-sm"
               />
+            </div>
+
+            {/* Generate Button */}
+            <div className="pt-6">
+              <button
+                onClick={handleGenerate}
+                disabled={isLoading}
+                className="w-full rounded-lg bg-[#223B7D] px-6 py-3 font-medium text-white shadow-md hover:bg-[#1a2d61] disabled:opacity-50"
+              >
+                {isLoading ? "Generating..." : "✨ Generate T-Shirt"}
+              </button>
             </div>
           </div>
 
-          {/* Right Column - Live Preview */}
+          {/* Right Column - Preview */}
           <TShirtPreviewNew
-            tShirt={tShirt}
+            tShirt={generatedImage || tShirtPlaceholder}
             colors={colors}
             selectedColor={selectedColor}
             uploadedImage={uploadedImage}
@@ -344,7 +364,7 @@ function CustomTShirt() {
             age={age}
             optionalMessage={optionalMessage}
             quantity={quantity}
-            setQuantity={setQuantity}
+            onQuantityChange={setQuantity}
           />
         </div>
       </div>
