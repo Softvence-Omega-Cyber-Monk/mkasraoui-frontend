@@ -29,6 +29,7 @@ export interface OrderResponse {
   success: boolean;
   message: string;
   data: {
+    checkoutUrl: string;
     orderId: string;
     paymentUrl?: string; // if API gives redirect link
   };
