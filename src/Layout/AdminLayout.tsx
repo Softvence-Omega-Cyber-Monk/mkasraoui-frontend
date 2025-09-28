@@ -7,6 +7,7 @@ import {
   ReviewsIcon,
   ServicesIcon,
 } from "@/Dashboard/Icons";
+import { useGetMeQuery } from "@/redux/features/user/userApi";
 import {
   Menu,
   MenuButton,
@@ -19,6 +20,7 @@ import {
   ChevronDownIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+// import { BellIcon } from "lucide-react";
 import { Fragment, useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 // import {
@@ -36,6 +38,9 @@ function AdminLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { data: me } = useGetMeQuery();
+  console.log(me);
 
   // Close mobile sidebar on route change
   useEffect(() => {
@@ -78,6 +83,16 @@ function AdminLayout() {
     {
       to: "/admin-dashboard/subscription-plan",
       label: "Subscription Plan",
+      icon: ServicesIcon,
+    },
+    {
+      to: "/admin-dashboard/provider-plan",
+      label: "Provider Plan",
+      icon: ServicesIcon,
+    },
+    {
+      to: "/admin-dashboard/news-letter",
+      label: "News Letter",
       icon: ServicesIcon,
     },
 
@@ -307,24 +322,26 @@ function AdminLayout() {
             {/* Notifications */}
             {/* <button
               type="button"
-              className="relative rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="relative rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
               aria-label="View notifications"
             >
               <BellIcon className="h-6 w-6" aria-hidden="true" />
-              <span className="absolute -right-1 -top-1 block h-3 w-3 rounded-full bg-red-400 ring-2 ring-white" />
+              <span className="absolute -top-1 -right-1 block h-3 w-3 rounded-full bg-red-400 ring-2 ring-white" />
             </button> */}
 
             {/* User Menu */}
             <Menu as="div" className="relative">
               <MenuButton className="focus:ring-secondary-light/60 flex cursor-pointer items-center gap-3 rounded-lg bg-white p-1.5 text-sm hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:outline-none">
-                <img
-                  className="h-8 w-8 rounded-full object-cover ring-2 ring-gray-200"
-                  src="https://i.pravatar.cc/40"
-                  alt="Sarah Miller"
-                />
+                {me?.profile_image && (
+                  <img
+                    className="h-8 w-8 rounded-full object-cover ring-2 ring-gray-200"
+                    src={me.profile_image}
+                    alt={me.name ?? "https://i.pravatar.cc/40"}
+                  />
+                )}
                 <div className="hidden text-left lg:block">
                   <p className="text-sm font-medium text-gray-900">
-                    Sarah Miller(admin)
+                    {me?.name}(admin)
                   </p>
                   <p className="text-xs text-gray-500">Admin Profile</p>
                 </div>
@@ -346,14 +363,14 @@ function AdminLayout() {
                 <MenuItems className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none">
                   <div className="border-b border-gray-100 px-4 py-3">
                     <p className="text-sm font-medium text-gray-900">
-                      Sarah Miller
+                      {me?.name}
                     </p>
-                    <p className="text-sm text-gray-500">sarah@example.com</p>
+                    <p className="text-sm text-gray-500">{me?.email}</p>
                   </div>
                   <div className="px-4">
                     <button
                       onClick={() =>
-                        navigate("/home/my-account", {
+                        navigate("/admin-dashboard/admin-account", {
                           state: { initialTab: "Profile" },
                         })
                       }

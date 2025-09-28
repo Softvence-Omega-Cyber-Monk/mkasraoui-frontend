@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Upload,
@@ -14,11 +14,11 @@ import {
   Instagram,
   Check,
   ArrowLeft,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { useRequestProviderMutation } from "@/redux/features/property/propertyApi";
-
-import { Controller } from "react-hook-form";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import GetStarted from "@/components/Map/GetStarted";
 
 const serviceCategories = [
   { value: "VENUE_SPACES", label: "Venue Spaces" },
@@ -69,14 +69,27 @@ const BecomeProvider = () => {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>();
   const navigate = useNavigate();
-
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleFileClick = () => fileInputRef.current?.click();
+  // State for location & destination (only using location for primary service area)
+  const [addPlaceData, setAddPlaceData] = useState<{
+    location: { lat: number; lng: number } | null;
+    destination: { lat: number; lng: number } | null;
+    homeAddress?: string;
+    destinationAddress?: string;
+  }>({ location: null, destination: null });
 
+  const handleDataUpdate = (data: Partial<typeof addPlaceData>) => {
+    setAddPlaceData((prev) => ({ ...prev, ...data }));
+    // Update react-hook-form values dynamically
+    if (data.homeAddress) setValue("primaryServiceArea", data.homeAddress);
+  };
+
+  const handleFileClick = () => fileInputRef.current?.click();
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files).map((file) => ({
@@ -105,11 +118,15 @@ const BecomeProvider = () => {
   const removeFile = (id: string) => {
     setUploadedFiles((prev) => prev.filter((file) => file.id !== id));
   };
+
   const onSubmit = async (data: FormValues) => {
     try {
       const formData = new FormData();
 
-      // Create payload exactly as backend expects
+      // Only add lat/lng if location is selected
+      const latitude = addPlaceData.location?.lat || null;
+      const longitude = addPlaceData.location?.lng || null;
+
       const payload: Record<string, unknown> = {
         bussinessName: data.businessName,
         email: data.email,
@@ -117,20 +134,16 @@ const BecomeProvider = () => {
         phone: data.phone,
         serviceCategory: data.serviceCategory,
         serviceArea: data.primaryServiceArea,
-        latitude: 40.7128,
-        longitude: -74.006,
+        latitude,
+        longitude,
         description: data.serviceDescription,
         priceRange: data.priceRange,
         website: data.website || null,
         instagram: data.instagram || null,
       };
 
-      // Append JSON payload as a string
       formData.append("data", JSON.stringify(payload));
-      console.log(payload);
-      console.log(formData);
 
-      // Append all uploaded files
       uploadedFiles.forEach((file) => {
         formData.append("files", file.file);
       });
@@ -152,9 +165,9 @@ const BecomeProvider = () => {
           Back to Providers
         </Link>
       </header>
+
       <div className="py-6">
         <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
-          {/* Header */}
           <div className="mb-8 text-center">
             <h1 className="mb-2 text-3xl font-bold text-blue-900">
               Become a Party Provider
@@ -166,8 +179,8 @@ const BecomeProvider = () => {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Business Name */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {/* Business Name */}
               <div>
                 <label className="mb-2 flex items-center font-medium text-gray-700">
                   <Briefcase className="text-secondary mr-2 h-5 w-5" /> Business
@@ -244,26 +257,6 @@ const BecomeProvider = () => {
               </div>
 
               {/* Service Category */}
-              {/* <div>
-                <label className="mb-2 flex items-center font-medium text-gray-700">
-                  <Briefcase className="text-secondary mr-2 h-5 w-5" /> Service
-                  Category
-                </label>
-                <input
-                  type="text"
-                  {...register("serviceCategory", {
-                    required: "Service category is required",
-                  })}
-                  className="focus:border-secondary focus:ring-secondary/20 w-full rounded-lg border border-gray-300 p-3 focus:ring-2"
-                />
-                {errors.serviceCategory && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.serviceCategory.message}
-                  </p>
-                )}
-              </div> */}
-
-              {/* Service Category */}
               <div>
                 <label className="mb-2 flex items-center font-medium text-gray-700">
                   <Briefcase className="text-secondary mr-2 h-5 w-5" /> Service
@@ -278,17 +271,14 @@ const BecomeProvider = () => {
                   }}
                   render={({ field }) => {
                     const [open, setOpen] = useState(false);
-
                     const toggleCategory = (value: string) => {
                       const newValue = field.value?.includes(value)
                         ? field.value.filter((v: string) => v !== value)
                         : [...(field.value || []), value];
                       field.onChange(newValue);
                     };
-
                     return (
                       <div className="relative">
-                        {/* Selected Box */}
                         <div
                           onClick={() => setOpen(!open)}
                           className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-300 p-3"
@@ -299,8 +289,8 @@ const BecomeProvider = () => {
                                   .map(
                                     (v: string) =>
                                       serviceCategories.find(
-                                        (c) => c.value === v,
-                                      )?.label,
+                                        (c) => c.value === v
+                                      )?.label
                                   )
                                   .join(", ")
                               : "Select categories"}
@@ -312,7 +302,6 @@ const BecomeProvider = () => {
                           )}
                         </div>
 
-                        {/* Dropdown */}
                         {open && (
                           <div className="absolute z-10 mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg">
                             <ul className="max-h-64 overflow-y-auto">
@@ -324,7 +313,8 @@ const BecomeProvider = () => {
                                   <input
                                     type="checkbox"
                                     checked={
-                                      field.value?.includes(cat.value) || false
+                                      field.value?.includes(cat.value) ||
+                                      false
                                     }
                                     onChange={() => toggleCategory(cat.value)}
                                     className="h-4 w-4"
@@ -350,17 +340,22 @@ const BecomeProvider = () => {
               </div>
 
               {/* Primary Service Area */}
-              <div>
+              <div className="md:col-span-2">
                 <label className="mb-2 flex items-center font-medium text-gray-700">
                   <MapPin className="text-secondary mr-2 h-5 w-5" /> Primary
                   Service Area
                 </label>
-                <input
-                  type="text"
-                  {...register("primaryServiceArea", {
-                    required: "Primary service area is required",
-                  })}
-                  className="focus:border-secondary focus:ring-secondary/20 w-full rounded-lg border border-gray-300 p-3 focus:ring-2"
+                <GetStarted
+                  location={addPlaceData.location}
+                  destination={addPlaceData.destination}
+                  onLocationChange={(coords) => {
+                    if (coords) handleDataUpdate({ location: coords });
+                  }}
+                  onDestinationChange={() => {}}
+                  onLocationAddressChange={(homeAddress) =>
+                    handleDataUpdate({ homeAddress })
+                  }
+                  onDestinationAddressChange={() => {}}
                 />
                 {errors.primaryServiceArea && (
                   <p className="mt-1 text-sm text-red-500">
@@ -415,6 +410,7 @@ const BecomeProvider = () => {
                 />
               </div>
             </div>
+
             {/* Description */}
             <div>
               <label className="mb-2 flex items-center font-medium text-gray-700">
@@ -434,6 +430,7 @@ const BecomeProvider = () => {
                 </p>
               )}
             </div>
+
             {/* File Upload */}
             <div>
               <label className="mb-2 block font-medium text-gray-700">
@@ -457,7 +454,6 @@ const BecomeProvider = () => {
                 />
               </div>
 
-              {/* Preview */}
               <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3">
                 {uploadedFiles.map((file) => (
                   <div
@@ -492,6 +488,7 @@ const BecomeProvider = () => {
           </form>
         </div>
       </div>
+
       {/* Footer */}
       <div className="mt-8 w-full rounded-lg bg-[#D2EAFF] p-6">
         <h2 className="text-secondary mb-4 text-2xl font-semibold">
@@ -516,7 +513,7 @@ const BecomeProvider = () => {
           <div className="flex items-start gap-3">
             <Check className="text-secondary-dark mt-0.5 h-5 w-5 flex-shrink-0" />
             <p className="text-secondary text-base">
-              Start receiving booking requests from local families!
+              Start managing your services and bookings
             </p>
           </div>
         </div>
@@ -526,6 +523,8 @@ const BecomeProvider = () => {
 };
 
 export default BecomeProvider;
+
+
 
 // import { useRef, useState } from "react";
 // import { useForm } from "react-hook-form";
@@ -546,12 +545,36 @@ export default BecomeProvider;
 // } from "lucide-react";
 // import { useRequestProviderMutation } from "@/redux/features/property/propertyApi";
 
+// import { Controller } from "react-hook-form";
+// import { ChevronDown, ChevronUp } from "lucide-react";
+
+// const serviceCategories = [
+//   { value: "VENUE_SPACES", label: "Venue Spaces" },
+//   { value: "FOOD_CATERING", label: "Food & Catering" },
+//   { value: "CAKES_DESSERTS", label: "Cakes & Desserts" },
+//   { value: "BALLOON_DECOR", label: "Balloon Decoration" },
+//   { value: "FLORAL_DECOR", label: "Floral Decoration" },
+//   { value: "LIGHTING_SETUP", label: "Lighting Setup" },
+//   { value: "DJs_BANDS", label: "DJs & Bands" },
+//   { value: "MAGICIANS", label: "Magicians" },
+//   { value: "PHOTOGRAPHY", label: "Photography" },
+//   { value: "VIDEOGRAPHY", label: "Videography" },
+//   { value: "PHOTO_BOOTH", label: "Photo Booth" },
+//   { value: "PARTY_SUPPLIES", label: "Party Supplies" },
+//   { value: "SOUND_SYSTEM", label: "Sound System" },
+//   { value: "INVITATIONS", label: "Invitations" },
+//   { value: "RETURN_GIFTS", label: "Return Gifts" },
+//   { value: "HOSTS_ANCHORS", label: "Hosts / Anchors" },
+//   { value: "KIDS_ENTERTAINMENT", label: "Kids Entertainment" },
+//   { value: "PREMIUM_LUXURY", label: "Premium Luxury" },
+// ];
+
 // type FormValues = {
 //   businessName: string;
 //   email: string;
 //   contactName: string;
 //   phone: string;
-//   serviceCategory: string;
+//   serviceCategory: string[];
 //   primaryServiceArea: string;
 //   serviceDescription: string;
 //   priceRange: string;
@@ -573,6 +596,7 @@ export default BecomeProvider;
 //   const {
 //     register,
 //     handleSubmit,
+//     control,
 //     formState: { errors },
 //   } = useForm<FormValues>();
 //   const navigate = useNavigate();
@@ -619,7 +643,7 @@ export default BecomeProvider;
 //         email: data.email,
 //         contactName: data.contactName,
 //         phone: data.phone,
-//         serviceCategory: [data.serviceCategory],
+//         serviceCategory: data.serviceCategory,
 //         serviceArea: data.primaryServiceArea,
 //         latitude: 40.7128,
 //         longitude: -74.006,
@@ -748,7 +772,7 @@ export default BecomeProvider;
 //               </div>
 
 //               {/* Service Category */}
-//               <div>
+//               {/* <div>
 //                 <label className="mb-2 flex items-center font-medium text-gray-700">
 //                   <Briefcase className="text-secondary mr-2 h-5 w-5" /> Service
 //                   Category
@@ -760,6 +784,92 @@ export default BecomeProvider;
 //                   })}
 //                   className="focus:border-secondary focus:ring-secondary/20 w-full rounded-lg border border-gray-300 p-3 focus:ring-2"
 //                 />
+//                 {errors.serviceCategory && (
+//                   <p className="mt-1 text-sm text-red-500">
+//                     {errors.serviceCategory.message}
+//                   </p>
+//                 )}
+//               </div> */}
+
+//               {/* Service Category */}
+//               <div>
+//                 <label className="mb-2 flex items-center font-medium text-gray-700">
+//                   <Briefcase className="text-secondary mr-2 h-5 w-5" /> Service
+//                   Category
+//                 </label>
+
+//                 <Controller
+//                   name="serviceCategory"
+//                   control={control}
+//                   rules={{
+//                     required: "At least one service category is required",
+//                   }}
+//                   render={({ field }) => {
+//                     const [open, setOpen] = useState(false);
+
+//                     const toggleCategory = (value: string) => {
+//                       const newValue = field.value?.includes(value)
+//                         ? field.value.filter((v: string) => v !== value)
+//                         : [...(field.value || []), value];
+//                       field.onChange(newValue);
+//                     };
+
+//                     return (
+//                       <div className="relative">
+//                         {/* Selected Box */}
+//                         <div
+//                           onClick={() => setOpen(!open)}
+//                           className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-300 p-3"
+//                         >
+//                           <span className="text-gray-700">
+//                             {field.value?.length > 0
+//                               ? field.value
+//                                   .map(
+//                                     (v: string) =>
+//                                       serviceCategories.find(
+//                                         (c) => c.value === v,
+//                                       )?.label,
+//                                   )
+//                                   .join(", ")
+//                               : "Select categories"}
+//                           </span>
+//                           {open ? (
+//                             <ChevronUp className="h-5 w-5" />
+//                           ) : (
+//                             <ChevronDown className="h-5 w-5" />
+//                           )}
+//                         </div>
+
+//                         {/* Dropdown */}
+//                         {open && (
+//                           <div className="absolute z-10 mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg">
+//                             <ul className="max-h-64 overflow-y-auto">
+//                               {serviceCategories.map((cat) => (
+//                                 <li
+//                                   key={cat.value}
+//                                   className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100"
+//                                 >
+//                                   <input
+//                                     type="checkbox"
+//                                     checked={
+//                                       field.value?.includes(cat.value) || false
+//                                     }
+//                                     onChange={() => toggleCategory(cat.value)}
+//                                     className="h-4 w-4"
+//                                   />
+//                                   <label className="cursor-pointer">
+//                                     {cat.label}
+//                                   </label>
+//                                 </li>
+//                               ))}
+//                             </ul>
+//                           </div>
+//                         )}
+//                       </div>
+//                     );
+//                   }}
+//                 />
+
 //                 {errors.serviceCategory && (
 //                   <p className="mt-1 text-sm text-red-500">
 //                     {errors.serviceCategory.message}

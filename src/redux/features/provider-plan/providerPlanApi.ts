@@ -12,6 +12,7 @@ export const providerPlanApi = baseApi.injectEndpoints({
       transformResponse: (response: ProviderPlanResponse) => response.data, 
       providesTags: ["ProviderPlans"],
     }),
+    
   }),
 });
 
