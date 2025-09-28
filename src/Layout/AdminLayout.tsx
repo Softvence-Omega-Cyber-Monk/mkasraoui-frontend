@@ -7,7 +7,9 @@ import {
   ReviewsIcon,
   ServicesIcon,
 } from "@/Dashboard/Icons";
+import { logOut } from "@/redux/features/auth/authSlice";
 import { useGetMeQuery } from "@/redux/features/user/userApi";
+import { useAppDispatch } from "@/redux/hooks/redux-hook";
 import {
   Menu,
   MenuButton,
@@ -20,17 +22,9 @@ import {
   ChevronDownIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-// import { BellIcon } from "lucide-react";
 import { Fragment, useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
-// import {
-//   BookingIcon,
-//   DashboardIcon,
-//   EarningsIcon,
-//   MessagesIcon,
-//   ReviewsIcon,
-//   ServicesIcon,
-// } from "./Icons";
+
 import { useNavigate } from "react-router-dom";
 
 function AdminLayout() {
@@ -38,6 +32,8 @@ function AdminLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const dispatch = useAppDispatch();
 
   const { data: me } = useGetMeQuery();
   console.log(me);
@@ -421,8 +417,8 @@ function AdminLayout() {
                       {({ focus }) => (
                         <button
                           onClick={() => {
-                            // Handle logout logic
-                            console.log("Logging out...");
+                            dispatch(logOut()); // clear Redux + cookies + localStorage
+                            navigate("/auth/login"); // redirect to login page
                           }}
                           className={`block w-full cursor-pointer px-4 py-2 text-left text-sm transition-colors ${
                             focus ? "bg-gray-50 text-gray-900" : "text-gray-700"
