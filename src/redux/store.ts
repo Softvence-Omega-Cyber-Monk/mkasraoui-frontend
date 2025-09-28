@@ -9,6 +9,8 @@ import providerReviewReducer from "./features/review/providerReviewSlice";
 import productReducer from "./features/product/productSlice";
 import userReducer from "./features/user/userSlice";
 import planReducer from "./features/subscribtionPlan/planSlice";
+import adminProviderPlanReducer from "./features/adminProviderPlan/adminProviderPlanSlice";
+import newsLetterReducer from "./features/newsLetter/newsLetterSlice";
 import { tShirtApi } from "./features/tShirt/tshirtApi";
 
 export const store = configureStore({
@@ -24,6 +26,8 @@ export const store = configureStore({
     product: productReducer,
     user: userReducer,
     plan: planReducer,
+    providerPlan: adminProviderPlanReducer,
+    newsLetter: newsLetterReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

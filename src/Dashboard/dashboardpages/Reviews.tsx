@@ -2,7 +2,6 @@ import { SlDislike, SlLike } from "react-icons/sl";
 import Analytics from "../components/reviews/Analytics";
 import { useGetProviderReviewsQuery } from "@/redux/features/review/providerReviewApi";
 
-
 function Reviews() {
   const { data: reviews = [], isLoading } = useGetProviderReviewsQuery();
 
@@ -30,7 +29,10 @@ function Reviews() {
           Reviews & Ratings
         </h1>
         <h2 className="mb-6 text-xl font-semibold text-gray-800">
-          List of Reviews
+          Provider Reviews
+        </h2>
+        <h2 className="mb-6 text-xl font-semibold text-gray-800">
+          User Reviews
         </h2>
 
         <div className="space-y-6">
@@ -83,8 +85,6 @@ function Reviews() {
 }
 
 export default Reviews;
-
-
 
 // import { SlDislike, SlLike } from "react-icons/sl";
 // import Analytics from "../components/reviews/Analytics";

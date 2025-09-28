@@ -4,24 +4,12 @@ import { baseApi } from "@/redux/hooks/baseApi";
 import type {
   User,
   CreateUserRequest,
-  UpdateUserRequest,
+  // UpdateUserRequest,
   ApiResponse,
 } from "@/redux/types/user.type";
 
 export const userApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    // GET /user -> all users
-    // getUsers: build.query<User[], void>({
-    //   query: () => "/user",
-    //   providesTags: (result) =>
-    //     result
-    //       ? [
-    //           ...result.map(({ id }) => ({ type: "User" as const, id })),
-    //           { type: "User" as const, id: "LIST" },
-    //         ]
-    //       : [{ type: "User" as const, id: "LIST" }],
-    // }),
-
     getUsers: build.query<User[], void>({
       query: () => "/user",
       transformResponse: (response: { data: User[] }) => response.data,
@@ -59,18 +47,20 @@ export const userApi = baseApi.injectEndpoints({
     }),
 
     // PATCH /user/:id -> update user
-    updateUser: build.mutation<User, UpdateUserRequest>({
-      query: ({ id, data }) => ({
-        url: `/user/${id}`,
+    updateUser: build.mutation<User, FormData>({
+      query: (formData) => ({
+        url: "/user", // PATCH /user
         method: "PATCH",
-        body: data,
+        body: formData,
       }),
-      invalidatesTags: (_result, _error, { id }) => [
-        { type: "User", id },
-        { type: "User", id: "LIST" },
-      ],
+      invalidatesTags: (result) =>
+        result
+          ? [
+              { type: "User", id: result.id },
+              { type: "User", id: "LIST" },
+            ]
+          : [],
     }),
-
     // DELETE /user/:id -> remove user
     deleteUser: build.mutation<{ success: boolean; id?: string }, string>({
       query: (id) => ({

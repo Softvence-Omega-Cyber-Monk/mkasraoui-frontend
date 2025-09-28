@@ -7,6 +7,8 @@ import {
   useGetProviderByIdQuery,
 } from "@/redux/features/property/propertyApi";
 import type { Provider } from "@/redux/types/property.type";
+import Title from "@/components/Shared/Title";
+import PageLoader from "@/components/Shared/PageLoader";
 
 const AdminProvidersTable: React.FC = () => {
   const [page, setPage] = useState<number>(1);
@@ -81,12 +83,13 @@ const AdminProvidersTable: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50">
       <div className="mx-auto w-full">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">Providers</h1>
+          {/* <h1 className="font-sans text-4xl text-gray-900">Providers</h1> */}
 
+          <Title title="Providers" />
           <div className="flex items-center gap-2">
             <input
               type="search"
@@ -144,7 +147,8 @@ const AdminProvidersTable: React.FC = () => {
                 {isLoading || isFetching ? (
                   <tr>
                     <td colSpan={8} className="p-6 text-center text-sm">
-                      Loading providers...
+                      {/* Loading providers... */}
+                      <PageLoader />
                     </td>
                   </tr>
                 ) : providers.length === 0 ? (
@@ -191,7 +195,7 @@ const AdminProvidersTable: React.FC = () => {
 
                       <td className="px-6 py-4 text-xs text-gray-600">
                         <div className="text-xs text-gray-600">
-                          {p.serviceArea}
+                          {p.serviceArea.split(" ").slice(0, 3).join(" ")}
                         </div>
                       </td>
 
@@ -256,23 +260,30 @@ const AdminProvidersTable: React.FC = () => {
         </div>
 
         {/* Pagination */}
-        <div className="mt-4 flex items-center justify-between">
+        <div className="mt-6 flex items-center justify-between px-4 py-3">
+          {/* Info text */}
           <div className="text-sm text-gray-600">
-            Showing {providers.length} of {total ?? "—"}
+            Showing <span className="font-medium">{providers.length}</span> of{" "}
+            <span className="font-medium">{total ?? "—"}</span>
           </div>
 
+          {/* Pagination Controls */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="cursor-pointer rounded-md border px-3 py-1 text-sm"
+              className="cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Prev
             </button>
-            <div className="px-3 py-1 text-sm">Page {pageFromServer}</div>
+
+            <div className="min-w-[50px] rounded-md border border-[#E3E3E4] bg-gray-50 px-3 py-1.5 text-center text-sm font-medium text-gray-700 shadow-sm">
+              {pageFromServer}
+            </div>
+
             <button
               onClick={() => setPage((p) => p + 1)}
-              className="cursor-pointer rounded-md border px-3 py-1 text-sm"
+              className="cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium text-gray-600 transition hover:bg-gray-100"
             >
               Next
             </button>

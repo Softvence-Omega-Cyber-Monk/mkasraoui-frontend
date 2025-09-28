@@ -1,23 +1,25 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import {
-  useGetPlansQuery,
-  useCreatePlanMutation,
-  useUpdatePlanMutation,
-  useDeletePlanMutation,
-} from "@/redux/features/subscribtionPlan/planApi";
-import PageLoader from "@/components/Shared/PageLoader";
+import { FaRegEdit } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 import { Plus, X, Loader2, Check } from "lucide-react";
 import toast from "react-hot-toast";
+
+import Title from "@/components/Shared/Title";
+import PageLoader from "@/components/Shared/PageLoader";
+
 import type {
   Feature,
   Plan,
   PlanFormData,
-} from "@/redux/types/subscribtionPlan.type";
-import { FaRegEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
-import Title from "@/components/Shared/Title";
+} from "@/redux/types/adminProviderPlan.type";
+import {
+  useCreateAdminProviderPlanMutation,
+  useDeleteAdminProviderPlanMutation,
+  useGetAdminProviderPlansQuery,
+  useUpdateAdminProviderPlanMutation,
+} from "@/redux/features/adminProviderPlan/adminProviderPlanApi";
 
 interface ApiError {
   data?: { message?: string };
@@ -26,7 +28,7 @@ interface ApiError {
 
 type PlanFormState = Omit<PlanFormData, "price"> & { price: number | "" };
 
-export default function SubscriptionPlan() {
+export default function ProviderPlan() {
   // --- State ---
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
@@ -58,12 +60,15 @@ export default function SubscriptionPlan() {
     isLoading,
     isError,
     refetch,
-  } = useGetPlansQuery();
+  } = useGetAdminProviderPlansQuery();
   const plans = plansResponse?.data || [];
 
-  const [createPlan, { isLoading: isCreating }] = useCreatePlanMutation();
-  const [updatePlan, { isLoading: isUpdating }] = useUpdatePlanMutation();
-  const [deletePlan, { isLoading: isDeleting }] = useDeletePlanMutation();
+  const [createPlan, { isLoading: isCreating }] =
+    useCreateAdminProviderPlanMutation();
+  const [updatePlan, { isLoading: isUpdating }] =
+    useUpdateAdminProviderPlanMutation();
+  const [deletePlan, { isLoading: isDeleting }] =
+    useDeleteAdminProviderPlanMutation();
 
   // --- Validation ---
   const validateForm = useCallback(() => {
@@ -117,11 +122,8 @@ export default function SubscriptionPlan() {
         toast.success("Plan created successfully!");
       }
 
-      // Reset form and close modal
       resetForm();
       setIsDialogOpen(false);
-
-      // Refresh list
       refetch();
     } catch (error: unknown) {
       const err = error as ApiError;
@@ -151,8 +153,6 @@ export default function SubscriptionPlan() {
     try {
       await deletePlan(planToDelete).unwrap();
       toast.success("Plan deleted successfully!");
-
-      // Refresh list
       refetch();
     } catch (error: unknown) {
       const err = error as ApiError;
@@ -160,7 +160,6 @@ export default function SubscriptionPlan() {
         err?.data?.message || err?.message || "Failed to delete plan",
       );
     } finally {
-      // Close delete dialog and reset selection
       setDeleteDialogOpen(false);
       setPlanToDelete(null);
     }
@@ -219,24 +218,11 @@ export default function SubscriptionPlan() {
     setFeatureModalOpen(true);
   }, []);
 
-  // if (isLoading) return <PageLoader />;
-
-  // if (isError)
-  //   return (
-  //     <div className="py-8 text-center text-red-500">
-  //       Error loading plans.{" "}
-  //       <button className="text-blue-600 underline" onClick={refetch}>
-  //         Try again
-  //       </button>
-  //     </div>
-  //   );
-
   return (
     <div className="mx-auto w-full font-sans">
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
-        {/* <h1 className="text-3xl font-bold">Subscription Plan </h1> */}
-        <Title title="Subscription Plan" />
+        <Title title="ProviderPlan" />
         <button
           onClick={() => {
             resetForm();
@@ -248,7 +234,7 @@ export default function SubscriptionPlan() {
         </button>
       </div>
 
-      {/* Add / Edit Plan Modal */}
+      {/* Add/Edit Plan Modal */}
       {isDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="relative w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-8 shadow-2xl">
@@ -362,6 +348,7 @@ export default function SubscriptionPlan() {
                     <Plus className="h-4 w-4" />
                   </button>
                 </div>
+
                 {newPlan.features.map((f, i) => (
                   <div
                     key={i}
@@ -412,7 +399,7 @@ export default function SubscriptionPlan() {
         </div>
       )}
 
-      {/* Feature Modal */}
+      {/* Features Modal */}
       {featureModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
@@ -464,13 +451,25 @@ export default function SubscriptionPlan() {
               </tr>
             </thead>
             <tbody>
-              {isLoading || isError ? (
+              {isLoading ? (
                 <tr>
                   <td
                     colSpan={6}
                     className="p-6 text-center text-sm text-gray-500"
                   >
                     <PageLoader />
+                  </td>
+                </tr>
+              ) : isError ? (
+                <tr>
+                  <td colSpan={6} className="p-6 text-center text-red-500">
+                    Error loading plans.{" "}
+                    <button
+                      onClick={refetch}
+                      className="text-blue-600 underline"
+                    >
+                      Try again
+                    </button>
                   </td>
                 </tr>
               ) : plans.length === 0 ? (
@@ -509,20 +508,15 @@ export default function SubscriptionPlan() {
                       {plan.is_active ? "Active" : "Inactive"}
                     </td>
                     <td className="flex space-x-2 px-6 py-4">
-                      {/* Edit Button */}
                       <button
                         onClick={() => openEditDialog(plan)}
-                        className="flex cursor-pointer items-center justify-center rounded-md bg-yellow-500 p-2 text-white transition-colors hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
-                        title="Edit Plan"
+                        className="flex cursor-pointer items-center justify-center rounded-md bg-yellow-500 p-2 text-white hover:bg-yellow-600"
                       >
                         <FaRegEdit className="h-4 w-4" />
                       </button>
-
-                      {/* Delete Button */}
                       <button
                         onClick={() => handleDeletePlan(plan.id)}
-                        className="flex cursor-pointer items-center justify-center rounded-md bg-red-600 p-2 text-white transition-colors hover:bg-red-700 focus:ring-2 focus:ring-red-400 focus:outline-none"
-                        title="Delete Plan"
+                        className="flex cursor-pointer items-center justify-center rounded-md bg-red-600 p-2 text-white hover:bg-red-700"
                       >
                         {isDeleting && planToDelete === plan.id ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -539,36 +533,29 @@ export default function SubscriptionPlan() {
         </div>
       </div>
 
-      {/* Delete Confirmation */}
-      {/* Delete Confirmation Modal */}
+      {/* Delete Modal */}
       {deleteDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="relative w-full max-w-md scale-100 transform rounded-2xl bg-white p-8 shadow-xl transition-transform duration-200">
-            {/* Header */}
+          <div className="relative w-full max-w-md scale-100 transform rounded-2xl bg-white p-8 shadow-xl">
             <h3 className="mb-4 text-2xl font-semibold text-gray-800">
               Confirm Deletion
             </h3>
-
-            {/* Message */}
             <p className="mb-6 text-gray-600">
-              Are you sure you want to delete this subscription plan? <br />
-              This action cannot be undone.
+              Are you sure you want to delete this subscription plan? This
+              action cannot be undone.
             </p>
-
-            {/* Buttons */}
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteDialogOpen(false)}
                 disabled={isDeleting}
-                className="cursor-pointer rounded-lg border border-gray-300 px-5 py-2 font-medium text-gray-700 transition hover:bg-gray-100 focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 focus:outline-none"
+                className="cursor-pointer rounded-lg border border-gray-300 px-5 py-2 text-gray-700 hover:bg-gray-100"
               >
                 Cancel
               </button>
-
               <button
                 onClick={confirmDeletePlan}
                 disabled={isDeleting}
-                className="flex cursor-pointer items-center gap-2 rounded-lg bg-red-600 px-5 py-2 font-semibold text-white shadow-lg transition hover:bg-red-700 focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:outline-none"
+                className="flex cursor-pointer items-center gap-2 rounded-lg bg-red-600 px-5 py-2 text-white hover:bg-red-700"
               >
                 {isDeleting && <Loader2 className="h-5 w-5 animate-spin" />}
                 Delete
