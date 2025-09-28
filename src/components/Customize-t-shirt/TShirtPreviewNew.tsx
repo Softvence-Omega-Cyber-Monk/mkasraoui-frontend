@@ -1,7 +1,8 @@
 import React from "react";
 
 interface TShirtPreviewProps {
-  tShirt: string;
+  tShirtDesign: string;
+  tShirtMockup: string;
   colors: { name: string; bg: string; border: string }[];
   selectedColor: string;
   uploadedImage: string | null;
@@ -15,7 +16,8 @@ interface TShirtPreviewProps {
 }
 
 const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
-  tShirt,
+  tShirtDesign,
+  tShirtMockup,
   colors,
   selectedColor,
   uploadedImage,
@@ -28,60 +30,58 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
   setQuantity,
 }) => {
   const unitPrice = 12.9;
+
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="mb-4 text-center text-lg font-semibold text-gray-800">
-          Live Preview
-        </h3>
+      <h3 className="mb-4 text-center text-lg font-semibold text-gray-800">
+        Live Preview
+      </h3>
 
-        {/* Main Preview */}
-        <div className="rounded-lg bg-gradient-to-b from-blue-100 to-blue-200 p-8 text-center">
+      <div className="flex flex-col gap-6 md:flex-row md:gap-4 justify-center">
+        {/* Design Image */}
+        <div className="rounded-lg bg-gradient-to-b from-blue-100 to-blue-200 p-4 text-center relative">
           <div className="relative inline-block">
-            {/* Color overlay for t-shirt */}
-            <div className="relative">
-              <img
-                src={tShirt}
-                alt="T-shirt preview"
-                className="h-80 w-64 object-contain"
+            <img
+              src={tShirtDesign}
+              alt="T-shirt design"
+              className="h-80 w-64 object-contain"
+            />
+            {selectedColor !== "white" && (
+              <div
+                className={`absolute inset-0 h-80 w-64 ${
+                  colors.find((c) => c.name === selectedColor)?.bg
+                } opacity-60 mix-blend-multiply`}
+                style={{
+                  maskImage: `url(${tShirtDesign})`,
+                  maskSize: "contain",
+                  maskRepeat: "no-repeat",
+                  maskPosition: "center",
+                  WebkitMaskImage: `url(${tShirtDesign})`,
+                  WebkitMaskSize: "contain",
+                  WebkitMaskRepeat: "no-repeat",
+                  WebkitMaskPosition: "center",
+                }}
               />
-              {selectedColor !== "white" && (
-                <div
-                  className={`absolute inset-0 h-80 w-64 ${
-                    colors.find((c) => c.name === selectedColor)?.bg
-                  } opacity-60 mix-blend-multiply`}
-                  style={{
-                    maskImage: `url(${tShirt})`,
-                    maskSize: "contain",
-                    maskRepeat: "no-repeat",
-                    maskPosition: "center",
-                    WebkitMaskImage: `url(${tShirt})`,
-                    WebkitMaskSize: "contain",
-                    WebkitMaskRepeat: "no-repeat",
-                    WebkitMaskPosition: "center",
-                  }}
-                />
-              )}
-            </div>
+            )}
 
-            {/* Design Overlay */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
               <div className="flex h-42 w-42 flex-col items-center justify-center rounded-lg bg-transparent p-2">
                 {uploadedImage && (
                   <img
-                    src={uploadedImage || "/placeholder.svg"}
+                    src={uploadedImage}
                     alt="Uploaded design"
                     className="mb-1 h-16 w-16 object-contain"
                   />
                 )}
-
                 {!uploadedImage && (
                   <div className="mb-1 text-5xl">
-                    {selectedTheme.find((theme) => theme.id === selectedThemeId)
-                      ?.icon || "🦄"}
+                    {
+                      selectedTheme.find(
+                        (theme) => theme.id === selectedThemeId
+                      )?.icon
+                    }
                   </div>
                 )}
-
                 {childName && (
                   <div className="text-center text-xs leading-tight font-bold text-purple-600">
                     {childName}
@@ -100,11 +100,76 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
               </div>
             </div>
           </div>
+          <div className="mt-2 text-sm text-gray-600">Design Preview</div>
+        </div>
+
+        {/* Mockup Image */}
+        <div className="rounded-lg bg-gradient-to-b from-blue-100 to-blue-200 p-4 text-center relative">
+          <div className="relative inline-block">
+            <img
+              src={tShirtMockup}
+              alt="T-shirt mockup"
+              className="h-80 w-64 object-contain"
+            />
+            {selectedColor !== "white" && (
+              <div
+                className={`absolute inset-0 h-80 w-64 ${
+                  colors.find((c) => c.name === selectedColor)?.bg
+                } opacity-60 mix-blend-multiply`}
+                style={{
+                  maskImage: `url(${tShirtMockup})`,
+                  maskSize: "contain",
+                  maskRepeat: "no-repeat",
+                  maskPosition: "center",
+                  WebkitMaskImage: `url(${tShirtMockup})`,
+                  WebkitMaskSize: "contain",
+                  WebkitMaskRepeat: "no-repeat",
+                  WebkitMaskPosition: "center",
+                }}
+              />
+            )}
+
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
+              <div className="flex h-42 w-42 flex-col items-center justify-center rounded-lg bg-transparent p-2">
+                {uploadedImage && (
+                  <img
+                    src={uploadedImage}
+                    alt="Uploaded design"
+                    className="mb-1 h-16 w-16 object-contain"
+                  />
+                )}
+                {!uploadedImage && (
+                  <div className="mb-1 text-5xl">
+                    {
+                      selectedTheme.find(
+                        (theme) => theme.id === selectedThemeId
+                      )?.icon
+                    }
+                  </div>
+                )}
+                {childName && (
+                  <div className="text-center text-xs leading-tight font-bold text-purple-600">
+                    {childName}
+                  </div>
+                )}
+                {age && (
+                  <div className="text-center text-xs text-purple-500">
+                    Age {age}
+                  </div>
+                )}
+                {optionalMessage && (
+                  <div className="mt-1 text-center text-xs leading-tight text-gray-600">
+                    {optionalMessage}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="mt-2 text-sm text-gray-600">Mockup Preview</div>
         </div>
       </div>
 
-      {/* Quantity and Price */}
-      {/* Quantity and Price */}
+      {/* Quantity & Price */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium text-gray-700">Quantity:</span>
@@ -115,9 +180,7 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
             >
               -
             </button>
-            <span className="border-x border-gray-300 px-4 py-2">
-              {quantity}
-            </span>
+            <span className="border-x border-gray-300 px-4 py-2">{quantity}</span>
             <button
               onClick={() => setQuantity(quantity + 1)}
               className="px-3 py-2 text-gray-600 hover:text-gray-800"
