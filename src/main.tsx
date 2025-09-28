@@ -58,6 +58,7 @@ import CheckoutPage from "./Pages/Checkout";
 import ProviderPlanPage from "./Pages/Admin/ProviderPlanPage";
 import NewsletterPage from "./Pages/Admin/NewsletterPage";
 import AdminUpdateProfile from "./components/Admin/AllUsers/AdminUpdateProfile";
+import ProviderUpdateProfile from "./components/Provider/ProviderUpdateProfile";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -242,6 +243,10 @@ const router = createBrowserRouter([
       {
         path: "earnings",
         element: <Earnings />,
+      },
+      {
+        path: "provider-account",
+        element: <ProviderUpdateProfile />,
       },
     ],
   },
