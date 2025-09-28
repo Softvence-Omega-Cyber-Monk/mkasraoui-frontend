@@ -1,24 +1,46 @@
-// src/redux/features/tshirt/tShirtApi.ts
-import { baseApiForAi } from "@/redux/hooks/baseApiforAi";
-import type { TShirtRequest, TShirtResponse } from "@/redux/types/tshirt.type";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const tShirtApi = baseApiForAi.injectEndpoints({
+export interface GenerateTShirtRequest {
+  t_shirt_type: string; 
+  t_shirt_size: string; 
+  gender: string; 
+  t_shirt_color: string; 
+  age: number;
+  t_shirt_theme: string; 
+  optional_description?: string;
+  img_file?: File | null;
+}
+
+export interface GenerateTShirtResponse {
+  success: boolean;
+  message: string;
+  generated_design_url: string; 
+  generated_mockup_url: string
+}
+
+export const tShirtApi = createApi({
+  reducerPath: "tShirtApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: "https://partyplanegenerator.onrender.com", 
+  }),
   endpoints: (builder) => ({
-    generateTShirt: builder.mutation<TShirtResponse, TShirtRequest>({
-      query: (data) => {
+    generateTShirt: builder.mutation<
+      GenerateTShirtResponse,
+      GenerateTShirtRequest
+    >({
+      query: (body) => {
         const formData = new FormData();
-        formData.append("t_shirt_type", data.t_shirt_type);
-        formData.append("t_shirt_size", data.t_shirt_size);
-        formData.append("gender", data.gender);
-        formData.append("t_shirt_color", data.t_shirt_color);
-        formData.append("age", String(data.age));
-        formData.append("t_shirt_theme", data.t_shirt_theme);
-
-        if (data.optional_description) {
-          formData.append("optional_description", data.optional_description);
+        formData.append("t_shirt_type", body.t_shirt_type);
+        formData.append("t_shirt_size", body.t_shirt_size);
+        formData.append("gender", body.gender);
+        formData.append("t_shirt_color", body.t_shirt_color);
+        formData.append("age", body.age.toString());
+        formData.append("t_shirt_theme", body.t_shirt_theme);
+        if (body.optional_description) {
+          formData.append("optional_description", body.optional_description);
         }
-        if (data.img_file) {
-          formData.append("img_file", data.img_file);
+        if (body.img_file) {
+          formData.append("img_file", body.img_file);
         }
 
         return {

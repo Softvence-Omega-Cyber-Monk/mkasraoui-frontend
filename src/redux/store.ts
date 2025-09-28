@@ -11,10 +11,12 @@ import userReducer from "./features/user/userSlice";
 import planReducer from "./features/subscribtionPlan/planSlice";
 import adminProviderPlanReducer from "./features/adminProviderPlan/adminProviderPlanSlice";
 import newsLetterReducer from "./features/newsLetter/newsLetterSlice";
+import { tShirtApi } from "./features/tShirt/tshirtApi";
 
 export const store = configureStore({
   reducer: {
     [baseApi.reducerPath]: baseApi.reducer,
+    [tShirtApi.reducerPath]: tShirtApi.reducer,
     auth: authReducer,
     cart: cartReducer,
     wishlist: wishlistReducer,

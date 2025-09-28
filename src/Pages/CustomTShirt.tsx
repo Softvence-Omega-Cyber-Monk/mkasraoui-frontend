@@ -16,7 +16,10 @@ function CustomTShirt() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [optionalMessage, setOptionalMessage] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+
+  // Two images from API
+  const [tShirtDesign, setTShirtDesign] = useState<string | null>(null);
+  const [tShirtMockup, setTShirtMockup] = useState<string | null>(null);
 
   const [showSizeDropdown, setShowSizeDropdown] = useState(false);
   const [showGenderDropdown, setShowGenderDropdown] = useState(false);
@@ -75,7 +78,10 @@ function CustomTShirt() {
         img_file: uploadedFile || null,
       }).unwrap();
 
-      setGeneratedImage(response.image_url);
+      console.log(response);
+
+      setTShirtDesign(response.generated_design_url);
+      setTShirtMockup(response.generated_mockup_url);
     } catch (err) {
       console.error("Error generating t-shirt:", err);
       alert("Failed to generate t-shirt. Please try again.");
@@ -84,11 +90,18 @@ function CustomTShirt() {
 
   return (
     <div>
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-white"></div>
+        </div>
+      )}
+
       <MyHeader
         title="Custom T-Shirt Designer"
         subtitle="Create unique, personalized t-shirts for your child's special day. Choose from our collection of themes and make it truly memorable!"
         className="text-3xl sm:text-5xl md:text-6xl"
       />
+
       <div className="container mx-auto -mt-20 bg-white p-6">
         <h1 className="mb-14 text-center text-2xl font-bold text-gray-800">
           Create Your Personalized Birthday T-Shirt
@@ -109,9 +122,7 @@ function CustomTShirt() {
                 <button
                   onClick={() => setTshirtType("child")}
                   className={`flex-1 cursor-pointer rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                    tshirtType === "child"
-                      ? "bg-[#223B7D] text-white"
-                      : "text-gray-600 hover:text-gray-800"
+                    tshirtType === "child" ? "bg-[#223B7D] text-white" : "text-gray-600 hover:text-gray-800"
                   }`}
                 >
                   Child
@@ -119,9 +130,7 @@ function CustomTShirt() {
                 <button
                   onClick={() => setTshirtType("adult")}
                   className={`flex-1 cursor-pointer rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                    tshirtType === "adult"
-                      ? "bg-[#223B7D] text-white"
-                      : "text-gray-600 hover:text-gray-800"
+                    tshirtType === "adult" ? "bg-[#223B7D] text-white" : "text-gray-600 hover:text-gray-800"
                   }`}
                 >
                   Adult
@@ -168,9 +177,7 @@ function CustomTShirt() {
               <div>
                 <div className="mb-2 flex items-center">
                   <span className="mr-2 text-sm text-gray-600">👤</span>
-                  <span className="text-sm font-medium text-gray-700">
-                    Gender
-                  </span>
+                  <span className="text-sm font-medium text-gray-700">Gender</span>
                 </div>
                 <div className="relative">
                   <button
@@ -204,9 +211,7 @@ function CustomTShirt() {
             <div>
               <div className="mb-3 flex items-center">
                 <span className="mr-2 text-sm text-gray-600">🎨</span>
-                <span className="text-sm font-medium text-gray-700">
-                  Colors
-                </span>
+                <span className="text-sm font-medium text-gray-700">Colors</span>
               </div>
               <div className="flex gap-3">
                 {colors.map((color) => (
@@ -214,9 +219,7 @@ function CustomTShirt() {
                     key={color.name}
                     onClick={() => setSelectedColor(color.name)}
                     className={`h-8 w-8 rounded-full border-2 ${color.bg} ${
-                      selectedColor === color.name
-                        ? "ring-2 ring-[#223B7D] ring-offset-2"
-                        : color.border
+                      selectedColor === color.name ? "ring-2 ring-[#223B7D] ring-offset-2" : color.border
                     }`}
                   />
                 ))}
@@ -281,9 +284,7 @@ function CustomTShirt() {
                     key={theme.id}
                     onClick={() => setSelectedTheme(theme.id)}
                     className={`rounded-lg border p-4 text-center ${
-                      selectedTheme === theme.id
-                        ? "border-blue-500 bg-blue-50 text-blue-700"
-                        : "border-gray-300 hover:border-gray-400"
+                      selectedTheme === theme.id ? "border-blue-500 bg-blue-50 text-blue-700" : "border-gray-300 hover:border-gray-400"
                     }`}
                   >
                     <div className="mb-1 text-2xl">{theme.icon}</div>
@@ -296,8 +297,7 @@ function CustomTShirt() {
             {/* Image Upload */}
             <div>
               <p className="mb-3 text-sm text-gray-600">
-                Add a special image, character, or logo to personalize the
-                T-shirt even more.
+                Add a special image, character, or logo to personalize the T-shirt even more.
               </p>
               <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
                 <input
@@ -317,9 +317,7 @@ function CustomTShirt() {
                   ) : (
                     <>
                       <div className="mb-2 text-gray-400">📷</div>
-                      <div className="text-sm text-gray-500">
-                        + Select an Image
-                      </div>
+                      <div className="text-sm text-gray-500">+ Select an Image</div>
                     </>
                   )}
                 </label>
@@ -328,9 +326,7 @@ function CustomTShirt() {
 
             {/* Optional Message */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                📝 Optional Message
-              </label>
+              <label className="mb-2 block text-sm font-medium text-gray-700">📝 Optional Message</label>
               <textarea
                 value={optionalMessage}
                 onChange={(e) => setOptionalMessage(e.target.value)}
@@ -354,7 +350,8 @@ function CustomTShirt() {
 
           {/* Right Column - Preview */}
           <TShirtPreviewNew
-            tShirt={generatedImage || tShirtPlaceholder}
+            tShirtDesign={tShirtDesign || tShirtPlaceholder}
+            tShirtMockup={tShirtMockup || tShirtPlaceholder}
             colors={colors}
             selectedColor={selectedColor}
             uploadedImage={uploadedImage}
@@ -364,7 +361,7 @@ function CustomTShirt() {
             age={age}
             optionalMessage={optionalMessage}
             quantity={quantity}
-            onQuantityChange={setQuantity}
+            setQuantity={setQuantity}
           />
         </div>
       </div>
