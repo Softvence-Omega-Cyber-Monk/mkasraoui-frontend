@@ -1,3 +1,8 @@
+export interface DIYActivity {
+  id: string;
+  title: string;
+  description: string;
+}
 export interface Review {
   id: string;
   rating: number;
@@ -16,8 +21,6 @@ export interface DIYProduct {
   age_range: string;
   price: number;
   discounted_price: number | null;
-  included: string[];
-  tutorial: string | null;
   imges: string[];
   avg_rating: number;
   total_review: number;
@@ -26,6 +29,9 @@ export interface DIYProduct {
   theme: string;
   up_to_kids: string | null;
   reviews: Review[];
+  included?: string[];
+  activities?: DIYActivity[];
+  tutorial?: string;
 }
 
 export interface Activity {

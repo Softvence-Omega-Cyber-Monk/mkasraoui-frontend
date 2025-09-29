@@ -1,54 +1,61 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState } from "react";
-
-// import bannerImg from "@/assets/party-banner-bg.png";
 import allBgImg from "@/assets/party-al-bg.png";
 import { FiChevronDown } from "react-icons/fi";
 import MyHeader from "@/components/MyHeader/MyHeader";
 import Swal from "sweetalert2";
 import YourPerfectPartyTab from "@/components/AI Party Generator/YourPerfectPartyTab";
 import DatePicker from "react-datepicker";
-// import { Calendar, ChevronDown } from 'lucide-react';
+import { useCreatePartyPlanMutation } from "@/redux/features/partyPlan/partyPlanApi";
+
 interface FormData {
   childName: string;
-  childAge: string;
-  guestCount: string;
-  budget: string;
+  childAge: number;
+  guestCount: number;
+  budget: number;
   date: Date | null;
   location: string;
   selectedTheme: string;
-  selectedActivities: string[]; // <-- important
+  selectedActivities: string[]; 
+}
+
+interface PartyPlanData {
+  person_name: string;
+  person_age: number;
+  budget: number;
+  num_guests: number;
+  party_date: string;
+  location: string;
+  party_details: {
+    theme: string;
+    favorite_activities: string[];
+  };
+  num_product: number;
 }
 
 export default function PartyGenerator() {
   const [activeStep, setActiveStep] = useState("Basis Info");
-
-  // get all from input  data
+  const [partyPlanData, setPartyPlanData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [createPartyPlan] = useCreatePartyPlanMutation();
   const [formData, setFormData] = useState<FormData>({
-    // first step
     childName: "",
-    childAge: "",
-    // for second tab
-    guestCount: "",
-    budget: "",
+    childAge: 0,
+    guestCount: 0,
+    budget: 0,
     date: null,
     location: "",
-    // for select theme
     selectedTheme: "",
     selectedActivities: [],
   });
   const [selectedTheme, setSelectedTheme] = useState<string>("");
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
-
-  const finalData = { ...formData, selectedTheme, selectedActivities };
-  // console.log(finalData);
-
   const steps = [
     {
       id: "Basis Info",
       title: "Basis Info",
-      icon: 1, // JSX icon
+      icon: 1, 
     },
     {
       id: "Party Details",
@@ -78,6 +85,7 @@ export default function PartyGenerator() {
     const currentIndex = getStepIndex(activeStep);
     return currentIndex > fromIndex;
   };
+  
   const stepRequiredFields: Record<string, string[]> = {
     "Basis Info": ["childName", "childAge"],
     "Party Details": ["guestCount", "budget", "date", "location"],
@@ -92,12 +100,74 @@ export default function PartyGenerator() {
           : [...prev, activityId], // add if not selected
     );
   };
+  const formatDateForAPI = (date: Date): string => {
+    if (!date) return "";
+    
+    const day = date.getDate();
+    const months = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    
+    return `${day} ${month} ${year}`;
+  };
 
-  //  this function  work for go to next tab  and api call
+  const prepareAPIData = (): PartyPlanData => {
+    return {
+      person_name: formData.childName,
+      person_age: formData.childAge,
+      budget: formData.budget,
+      num_guests: formData.guestCount,
+      party_date: formatDateForAPI(formData.date!),
+      location: formData.location,
+      party_details: {
+        theme: selectedTheme,
+        favorite_activities: selectedActivities,
+      },
+      num_product: 3, // Default to 3 as shown in your example
+    };
+  };
+
+  const handleAPICall = async () => {
+    setIsLoading(true);
+    try {
+      const apiData = prepareAPIData();
+      console.log("Sending API data:", apiData);
+      
+      const response = await createPartyPlan(apiData).unwrap();
+      console.log("API Response:", response);
+      
+      setPartyPlanData(response);
+      
+      // Move to next step after successful API call
+      const currentIndex = getStepIndex(activeStep);
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < steps.length) {
+        setActiveStep(steps[nextIndex].id);
+      }
+      
+    } catch (error) {
+      console.error("API Error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Something went wrong!",
+        html: "Failed to generate party plan. Please try again.",
+        confirmButtonColor: "#3085d6",
+        customClass: {
+          popup: "swal-popup",
+          title: "swal-title",
+          htmlContainer: "swal-html-container",
+          confirmButton: "swal2-confirm",
+        },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const handleNext = () => {
     const currentStepFields = stepRequiredFields[activeStep] || [];
-
-    // ✅ Validation for Step 1 & 2
     if (activeStep !== "Preferences") {
       for (const field of currentStepFields) {
         if (
@@ -124,8 +194,6 @@ export default function PartyGenerator() {
         }
       }
     }
-
-    // ✅ Validation for Step 3 (Preferences)
     if (activeStep === "Preferences") {
       if (!selectedTheme || selectedActivities.length === 0) {
         Swal.fire({
@@ -142,19 +210,9 @@ export default function PartyGenerator() {
         });
         return;
       }
-
-      // ✅ Step 3 is complete → Send data to backend
-      console.log("Hey Dev, I am ready to go backend 🚀", finalData);
-
-      const currentIndex = getStepIndex(activeStep);
-      const nextIndex = currentIndex + 1;
-      if (nextIndex < steps.length) {
-        setActiveStep(steps[nextIndex].id);
-      }
+      handleAPICall();
       return;
     }
-
-    // ✅ Default: Move to next step (for Step 1 & 2)
     const currentIndex = getStepIndex(activeStep);
     const nextIndex = currentIndex + 1;
     if (nextIndex < steps.length) {
@@ -171,19 +229,7 @@ export default function PartyGenerator() {
   };
 
   const ageOptions = [
-    "0-1 years",
-    "1-2 years",
-    "2-3 years",
-    "3-4 years",
-    "4-5 years",
-    "5-6 years",
-    "6-7 years",
-    "7-8 years",
-    "8-9 years",
-    "9-10 years",
-    "10-11 years",
-    "11-12 years",
-    "12+ years",
+    1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
   ];
 
   const themes = [
@@ -234,8 +280,6 @@ export default function PartyGenerator() {
     { id: "other-activity", name: "Other" },
   ];
 
-  // this is for forth tab
-
   const renderStepContent = () => {
     switch (activeStep) {
       case "Basis Info":
@@ -263,7 +307,7 @@ export default function PartyGenerator() {
                       id="childName"
                       value={formData.childName}
                       onChange={(e) => {
-                        const onlyText = e.target.value.replace(/[0-9]/g, ""); // remove numbers
+                        const onlyText = e.target.value.replace(/[0-9]/g, ""); 
                         setFormData({ ...formData, childName: onlyText });
                       }}
                       required
@@ -284,7 +328,7 @@ export default function PartyGenerator() {
                         id="childAge"
                         value={formData.childAge}
                         onChange={(e) =>
-                          setFormData({ ...formData, childAge: e.target.value })
+                          setFormData({ ...formData, childAge: parseInt(e.target.value) })
                         }
                         required
                         className="w-full cursor-pointer appearance-none rounded-xl border border-[#C9C9C9] bg-white px-4 py-3 transition-all duration-200 outline-none focus:border-transparent focus:ring-2"
@@ -321,7 +365,6 @@ export default function PartyGenerator() {
       case "Party Details":
         return (
           <div className="mx-auto max-w-4xl">
-            {/* <h2>this for second tab </h2> */}
             <h2 className="text-center text-2xl font-bold text-[#050505] md:text-3xl">
               Step 2: A few more details! ✨
             </h2>
@@ -329,9 +372,7 @@ export default function PartyGenerator() {
               <h1 className="font-fredoka mb-8 text-2xl font-semibold text-gray-900">
                 Party Details
               </h1>
-              {/* form here start  */}
               <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
-                {/* Number of Guests */}
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-700">
                     Number of Guests
@@ -340,22 +381,20 @@ export default function PartyGenerator() {
                     <select
                       value={formData.guestCount}
                       onChange={(e) =>
-                        setFormData({ ...formData, guestCount: e.target.value })
+                        setFormData({ ...formData, guestCount: parseInt(e.target.value) })
                       }
                       className="w-full cursor-pointer appearance-none rounded-xl border border-[#C9C9C9] bg-white px-4 py-3 text-gray-700"
                     >
                       <option value="">Select guest count</option>
-                      <option value="1-10">1-10 guests</option>
-                      <option value="11-25">11-25 guests</option>
-                      <option value="26-50">26-50 guests</option>
-                      <option value="51-100">51-100 guests</option>
-                      <option value="100+">100+ guests</option>
+                      <option value="5">1-10 guests</option>
+                      <option value="20">11-25 guests</option>
+                      <option value="40">26-50 guests</option>
+                      <option value="100">51-100 guests</option>
+                      <option value="300">100+ guests</option>
                     </select>
                     <FiChevronDown className="pointer-events-none absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
                   </div>
                 </div>
-
-                {/* Budget Range */}
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-700">
                     Budget Range
@@ -365,22 +404,20 @@ export default function PartyGenerator() {
                       required
                       value={formData.budget}
                       onChange={(e) =>
-                        setFormData({ ...formData, budget: e.target.value })
+                        setFormData({ ...formData, budget: parseInt(e.target.value) })
                       }
                       className="w-full cursor-pointer appearance-none rounded-xl border border-[#C9C9C9] bg-white px-4 py-3 text-gray-700"
                     >
                       <option value="">Select budget</option>
-                      <option value="under-500">Under $500</option>
-                      <option value="500-1000">$500 - $1,000</option>
-                      <option value="1000-2500">$1,000 - $2,500</option>
-                      <option value="2500-5000">$2,500 - $5,000</option>
-                      <option value="5000+">$5,000+</option>
+                      <option value="300">Under $500</option>
+                      <option value="700">$500 - $1,000</option>
+                      <option value="1500">$1,000 - $2,500</option>
+                      <option value="4000">$2,500 - $5,000</option>
+                      <option value="7000">$5,000+</option>
                     </select>
                     <FiChevronDown className="pointer-events-none absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
                   </div>
                 </div>
-
-                {/* Party Date */}
                 <div className="w-full">
                   <label className="mb-2 block text-sm font-medium text-gray-700">
                     Party Date
@@ -396,8 +433,6 @@ export default function PartyGenerator() {
                     dateFormat="dd/MM/yyyy"
                   />
                 </div>
-
-                {/* Location */}
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-700">
                     Location
@@ -423,8 +458,6 @@ export default function PartyGenerator() {
                   </div>
                 </div>
               </div>
-
-              {/* Navigation Buttons */}
               <div className="flex justify-between">
                 <button
                   onClick={handleBack}
@@ -448,12 +481,10 @@ export default function PartyGenerator() {
       case "Preferences":
         return (
           <div className="mx-auto max-w-4xl">
-            {/* <h2>this is thead tab </h2> */}
             <h2 className="font-fredoka text-center text-3xl font-semibold text-[#050505]">
               Step 3: A few more details! ✨
             </h2>
             <div className="mx-auto mt-10 max-w-4xl rounded-2xl bg-white p-8 shadow-lg">
-              {/* Party Details Section */}
               <div className="mb-12">
                 <h2 className="mb-2 text-2xl font-bold text-gray-900">
                   Party Details
@@ -484,8 +515,6 @@ export default function PartyGenerator() {
                   })}
                 </div>
               </div>
-
-              {/* Favorite  Activities Section */}
               <div className="mb-12">
                 <h2 className="mb-2 text-2xl font-bold text-gray-900">
                   Favorite Activities
@@ -517,8 +546,6 @@ export default function PartyGenerator() {
                   })}
                 </div>
               </div>
-
-              {/* Action Buttons */}
               <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
                 <button
                   onClick={handleBack}
@@ -527,26 +554,27 @@ export default function PartyGenerator() {
                   Previous
                 </button>
 
-                {/* <button
-                  onClick={handleNext}
-                  className="hover:bg-secondary-light flex cursor-pointer items-center space-x-2 rounded-lg bg-[#223B7D] px-8 py-3 font-medium text-white transition-all duration-200 hover:shadow-lg"
-                >
-                  ✨ Generate My Party!
-                </button> */}
                 <button
                   onClick={handleNext}
-                  disabled={!selectedTheme || selectedActivities.length === 0} // disable if either not selected
+                  disabled={!selectedTheme || selectedActivities.length === 0 || isLoading}
                   className={`flex items-center space-x-2 rounded-lg px-8 py-3 font-medium transition-all duration-200 ${
-                    selectedTheme && selectedActivities.length > 0
+                    selectedTheme && selectedActivities.length > 0 && !isLoading
                       ? "cursor-pointer bg-[#223B7D] text-white hover:bg-[#1a2f66] hover:shadow-lg"
                       : "cursor-not-allowed bg-gray-400 text-gray-200"
                   }`}
                 >
-                  ✨ Generate My Party!
+                  {isLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                      <span>Generating...</span>
+                    </>
+                  ) : (
+                    <>
+                      ✨ Generate My Party!
+                    </>
+                  )}
                 </button>
               </div>
-
-              {/* Selection Summary */}
             </div>
           </div>
         );
@@ -554,7 +582,10 @@ export default function PartyGenerator() {
       case "Your Perfect Party":
         return (
           <div>
-            <YourPerfectPartyTab setActiveStep={setActiveStep} />
+            <YourPerfectPartyTab 
+              setActiveStep={setActiveStep} 
+              partyPlanData={partyPlanData}
+            />
           </div>
         );
 
@@ -562,8 +593,6 @@ export default function PartyGenerator() {
         return null;
     }
   };
-
-  // main div here
   return (
     <div className=" ">
       <MyHeader
@@ -577,13 +606,9 @@ export default function PartyGenerator() {
           className="absolute inset-0 bg-cover bg-center grayscale"
           style={{ backgroundImage: `url(${allBgImg})` }}
         ></div>
-
-        {/* Main Content */}
         <div className="relative z-10 px-2">
-          {/* Header */}
-          <div className="mb-8 lg:mb-12">{/* here something  */}</div>
-
-          <div className="mx-auto -mt-20 max-w-6xl rounded-2xl bg-transparent pt-10 drop-shadow-sm">
+          <div className="mb-8 lg:mb-12"></div>
+          <div className="mx-auto -mt-20 max-w-[1400px] rounded-2xl bg-transparent pt-10 drop-shadow-sm">
             <div className="mb-2 flex justify-center">
               <div className="flex w-full max-w-6xl items-center px-2">
                 {steps.map((step, index) => {
@@ -595,7 +620,6 @@ export default function PartyGenerator() {
                   return (
                     <React.Fragment key={step.id}>
                       <div className="relative flex h-[130px] flex-1 flex-col items-center">
-                        {/* Horizontal Line (positioned behind the circle, vertically centered) */}
                         {index < steps.length - 1 && (
                           <div className="absolute top-6 left-1/2 z-0 h-0.5 w-full">
                             <div
@@ -607,16 +631,10 @@ export default function PartyGenerator() {
                             ></div>
                           </div>
                         )}
-
-                        {/* Circle */}
                         <div
-                          // onClick={() => setActiveStep(step.id)}
-                          // this oneClick for stope go to next tab with out fill input
                           onClick={() => {
                             const targetIndex = getStepIndex(step.id);
                             const currentIndex = getStepIndex(activeStep);
-
-                            //  Prevent skipping ahead
                             if (targetIndex > currentIndex) {
                               const currentStepFields =
                                 stepRequiredFields[activeStep] || [];
@@ -639,12 +657,12 @@ export default function PartyGenerator() {
                                       confirmButton: "swal2-confirm",
                                     },
                                   });
-                                  return; // stop tab click
+                                  return; 
                                 }
                               }
                             }
 
-                            setActiveStep(step.id); // ✅ allow backward or valid forward click
+                            setActiveStep(step.id); 
                           }}
                           className={`relative z-10 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full transition-all duration-300 ${
                             isCompleted
@@ -654,17 +672,10 @@ export default function PartyGenerator() {
                                 : "bg-[#C9C9C9] text-white"
                           }`}
                         >
-                          {/* {isCompleted ? (
-                                <img src={icon5} alt="" />
-                              ) : (
-                                step.icon
-                              )} */}
                           <h2 className="font-fredoka text-xl font-bold">
                             {step.icon}
                           </h2>
                         </div>
-
-                        {/* Title */}
                         <div className="mt-2 text-center">
                           <div
                             className={`text-sm font-medium lg:text-base ${
@@ -676,7 +687,6 @@ export default function PartyGenerator() {
                             <h2 className="font-fredoka text-base break-words whitespace-normal md:text-xl">
                               {" "}
                               {step.title} <br />{" "}
-                              {/* <span className="">{step.subtitle}</span> */}
                             </h2>
                           </div>
                         </div>
@@ -686,14 +696,9 @@ export default function PartyGenerator() {
                 })}
               </div>
             </div>
-
-            {/* Main Content */}
             <div className="mb-4 p-6 lg:p-8">{renderStepContent()}</div>
           </div>
         </div>
-
-        {/* Mobile Only Cart in Center */}
-        {/* here i want to add design only for mobile   */}
       </div>
     </div>
   );

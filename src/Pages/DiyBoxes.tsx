@@ -16,12 +16,15 @@ import toast from "react-hot-toast";
 // Redux imports
 import { useAppDispatch, useAppSelector } from "@/redux/hooks/redux-hook";
 import { addToCart } from "@/redux/features/cart/cartSlice";
-import { addToWishlist, removeFromWishlist } from "@/redux/features/wishlist/wishlistSlice";
 
-// Updated API hook to use the new structure
+// API hooks
 import { useGetDIYBoxesQuery } from "@/redux/features/diyProducts/diyProductsApi";
 import type { DIYProduct } from "@/redux/types/diy.types";
-import { useAddToWishlistApiMutation, useRemoveFromWishlistApiMutation } from "@/redux/features/wishlist/wishlistApi";
+import { 
+  useAddToWishlistApiMutation, 
+  useRemoveFromWishlistApiMutation,
+  useGetWishlistQuery 
+} from "@/redux/features/wishlist/wishlistApi";
 
 export default function DiyBoxes() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,17 +32,17 @@ export default function DiyBoxes() {
   const [theme, setTheme] = useState("");
 
   const dispatch = useAppDispatch();
-  const wishlist = useAppSelector((state) => state.wishlist.items);
   const cart = useAppSelector((state) => state.cart.items);
 
-  // API mutations for wishlist
+  // Wishlist API hooks
+  const { data: wishlistItems = [] } = useGetWishlistQuery();
   const [addToWishlistApi] = useAddToWishlistApiMutation();
   const [removeFromWishlistApi] = useRemoveFromWishlistApiMutation();
 
   // Loading states for individual items
   const [wishlistLoadingStates, setWishlistLoadingStates] = useState<{[key: string]: boolean}>({});
 
-  // Updated: Use the new API hook that returns only DIY boxes
+  // Get DIY boxes data
   const { data: activities = [], isLoading, isError } = useGetDIYBoxesQuery();
 
   // Star rating renderer
@@ -61,9 +64,9 @@ export default function DiyBoxes() {
     return stars;
   };
 
-  // Updated wishlist toggle with API integration
+  // Wishlist toggle with API integration only
   const toggleLike = async (item: DIYProduct) => {
-    const isInWishlist = wishlist.some((w) => String(w.id) === String(item.id));
+    const isInWishlist = checkIsInWishlist(String(item.id));
     
     // Set loading state for this specific item
     setWishlistLoadingStates(prev => ({ ...prev, [item.id]: true }));
@@ -71,24 +74,12 @@ export default function DiyBoxes() {
     try {
       if (isInWishlist) {
         // Remove from wishlist
-        const result = await removeFromWishlistApi(String(item.id)).unwrap();
-        dispatch(removeFromWishlist(String(item.id)));
+        await removeFromWishlistApi(String(item.id)).unwrap();
         toast.success(`${item.title} removed from wishlist!`);
-        console.log('Removed from wishlist:', result);
       } else {
         // Add to wishlist
-        const result = await addToWishlistApi({ product_id: String(item.id) }).unwrap();
-        dispatch(
-          addToWishlist({
-            id: String(item.id),
-            title: item.title,
-            price: item.discounted_price || item.price,
-            image: item.imges?.[0] || "",
-            description: item.description,
-          })
-        );
+        await addToWishlistApi({ product_id: String(item.id) }).unwrap();
         toast.success(`${item.title} added to wishlist!`);
-        console.log('Added to wishlist:', result);
       }
     } catch (error) {
       console.error('Wishlist API error:', error);
@@ -98,9 +89,10 @@ export default function DiyBoxes() {
       toast.error(errorMessage);
       
       if (error && typeof error === 'object' && 'status' in error) {
-        if (error.status === 401) {
+        const apiError = error as { status: number };
+        if (apiError.status === 401) {
           toast.error('Please log in to manage your wishlist');
-        } else if (error.status === 500) {
+        } else if (apiError.status === 500) {
           toast.error('Server error. Please try again later.');
         }
       }
@@ -110,9 +102,9 @@ export default function DiyBoxes() {
     }
   };
 
-  // Helper functions
-  const isInWishlist = (itemId: string): boolean => {
-    return wishlist.some((w) => String(w.id) === String(itemId));
+  // Helper functions - now using API data only
+  const checkIsInWishlist = (itemId: string): boolean => {
+    return wishlistItems.some((item) => String(item.id) === String(itemId));
   };
 
   const isInCart = (itemId: string): boolean => {
@@ -123,7 +115,7 @@ export default function DiyBoxes() {
     return wishlistLoadingStates[itemId] || false;
   };
 
-  // Enhanced filtering to work with new API structure
+  // Enhanced filtering
   const filteredActivities = activities.filter((activity) => {
     const matchesSearch = activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          activity.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -166,7 +158,7 @@ export default function DiyBoxes() {
               />
             </div>
 
-            {/* Updated Age Range options to match API data */}
+            {/* Age Range */}
             <div className="relative">
               <select
                 value={ageRange}
@@ -187,7 +179,7 @@ export default function DiyBoxes() {
               </div>
             </div>
 
-            {/* Updated Theme options to match API data */}
+            {/* Theme */}
             <div className="relative">
               <select
                 value={theme}
@@ -218,7 +210,7 @@ export default function DiyBoxes() {
           ) : (
             <div className="mx-auto mt-20 grid grid-cols-1 gap-6 px-4 pb-14 md:grid-cols-2 lg:grid-cols-3">
               {filteredActivities.map((activity) => {
-                const liked = isInWishlist(String(activity.id));
+                const liked = checkIsInWishlist(String(activity.id));
                 const inCart = isInCart(String(activity.id));
                 const wishlistLoading = isWishlistLoading(String(activity.id));
                 
@@ -240,7 +232,7 @@ export default function DiyBoxes() {
                         DIY Box
                       </div>
                       
-                      {/* Updated wishlist button with loading state */}
+                      {/* Wishlist button */}
                       <button
                         className="absolute top-3 left-3 rounded-full bg-white p-2 shadow-sm hover:bg-gray-50 transition-colors"
                         onClick={() => toggleLike(activity)}
@@ -291,7 +283,7 @@ export default function DiyBoxes() {
                         </span>
                       </div>
 
-                      {/* Updated Price display to handle discounted_price */}
+                      {/* Price */}
                       <div className="mb-4 flex justify-between">
                         <div className="flex items-baseline gap-2">
                           <span className="text-2xl font-bold text-[#223B7D]">

@@ -8,7 +8,6 @@ export interface OrderItem {
 
 export interface ShippingInfo {
   name: string;
-  email: string;
   phone: string;
   city: string;
   state: string;
