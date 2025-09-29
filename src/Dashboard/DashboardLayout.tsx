@@ -18,7 +18,7 @@ import {
   DashboardIcon,
   MessagesIcon,
   ReviewsIcon,
-  ServicesIcon,
+  // ServicesIcon,
 } from "./Icons";
 import { useNavigate } from "react-router-dom";
 import { useGetMeQuery } from "@/redux/features/user/userApi";
@@ -58,14 +58,19 @@ function DashboardLayout() {
       icon: DashboardIcon,
       end: true,
     },
+    // {
+    //   to: "/dashboard/services",
+    //   label: "Provider",
+    //   icon: ServicesIcon,
+    // },
+    // {
+    //   to: "/dashboard/booking",
+    //   label: "Bookings",
+    //   icon: BookingIcon,
+    // },
     {
-      to: "/dashboard/services",
-      label: "Provider",
-      icon: ServicesIcon,
-    },
-    {
-      to: "/dashboard/booking",
-      label: "Bookings",
+      to: "/dashboard/provider-quotes",
+      label: "Provider Quotes",
       icon: BookingIcon,
     },
     {

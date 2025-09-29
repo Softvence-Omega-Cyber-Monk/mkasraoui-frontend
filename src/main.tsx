@@ -59,6 +59,9 @@ import ProviderPlanPage from "./Pages/Admin/ProviderPlanPage";
 import NewsletterPage from "./Pages/Admin/NewsletterPage";
 import AdminUpdateProfile from "./components/Admin/AllUsers/AdminUpdateProfile";
 import ProviderUpdateProfile from "./components/Provider/ProviderUpdateProfile";
+import ProviderQuotesPage from "./Pages/Provider/ProviderQuotesPage";
+import AdminOrderPage from "./Pages/Admin/AdminOrderPage";
+import AdminCustomerOrderPage from "./Pages/Admin/AdminCustomerOrderPage";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -229,6 +232,10 @@ const router = createBrowserRouter([
         element: <Services />,
       },
       {
+        path: "provider-quotes",
+        element: <ProviderQuotesPage />,
+      },
+      {
         path: "booking",
         element: <BookingParent />,
       },
@@ -266,6 +273,14 @@ const router = createBrowserRouter([
       {
         path: "all-users",
         element: <AdminAllUsersPage />,
+      },
+      {
+        path: "all-orders",
+        element: <AdminOrderPage />,
+      },
+      {
+        path: "all-customer-orders",
+        element: <AdminCustomerOrderPage />,
       },
       {
         path: "provider-management",

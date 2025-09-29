@@ -1,6 +1,5 @@
 import NavLogo from "@/assets/navlogo-new.png";
 import {
-  BookingIcon,
   DashboardIcon,
   EarningsIcon,
   MessagesIcon,
@@ -23,6 +22,12 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { Fragment, useEffect, useState } from "react";
+import { FaFileInvoiceDollar, FaJediOrder, FaUsers } from "react-icons/fa";
+import { FaMoneyCheckDollar } from "react-icons/fa6";
+import { GoProjectSymlink } from "react-icons/go";
+import { MdOutlineAddChart } from "react-icons/md";
+import { RiListOrdered } from "react-icons/ri";
+
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 
 import { useNavigate } from "react-router-dom";
@@ -64,27 +69,37 @@ function AdminLayout() {
     {
       to: "/admin-dashboard/all-users",
       label: "All Users",
-      icon: BookingIcon,
+      icon: FaUsers,
+    },
+    {
+      to: "/admin-dashboard/all-orders",
+      label: "All Orders",
+      icon: RiListOrdered,
+    },
+    {
+      to: "/admin-dashboard/all-customer-orders",
+      label: "All Customer Orders",
+      icon: FaJediOrder,
     },
     {
       to: "/admin-dashboard/provider-management",
       label: "Provider Management",
-      icon: BookingIcon,
+      icon: GoProjectSymlink,
     },
     {
       to: "/admin-dashboard/add-product",
       label: "Add Product",
-      icon: ServicesIcon,
+      icon: MdOutlineAddChart,
     },
     {
       to: "/admin-dashboard/subscription-plan",
-      label: "Subscription Plan",
-      icon: ServicesIcon,
+      label: "General Plan",
+      icon: FaMoneyCheckDollar,
     },
     {
       to: "/admin-dashboard/provider-plan",
       label: "Provider Plan",
-      icon: ServicesIcon,
+      icon: FaFileInvoiceDollar,
     },
     {
       to: "/admin-dashboard/news-letter",
