@@ -1,9 +1,15 @@
 import { useGetProviderMetaQuery } from "@/redux/features/user/dashboardApi";
 import { Calendar, FileText, MessageSquare, Star } from "lucide-react";
 import PageLoader from "../Shared/PageLoader";
+import { useGetProviderQuotesQuery } from "@/redux/features/quotes/quotesApi";
 
 const ProviderCard = () => {
   const { data, isLoading, isError } = useGetProviderMetaQuery();
+
+  const { data: quotesData } = useGetProviderQuotesQuery({
+    page: 1,
+    limit: 1000,
+  });
 
   const colors = ["#FFA600", "#9747FF", "#12CC1E", "#009CDE"];
   const bgColors = ["#FFA6001A", "#9747FF1A", "#12CC1E1A", "#009CDE1A"];
@@ -34,8 +40,8 @@ const ProviderCard = () => {
       icon: <MessageSquare />,
     },
     {
-      title: "Active Submissions",
-      amount: 10,
+      title: "All Provider Quote",
+      amount: quotesData?.data?.data?.length || 0, // ✅ correct
       icon: <FileText />,
     },
     {

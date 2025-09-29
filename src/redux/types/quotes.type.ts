@@ -20,8 +20,26 @@ export interface QuoteRequest {
 export interface QuoteResponse extends QuoteRequest {
   id: string;
   userId: string;
-  status: "PENDING" | "ACCEPTED" | "REJECTED" | string;
+  status: "PENDING" | "ACCEPTED" | "REJECTED" | "BOOKED" | "CANCELLED" | string;
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+// ✅ Generic pagination wrapper (used in getMyQuotes / getProviderQuotes)
+export interface PaginatedResponse<T> {
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+  data: T[];
+}
+
+export interface ApiResponse<T> {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: T;
 }
