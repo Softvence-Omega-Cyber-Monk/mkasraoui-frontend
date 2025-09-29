@@ -3,6 +3,7 @@ import type { ActivityItem } from "../components/DefaultPage/types/ActivityItem"
 import ActivityItemComponent from "../components/DefaultPage/ActivityItem";
 import ProviderCard from "@/components/Provider/ProviderCard";
 import { useGetMeQuery } from "@/redux/features/user/userApi";
+import ProviderQuotesTable from "@/components/Provider/ProviderQuotesTable";
 
 // Mock data
 const mockData = {
@@ -66,6 +67,9 @@ const DefaultPage: React.FC = () => {
 
         <div>
           <ProviderCard />
+        </div>
+        <div>
+          <ProviderQuotesTable />
         </div>
 
         {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
