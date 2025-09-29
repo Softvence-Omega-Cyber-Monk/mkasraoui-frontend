@@ -5,12 +5,10 @@ import StatsMetrics from "@/components/CheckList/StatsMetrics";
 import type { ReactNode } from 'react';
 import { Suspense, lazy, useCallback, useState } from 'react';
 
-// Lazy load tab content components for better performance
 const ChecklistContent = lazy(() => import("@/components/CheckList/Contents/ChecklistContent"));
 const TimelineContent = lazy(() => import("@/components/CheckList/Contents/TimelineContent"));
 const CategoryContent = lazy(() => import("@/components/CheckList/Contents/CategoryContent"));
 
-// Loading fallback component
 const TabContentSkeleton = () => (
   <div className="container min-h-screen mx-auto animate-pulse space-y-4 p-4">
     <div className="h-4 bg-gray-300 rounded w-3/4"></div>
@@ -19,14 +17,13 @@ const TabContentSkeleton = () => (
   </div>
 );
 
-// Error boundary for tab content
 interface TabContentErrorBoundaryProps {
   children: ReactNode;
   fallback?: ReactNode;
 }
 
 const TabContentErrorBoundary = ({ children = <div>Something went wrong</div> }: TabContentErrorBoundaryProps) => {
-  return <>{children}</>; // In a real app, implement proper error boundary
+  return <>{children}</>; 
 };
 
 const INITIAL_TAB = 'checklist';
@@ -36,14 +33,6 @@ function CheckList() {
   const [activeTab, setActiveTab] = useState<TabId>(INITIAL_TAB);
   const handleTabChange = useCallback((tabId: TabId) => {
     setActiveTab(tabId);
-    
-    // Optional: Analytics tracking
-    // analytics.track('tab_changed', { tab: tabId });
-    
-    // Optional: URL sync
-    // const url = new URL(window.location);
-    // url.searchParams.set('tab', tabId);
-    // window.history.pushState({}, '', url);
   }, []);
 
   const renderTabContent = () => {

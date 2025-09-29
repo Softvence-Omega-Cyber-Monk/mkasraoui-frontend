@@ -3,6 +3,7 @@ import { baseApi } from "@/redux/hooks/baseApi";
 import type { WishlistResponse, Favorite } from "@/redux/types/wishlist.types";
 
 export interface Product {
+  discounted_price: number;
   id: string;
   title: string;
   price: number;
@@ -19,10 +20,18 @@ export interface WishlistItem {
 export const wishlistApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getWishlist: builder.query<WishlistItem[], void>({
-      query: () => "/favorite",
-      transformResponse: (response: WishlistResponse) => response.data,
-      providesTags: ["Wishlist"],
-    }),
+  query: () => "/favorite",
+  transformResponse: (response: WishlistResponse): WishlistItem[] => {
+    return response.data.map((fav) => ({
+      id: fav.id,
+      prodcut: {
+        ...fav.prodcut,
+        discounted_price: fav.prodcut.discounted_price ?? fav.prodcut.price, // fallback if missing
+      },
+    }));
+  },
+  providesTags: ["Wishlist"],
+}),
 
     addToWishlistApi: builder.mutation<Favorite, { product_id: string }>({
       query: (body) => ({

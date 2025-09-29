@@ -14,6 +14,7 @@ export interface Product {
   total_review: number;
   createdAt: string;
   updatedAt: string;
+  discounted_price?: number;
 }
 
 export interface Favorite {

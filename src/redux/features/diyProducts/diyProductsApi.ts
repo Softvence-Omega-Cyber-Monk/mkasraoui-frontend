@@ -44,7 +44,7 @@ export const diyProductApi = baseApi.injectEndpoints({
         getDIYProductById: builder.query<DIYProduct, string>({
             query: (id) => `/products/${id}`,
             transformResponse: (response: SingleProductResponse) => response.data,
-            providesTags: (result, error, id) => [{ type: "DIY" as const, id }]
+            providesTags: ["DIY"]
         }),
         
         // Create review
@@ -58,10 +58,7 @@ export const diyProductApi = baseApi.injectEndpoints({
                 method: "POST",
                 body,
             }),
-            invalidatesTags: (result, error, { productId }) => [
-                { type: "DIY" as const, id: productId },
-                "DIY"
-            ],
+            invalidatesTags: ["DIY"]
         }),
     })
 });

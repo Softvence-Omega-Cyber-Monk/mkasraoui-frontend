@@ -5,7 +5,7 @@ import MyHeader from "@/components/MyHeader/MyHeader";
 import { useGenerateTShirtMutation } from "@/redux/features/tShirt/tshirtApi";
 
 function CustomTShirt() {
-  const [tshirtType, setTshirtType] = useState("child");
+  const [tshirtType, setTshirtType] = useState("CHILD");
   const [size, setSize] = useState("");
   const [gender, setGender] = useState("");
   const [selectedColor, setSelectedColor] = useState("white");
@@ -37,16 +37,16 @@ function CustomTShirt() {
   ];
 
   const themes = [
-    { id: "unicorns", name: "Unicorns", icon: "🦄" },
-    { id: "pirates", name: "Pirates", icon: "🏴‍☠️" },
-    { id: "princess", name: "Princess", icon: "👑" },
-    { id: "superheroes", name: "Superheroes", icon: "🦸" },
-    { id: "jungle", name: "Jungle", icon: "🌿" },
-    { id: "space", name: "Space", icon: "🚀" },
+    { id: "UNICORNS", name: "Unicorns", icon: "🦄" },
+    { id: "PIRATES", name: "Pirates", icon: "🏴‍☠️" },
+    { id: "PRINCESS", name: "Princess", icon: "👑" },
+    { id: "SUPERHERO", name: "Superheroes", icon: "🦸" },
+    { id: "JUNGLE", name: "Jungle", icon: "🌿" },
+    { id: "SPACE", name: "Space", icon: "🚀" },
   ];
 
   const sizes = ["S", "M", "L", "XL", "2-3 years", "4-5 years", "6-7 years", "8-9 years", "10-11 years", "12-13 years"];
-  const genders = ["male", "female", "unisex"];
+  const genders = ["MALE", "FEMALE"];
   const ages = Array.from({ length: 13 }, (_, i) => String(i + 1));
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,17 +120,17 @@ function CustomTShirt() {
               </div>
               <div className="flex rounded-lg bg-gray-100 p-1">
                 <button
-                  onClick={() => setTshirtType("child")}
+                  onClick={() => setTshirtType("CHILD")}
                   className={`flex-1 cursor-pointer rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                    tshirtType === "child" ? "bg-[#223B7D] text-white" : "text-gray-600 hover:text-gray-800"
+                    tshirtType === "CHILD" ? "bg-[#223B7D] text-white" : "text-gray-600 hover:text-gray-800"
                   }`}
                 >
                   Child
                 </button>
                 <button
-                  onClick={() => setTshirtType("adult")}
+                  onClick={() => setTshirtType("ADULT")}
                   className={`flex-1 cursor-pointer rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                    tshirtType === "adult" ? "bg-[#223B7D] text-white" : "text-gray-600 hover:text-gray-800"
+                    tshirtType === "ADULT" ? "bg-[#223B7D] text-white" : "text-gray-600 hover:text-gray-800"
                   }`}
                 >
                   Adult
@@ -362,6 +362,10 @@ function CustomTShirt() {
             optionalMessage={optionalMessage}
             quantity={quantity}
             setQuantity={setQuantity}
+            tshirtType = {tshirtType}
+            size = {size}
+            gender = {gender}
+            theme = {selectedTheme}
           />
         </div>
       </div>
