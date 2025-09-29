@@ -19,7 +19,6 @@ import toast from "react-hot-toast";
 // Redux imports
 import { useAppDispatch, useAppSelector } from "@/redux/hooks/redux-hook";
 import { addToCart } from "@/redux/features/cart/cartSlice";
-import { addToWishlist, removeFromWishlist } from "@/redux/features/wishlist/wishlistSlice";
 
 // Updated RTK Query hooks for new API structure
 import { useGetAllProductsFlatQuery } from "@/redux/features/diyProducts/diyProductsApi";
@@ -212,19 +211,10 @@ export default function Shop(): JSX.Element {
     try {
       if (isInWishlist) {
         const result = await removeFromWishlistApi(item.id).unwrap();
-        dispatch(removeFromWishlist(item.id));
         toast.success(`${item.title} removed from wishlist!`);
         console.log('Removed from wishlist:', result);
       } else {
         const result = await addToWishlistApi({ product_id: item.id }).unwrap();
-        dispatch(
-          addToWishlist({
-            id: item.id,
-            title: item.title,
-            price: item.currentPrice,
-            image: item.image,
-          })
-        );
         toast.success(`${item.title} added to wishlist!`);
         console.log('Added to wishlist:', result);
       }

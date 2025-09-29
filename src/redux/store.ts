@@ -1,5 +1,4 @@
 import cartReducer from "./features/cart/cartSlice";
-import wishlistReducer from "./features/wishlist/wishlistSlice";
 import { configureStore } from "@reduxjs/toolkit";
 import { baseApi } from "./hooks/baseApi";
 import authReducer from "./features/auth/authSlice";
@@ -12,14 +11,17 @@ import planReducer from "./features/subscribtionPlan/planSlice";
 import adminProviderPlanReducer from "./features/adminProviderPlan/adminProviderPlanSlice";
 import newsLetterReducer from "./features/newsLetter/newsLetterSlice";
 import { tShirtApi } from "./features/tShirt/tshirtApi";
+import { partyPlanApi } from "./features/partyPlan/partyPlanApi";
+import { generateCardApi } from "./features/generateCard/generateCard";
 
 export const store = configureStore({
   reducer: {
     [baseApi.reducerPath]: baseApi.reducer,
     [tShirtApi.reducerPath]: tShirtApi.reducer,
+    [partyPlanApi.reducerPath]: partyPlanApi.reducer,
+    [generateCardApi.reducerPath]: generateCardApi.reducer,
     auth: authReducer,
     cart: cartReducer,
-    wishlist: wishlistReducer,
     property: propertyReducer,
     quotes: quotesReducer,
     providerReview: providerReviewReducer,
@@ -34,7 +36,10 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [],
       },
-    }).concat(baseApi.middleware),
+    }).concat(baseApi.middleware)
+      .concat(tShirtApi.middleware)
+      .concat(partyPlanApi.middleware) 
+      .concat(generateCardApi.middleware), 
 });
 
 export type AppRootState = ReturnType<typeof store.getState>;

@@ -355,7 +355,6 @@ const Navbar: React.FC = () => {
 
   // ✅ Redux selectors
   const cart = useSelector((state: AppRootState) => state.cart.items);
-  const wishlist = useSelector((state: AppRootState) => state.wishlist.items);
 
   const navLinks = user
     ? [
@@ -515,7 +514,7 @@ const Navbar: React.FC = () => {
                   className="block rounded-xl px-4 py-2 text-gray-700 hover:bg-gray-100"
                   onClick={() => setAccountOpen(false)}
                 >
-                  My Wishlist ({wishlist.length})
+                  My Wishlist
                 </Link>
                 <button
                   onClick={handleLogout}
@@ -598,7 +597,7 @@ const Navbar: React.FC = () => {
                     onClick={toggleMenu}
                     className="hover:text-primary flex items-center gap-2 py-2 text-gray-700 transition"
                   >
-                    ❤️ Wishlist ({wishlist.length})
+                    ❤️ Wishlist
                   </Link>
                 </li>
                 <li>

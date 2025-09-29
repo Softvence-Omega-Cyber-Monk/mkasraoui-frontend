@@ -10,35 +10,75 @@ import {
   ChevronDown,
   Download,
   Mail,
-  MapPin,
   Share2,
   Sparkles,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useGenerateCardMutation } from "@/redux/features/generateCard/generateCard";
+import { useSendInvitationMutation} from "@/redux/features/invitations/invitationsApi";
 
 export default function PartyInvitations() {
   const [activeTab, setActiveTab] = useState("Create Invitation");
-  const [, setSelectedTemplate] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+
+  // Redux mutation hook
+  const [generateCard, { isLoading: isGenerating, error: generateError }] = useGenerateCardMutation();
+  const [sendInvitation, {isLoading}] = useSendInvitationMutation();
+  // const [deleteInvitation] = useDeleteInvitationMutation();
+  // const { getInvitations } = useGetInvitationsQuery();
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
+  const [generatedPartyId, setGeneratedPartyId] = useState<string | null>(null);
+  const [showPopup, setShowPopup] = useState(false);
+        const [formData, setFormData] = useState({
+          email: "",
+          guest_name: "",
+          quest_phone: "",
+        });
+        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+          setFormData({ ...formData, [e.target.name]: e.target.value });
+        };
+
+        const handleSubmit = async (e: React.FormEvent) => {
+          e.preventDefault();
+          try {
+            await sendInvitation({
+              email: formData.email,
+              guest_name: formData.guest_name,
+              quest_phone: formData.quest_phone,
+              imageUrl: generatedImageUrl!,
+              party_id: generatedPartyId!,
+            }).unwrap();
+            setShowPopup(false);
+            alert("Invitation sent successfully!");
+          } catch (err) {
+            console.error(err);
+            alert("Failed to send invitation");
+          }
+        };
 
   const tabs = [
     { id: "Create Invitation", label: "Create Invitation" },
     { id: "Preview & Send", label: "Preview & Send" },
     { id: "Manage RSVPs", label: "Manage RSVPs" },
-    // { id: "reviews", label: "Reviews" },
   ];
 
   const [isAgeDropdownOpen, setIsAgeDropdownOpen] = useState(false);
   const [partyDetails, setPartyDetails] = useState({
     childName: "",
-    age: "",
+    age: 0,
     partyDate: "",
+    partyTime: "",
+    gender: "",
     location: "",
     rsvpContact: "",
-    customMessage: "",
+    description: "",
   });
+
+
 
   const ages = Array.from({ length: 80 }, (_, i) => i + 1);
 
@@ -57,21 +97,16 @@ export default function PartyInvitations() {
     setIsAgeDropdownOpen(false);
   };
 
-  // Inside your PartyInvitations component, before renderContent()
   const [selectedDate, setSelectedDate] = useState<Date | null>(
     partyDetails.partyDate ? new Date(partyDetails.partyDate) : null,
   );
 
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
-
-    // Save as yyyy-MM-dd (like <input type="date" /> would do)
     const formattedDate = date ? date.toISOString().split("T")[0] : "";
     handleInputChange("partyDate", formattedDate);
   };
-  // this handler for go to next tab renderContent()
 
-  //  this is handel previous button for go back
   const handleBack = () => {
     const currentIndex = tabs.findIndex((tab) => tab.id === activeTab);
     if (currentIndex > 0) {
@@ -79,9 +114,56 @@ export default function PartyInvitations() {
     }
   };
 
-  // this handle function for go data in the backend
+  // Handle AI generation
+  const handleGenerateCard = async () => {
+    if (!partyDetails.description.trim()) {
+      Swal.fire({
+        icon: "warning",
+        title: "Message Required",
+        html: "Please enter a custom message to generate the card.",
+        confirmButtonColor: "#3085d6",
+      });
+      return;
+    }
+
+    try {
+      const result = await generateCard({
+        theme: selectedTemplate!,
+        description: partyDetails.description,
+        age: partyDetails.age,
+        gender: partyDetails.gender,
+        birthday_person_name: partyDetails.childName,
+        venue: partyDetails.location,
+        date: partyDetails.partyDate,
+        time: partyDetails.partyTime,
+        contact_info: partyDetails.rsvpContact
+      }).unwrap();
+
+      console.log(result)
+
+      if (result.images) {
+        setGeneratedImageUrl(result.images[0].url);
+        setGeneratedPartyId(result.images[0].public_id)
+        Swal.fire({
+          icon: "success",
+          title: "Card Generated!",
+          text: "Your custom invitation card has been created.",
+          confirmButtonColor: "#223B7D",
+        });
+        handleNext()
+      }
+    } catch (error) {
+      console.error("Failed to generate card:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Generation Failed",
+        text: "Unable to generate the card. Please try again.",
+        confirmButtonColor: "#223B7D",
+      });
+    }
+  };
+
   const handleNext = () => {
-    // Define required fields and their messages
     const requiredFields: { key: keyof typeof partyDetails; label: string }[] =
       [
         { key: "childName", label: "Child's Name" },
@@ -94,7 +176,6 @@ export default function PartyInvitations() {
     for (const field of requiredFields) {
       const value = partyDetails[field.key];
 
-      // check empty or only spaces
       if (!value || (typeof value === "string" && value.trim() === "")) {
         Swal.fire({
           icon: "warning",
@@ -108,18 +189,17 @@ export default function PartyInvitations() {
             confirmButton: "swal2-confirm",
           },
         });
-        return; // stop here
+        return;
       }
     }
-    console.log("hi dev All Party Details:", partyDetails);
-    // ✅ All fields valid → go to next tab
+
+    console.log("All Party Details:", partyDetails);
     const currentIndex = tabs.findIndex((tab) => tab.id === activeTab);
     if (currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1].id);
     }
   };
 
-  // data for the last atb
   const templates = [
     {
       id: "superhero",
@@ -150,7 +230,7 @@ export default function PartyInvitations() {
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
     },
   ];
-  //   this data for last atb
+
   const [guests, setGuests] = useState([
     {
       id: "1",
@@ -206,7 +286,6 @@ export default function PartyInvitations() {
     }
   };
 
-  // this is tab content
   const renderContent = () => {
     switch (activeTab) {
       case "Create Invitation":
@@ -223,7 +302,10 @@ export default function PartyInvitations() {
                     {templates.map((template) => (
                       <div
                         key={template.id}
-                        className={`relative cursor-pointer rounded-xl border-2 border-[#223B7D] bg-[#FFF7ED] transition-all duration-200`}
+                        className={`relative cursor-pointer rounded-xl border-2 transition-all duration-200 ${selectedTemplate === template.id
+                          ? "border-[#223B7D] bg-[#FFF7ED]"
+                          : "border-[#E6E6E6] bg-white hover:border-[#223B7D]"
+                          }`}
                         onClick={() => setSelectedTemplate(template.id)}
                       >
                         <div className="aspect-video h-52 w-full overflow-hidden rounded-t-lg">
@@ -252,6 +334,22 @@ export default function PartyInvitations() {
                       </div>
                     ))}
                   </div>
+
+                  {/* Generated Card Display */}
+                  {generatedImageUrl && (
+                    <div className="mt-6">
+                      <h3 className="mb-3 text-lg font-semibold text-[#000000]">
+                        AI Generated Card
+                      </h3>
+                      <div className="overflow-hidden rounded-xl border-2 border-[#223B7D]">
+                        <img
+                          src={generatedImageUrl}
+                          alt="Generated invitation card"
+                          className="h-auto w-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Party Details Section */}
@@ -272,7 +370,6 @@ export default function PartyInvitations() {
                         value={partyDetails.childName}
                         onChange={(e) => {
                           const value = e.target.value;
-                          //  allow only letters and spaces
                           if (/^[A-Za-z\s]*$/.test(value)) {
                             handleInputChange("childName", value);
                           }
@@ -280,61 +377,94 @@ export default function PartyInvitations() {
                       />
                     </div>
 
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700">
-                        Age
-                      </label>
-                      <div className="relative">
-                        <button
-                          type="button"
-                          className="flex w-full items-center justify-between rounded-lg border border-[#CECECE] bg-white px-3 py-2 text-left focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                          onClick={() =>
-                            setIsAgeDropdownOpen(!isAgeDropdownOpen)
-                          }
-                        >
-                          <span
-                            className={
-                              partyDetails.age
-                                ? "text-gray-900"
-                                : "text-gray-500"
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                          Age
+                        </label>
+                        <div className="relative">
+                          <button
+                            type="button"
+                            className="flex w-full items-center justify-between rounded-lg border border-[#CECECE] bg-white px-3 py-2 text-left focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            onClick={() =>
+                              setIsAgeDropdownOpen(!isAgeDropdownOpen)
                             }
                           >
-                            {partyDetails.age || "Select age"}
-                          </span>
-                          <ChevronDown className="h-4 w-4 text-gray-400" />
-                        </button>
+                            <span
+                              className={
+                                partyDetails.age
+                                  ? "text-gray-900"
+                                  : "text-gray-500"
+                              }
+                            >
+                              {partyDetails.age || "Select age"}
+                            </span>
+                            <ChevronDown className="h-4 w-4 text-gray-400" />
+                          </button>
 
-                        {isAgeDropdownOpen && (
-                          <div className="absolute z-10 mt-1 max-h-40 w-full overflow-y-auto rounded-lg border border-[#CECECE] bg-white shadow-lg">
-                            {ages.map((age) => (
-                              <button
-                                key={age}
-                                type="button"
-                                className="w-full px-3 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"
-                                onClick={() => handleAgeSelect(age)}
-                              >
-                                {age}
-                              </button>
-                            ))}
-                          </div>
-                        )}
+                          {isAgeDropdownOpen && (
+                            <div className="absolute z-10 mt-1 max-h-40 w-full overflow-y-auto rounded-lg border border-[#CECECE] bg-white shadow-lg">
+                              {ages.map((age) => (
+                                <button
+                                  key={age}
+                                  type="button"
+                                  className="w-full px-3 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"
+                                  onClick={() => handleAgeSelect(age)}
+                                >
+                                  {age}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                          Gender
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Gender"
+                          className="w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          value={partyDetails.gender}
+                          onChange={(e) =>
+                            handleInputChange("gender", e.target.value)
+                          }
+                        />
                       </div>
                     </div>
 
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700">
-                        Party Date
-                      </label>
-                      <div className="relative">
-                        <DatePicker
-                          selected={selectedDate}
-                          onChange={handleDateChange}
-                          dateFormat="dd/MM/yyyy"
-                          placeholderText="dd/mm/yyyy"
-                          className="w-full rounded-lg border border-[#CECECE] px-3 py-2 pr-10 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                          wrapperClassName="w-full" // 👈 THIS makes the wrapper stretch full width
+                    <div className="flex gap-7">
+                      <div className="flex-1">
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                          Party Date
+                        </label>
+                        <div className="relative">
+                          <DatePicker
+                            selected={selectedDate}
+                            onChange={handleDateChange}
+                            dateFormat="dd/MM/yyyy"
+                            placeholderText="dd/mm/yyyy"
+                            className="w-full rounded-lg border border-[#CECECE] px-3 py-2 pr-10 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            wrapperClassName="w-full"
+                          />
+                          <Calendar className="pointer-events-none absolute top-2.5 right-3 h-4 w-4 text-gray-400" />
+                        </div>
+                      </div>
+
+                      <div className="flex-1">
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                          Party Time
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Party Time"
+                          className="w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          value={partyDetails.partyTime}
+                          onChange={(e) =>
+                            handleInputChange("partyTime", e.target.value)
+                          }
                         />
-                        <Calendar className="pointer-events-none absolute top-2.5 right-3 h-4 w-4 text-gray-400" />
                       </div>
                     </div>
 
@@ -367,7 +497,6 @@ export default function PartyInvitations() {
                         }
                         onBlur={() => {
                           const value = partyDetails.rsvpContact.trim();
-
                           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                           const phoneRegex = /^\+?[0-9]{7,15}$/;
 
@@ -389,24 +518,37 @@ export default function PartyInvitations() {
                         <label className="block text-sm font-medium text-gray-700">
                           Custom Message
                         </label>
-                        <button className="flex cursor-pointer items-center rounded-sm border border-[#C3C3C3] px-6 py-2 text-sm text-[#223B7D] hover:text-blue-700">
+                        <button
+                          type="button"
+                          onClick={handleGenerateCard}
+                          disabled={isGenerating}
+                          className="flex cursor-pointer items-center rounded-sm border border-[#C3C3C3] px-6 py-2 text-sm text-[#223B7D] hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
                           <Sparkles className="h-4 w-4" />
-                          <span>AI Suggest</span>
+                          <span>
+                            {isGenerating ? "Generating..." : "AI Suggest"}
+                          </span>
                         </button>
                       </div>
                       <textarea
                         placeholder="Add a personal message to your invitation..."
                         rows={4}
                         className="w-full resize-none rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                        value={partyDetails.customMessage}
+                        value={partyDetails.description}
                         onChange={(e) =>
-                          handleInputChange("customMessage", e.target.value)
+                          handleInputChange("description", e.target.value)
                         }
                       />
+                      {generateError && (
+                        <p className="mt-1 text-sm text-red-600">
+                          Failed to generate card. Please try again.
+                        </p>
+                      )}
                     </div>
+
                     <div className="flex justify-end">
                       <button
-                        onClick={handleNext}
+                        onClick={handleGenerateCard}
                         className="hover:bg-secondary-light cursor-pointer rounded-md bg-[#223B7D] px-6 py-3 text-white transition-all duration-300"
                       >
                         Next
@@ -432,51 +574,7 @@ export default function PartyInvitations() {
                   </div>
                   <div className="px-6 pb-6">
                     <div className="relative">
-                      {/* Gradient border wrapper */}
-                      <div className="rounded-3xl bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 p-6">
-                        <div className="rounded-xl bg-white p-8 text-center">
-                          {/* Party icon */}
-                          <div className="mb-4 flex justify-center">
-                            <div className="text-4xl">🎉</div>
-                          </div>
-
-                          {/* Main heading */}
-                          <h2 className="mb-2 text-2xl font-bold text-[#223B7D]">
-                            You're Invited!
-                          </h2>
-
-                          {/* Subtitle */}
-                          <p className="mb-6 text-base font-medium text-gray-700">
-                            Child's Name is turning X!
-                          </p>
-
-                          {/* Date and Location */}
-                          <div className="mb-6 space-y-3">
-                            <div className="flex items-center justify-center gap-2 text-gray-700">
-                              <Calendar className="h-5 w-5" />
-                              <span className="text-base font-medium">
-                                Date at Time
-                              </span>
-                            </div>
-                            <div className="flex items-center justify-center gap-2 text-gray-700">
-                              <MapPin className="h-5 w-5" />
-                              <span className="text-base font-medium">
-                                Location
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Custom message */}
-                          <p className="mb-3 bg-[#F9FAFB] py-2 text-sm text-gray-500 italic">
-                            Your custom message will appear here...
-                          </p>
-
-                          {/* RSVP */}
-                          <p className="text-sm text-gray-700">
-                            RSVP: Contact info
-                          </p>
-                        </div>
-                      </div>
+                      <img src={generatedImageUrl!} />
                     </div>
                   </div>
                 </div>
@@ -491,7 +589,10 @@ export default function PartyInvitations() {
                     </h2>
                   </div>
                   <div className="space-y-4 px-6 pb-6">
-                    <button className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#223B7D] font-normal text-white transition-colors hover:bg-blue-900">
+                    <button
+                      onClick={() => setShowPopup(true)}
+                      className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#223B7D] font-normal text-white transition-colors hover:bg-blue-900"
+                    >
                       <Mail className="text-sm" />
                       Send Via Email
                     </button>
@@ -519,15 +620,13 @@ export default function PartyInvitations() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="rounded-lg bg-[#FAF5FF] p-4 text-center">
                         <div className="mb-1 text-2xl font-bold text-[#FD8EFF]">
-                          50
+                          {guests.length}
                         </div>
-                        <div className="text-sm text-gray-700">
-                          Total Guests
-                        </div>
+                        <div className="text-sm text-gray-700">Total Guests</div>
                       </div>
                       <div className="rounded-lg bg-[#AEF4B85C] p-4 text-center">
                         <div className="mb-1 text-2xl font-bold text-[#36B37E]">
-                          40
+                          {guests.filter((g) => g.status === "confirmed").length}
                         </div>
                         <div className="text-sm text-gray-700">Confirmed</div>
                       </div>
@@ -536,6 +635,8 @@ export default function PartyInvitations() {
                 </div>
               </div>
             </div>
+
+            {/* Navigation Buttons */}
             <div className="mt-6 flex justify-between">
               <button
                 onClick={handleBack}
@@ -552,8 +653,60 @@ export default function PartyInvitations() {
                 Next
               </button>
             </div>
+
+            {/* Popup Form */}
+            {showPopup && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                <div className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
+                  <button
+                    className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+                    onClick={() => setShowPopup(false)}
+                  >
+                    <X />
+                  </button>
+                  <h3 className="mb-4 text-xl font-semibold">Send Invitation</h3>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Your Email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full rounded-md border border-gray-300 p-2"
+                    />
+                    <input
+                      type="text"
+                      name="guest_name"
+                      placeholder="Guest Name"
+                      value={formData.guest_name}
+                      onChange={handleChange}
+                      required
+                      className="w-full rounded-md border border-gray-300 p-2"
+                    />
+                    <input
+                      type="text"
+                      name="quest_phone"
+                      placeholder="Guest Phone"
+                      value={formData.quest_phone}
+                      onChange={handleChange}
+                      required
+                      className="w-full rounded-md border border-gray-300 p-2"
+                    />
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full rounded-md bg-[#223B7D] p-2 text-white hover:bg-blue-900 transition-colors"
+                    >
+                      {isLoading ? "Sending..." : "Send Invitation"}
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         );
+
       case "Manage RSVPs":
         return (
           <div>
@@ -572,50 +725,38 @@ export default function PartyInvitations() {
     }
   };
 
-  // this is   a main  part
   return (
     <div className="pb:0 md:pb-20">
-      {/* bg-banner here  */}{" "}
       <MyHeader
         title="Party Invitations"
-        subtitle=" Create beautiful invitations and manage your guest list effortlessly"
+        subtitle="Create beautiful invitations and manage your guest list effortlessly"
         className="font-fredoka text-3xl leading-snug font-bold sm:text-5xl md:text-6xl"
       />
-      {/* here is the my tab  */}
       <div className="relative mt-1">
-        {/* Background */}
         <div
           className="absolute inset-0 z-0 bg-cover bg-center grayscale"
           style={{ backgroundImage: `url(${allBgImg})` }}
         ></div>
-
-        {/* Foreground Content */}
         <div className="relative z-10 mx-auto mt-4 max-w-7xl px-4">
           <div className="overflow-hidden rounded-lg p-2">
-            {/* Tab Navigation */}
             <div className="flex overflow-x-scroll rounded-xl border-b border-gray-200 bg-[#F5F5F5] p-2 md:overflow-x-hidden">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 cursor-pointer px-6 py-3 text-center text-xs font-medium transition-colors duration-200 md:text-lg ${
-                    activeTab === tab.id
-                      ? "rounded-md bg-[#223B7D] text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
+                  className={`flex-1 cursor-pointer px-6 py-3 text-center text-xs font-medium transition-colors duration-200 md:text-lg ${activeTab === tab.id
+                    ? "rounded-md bg-[#223B7D] text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
                 >
                   {tab.label}
                 </button>
               ))}
             </div>
-
-            {/* Tab Content */}
             <div className="mt-10 bg-white">{renderContent()}</div>
           </div>
         </div>
       </div>
-      {/* teb section  */}
-      {/* here add Love (this theme?) section */}
     </div>
   );
 }

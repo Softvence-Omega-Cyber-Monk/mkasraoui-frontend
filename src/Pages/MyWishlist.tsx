@@ -16,6 +16,7 @@ function MyWishlist() {
         title: item.prodcut.title,
         price: item.prodcut.price,
         image: item.prodcut.imges[0] || "/placeholder.png",
+        discounted_price: item.prodcut.discounted_price,
         quantity: 1,
       })
     );

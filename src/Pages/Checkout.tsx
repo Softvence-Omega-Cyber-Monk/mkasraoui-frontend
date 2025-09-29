@@ -183,7 +183,6 @@ function CheckoutPage() {
         shippingFee: shippingFee,
         shippingInfo: {
           name: formData.name,
-          email: formData.email,
           phone: formData.phone,
           city: formData.city,
           state: formData.state,
