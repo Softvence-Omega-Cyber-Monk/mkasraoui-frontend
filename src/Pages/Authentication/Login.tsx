@@ -59,24 +59,42 @@ export default function Login() {
     };
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  event.preventDefault();
 
-    const newErrors = validateAll();
-    setErrors(newErrors);
+  const newErrors = validateAll();
+  setErrors(newErrors);
 
-    const hasErrors = Object.values(newErrors).some((error) => error !== "");
-    if (hasErrors) return;
+  const hasErrors = Object.values(newErrors).some((error) => error !== "");
+  if (hasErrors) return;
 
+  try {
     const res = await login({ email, password }).unwrap();
+
+    // Save token and user info
     localStorage.setItem("access_token", res.data.accessToken);
     localStorage.setItem("userName", res.data.user.name);
-    console.log(res);
+    localStorage.setItem("userRole", res.data.user.role); // save role if needed
 
     toast.success("Login Successful");
-    // If no errors
+
+    // Update global user state
     setUser(true);
-    navigate("/home/my-account");
-  };
+
+    // Conditional redirect based on role
+    const role = res.data.user.role;
+    if (role === "ADMIN") {
+      navigate("/admin-dashboard");
+    } else if (role === "PROVIDER") {
+      navigate("/dashboard");
+    } else {
+      navigate("/home/my-account");
+    }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    toast.error(error?.data?.message || "Login failed");
+  }
+};
+
 
   return (
     <div className="flex min-h-screen">

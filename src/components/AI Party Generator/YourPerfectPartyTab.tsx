@@ -1,4 +1,7 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useCreatePartyPlanMutation } from "@/redux/features/partyPlan/partyPlanApi";
+import toast from "react-hot-toast";
 
 interface Product {
   id: string;
@@ -34,13 +37,29 @@ interface PartyPlanResponse {
 interface YourPerfectPartyTabProps {
   setActiveStep: (step: string) => void;
   partyPlanData?: PartyPlanResponse;
+  preferencesData?: {
+    person_name?: string;
+    person_age?: number;
+    budget?: number;
+    num_guests?: number;
+    party_type?: string;
+    theme?: string;
+    location?: string;
+    dietary_restrictions?: string[];
+    party_date?: string;
+    party_details?: string;
+    favorite_activities?: string[];
+  };
 }
 
 const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
   setActiveStep,
-  partyPlanData
+  partyPlanData,
+  preferencesData
 }) => {
-  // Show loading state if no data
+  const [createPartyPlan, { isLoading: isSaving }] = useCreatePartyPlanMutation();
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
   if (!partyPlanData) {
     return (
       <div className="mx-auto max-w-6xl">
@@ -54,7 +73,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
 
   const { party_plan, suggest_gifts, all_product } = partyPlanData;
 
-  // Get suggested products by matching IDs
   const getSuggestedProducts = (): Product[] => {
     const allProducts = [...all_product.diyBoxes, ...all_product.gifts];
     return suggest_gifts.product_ids
@@ -68,14 +86,43 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
     setActiveStep("Preferences");
   };
 
+  const handleSaveParty = async () => {
+    try {
+      const requestBody = {
+        person_name: preferencesData?.person_name || "Guest",
+        person_age: preferencesData?.person_age || 0,
+        budget: preferencesData?.budget || 0,
+        num_guests: preferencesData?.num_guests || 0,
+        party_date: preferencesData?.party_date || new Date().toISOString(),
+        location: preferencesData?.location || "",
+        party_details: {
+          theme: preferencesData?.theme || "",
+          favorite_activities: preferencesData?.favorite_activities || []
+        },
+        num_product: suggestedProducts.length
+      };
+
+      const response = await createPartyPlan(requestBody).unwrap();
+
+      setSaveStatus('success');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+      toast.success("Party saved successfully");
+
+      console.log("Party saved successfully:", response);
+    } catch (error) {
+      console.error("Failed to save party:", error);
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    }
+  };
+
   const renderStars = (rating: number) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
         <span
           key={i}
-          className={`text-lg ${i <= rating ? "text-yellow-400" : "text-gray-300"
-            }`}
+          className={`text-lg ${i <= rating ? "text-yellow-400" : "text-gray-300"}`}
         >
           ★
         </span>
@@ -84,12 +131,15 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
     return stars;
   };
 
-  // --- Start of Improved Design ---
   return (
-    // Increased max-width for a more spacious feel on large screens
     <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+      {saveStatus !== 'idle' && (
+        <div className={`fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg ${saveStatus === 'success' ? 'bg-green-500' : 'bg-red-500'
+          } text-white font-semibold animate-fade-in`}>
+          {saveStatus === 'success' ? '✅ Party saved successfully!' : '❌ Failed to save party'}
+        </div>
+      )}
 
-      {/* Header (1-Column) */}
       <div className="text-center mb-16 bg-white p-6 rounded-2xl shadow-xl">
         <h1 className="text-4xl sm:text-5xl font-extrabold text-[#223B7D] mb-4">
           🎉 Your Perfect Party Plan! ✨
@@ -99,11 +149,9 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
         </p>
       </div>
 
-      {/* Party Plan Sections (Two-Column on MD+) */}
       <div className="space-y-10 mb-16">
         <h2 className="text-3xl font-bold text-gray-800 border-b pb-3 mb-6">The Party Blueprint</h2>
 
-        {/* Responsive Grid for Plan Sections */}
         <div className="grid md:grid-cols-2 gap-8">
           {Object.entries(party_plan).map(([sectionTitle, items], index) => (
             <div
@@ -111,9 +159,7 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
               className="bg-white rounded-xl shadow-2xl p-6 border-t-4 border-[#223B7D]"
             >
               <h3 className="text-2xl font-extrabold text-gray-900 mb-4 flex items-center">
-                {/* Adding an icon for visual appeal */}
                 <span className="mr-3 text-[#223B7D]">
-                  {/* A simple switch for some common section headers */}
                   {sectionTitle.toLowerCase().includes('theme') && '🎨'}
                   {sectionTitle.toLowerCase().includes('food') && '🍕'}
                   {sectionTitle.toLowerCase().includes('activities') && '🎈'}
@@ -142,7 +188,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
 
       <hr className="my-16 border-gray-200" />
 
-      {/* Suggested Products (Responsive Grid maintained) */}
       {suggestedProducts.length > 0 && (
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-gray-800 border-b pb-3 mb-8">
@@ -154,7 +199,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
                 key={product.id}
                 className="bg-white rounded-xl overflow-hidden shadow-2xl hover:shadow-primary transition-all duration-300 transform hover:-translate-y-1"
               >
-                {/* Product Image */}
                 {product.imges && product.imges.length > 0 && (
                   <div className="h-48 w-80">
                     <img
@@ -169,7 +213,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
                   </div>
                 )}
 
-                {/* Product Info */}
                 <div className="p-5">
                   <h3 className="font-extrabold text-xl text-gray-900 mb-2 truncate">
                     {product.title}
@@ -179,7 +222,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
                     {product.description}
                   </p>
 
-                  {/* Rating */}
                   {product.total_review > 0 && (
                     <div className="flex items-center mb-4">
                       {renderStars(Math.round(product.avg_rating))}
@@ -189,7 +231,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
                     </div>
                   )}
 
-                  {/* Price and Action */}
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       {product.discounted_price ? (
@@ -215,7 +256,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
                     </Link>
                   </div>
 
-                  {/* Age Range & Type (Moved here for better flow) */}
                   <div className="flex flex-wrap gap-2 mb-4">
                     <span className="text-xs bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full font-medium">
                       {product.age_range}
@@ -225,7 +265,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
                     </span>
                   </div>
 
-                  {/* Included Items */}
                   {product.included && product.included.length > 0 && (
                     <div className="mt-3 border-t pt-3">
                       <p className="text-xs text-gray-500 mb-2 font-semibold">What's Inside:</p>
@@ -246,7 +285,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
                       </div>
                     </div>
                   )}
-
                 </div>
               </div>
             ))}
@@ -256,7 +294,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
 
       <hr className="my-16 border-gray-200" />
 
-      {/* Action Buttons (1-Column, Centered) */}
       <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
         <button
           onClick={handleBackToPreferences}
@@ -265,16 +302,26 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
           🔄 Generate New Plan
         </button>
 
-        <button className="px-8 py-3 bg-[#223B7D] text-white rounded-xl font-semibold hover:bg-[#1a2f66] transition-colors shadow-lg">
-          💾 Save This Plan
+        <button
+          onClick={handleSaveParty}
+          disabled={isSaving}
+          className={`px-8 py-3 bg-[#223B7D] text-white rounded-xl font-semibold hover:bg-[#1a2f66] transition-colors shadow-lg ${isSaving ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+        >
+          {isSaving ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Saving...
+            </span>
+          ) : (
+            '💾 Save This Plan'
+          )}
         </button>
-
-        {/* <button className="px-8 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition-colors shadow-lg">
-                    📤 Share Plan
-                </button> */}
       </div>
 
-      {/* Summary Stats (1-Column, Responsive Grid for items) */}
       <div className="bg-gradient-to-br from-indigo-50 to-pink-50 rounded-2xl p-8 shadow-xl border-t-4 border-[#223B7D]">
         <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
           Party Plan Summary
