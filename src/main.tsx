@@ -55,6 +55,10 @@ import BookingParent from "./Dashboard/dashboardpages/BookingParent";
 import AdminProviderManagementPage from "./Pages/Admin/AdminProviderManagementPage";
 import SubscriptionPlanPage from "./Pages/Admin/SubscriptionPlanPage";
 import CheckoutPage from "./Pages/Checkout";
+import ProviderPlanPage from "./Pages/Admin/ProviderPlanPage";
+import NewsletterPage from "./Pages/Admin/NewsletterPage";
+import AdminUpdateProfile from "./components/Admin/AllUsers/AdminUpdateProfile";
+import ProviderUpdateProfile from "./components/Provider/ProviderUpdateProfile";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -203,12 +207,11 @@ const router = createBrowserRouter([
         path: "plan",
         element: <Plan />,
       },
-      
-     
+
       {
         path: "checkout",
-        element: <CheckoutPage />
-      }
+        element: <CheckoutPage />,
+      },
     ],
   },
 
@@ -241,6 +244,10 @@ const router = createBrowserRouter([
         path: "earnings",
         element: <Earnings />,
       },
+      {
+        path: "provider-account",
+        element: <ProviderUpdateProfile />,
+      },
     ],
   },
   // admin Dashboard routes can be added here
@@ -271,6 +278,18 @@ const router = createBrowserRouter([
       {
         path: "subscription-plan",
         element: <SubscriptionPlanPage />,
+      },
+      {
+        path: "news-letter",
+        element: <NewsletterPage />,
+      },
+      {
+        path: "admin-account",
+        element: <AdminUpdateProfile />,
+      },
+      {
+        path: "provider-plan",
+        element: <ProviderPlanPage />,
       },
       {
         path: "messages",

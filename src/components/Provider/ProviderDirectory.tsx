@@ -26,7 +26,10 @@ export default function ProviderDirectory() {
     priceRange: priceRange || undefined,
   });
 
-  const providers = data?.data?.data ?? [];
+  // const providers = data?.data?.data ?? [];
+  const providers = (data?.data?.data ?? []).filter(
+    (provider) => provider.isApproved,
+  );
 
   console.log("all data provider:", providers);
 

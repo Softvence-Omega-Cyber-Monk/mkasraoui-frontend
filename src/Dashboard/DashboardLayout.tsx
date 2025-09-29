@@ -16,18 +16,24 @@ import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   BookingIcon,
   DashboardIcon,
-  EarningsIcon,
   MessagesIcon,
   ReviewsIcon,
   ServicesIcon,
 } from "./Icons";
 import { useNavigate } from "react-router-dom";
+import { useGetMeQuery } from "@/redux/features/user/userApi";
+import { useAppDispatch } from "@/redux/hooks/redux-hook";
+import { logOut } from "@/redux/features/auth/authSlice";
 
 function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useAppDispatch();
+
+  const { data: me } = useGetMeQuery();
+  console.log(me);
 
   // Close mobile sidebar on route change
   useEffect(() => {
@@ -54,7 +60,7 @@ function DashboardLayout() {
     },
     {
       to: "/dashboard/services",
-      label: "Services",
+      label: "Provider",
       icon: ServicesIcon,
     },
     {
@@ -73,11 +79,11 @@ function DashboardLayout() {
       label: "Reviews",
       icon: ReviewsIcon,
     },
-    {
-      to: "/dashboard/earnings",
-      label: "Earnings",
-      icon: EarningsIcon,
-    },
+    // {
+    //   to: "/dashboard/earnings",
+    //   label: "Earnings",
+    //   icon: EarningsIcon,
+    // },
   ];
 
   const NavItem = ({
@@ -305,7 +311,7 @@ function DashboardLayout() {
                 />
                 <div className="hidden text-left lg:block">
                   <p className="text-sm font-medium text-gray-900">
-                    Sarah Miller
+                    {me?.name}
                   </p>
                   <p className="text-xs text-gray-500">Service Provider</p>
                 </div>
@@ -327,14 +333,14 @@ function DashboardLayout() {
                 <MenuItems className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none">
                   <div className="border-b border-gray-100 px-4 py-3">
                     <p className="text-sm font-medium text-gray-900">
-                      Sarah Miller
+                      {me?.name}
                     </p>
-                    <p className="text-sm text-gray-500">sarah@example.com</p>
+                    <p className="text-sm text-gray-500">{me?.email}</p>
                   </div>
                   <div className="px-4">
                     <button
                       onClick={() =>
-                        navigate("/home/my-account", {
+                        navigate("/dashboard/provider-account", {
                           state: { initialTab: "Profile" },
                         })
                       }
@@ -385,8 +391,8 @@ function DashboardLayout() {
                       {({ focus }) => (
                         <button
                           onClick={() => {
-                            // Handle logout logic
-                            console.log("Logging out...");
+                            dispatch(logOut()); // clear Redux + cookies + localStorage
+                            navigate("/auth/login"); // redirect to login page
                           }}
                           className={`block w-full cursor-pointer px-4 py-2 text-left text-sm transition-colors ${
                             focus ? "bg-gray-50 text-gray-900" : "text-gray-700"

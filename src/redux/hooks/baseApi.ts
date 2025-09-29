@@ -63,6 +63,8 @@ export const baseApi = createApi({
     "Bookings",
     "Plan",
     "ProviderPlans",
+    "Dashboard",
+    "NewsLetter",
     "Provider",
     "Conversation",
     "Tasks",

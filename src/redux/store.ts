@@ -8,6 +8,8 @@ import providerReviewReducer from "./features/review/providerReviewSlice";
 import productReducer from "./features/product/productSlice";
 import userReducer from "./features/user/userSlice";
 import planReducer from "./features/subscribtionPlan/planSlice";
+import adminProviderPlanReducer from "./features/adminProviderPlan/adminProviderPlanSlice";
+import newsLetterReducer from "./features/newsLetter/newsLetterSlice";
 import { tShirtApi } from "./features/tShirt/tshirtApi";
 import { partyPlanApi } from "./features/partyPlan/partyPlanApi";
 import { generateCardApi } from "./features/generateCard/generateCard";
@@ -26,6 +28,8 @@ export const store = configureStore({
     product: productReducer,
     user: userReducer,
     plan: planReducer,
+    providerPlan: adminProviderPlanReducer,
+    newsLetter: newsLetterReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
