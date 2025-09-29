@@ -325,9 +325,7 @@
 //   );
 // };
 
-// export default Navbar;
-
-import React, { useEffect, useRef, useState } from "react";
+// export default Navbar;import React, { useEffect, useRef, useState } from "react";
 import {
   FiChevronDown,
   FiMenu,
@@ -335,64 +333,69 @@ import {
   FiUser,
   FiX,
 } from "react-icons/fi";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import logo from "../../assets/navlogo-new.png";
 import { User } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "@/redux/store";
+import { useEffect, useRef, useState } from "react";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const storedUser = localStorage.getItem("user");
   const userName = localStorage.getItem("userName");
+  const userRole = localStorage.getItem("userRole"); // 'admin', 'provider', 'user'
   const user = storedUser ? JSON.parse(storedUser) : null;
-  const navigate = useNavigate();
+
   const menuRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // ✅ Redux selectors
   const cart = useSelector((state: AppRootState) => state.cart.items);
 
   const navLinks = user
     ? [
-      { name: "Home", to: "/" },
-      { name: "Party Generator", to: "/home/party-generator" },
-      { name: "DIY Boxes", to: "/home/diyboxes" },
-      { name: "Invitations", to: "/home/party-invitations" },
-      { name: "Providers", to: "/home/providers" },
-      { name: "Shop", to: "/home/shop" },
-      { name: "Custom T-Shirt", to: "/home/custom-t-shirt"},
-      { name: "Blog", to: "/home/blog" },
-    ]
+        { name: "Home", to: "/" },
+        { name: "Party Generator", to: "/home/party-generator" },
+        { name: "DIY Boxes", to: "/home/diyboxes" },
+        { name: "Invitations", to: "/home/party-invitations" },
+        { name: "Providers", to: "/home/providers" },
+        { name: "Shop", to: "/home/shop" },
+        { name: "Custom T-Shirt", to: "/home/custom-t-shirt" },
+        { name: "Blog", to: "/home/blog" },
+      ]
     : [
-      { name: "Home", to: "/" },
-      { name: "About", hash: "/#about" },
-      { name: "Services", hash: "/#services" },
-      { name: "Testimonial", hash: "/#testimonial" },
-      { name: "Providers", to: "/home/providers" },
-      { name: "Shop", to: "/home/shop" },
-      { name: "Blog", to: "/home/blog" },
-    ];
+        { name: "Home", to: "/" },
+        { name: "About", hash: "/#about" },
+        { name: "Services", hash: "/#services" },
+        { name: "Testimonial", hash: "/#testimonial" },
+        { name: "Providers", to: "/home/providers" },
+        { name: "Shop", to: "/home/shop" },
+        { name: "Blog", to: "/home/blog" },
+      ];
+
+  const getDashboardUrl = () => {
+    if (userRole === "ADMIN") return "/admin-dashboard";
+    if (userRole === "PROVIDER") return "/dashboard";
+    return "/home/my-account"; // default user
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("access_token");
-    navigate("/auth/login");
-    setAccountOpen(false);
-    setIsDropdownOpen(false);
+    localStorage.removeItem("userRole");
+    window.location.href = "/auth/login";
   };
 
-  // Toggle functions
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleDropdown = () => {
     setAccountOpen(!accountOpen);
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  // Close mobile menu if clicked outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -400,10 +403,10 @@ const Navbar: React.FC = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Close dropdown if clicked outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -415,7 +418,8 @@ const Navbar: React.FC = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const getTotalCartItems = () =>
@@ -454,15 +458,11 @@ const Navbar: React.FC = () => {
 
       {/* Desktop cart & user */}
       <div className="hidden items-center gap-4 lg:flex">
-        {/* Cart */}
         <Link
           to="/home/my-cart"
           className="relative flex items-center gap-1 rounded-lg p-2 transition hover:bg-gray-50"
         >
-          <FiShoppingCart
-            size={24}
-            className="text-secondary hover:text-gray-800"
-          />
+          <FiShoppingCart size={24} className="text-secondary hover:text-gray-800" />
           {cart.length > 0 && (
             <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
               {getTotalCartItems()}
@@ -495,15 +495,16 @@ const Navbar: React.FC = () => {
               {userName?.split(" ")[0]}
               <FiChevronDown
                 size={16}
-                className={`transition-transform ${isDropdownOpen ? "rotate-180" : ""
-                  }`}
+                className={`transition-transform ${
+                  isDropdownOpen ? "rotate-180" : ""
+                }`}
               />
             </button>
 
             {accountOpen && (
               <div className="absolute right-0 z-[9999] mt-2 w-40 rounded-lg border bg-white py-3 shadow-lg transition-all duration-200">
                 <Link
-                  to="/home/my-account"
+                  to={getDashboardUrl()}
                   className="block rounded-xl px-4 py-2 text-gray-700 hover:bg-gray-100"
                   onClick={() => setAccountOpen(false)}
                 >
@@ -583,7 +584,7 @@ const Navbar: React.FC = () => {
                 <hr className="my-2 border-gray-200" />
                 <li>
                   <Link
-                    to="/home/my-account"
+                    to={getDashboardUrl()}
                     onClick={toggleMenu}
                     className="hover:text-primary flex items-center gap-2 py-2 text-gray-700 transition"
                   >
@@ -635,4 +636,3 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
-
