@@ -17,7 +17,7 @@ interface FormData {
   date: Date | null;
   location: string;
   selectedTheme: string;
-  selectedActivities: string[]; 
+  selectedActivities: string[];
 }
 
 interface PartyPlanData {
@@ -55,7 +55,7 @@ export default function PartyGenerator() {
     {
       id: "Basis Info",
       title: "Basis Info",
-      icon: 1, 
+      icon: 1,
     },
     {
       id: "Party Details",
@@ -85,7 +85,7 @@ export default function PartyGenerator() {
     const currentIndex = getStepIndex(activeStep);
     return currentIndex > fromIndex;
   };
-  
+
   const stepRequiredFields: Record<string, string[]> = {
     "Basis Info": ["childName", "childAge"],
     "Party Details": ["guestCount", "budget", "date", "location"],
@@ -102,7 +102,7 @@ export default function PartyGenerator() {
   };
   const formatDateForAPI = (date: Date): string => {
     if (!date) return "";
-    
+
     const day = date.getDate();
     const months = [
       "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -110,7 +110,7 @@ export default function PartyGenerator() {
     ];
     const month = months[date.getMonth()];
     const year = date.getFullYear();
-    
+
     return `${day} ${month} ${year}`;
   };
 
@@ -135,19 +135,19 @@ export default function PartyGenerator() {
     try {
       const apiData = prepareAPIData();
       console.log("Sending API data:", apiData);
-      
+
       const response = await createPartyPlan(apiData).unwrap();
       console.log("API Response:", response);
-      
+
       setPartyPlanData(response);
-      
+
       // Move to next step after successful API call
       const currentIndex = getStepIndex(activeStep);
       const nextIndex = currentIndex + 1;
       if (nextIndex < steps.length) {
         setActiveStep(steps[nextIndex].id);
       }
-      
+
     } catch (error) {
       console.error("API Error:", error);
       Swal.fire({
@@ -229,7 +229,7 @@ export default function PartyGenerator() {
   };
 
   const ageOptions = [
-    1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
   ];
 
   const themes = [
@@ -307,7 +307,7 @@ export default function PartyGenerator() {
                       id="childName"
                       value={formData.childName}
                       onChange={(e) => {
-                        const onlyText = e.target.value.replace(/[0-9]/g, ""); 
+                        const onlyText = e.target.value.replace(/[0-9]/g, "");
                         setFormData({ ...formData, childName: onlyText });
                       }}
                       required
@@ -499,11 +499,10 @@ export default function PartyGenerator() {
                       <button
                         key={theme.id}
                         onClick={() => setSelectedTheme(theme.id)}
-                        className={`cursor-pointer rounded-xl border-2 p-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-md ${
-                          selectedTheme === theme.id
-                            ? "border-[#223B7D] bg-blue-50 shadow-md"
-                            : "border-gray-200 bg-white hover:border-gray-300"
-                        } `}
+                        className={`cursor-pointer rounded-xl border-2 p-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-md ${selectedTheme === theme.id
+                          ? "border-[#223B7D] bg-blue-50 shadow-md"
+                          : "border-gray-200 bg-white hover:border-gray-300"
+                          } `}
                       >
                         <div className="flex items-center justify-center space-x-3">
                           <span className="font-medium text-gray-800">
@@ -530,11 +529,10 @@ export default function PartyGenerator() {
                       <button
                         key={activity.id}
                         onClick={() => handleActivityToggle(activity.id)}
-                        className={`cursor-pointer rounded-xl border-2 p-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-md ${
-                          isSelected
-                            ? "border-[#223B7D] bg-blue-50 shadow-md"
-                            : "border-gray-200 bg-white hover:border-gray-300"
-                        } `}
+                        className={`cursor-pointer rounded-xl border-2 p-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-md ${isSelected
+                          ? "border-[#223B7D] bg-blue-50 shadow-md"
+                          : "border-gray-200 bg-white hover:border-gray-300"
+                          } `}
                       >
                         <div className="flex items-center justify-center space-x-3">
                           <span className="font-medium text-gray-800">
@@ -557,11 +555,10 @@ export default function PartyGenerator() {
                 <button
                   onClick={handleNext}
                   disabled={!selectedTheme || selectedActivities.length === 0 || isLoading}
-                  className={`flex items-center space-x-2 rounded-lg px-8 py-3 font-medium transition-all duration-200 ${
-                    selectedTheme && selectedActivities.length > 0 && !isLoading
-                      ? "cursor-pointer bg-[#223B7D] text-white hover:bg-[#1a2f66] hover:shadow-lg"
-                      : "cursor-not-allowed bg-gray-400 text-gray-200"
-                  }`}
+                  className={`flex items-center space-x-2 rounded-lg px-8 py-3 font-medium transition-all duration-200 ${selectedTheme && selectedActivities.length > 0 && !isLoading
+                    ? "cursor-pointer bg-[#223B7D] text-white hover:bg-[#1a2f66] hover:shadow-lg"
+                    : "cursor-not-allowed bg-gray-400 text-gray-200"
+                    }`}
                 >
                   {isLoading ? (
                     <>
@@ -582,9 +579,26 @@ export default function PartyGenerator() {
       case "Your Perfect Party":
         return (
           <div>
-            <YourPerfectPartyTab 
-              setActiveStep={setActiveStep} 
+            <YourPerfectPartyTab
+              setActiveStep={setActiveStep}
               partyPlanData={partyPlanData}
+              preferencesData={{
+                person_name: formData.childName,
+                person_age: formData.childAge,
+                budget: formData.budget,
+                num_guests: formData.guestCount,
+                party_type: "Birthday",
+                theme: formData.selectedTheme,
+                location: formData.location,
+                dietary_restrictions: ["Vegetarian"],
+                party_date: formData.date?.toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit'
+                }),
+                party_details: "Special birthday celebration",
+                favorite_activities: formData.selectedActivities
+              }}
             />
           </div>
         );
@@ -623,11 +637,10 @@ export default function PartyGenerator() {
                         {index < steps.length - 1 && (
                           <div className="absolute top-6 left-1/2 z-0 h-0.5 w-full">
                             <div
-                              className={`h-full w-full ${
-                                isLineActive(index)
-                                  ? "bg-[#223B7D]" //this line for  active line color
-                                  : "bg-gray-300"
-                              }`}
+                              className={`h-full w-full ${isLineActive(index)
+                                ? "bg-[#223B7D]" //this line for  active line color
+                                : "bg-gray-300"
+                                }`}
                             ></div>
                           </div>
                         )}
@@ -657,20 +670,19 @@ export default function PartyGenerator() {
                                       confirmButton: "swal2-confirm",
                                     },
                                   });
-                                  return; 
+                                  return;
                                 }
                               }
                             }
 
-                            setActiveStep(step.id); 
+                            setActiveStep(step.id);
                           }}
-                          className={`relative z-10 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full transition-all duration-300 ${
-                            isCompleted
+                          className={`relative z-10 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full transition-all duration-300 ${isCompleted
+                            ? "bg-[#223B7D] text-white"
+                            : isActive
                               ? "bg-[#223B7D] text-white"
-                              : isActive
-                                ? "bg-[#223B7D] text-white"
-                                : "bg-[#C9C9C9] text-white"
-                          }`}
+                              : "bg-[#C9C9C9] text-white"
+                            }`}
                         >
                           <h2 className="font-fredoka text-xl font-bold">
                             {step.icon}
@@ -678,11 +690,10 @@ export default function PartyGenerator() {
                         </div>
                         <div className="mt-2 text-center">
                           <div
-                            className={`text-sm font-medium lg:text-base ${
-                              isActive || isCompleted
-                                ? "text-black"
-                                : "text-gray-800"
-                            }`}
+                            className={`text-sm font-medium lg:text-base ${isActive || isCompleted
+                              ? "text-black"
+                              : "text-gray-800"
+                              }`}
                           >
                             <h2 className="font-fredoka text-base break-words whitespace-normal md:text-xl">
                               {" "}

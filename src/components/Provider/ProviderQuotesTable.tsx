@@ -21,6 +21,8 @@ const ProviderQuotesTable = () => {
     page: 1,
     limit: 1000,
   });
+
+  console.log("prodsfdsfdsfd", data);
   const [updateStatus] = useUpdateQuoteStatusMutation();
 
   const quotes: QuoteResponse[] = data?.data?.data ?? [];

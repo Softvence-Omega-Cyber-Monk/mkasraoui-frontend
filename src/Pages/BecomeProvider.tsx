@@ -289,8 +289,8 @@ const BecomeProvider = () => {
                                   .map(
                                     (v: string) =>
                                       serviceCategories.find(
-                                        (c) => c.value === v
-                                      )?.label
+                                        (c) => c.value === v,
+                                      )?.label,
                                   )
                                   .join(", ")
                               : "Select categories"}
@@ -313,8 +313,7 @@ const BecomeProvider = () => {
                                   <input
                                     type="checkbox"
                                     checked={
-                                      field.value?.includes(cat.value) ||
-                                      false
+                                      field.value?.includes(cat.value) || false
                                     }
                                     onChange={() => toggleCategory(cat.value)}
                                     className="h-4 w-4"
@@ -340,12 +339,13 @@ const BecomeProvider = () => {
               </div>
 
               {/* Primary Service Area */}
-              <div className="md:col-span-2">
+              <div className="">
                 <label className="mb-2 flex items-center font-medium text-gray-700">
                   <MapPin className="text-secondary mr-2 h-5 w-5" /> Primary
                   Service Area
                 </label>
                 <GetStarted
+                
                   location={addPlaceData.location}
                   destination={addPlaceData.destination}
                   onLocationChange={(coords) => {
@@ -523,8 +523,6 @@ const BecomeProvider = () => {
 };
 
 export default BecomeProvider;
-
-
 
 // import { useRef, useState } from "react";
 // import { useForm } from "react-hook-form";

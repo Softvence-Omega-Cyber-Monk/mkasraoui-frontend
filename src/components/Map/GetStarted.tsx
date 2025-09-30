@@ -110,32 +110,32 @@ const GetStarted = ({
   return (
     <div className="flex w-full flex-col gap-5 lg:flex-row lg:items-center">
       {/* Input Section */}
-      <div className="w-full lg:w-1/2">
+      <div className="w-full">
         <div className="gap-6 space-y-8">
           <div className="space-y-4">
             {/* Location Input */}
             <div>
-              <div className="relative w-full">
+              <div onClick={openLocationMap} className="relative w-full">
                 <div className="absolute top-1/2 left-3 -translate-y-1/2">
                   <img src={map} className="h-6 w-6" />
                 </div>
 
                 <input
                   type="text"
+                  readOnly
                   value={locationAddress}
                   onChange={(e) => setLocationAddress(e.target.value)}
-                  placeholder="Enter starting location"
-                  className="border-dark-3 text-dark-3 w-full rounded-lg border py-4 pr-10 pl-10 focus:outline-none"
+                  placeholder="Select and Search location"
+                  className="border-dark-3 text-dark-3 w-full cursor-pointer rounded-lg border border-[#D1D5DC] py-4 pr-10 pl-10 focus:outline-none"
                 />
 
                 <div
-                  className="absolute top-1/2 right-2 flex h-10 w-16 -translate-y-1/2 items-center justify-center overflow-hidden rounded text-gray-500"
+                  className="absolute top-1/2 right-2 flex h-10 w-16 -translate-y-1/2 cursor-pointer items-center justify-center overflow-hidden rounded text-gray-500"
                   style={{
                     backgroundImage: `url('/mapBg.svg')`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
-                  onClick={openLocationMap}
                 >
                   <img src={mapUp} alt="" />
                 </div>

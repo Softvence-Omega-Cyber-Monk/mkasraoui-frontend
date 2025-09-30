@@ -24,6 +24,7 @@ import { useNavigate } from "react-router-dom";
 import { useGetMeQuery } from "@/redux/features/user/userApi";
 import { useAppDispatch } from "@/redux/hooks/redux-hook";
 import { logOut } from "@/redux/features/auth/authSlice";
+import { MdHome } from "react-icons/md";
 
 function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -68,6 +69,11 @@ function DashboardLayout() {
     //   label: "Bookings",
     //   icon: BookingIcon,
     // },
+    {
+      to: "/",
+      label: "Home",
+      icon: MdHome,
+    },
     {
       to: "/dashboard/provider-quotes",
       label: "Provider Quotes",
