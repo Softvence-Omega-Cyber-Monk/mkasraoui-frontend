@@ -1,4 +1,5 @@
 // src/components/DashboardCard.tsx
+import PageLoader from "@/components/Shared/PageLoader";
 import { useGetDashboardQuery } from "@/redux/features/user/dashboardApi";
 import { FaPoundSign, FaProductHunt, FaUsers } from "react-icons/fa";
 import { MdOutlineProductionQuantityLimits } from "react-icons/md";
@@ -36,7 +37,12 @@ const DashboardCard = () => {
   const colors = ["#FFA600", "#9747FF", "#12CC1E", "#009CDE"];
   const bgColors = ["#FFA6001A", "#9747FF1A", "#12CC1E1A", "#009CDE1A"];
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <div>
+        <PageLoader />
+      </div>
+    );
   if (isError) return <div>Error fetching dashboard data</div>;
 
   return (

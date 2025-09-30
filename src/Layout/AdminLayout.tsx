@@ -25,7 +25,7 @@ import { Fragment, useEffect, useState } from "react";
 import { FaFileInvoiceDollar, FaJediOrder, FaUsers } from "react-icons/fa";
 import { FaMoneyCheckDollar } from "react-icons/fa6";
 import { GoProjectSymlink } from "react-icons/go";
-import { MdOutlineAddChart } from "react-icons/md";
+import { MdHome, MdOutlineAddChart } from "react-icons/md";
 import { RiListOrdered } from "react-icons/ri";
 
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
@@ -67,6 +67,11 @@ function AdminLayout() {
       end: true,
     },
     {
+      to: "/",
+      label: "Home",
+      icon: MdHome,
+    },
+    {
       to: "/admin-dashboard/all-users",
       label: "All Users",
       icon: FaUsers,
@@ -78,7 +83,7 @@ function AdminLayout() {
     },
     {
       to: "/admin-dashboard/all-customer-orders",
-      label: "All Customer Orders",
+      label: "All Custom Orders",
       icon: FaJediOrder,
     },
     {

@@ -290,7 +290,7 @@ export default function RequestQuote() {
             type="button"
             onClick={handleSubmit}
             disabled={isLoading}
-            className="bg-secondary hover:bg-secondary-dark w-full rounded-lg px-4 py-3 font-medium text-white transition-colors focus:ring-4 focus:ring-blue-300 focus:outline-none"
+            className="bg-secondary hover:bg-secondary-dark w-full cursor-pointer rounded-lg px-4 py-3 font-medium text-white transition-colors focus:ring-4 focus:ring-blue-300 focus:outline-none"
           >
             {isLoading ? "Submitting..." : "Submit Quote"}
           </button>

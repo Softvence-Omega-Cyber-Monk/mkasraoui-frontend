@@ -46,7 +46,7 @@ const ProviderCard = () => {
     },
     {
       title: "Average Rating",
-      amount: data.avgRating.toFixed(2),
+      amount: data.avgRating !== undefined ? data.avgRating.toFixed(2) : "0.00",
       icon: <Star />,
     },
   ];

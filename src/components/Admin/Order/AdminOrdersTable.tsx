@@ -1,16 +1,22 @@
-"use client";
-
 import Title from "@/components/Shared/Title";
 import { toast } from "react-hot-toast";
-
 import type { OrderResponse } from "@/redux/types/adminOder.type";
 import {
   useGetOrdersQuery,
   useUpdateOrderStatusMutation,
+  adminOrderApi,
 } from "@/redux/features/admin/adminOrder/adminOrderApi";
 import PageLoader from "@/components/Shared/PageLoader";
+import { useState } from "react";
 
-const statusColors: Record<string, string> = {
+// Status text and background colors
+const statusText: Record<string, string> = {
+  PENDING: "text-blue-600",
+  DELIVERED: "text-green-600",
+  CANCELLED: "text-red-600",
+};
+
+const statusBg: Record<string, string> = {
   PENDING: "bg-blue-100 text-blue-800",
   DELIVERED: "bg-green-100 text-green-800",
   CANCELLED: "bg-red-100 text-red-800",
@@ -27,16 +33,34 @@ const AdminOrdersTable: React.FC = () => {
     page: 1,
     limit: 10,
   });
-  const [updateStatus, { isLoading: isUpdating }] =
-    useUpdateOrderStatusMutation();
+
+  const [updateStatus] = useUpdateOrderStatusMutation();
+  const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
 
   const handleStatusChange = async (orderId: string, status: string) => {
     try {
+      setUpdatingOrderId(orderId);
+      const toastId = toast.loading("Updating order status...");
+
+      // Update server
       await updateStatus({ id: orderId, status }).unwrap();
-      toast.success("Order status updated successfully");
-    } catch (error) {
+
+      // Optimistically update cache
+      adminOrderApi.util.updateQueryData(
+        "getOrders",
+        { page: 1, limit: 10 },
+        (draft) => {
+          const order = draft.data.orders.find((o) => o.id === orderId);
+          if (order) order.status = status;
+        },
+      );
+
+      toast.success("Order status updated successfully!", { id: toastId });
+    } catch (error: any) {
       console.error(error);
-      toast.error("Failed to update order status");
+      toast.error(error?.data?.message || "Failed to update order status");
+    } finally {
+      setUpdatingOrderId(null);
     }
   };
 
@@ -53,23 +77,18 @@ const AdminOrdersTable: React.FC = () => {
           <table className="w-full min-w-[900px]">
             <thead className="border-b-2 border-[#DBE0E5] bg-gray-50">
               <tr>
-                {/* <th className="px-6 py-5 text-left text-base font-medium text-gray-700">
-                  Order ID
-                </th> */}
                 <th className="px-6 py-5 text-left text-base font-medium text-gray-700">
                   Customer
                 </th>
                 <th className="px-6 py-5 text-left text-base font-medium text-gray-700">
                   Total
                 </th>
-
                 <th className="px-6 py-5 text-left text-base font-medium text-gray-700">
                   Items
                 </th>
                 <th className="px-6 py-5 text-left text-base font-medium text-gray-700">
                   Created At
                 </th>
-
                 <th className="px-6 py-5 text-left text-base font-medium text-gray-700">
                   Status
                 </th>
@@ -104,11 +123,6 @@ const AdminOrdersTable: React.FC = () => {
                     key={order.id}
                     className="border-b-2 border-gray-100 hover:bg-gray-50"
                   >
-                    {/* Order ID */}
-                    {/* <td className="px-6 py-4 font-mono text-xs text-gray-900">
-                      {order.id.slice(0, 8)}...
-                    </td> */}
-
                     {/* Customer */}
                     <td className="px-6 py-4 text-xs text-gray-600">
                       <div className="text-sm font-medium">
@@ -138,28 +152,28 @@ const AdminOrdersTable: React.FC = () => {
                     <td className="px-6 py-4 text-xs text-gray-600">
                       {new Date(order.createdAt).toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 text-xs text-gray-600">
-                      {order.status}
+
+                    {/* Status Text */}
+                    <td
+                      className={`px-6 py-4 text-sm font-semibold ${statusText[order.status]}`}
+                    >
+                      {order.status.charAt(0) +
+                        order.status.slice(1).toLowerCase()}
                     </td>
 
-                    {/* Status */}
+                    {/* Status Dropdown */}
                     <td className="px-6 py-4 text-xs">
                       <select
-                        className={`w-full min-w-30 cursor-pointer rounded-lg border border-none border-gray-300 px-3 py-2 text-sm font-medium shadow-sm transition-colors duration-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 ${statusColors[order.status]}`}
                         value={order.status}
-                        disabled={isUpdating}
+                        disabled={updatingOrderId === order.id}
                         onChange={(e) =>
                           handleStatusChange(order.id, e.target.value)
                         }
+                        className={`w-full cursor-pointer rounded-md border border-gray-300 px-3 py-2 text-sm font-medium shadow-sm transition-colors duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-50 ${statusBg[order.status]} ${statusText[order.status]}`}
                       >
                         {statusOptions.map((status) => (
-                          <option
-                            key={status}
-                            value={status}
-                            className="cursor-pointer border-none"
-                          >
-                            {status.charAt(0).toUpperCase() +
-                              status.slice(1).toLowerCase()}
+                          <option key={status} value={status}>
+                            {status.charAt(0) + status.slice(1).toLowerCase()}
                           </option>
                         ))}
                       </select>
