@@ -139,7 +139,8 @@ export default function ProviderDirectory() {
                     </span>
                     <div className="float-right flex items-center gap-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span>{provider.avg_ratting ?? 0}</span>
+                      {/* <span>{provider.avg_ratting ?? 0}</span> */}
+                      <span>{(provider.avg_ratting ?? 0).toFixed(1)}</span>
                       <span className="text-gray-500">
                         ({provider.total_review ?? 0})
                       </span>

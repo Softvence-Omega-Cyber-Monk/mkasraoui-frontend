@@ -403,8 +403,7 @@ const Navbar: React.FC = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -418,8 +417,7 @@ const Navbar: React.FC = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const getTotalCartItems = () =>
@@ -462,7 +460,10 @@ const Navbar: React.FC = () => {
           to="/home/my-cart"
           className="relative flex items-center gap-1 rounded-lg p-2 transition hover:bg-gray-50"
         >
-          <FiShoppingCart size={24} className="text-secondary hover:text-gray-800" />
+          <FiShoppingCart
+            size={24}
+            className="text-secondary hover:text-gray-800"
+          />
           {cart.length > 0 && (
             <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
               {getTotalCartItems()}
@@ -483,7 +484,7 @@ const Navbar: React.FC = () => {
         {user && (
           <div className="relative flex gap-3" ref={dropdownRef}>
             <Link to="/home/premium-feature">
-              <button className="cursor-pointer py-2 px-5 bg-secondary text-white rounded-3xl">
+              <button className="bg-secondary cursor-pointer rounded-3xl px-5 py-2 text-white">
                 Premium
               </button>
             </Link>
@@ -502,7 +503,7 @@ const Navbar: React.FC = () => {
             </button>
 
             {accountOpen && (
-              <div className="absolute right-0 z-[9999] mt-2 w-40 rounded-lg border bg-white py-3 shadow-lg transition-all duration-200">
+              <div className="absolute right-0 z-[9999] mt-15 w-40 rounded-lg border border-[#D1D5DC] bg-white py-3 shadow-lg transition-all duration-200">
                 <Link
                   to={getDashboardUrl()}
                   className="block rounded-xl px-4 py-2 text-gray-700 hover:bg-gray-100"

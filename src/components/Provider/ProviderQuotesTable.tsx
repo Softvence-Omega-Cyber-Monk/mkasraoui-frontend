@@ -127,7 +127,7 @@ const ProviderQuotesTable = () => {
                         {quote.status}
                       </span>
                     </td>
-                    <td className="flex justify-center space-x-2 px-6 py-4">
+                    <td className="flex justify-center space-x-2 px-6 py-5">
                       <button
                         onClick={() => handleStatusUpdate(quote.id, "BOOKED")}
                         className="flex cursor-pointer items-center justify-center rounded-md bg-green-500 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-green-600"
