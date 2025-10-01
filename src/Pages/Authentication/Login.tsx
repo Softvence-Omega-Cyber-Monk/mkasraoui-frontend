@@ -1,8 +1,10 @@
 import loginHeader from "@/assets/auth/loginHeader.png";
 import partyKids from "@/assets/auth/partyKids-2.jpg";
+import { useLoginMutation } from "@/redux/features/auth/authApi";
 import { useUserStore } from "@/store/useUserStore";
 import { Check, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 
 type Errors = {
@@ -15,8 +17,10 @@ export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  const [email, setEmail] = useState("user@example.com");
-  const [password, setPassword] = useState("password");
+  const [login, { isLoading }] = useLoginMutation();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Errors>({ email: "", password: "" });
 
   // Validate a single field
@@ -54,7 +58,7 @@ export default function Login() {
       }));
     };
 
-  const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const newErrors = validateAll();
@@ -63,9 +67,32 @@ export default function Login() {
     const hasErrors = Object.values(newErrors).some((error) => error !== "");
     if (hasErrors) return;
 
-    // If no errors
-    setUser(true);
-    navigate("/home/my-account");
+    try {
+      const res = await login({ email, password }).unwrap();
+
+      // Save token and user info
+      localStorage.setItem("access_token", res.data.accessToken);
+      localStorage.setItem("userName", res.data.user.name);
+      localStorage.setItem("userRole", res.data.user.role); // save role if needed
+
+      toast.success("Login Successful");
+
+      // Update global user state
+      setUser(true);
+
+      // Conditional redirect based on role
+      const role = res.data.user.role;
+      if (role === "ADMIN") {
+        navigate("/admin-dashboard");
+      } else if (role === "PROVIDER") {
+        navigate("/dashboard");
+      } else {
+        navigate("/home/my-account");
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Login failed");
+    }
   };
 
   return (
@@ -176,7 +203,7 @@ export default function Login() {
               type="submit"
               className="bg-secondary hover:bg-secondary-dark w-full cursor-pointer rounded-lg py-3 text-white shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl focus:ring-4 focus:ring-blue-200"
             >
-              Log In
+              {isLoading ? "Logging in..." : "Log In"}
             </button>
           </form>
 

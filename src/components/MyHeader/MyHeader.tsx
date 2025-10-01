@@ -14,13 +14,13 @@ const MyHeader: React.FC<MyHeaderProps> = ({
 }) => {
   return (
     <section
-      className={`relative  bg-cover bg-center ${className}`}
+      className={`relative bg-cover bg-center ${className}`}
       style={{
         backgroundImage: `url(${bgImage})`,
       }}
     >
       <div className="relative z-10 flex flex-col items-center justify-center px-4 py-24 text-center text-[#191919] sm:py-32 md:py-40 lg:py-44">
-        <h1 className="font-fredoka max-w-2xl text-2xl leading-snug font-semibold sm:text-4xl md:text-5xl">
+        <h1 className="font-fredoka max-w-2xl text-2xl leading-snug font-semibold sm:text-4xl md:text-6xl">
           {title}
         </h1>
 

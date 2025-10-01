@@ -1,407 +1,360 @@
-import {
-  BookmarkIcon,
-  Boxes,
-  Download,
-  ListChecks,
-  Mail,
-  Music,
-  RefreshCcw,
-  ShoppingCartIcon,
-} from "lucide-react";
-// import sortVideo from "../../public/sort-img.mp4";
-import sortVideo from "../../../public/sort-img.mp4";
-import gift1 from "@/assets/giftImg-1.jpg";
-import gift2 from "@/assets/gioftImg-2.jpg";
-import gift3 from "@/assets/giftImg-3.jpg";
-import QCode from "@/assets/Qcode.png";
-import musicImg1 from "@/assets/mic1.png";
-import musicImg2 from "@/assets/mic-2.png";
-import musicImg3 from "@/assets/mic-3.png";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useCreatePartyPlanMutation } from "@/redux/features/partyPlan/partyPlanApi";
+import toast from "react-hot-toast";
 
-function YourPerfectPartyTab({
-  setActiveStep,
-}: {
+interface Product {
+  id: string;
+  title: string;
+  description: string;
+  product_type: string;
+  age_range: string;
+  price: number;
+  discounted_price: number | null;
+  included: string[];
+  tutorial: string | null;
+  imges: string[];
+  avg_rating: number;
+  total_review: number;
+  theme: string;
+}
+
+interface PartyPlan {
+  [key: string]: string[];
+}
+
+interface PartyPlanResponse {
+  party_plan: PartyPlan;
+  suggest_gifts: {
+    product_ids: string[];
+  };
+  all_product: {
+    diyBoxes: Product[];
+    gifts: Product[];
+  };
+}
+
+interface YourPerfectPartyTabProps {
   setActiveStep: (step: string) => void;
-}) {
-  const gifts = [
-    {
-      id: 1,
-      title: "LEGO Superhero Building Set",
-      description: "Perfect for creative building and superhero adventures",
-      price: "$24.99",
-      retailer: "Amazon",
-      image: gift1, // Using the provided image
-    },
-    {
-      id: 2,
-      title: "Superhero Cape & Mask Set",
-      description: "High-quality costume pieces for dress-up fun",
-      price: "$30.99",
-      retailer: "Etsy",
-      image: gift2, // Placeholder for superhero costumes
-    },
-    {
-      id: 3,
-      title: "Hero Action Figure Collection ",
-      description: "Collectible figures for imaginative play Amazon",
-      price: "$35.99",
-      retailer: "Amazon",
-      image: gift3, // Placeholder for action figures
-    },
-  ];
-  // fak data for  musicCards
-  const musicCards = [
-    {
-      id: 1,
-      title: "Superhero Theme Songs",
-      description: "Epic superhero movie soundtracks and theme songs",
-      platform: "YouTube",
-      image: musicImg1,
-    },
-    {
-      id: 2,
-      title: "Kids Dance Party Mix",
-      description: "High-energy songs perfect for kids' dance time",
-      platform: "Spotify",
-      image: musicImg2,
-    },
-    {
-      id: 3,
-      title: "Happy Birthday Remixes",
-      description: "Fun birthday song variations and remixes",
-      platform: "YouTube",
-      image: musicImg3,
-    },
-  ];
-  const titles = [
-    "30 min before: Setup decorations",
-    "Party start: Welcome & costume photos",
-    "First 30 min: Superhero training",
-    "Food & cake time",
-    "Final 30 min: Games & prizes",
-  ];
-  return (
-    <div className="container mx-auto">
-      <div className="bg-white px-8 pt-10 pb-24">
-        {/* Header */}
-        <div className="mb-6 text-center md:text-left">
-          <h1 className="font-fredoka mb-3 text-base font-semibold text-gray-900 md:text-2xl">
-            <span>🎉</span>
-            Your Perfect Party Plan is Ready!
-          </h1>
-          <p className="text-base text-gray-600">
-            Here's what our AI created just for you
-          </p>
-        </div>
+  partyPlanData?: PartyPlanResponse;
+  preferencesData?: {
+    person_name?: string;
+    person_age?: number;
+    budget?: number;
+    num_guests?: number;
+    party_type?: string;
+    theme?: string;
+    location?: string;
+    dietary_restrictions?: string[];
+    party_date?: string;
+    party_details?: string;
+    favorite_activities?: string[];
+  };
+}
 
-        {/* Main Content Grid */}
-        <div className="mb-12 grid gap-8 px-8 md:grid-cols-2">
-          {/* Theme & Decorations */}
-          <div className="mt-6">
-            <div className="mb-6">
-              <h3 className="text-md font-fredoka font-semibold text-[#223B7D] md:text-xl">
-                🎨 Theme & Decorations
-              </h3>
-            </div>
+const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
+  setActiveStep,
+  partyPlanData,
+  preferencesData
+}) => {
+  const [createPartyPlan, { isLoading: isSaving }] = useCreatePartyPlanMutation();
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-            <div className="mb-5">
-              <span className="inline-block rounded-full bg-[#223B7D] px-6 py-3 text-xs font-medium text-white md:text-sm">
-                Superhero Adventure
-              </span>
-            </div>
-
-            <ul className="space-y-2">
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#223B7D]"></div>
-                <span>Superhero banners and balloons</span>
-              </li>
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#223B7D]"></div>
-                <span>City skyline backdrop</span>
-              </li>
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#223B7D]"></div>
-                <span>Comic book style table settings</span>
-              </li>
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#223B7D]"></div>
-                <span>LED string lights in primary colors</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Fun Activities */}
-          <div className="mt-6">
-            <div className="mb-4">
-              <h3 className="font-fredoka text-xl font-semibold text-[#191919]">
-                🎯 Fun Activities
-              </h3>
-            </div>
-
-            <ul className="space-y-2">
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-purple-400"></div>
-                <span>Superhero training obstacle course</span>
-              </li>
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-purple-400"></div>
-                <span>Design your own superhero mask</span>
-              </li>
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-purple-400"></div>
-                <span>Pin the cape on the superhero</span>
-              </li>
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-purple-400"></div>
-                <span>Superhero dance party</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Food & Treats */}
-          <div className="mt-6">
-            <div className="mb-3 flex items-center gap-3">
-              <h3 className="font-fredoka text-xl font-semibold text-[#223B7D]">
-                🍰 Food & Treats
-              </h3>
-            </div>
-
-            <ul className="space-y-2">
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#FFD54F]"></div>
-                <span>Hero sandwiches with fun names</span>
-              </li>
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#FFD54F]"></div>
-                <span>Power-up fruit kabobs</span>
-              </li>
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#FFD54F]"></div>
-                <span>Superhero cake with cape design</span>
-              </li>
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#FFD54F]"></div>
-                <span>Comic book cookies</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Party Supplies  */}
-          <div className="mt-6">
-            <div className="mb-3">
-              <h3 className="font-fredoka text-xl font-semibold text-[#191919]">
-                🛍️ Party Supplies
-              </h3>
-            </div>
-
-            <ul className="space-y-2">
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#F8BBD0]"></div>
-                <span>Superhero capes for each guest</span>
-              </li>
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#F8BBD0]"></div>
-                <span>Mask-making supplies</span>
-              </li>
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#F8BBD0]"></div>
-                <span>Activity prizes and stickers</span>
-              </li>
-              <li className="flex items-start gap-3 text-gray-700">
-                <div className="mt-2.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#F8BBD0]"></div>
-                <span>Themed party favors</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Party Timeline  bottom part*/}
-        <div className="border-t border-[#E2E2E2] p-6 pt-8">
-          <div className="mb-6">
-            <h3 className="font-fredoka text-xl font-semibold text-gray-900">
-              ⏰ Party Timeline
-            </h3>
-          </div>
-
-          <div className="flex flex-wrap gap-4">
-            {titles.map((title, index) => (
-              <div
-                key={index}
-                className="relative mb-4 overflow-hidden rounded-md border border-blue-400 px-6 py-1.5"
-              >
-                {/* Background Video */}
-                <video
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="absolute inset-0 z-0 h-full w-full object-cover"
-                >
-                  <source src={sortVideo} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-
-                {/* Black overlay */}
-                <div className="absolute inset-0 z-10 bg-black/60"></div>
-
-                {/* Text content */}
-                <div className="relative z-20">
-                  <h1 className="text-base font-normal text-white">{title}</h1>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* card section  */}
-        <div>
-          {/* Product Cards Grid */}
-          <div className="mt-8 mb-12 flex flex-col content-center justify-between gap-4 border-t border-[#E2E2E2] pt-10 md:flex-row md:gap-0">
-            <div>
-              <h2 className="font-fredoka text-2xl font-semibold">
-                🎁 Suggested Gifts
-              </h2>
-              <p className="mt-2 text-base text-gray-600">
-                Based on age and theme, here are great gift ideas:
-              </p>
-            </div>
-            <button className="cursor-pointer rounded-md border px-6 py-2">
-              <RefreshCcw className="mr-2 inline h-4 w-4" />
-              Refresh
-            </button>
-          </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {gifts.map((gift) => (
-              <div
-                key={gift.id}
-                className="overflow-hidden rounded-3xl border border-[#DFE1E6] bg-white p-3"
-              >
-                <div className="relative">
-                  <img
-                    src={gift.image || "/placeholder.svg"}
-                    alt={gift.title}
-                    className="h-48 w-full rounded-xl object-cover"
-                  />
-                  <button className="absolute top-3 right-3 cursor-pointer rounded-sm bg-white p-2 shadow-sm hover:bg-gray-50">
-                    <BookmarkIcon />
-                  </button>
-                </div>
-                <div className="p-2">
-                  <h3 className="mb-2 font-bold text-gray-900">{gift.title}</h3>
-                  <p className="mb-4 text-sm text-gray-600">
-                    {gift.description}
-                  </p>
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="text-xl font-bold text-[#223B7D]">
-                      {gift.price}
-                    </span>
-                    <span className="rounded-md border border-[#DFE1E6] px-2 py-1 text-sm text-gray-500">
-                      {gift.retailer}
-                    </span>
-                  </div>
-                  <button className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#223B7D] px-4 py-2 text-sm font-normal text-white transition-colors hover:bg-blue-900">
-                    <ShoppingCartIcon />
-                    Buy Now
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* 🎶 Party Music Playlist for Superhero Adventure */}
-        <div>
-          <div className="mt-8 mb-12 flex flex-col content-center justify-between gap-4 border-t border-[#E2E2E2] pt-10 md:flex-row md:gap-0">
-            <div>
-              <h2 className="font-fredoka text-2xl font-semibold">
-                🎶 Party Music Playlist for Superhero Adventure
-              </h2>
-              <p className="mt-2 text-base text-gray-600">
-                Get the party started with this curated playlist:
-              </p>
-            </div>
-          </div>
-          <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {musicCards.map((card) => (
-              <div
-                key={card.id}
-                className="overflow-hidden rounded-xl border border-[#DFE1E6] bg-white transition-shadow duration-300 hover:shadow-xl"
-              >
-                <div className="p-6">
-                  <div className="mb-4 flex items-start gap-4">
-                    <div
-                      className={`flex h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg`}
-                    >
-                      <img
-                        src={card.image}
-                        alt={card.title}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="mb-1 line-clamp-2 text-base font-bold text-gray-900">
-                        {card.title}
-                      </h3>
-                      <p className="line-clamp-2 text-xs leading-relaxed text-gray-600">
-                        {card.description}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mb-4">
-                    <span className="rounded-md border border-[#DFE1E6] px-2 py-1 text-sm text-gray-500">
-                      {card.platform}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <button className="flex cursor-pointer items-center gap-2 rounded-md bg-[#223B7D] px-8 py-2 font-normal text-white shadow-md transition-colors duration-200 hover:bg-blue-800 hover:shadow-lg">
-                      <Music size={18} />
-                      Listen
-                    </button>
-
-                    <div className="flex h-12 w-12 items-center justify-center bg-gray-50">
-                      {/* <QrCode size={24} className="text-gray-400" /> */}
-                      <img src={QCode} alt="" className="" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* button group  */}
-
-        <div className="mt-10 flex flex-col content-center justify-center gap-6 border-t border-[#E2E2E2] pt-8 md:flex-row">
-          <button className="cursor-pointer rounded border px-6 py-2">
-            {" "}
-            <Mail height={24} width={24} className="mr-2 inline" /> Email Plan
-          </button>
-          <button className="cursor-pointer rounded border px-6 py-2">
-            {" "}
-            <ListChecks height={24} width={24} className="mr-2 inline" /> Create
-            Checklist
-          </button>
-          <button className="cursor-pointer rounded border px-6 py-2">
-            {" "}
-            <Boxes height={24} width={24} className="mr-2 inline" /> View More
-            Gifts
-          </button>
-          <button className="cursor-pointer rounded bg-[#223B7D] px-6 py-2 text-white">
-            {" "}
-            <Download height={24} width={24} className="mr-2 inline" /> View
-            More Gifts
-          </button>
+  if (!partyPlanData) {
+    return (
+      <div className="mx-auto max-w-6xl">
+        <div className="text-center py-20">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#223B7D] border-t-transparent mx-auto mb-4"></div>
+          <h2 className="text-2xl font-semibold text-gray-700">Loading your perfect party...</h2>
         </div>
       </div>
-      <div className="mt-20 flex justify-center pb-10">
-        <button
-          className="hover:bg-secondary-light cursor-pointer rounded border border-[#DFE1E6] px-6 py-3 hover:text-white"
-          onClick={() => setActiveStep("Basis Info")}
+    );
+  }
+
+  const { party_plan, suggest_gifts, all_product } = partyPlanData;
+
+  const getSuggestedProducts = (): Product[] => {
+    const allProducts = [...all_product.diyBoxes, ...all_product.gifts];
+    return suggest_gifts.product_ids
+      .map(id => allProducts.find(product => product.id === id))
+      .filter((product): product is Product => product !== undefined);
+  };
+
+  const suggestedProducts = getSuggestedProducts();
+
+  const handleBackToPreferences = () => {
+    setActiveStep("Preferences");
+  };
+
+  const handleSaveParty = async () => {
+    try {
+      const requestBody = {
+        person_name: preferencesData?.person_name || "Guest",
+        person_age: preferencesData?.person_age || 0,
+        budget: preferencesData?.budget || 0,
+        num_guests: preferencesData?.num_guests || 0,
+        party_date: preferencesData?.party_date || new Date().toISOString(),
+        location: preferencesData?.location || "",
+        party_details: {
+          theme: preferencesData?.theme || "",
+          favorite_activities: preferencesData?.favorite_activities || []
+        },
+        num_product: suggestedProducts.length
+      };
+
+      const response = await createPartyPlan(requestBody).unwrap();
+
+      setSaveStatus('success');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+      toast.success("Party saved successfully");
+
+      console.log("Party saved successfully:", response);
+    } catch (error) {
+      console.error("Failed to save party:", error);
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    }
+  };
+
+  const renderStars = (rating: number) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <span
+          key={i}
+          className={`text-lg ${i <= rating ? "text-yellow-400" : "text-gray-300"}`}
         >
-          Plan Another Party
+          ★
+        </span>
+      );
+    }
+    return stars;
+  };
+
+  return (
+    <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+      {saveStatus !== 'idle' && (
+        <div className={`fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg ${saveStatus === 'success' ? 'bg-green-500' : 'bg-red-500'
+          } text-white font-semibold animate-fade-in`}>
+          {saveStatus === 'success' ? '✅ Party saved successfully!' : '❌ Failed to save party'}
+        </div>
+      )}
+
+      <div className="text-center mb-16 bg-white p-6 rounded-2xl shadow-xl">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-[#223B7D] mb-4">
+          🎉 Your Perfect Party Plan! ✨
+        </h1>
+        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          AI has synthesized your preferences into an amazing, detailed plan. Let's get this party started!
+        </p>
+      </div>
+
+      <div className="space-y-10 mb-16">
+        <h2 className="text-3xl font-bold text-gray-800 border-b pb-3 mb-6">The Party Blueprint</h2>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          {Object.entries(party_plan).map(([sectionTitle, items], index) => (
+            <div
+              key={index}
+              className="bg-white rounded-xl shadow-2xl p-6 border-t-4 border-[#223B7D]"
+            >
+              <h3 className="text-2xl font-extrabold text-gray-900 mb-4 flex items-center">
+                <span className="mr-3 text-[#223B7D]">
+                  {sectionTitle.toLowerCase().includes('theme') && '🎨'}
+                  {sectionTitle.toLowerCase().includes('food') && '🍕'}
+                  {sectionTitle.toLowerCase().includes('activities') && '🎈'}
+                  {sectionTitle.toLowerCase().includes('decoration') && '💡'}
+                  {!['theme', 'food', 'activities', 'decoration'].some(s => sectionTitle.toLowerCase().includes(s)) && '📋'}
+                </span>
+                {sectionTitle}
+              </h3>
+              <ul className="space-y-4">
+                {items.map((item, itemIndex) => (
+                  <li
+                    key={itemIndex}
+                    className="flex items-start space-x-3 p-4 bg-gray-50 hover:bg-gray-100 transition-colors rounded-lg border-l-4 border-gray-300"
+                  >
+                    <div className="flex-shrink-0 w-6 h-6 bg-[#223B7D] rounded-full flex items-center justify-center text-white text-sm font-semibold mt-0.5">
+                      {itemIndex + 1}
+                    </div>
+                    <p className="text-gray-700 flex-1 leading-relaxed">{item}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <hr className="my-16 border-gray-200" />
+
+      {suggestedProducts.length > 0 && (
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-800 border-b pb-3 mb-8">
+            🎁 Recommended Products
+          </h2>
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+            {suggestedProducts.map((product) => (
+              <div
+                key={product.id}
+                className="bg-white rounded-xl overflow-hidden shadow-2xl hover:shadow-primary transition-all duration-300 transform hover:-translate-y-1"
+              >
+                {product.imges && product.imges.length > 0 && (
+                  <div className="h-48 w-80">
+                    <img
+                      src={product.imges[0]}
+                      alt={product.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://via.placeholder.com/400x300?text=No+Image";
+                      }}
+                    />
+                  </div>
+                )}
+
+                <div className="p-5">
+                  <h3 className="font-extrabold text-xl text-gray-900 mb-2 truncate">
+                    {product.title}
+                  </h3>
+
+                  <p className="text-gray-500 text-sm mb-4 line-clamp-3 h-[60px]">
+                    {product.description}
+                  </p>
+
+                  {product.total_review > 0 && (
+                    <div className="flex items-center mb-4">
+                      {renderStars(Math.round(product.avg_rating))}
+                      <span className="ml-2 text-sm text-gray-600 font-medium">
+                        ({product.total_review})
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      {product.discounted_price ? (
+                        <div className="flex flex-col">
+                          <span className="text-xl font-bold text-red-600">
+                            ${product.discounted_price.toFixed(2)}
+                          </span>
+                          <span className="text-sm text-gray-500 line-through">
+                            ${product.price.toFixed(2)}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-xl font-bold text-[#223B7D]">
+                          ${product.price.toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+
+                    <Link to={`/home/diyboxe/details/${product.id}`}>
+                      <button className="bg-[#223B7D] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#1a2f66] transition-colors shadow-md">
+                        Details
+                      </button>
+                    </Link>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="text-xs bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full font-medium">
+                      {product.age_range}
+                    </span>
+                    <span className="text-xs bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full font-medium">
+                      {product.product_type.replace('_', ' ')}
+                    </span>
+                  </div>
+
+                  {product.included && product.included.length > 0 && (
+                    <div className="mt-3 border-t pt-3">
+                      <p className="text-xs text-gray-500 mb-2 font-semibold">What's Inside:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {product.included.slice(0, 3).map((item, idx) => (
+                          <span
+                            key={idx}
+                            className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                        {product.included.length > 3 && (
+                          <span className="text-xs text-gray-500 font-medium self-center">
+                            +{product.included.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <hr className="my-16 border-gray-200" />
+
+      <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
+        <button
+          onClick={handleBackToPreferences}
+          className="px-8 py-3 border-2 border-[#223B7D] text-[#223B7D] rounded-xl font-semibold hover:bg-[#223B7D] hover:text-white transition-all shadow-md"
+        >
+          🔄 Generate New Plan
         </button>
+
+        <button
+          onClick={handleSaveParty}
+          disabled={isSaving}
+          className={`px-8 py-3 bg-[#223B7D] text-white rounded-xl font-semibold hover:bg-[#1a2f66] transition-colors shadow-lg ${isSaving ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+        >
+          {isSaving ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Saving...
+            </span>
+          ) : (
+            '💾 Save This Plan'
+          )}
+        </button>
+      </div>
+
+      <div className="bg-gradient-to-br from-indigo-50 to-pink-50 rounded-2xl p-8 shadow-xl border-t-4 border-[#223B7D]">
+        <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+          Party Plan Summary
+        </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+          <div className="p-4 bg-white rounded-lg shadow-md">
+            <div className="text-3xl font-extrabold text-[#223B7D]">
+              {Object.keys(party_plan).length}
+            </div>
+            <div className="text-sm text-gray-600 font-medium mt-1">Plan Sections</div>
+          </div>
+          <div className="p-4 bg-white rounded-lg shadow-md">
+            <div className="text-3xl font-extrabold text-[#223B7D]">
+              {Object.values(party_plan).reduce((acc, items) => acc + items.length, 0)}
+            </div>
+            <div className="text-sm text-gray-600 font-medium mt-1">Total Items</div>
+          </div>
+          <div className="p-4 bg-white rounded-lg shadow-md">
+            <div className="text-3xl font-extrabold text-[#223B7D]">
+              {suggestedProducts.length}
+            </div>
+            <div className="text-sm text-gray-600 font-medium mt-1">Recommended Products</div>
+          </div>
+          <div className="p-4 bg-white rounded-lg shadow-md">
+            <div className="text-3xl font-extrabold text-[#223B7D]">
+              ${suggestedProducts.reduce((sum, product) => sum + (product.discounted_price || product.price), 0).toFixed(2)}
+            </div>
+            <div className="text-sm text-gray-600 font-medium mt-1">Products Total</div>
+          </div>
+        </div>
       </div>
     </div>
   );
-}
+};
 
 export default YourPerfectPartyTab;

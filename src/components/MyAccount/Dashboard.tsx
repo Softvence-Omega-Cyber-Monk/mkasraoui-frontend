@@ -1,13 +1,30 @@
-
 import allBgImg from "@/assets/party-al-bg.png";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import OverviewTab from "../DashBoardTabComponent/OverviewTab";
 import MyParties from "../DashBoardTabComponent/MyParties";
 import InvitationsTab from "../DashBoardTabComponent/InvitationsTab";
 import FavositesTab from "../DashBoardTabComponent/FavositesTab";
 import ProfileTab from "../DashBoardTabComponent/ProfileTab";
+import { useLocation } from "react-router-dom";
 export default function PartyInvitations() {
-  const [activeTab, setActiveTab] = useState("Overview");
+  // const [activeTab, setActiveTab] = useState("Overview");
+  const location = useLocation();
+  const initialTab = location.state?.initialTab || "Overview";
+  const [activeTab, setActiveTab] = useState(initialTab);
+  // Ref for the main content (or the tab section)
+
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (initialTab === "Profile" && profileRef.current) {
+      setTimeout(() => {
+        profileRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 0);
+    }
+  }, [initialTab]);
 
   const tabs = [
     { id: "Overview", label: "Overview" },
@@ -18,11 +35,6 @@ export default function PartyInvitations() {
     // { id: "reviews", label: "Reviews" },
   ];
 
-
-
-
-
-
   // this is tab content
   const renderContent = () => {
     switch (activeTab) {
@@ -30,33 +42,34 @@ export default function PartyInvitations() {
         return (
           <div className="">
             <div className="">
-            <OverviewTab/>
+              <OverviewTab />
             </div>
           </div>
         );
       case "My Parties":
         return (
           <div className="">
-         <MyParties/>
+            <MyParties />
           </div>
         );
       case "Invitations":
         return (
           <div className="">
-           <InvitationsTab/>
+            <InvitationsTab />
           </div>
         );
-        case "Favorite": return(
+      case "Favorite":
+        return (
           <div>
-            <FavositesTab/>
+            <FavositesTab />
           </div>
         );
-        case "Profile" : 
-        return(
-          <div>
-           <ProfileTab/>
+      case "Profile":
+        return (
+          <div ref={profileRef}>
+            <ProfileTab />
           </div>
-        )
+        );
       default:
         return null;
     }
@@ -66,8 +79,7 @@ export default function PartyInvitations() {
   return (
     <div className="pb-2 md:pb-20">
       {/* bg-banner here  */}
-    
-    
+
       {/* here is the my tab  */}
       <div className="relative mt-1 h-full">
         {/* Background */}
@@ -77,7 +89,7 @@ export default function PartyInvitations() {
         ></div>
 
         {/* Foreground Content */}
-        <div className="relative z-10  mt-4 container mx-auto  px-4">
+        <div className="relative z-10 container mx-auto mt-4 px-4">
           <div className="overflow-hidden rounded-lg p-2">
             {/* Tab Navigation */}
             <div className="flex overflow-x-scroll rounded-xl border-b border-gray-200 bg-[#F5F5F5] p-2 md:overflow-x-hidden">
@@ -85,7 +97,7 @@ export default function PartyInvitations() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 cursor-pointer px-6 py-3 text-center whitespace-nowrap font-medium transition-colors duration-200 ${
+                  className={`flex-1 cursor-pointer px-6 py-3 text-center font-medium whitespace-nowrap transition-colors duration-200 ${
                     activeTab === tab.id
                       ? "rounded-md bg-[#223B7D] text-white"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"

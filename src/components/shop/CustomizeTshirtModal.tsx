@@ -1,8 +1,10 @@
-import { useState } from "react";
-import mUser from "@/assets/m-user.png";
-import { ChevronDown } from "lucide-react";
 import imgUp from "@/assets/imgUp.png";
+import mUser from "@/assets/m-user.png";
 import shopingTrolly from "@/assets/shopping-cart.png";
+import { useUserStore } from "@/store/useUserStore";
+import { ChevronDown } from "lucide-react";
+import { useState } from "react";
+import Swal from "sweetalert2";
 interface CustomizeTshirtModalProps {
   product: {
     id: number;
@@ -12,8 +14,8 @@ interface CustomizeTshirtModalProps {
     description: string;
     rating: number;
     reviews: number;
-    currentPrice: string;
-    originalPrice: string;
+    currentPrice: number;
+    originalPrice: number;
     tags: string[];
     buttonText: string;
     buttonVariant: string;
@@ -23,6 +25,7 @@ interface CustomizeTshirtModalProps {
 }
 
 function CustomizeTshirtModal({ product, onClose }: CustomizeTshirtModalProps) {
+  const { user } = useUserStore();
   const [tshirtType, setTshirtType] = useState<"child" | "adult">("child");
   const [size, setSize] = useState("");
   const [gender, setGender] = useState("");
@@ -50,6 +53,7 @@ function CustomizeTshirtModal({ product, onClose }: CustomizeTshirtModalProps) {
     { id: "superheroes", label: "🦸 Superheroes" },
     { id: "jungle", label: "🌿 Jungle" },
     { id: "space", label: "🚀 Space" },
+    { id: "other", label: " Other" },
   ];
 
   // upload img handler
@@ -217,7 +221,13 @@ function CustomizeTshirtModal({ product, onClose }: CustomizeTshirtModalProps) {
               <input
                 type="text"
                 value={childName}
-                onChange={(e) => setChildName(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // allow only letters and spaces
+                  if (/^[A-Za-z\s]*$/.test(value)) {
+                    setChildName(value);
+                  }
+                }}
                 placeholder="Enter child's name"
                 className="w-full cursor-pointer rounded-lg border border-[#ADADAD] p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
@@ -401,6 +411,23 @@ function CustomizeTshirtModal({ product, onClose }: CustomizeTshirtModalProps) {
           {/* Add to Cart Button */}
           <button
             onClick={() => {
+              if (!user) {
+                // Show toast if not logged in
+
+                if (!user) {
+                  Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Please login first!",
+                  });
+                  return;
+                }
+
+                alert("Please log in to add items to your cart."); // Replace with a toast if using a library
+                return;
+              }
+
+              // User is logged in – proceed to add to cart
               console.log("Adding to cart:", {
                 tshirtType,
                 size,
@@ -414,6 +441,7 @@ function CustomizeTshirtModal({ product, onClose }: CustomizeTshirtModalProps) {
                 quantity,
                 totalPrice,
               });
+
               alert(`Added ${quantity} item(s) to cart for €${totalPrice}`);
             }}
             className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#223B7D] py-3 font-medium text-white transition-colors hover:bg-blue-700"

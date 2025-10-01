@@ -96,7 +96,7 @@ export default function WhatWeOffer() {
       <div className="mx-auto max-w-6xl text-center">
         {/* Header */}
         <div className="offer-header mb-8 flex flex-col items-center justify-center sm:flex-row sm:gap-2">
-          <span className="text-primary text-lg font-medium sm:text-xl">
+          <span className="text-primary text-xl font-medium sm:text-2xl">
             What we offer
           </span>
           <div className="offer-split relative mt-2 w-10 sm:-top-6 sm:left-8 sm:mt-0">
@@ -121,7 +121,7 @@ export default function WhatWeOffer() {
           {offerItems.map((item, idx) => (
             <div
               key={idx}
-              className="offer-card rounded-2xl bg-[#F6F6F6] p-5 text-center shadow-sm sm:p-6 md:p-8"
+              className="offer-card rounded-2xl bg-[#F6F6F6]/50 p-5 text-center sm:p-6 md:p-8"
             >
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl sm:mb-6 md:h-16 md:w-16">
                 {item.icon}

@@ -22,7 +22,7 @@ const Header = () => {
         {/* Buttons */}
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
           <Link
-            to={"#"}
+            to={"/home/become-provider"}
             className="border-secondary hover:bg-secondary-light bg-secondary inline-flex cursor-pointer items-center rounded-lg border px-5 py-2.5 text-base text-white transition"
           >
             Become a Provider

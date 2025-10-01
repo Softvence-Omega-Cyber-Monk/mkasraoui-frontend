@@ -1,4 +1,4 @@
-import bgImage from "@/assets/videobanner.png";
+import bgImage from "@/assets/bottom-banner.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import React, { useLayoutEffect, useRef } from "react";
@@ -71,7 +71,7 @@ const PremiumBanner: React.FC = () => {
         <div className="banner-overlay absolute inset-0 bg-black opacity-50" />
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center px-4 py-24 text-center text-white sm:py-28 md:py-36 lg:py-40">
+        <div className="relative z-10 flex flex-col items-center justify-center px-4 py-24 text-center text-white sm:py-28 md:py-36 lg:py-44">
           <h1 className="banner-headline font-fredoka max-w-2xl text-2xl leading-snug font-semibold sm:text-4xl md:text-5xl">
             Ready to plan the perfect
             <br /> party?
@@ -100,7 +100,7 @@ const PremiumBanner: React.FC = () => {
                 }}
                 className="gsap-hidden banner-button border-secondary hover:bg-secondary-light bg-secondary inline-flex cursor-pointer items-center rounded-lg border px-5 py-2 text-white transition"
               >
-                Start Planning Now
+                Discover the Premium Experience
                 <span className="ml-2 h-6">
                   <OutlineArrow />
                 </span>

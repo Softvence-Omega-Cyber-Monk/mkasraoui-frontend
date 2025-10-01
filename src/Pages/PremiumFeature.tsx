@@ -7,8 +7,12 @@ import LoyaltyReferralBonuses from "@/components/PremiumFeature/LoyaltyReferralB
 import PricingPlans from "@/components/PremiumFeature/PricingPlans";
 import ServiceProvidersArea from "@/components/PremiumFeature/ServiceProvidersArea";
 import Testimonials from "@/components/PremiumFeature/Testimonials";
+import { useEffect } from "react";
 
 export default function PremiumFeature() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div>
       <Header />
