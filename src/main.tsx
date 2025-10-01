@@ -62,6 +62,7 @@ import ProviderUpdateProfile from "./components/Provider/ProviderUpdateProfile";
 import ProviderQuotesPage from "./Pages/Provider/ProviderQuotesPage";
 import AdminOrderPage from "./Pages/Admin/AdminOrderPage";
 import AdminCustomerOrderPage from "./Pages/Admin/AdminCustomerOrderPage";
+import DiyBoxChackout from "./Pages/DiyBoxChackout";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -214,6 +215,10 @@ const router = createBrowserRouter([
       {
         path: "checkout",
         element: <CheckoutPage />,
+      },
+      {
+        path: "diyboxChackout",
+        element: <DiyBoxChackout />,
       },
     ],
   },
