@@ -30,7 +30,7 @@ jobs:
           username: root
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
-            cd /var/www/dist || exit
+            cd /var/www || exit
             rm -rf *
             # Exit to continue the action
             exit
@@ -42,4 +42,4 @@ jobs:
           username: root
           password: ${{ secrets.VPS_PASSWORD }}
           source: "dist/*"
-          target: "/var/www/dist"
+          target: "/var/www"
