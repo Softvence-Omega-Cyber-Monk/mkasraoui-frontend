@@ -19,8 +19,8 @@ export default function Login() {
 
   const [login, { isLoading }] = useLoginMutation();
 
-  const [email, setEmail] = useState("user@example.com");
-  const [password, setPassword] = useState("password");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Errors>({ email: "", password: "" });
 
   // Validate a single field
@@ -59,42 +59,41 @@ export default function Login() {
     };
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
-  event.preventDefault();
+    event.preventDefault();
 
-  const newErrors = validateAll();
-  setErrors(newErrors);
+    const newErrors = validateAll();
+    setErrors(newErrors);
 
-  const hasErrors = Object.values(newErrors).some((error) => error !== "");
-  if (hasErrors) return;
+    const hasErrors = Object.values(newErrors).some((error) => error !== "");
+    if (hasErrors) return;
 
-  try {
-    const res = await login({ email, password }).unwrap();
+    try {
+      const res = await login({ email, password }).unwrap();
 
-    // Save token and user info
-    localStorage.setItem("access_token", res.data.accessToken);
-    localStorage.setItem("userName", res.data.user.name);
-    localStorage.setItem("userRole", res.data.user.role); // save role if needed
+      // Save token and user info
+      localStorage.setItem("access_token", res.data.accessToken);
+      localStorage.setItem("userName", res.data.user.name);
+      localStorage.setItem("userRole", res.data.user.role); // save role if needed
 
-    toast.success("Login Successful");
+      toast.success("Login Successful");
 
-    // Update global user state
-    setUser(true);
+      // Update global user state
+      setUser(true);
 
-    // Conditional redirect based on role
-    const role = res.data.user.role;
-    if (role === "ADMIN") {
-      navigate("/admin-dashboard");
-    } else if (role === "PROVIDER") {
-      navigate("/dashboard");
-    } else {
-      navigate("/home/my-account");
+      // Conditional redirect based on role
+      const role = res.data.user.role;
+      if (role === "ADMIN") {
+        navigate("/admin-dashboard");
+      } else if (role === "PROVIDER") {
+        navigate("/dashboard");
+      } else {
+        navigate("/home/my-account");
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Login failed");
     }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    toast.error(error?.data?.message || "Login failed");
-  }
-};
-
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -130,8 +129,9 @@ export default function Login() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={handleChange("email")}
-                  className={`w-full rounded-lg border ${errors.email ? "border-red-500" : "border-gray-300"
-                    } py-3 pr-10 pl-10 transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none`}
+                  className={`w-full rounded-lg border ${
+                    errors.email ? "border-red-500" : "border-gray-300"
+                  } py-3 pr-10 pl-10 transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none`}
                 />
                 {email.trim() && !errors.email && (
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -162,8 +162,9 @@ export default function Login() {
                   placeholder="Enter your password"
                   value={password}
                   onChange={handleChange("password")}
-                  className={`w-full rounded-lg border ${errors.password ? "border-red-500" : "border-gray-300"
-                    } py-3 pr-10 pl-10 transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none`}
+                  className={`w-full rounded-lg border ${
+                    errors.password ? "border-red-500" : "border-gray-300"
+                  } py-3 pr-10 pl-10 transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none`}
                 />
                 <button
                   type="button"

@@ -62,6 +62,9 @@ import ProviderUpdateProfile from "./components/Provider/ProviderUpdateProfile";
 import ProviderQuotesPage from "./Pages/Provider/ProviderQuotesPage";
 import AdminOrderPage from "./Pages/Admin/AdminOrderPage";
 import AdminCustomerOrderPage from "./Pages/Admin/AdminCustomerOrderPage";
+// import ChatMessagePage from "./Pages/ChatMessagePage";
+import ProviderPage from "./Pages/Provider/ProviderPage";
+import ProvidersList from "./components/Provider/ProvidersList";
 import DiyBoxChackout from "./Pages/DiyBoxChackout";
 
 // Define your router with type-safe components
@@ -241,6 +244,14 @@ const router = createBrowserRouter([
         element: <ProviderQuotesPage />,
       },
       {
+        path: "providers",
+        element: <ProvidersList />,
+      },
+      {
+        path: "providers/:id",
+        element: <ProviderPage />,
+      },
+      {
         path: "booking",
         element: <BookingParent />,
       },
@@ -248,6 +259,11 @@ const router = createBrowserRouter([
         path: "messages",
         element: <Messages />,
       },
+      // {
+      //   path: "chat-message",
+      //   element: <ChatMessagePage />,
+      // },
+
       {
         path: "reviews",
         element: <Reviews />,

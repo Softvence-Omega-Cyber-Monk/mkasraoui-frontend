@@ -25,6 +25,7 @@ import { useGetMeQuery } from "@/redux/features/user/userApi";
 import { useAppDispatch } from "@/redux/hooks/redux-hook";
 import { logOut } from "@/redux/features/auth/authSlice";
 import { MdHome } from "react-icons/md";
+import { TbBlockquote } from "react-icons/tb";
 
 function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -77,6 +78,11 @@ function DashboardLayout() {
     {
       to: "/dashboard/provider-quotes",
       label: "Provider Quotes",
+      icon: TbBlockquote,
+    },
+    {
+      to: "/dashboard/providers",
+      label: "Provider ",
       icon: BookingIcon,
     },
     {

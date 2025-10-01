@@ -58,6 +58,16 @@ export const propertyApi = baseApi.injectEndpoints({
       invalidatesTags: ["Providers"],
     }),
 
+    // ✅ Update Provider Profile (with images)
+    updateProviderProfile: builder.mutation<ProviderResponse, FormData>({
+      query: (formData) => ({
+        url: "/user/provider/update-profile",
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: ["Providers"],
+    }),
+
     // ---- New mutations for approve / reject provider requests ----
     approveProviderRequest: builder.mutation<ProviderResponse, string>({
       query: (id) => ({
@@ -83,6 +93,7 @@ export const {
   useGetProvidersQuery,
   useGetProviderByIdQuery,
   useRequestProviderMutation,
+  useUpdateProviderProfileMutation, // ✅ export new mutation
   useApproveProviderRequestMutation,
   useRejectProviderRequestMutation,
 } = propertyApi;
