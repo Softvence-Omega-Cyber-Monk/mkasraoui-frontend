@@ -20,10 +20,10 @@ import { addToCart } from "@/redux/features/cart/cartSlice";
 // API hooks
 import { useGetDIYBoxesQuery } from "@/redux/features/diyProducts/diyProductsApi";
 import type { DIYProduct } from "@/redux/types/diy.types";
-import { 
-  useAddToWishlistApiMutation, 
+import {
+  useAddToWishlistApiMutation,
   useRemoveFromWishlistApiMutation,
-  useGetWishlistQuery 
+  useGetWishlistQuery,
 } from "@/redux/features/wishlist/wishlistApi";
 
 export default function DiyBoxes() {
@@ -40,7 +40,9 @@ export default function DiyBoxes() {
   const [removeFromWishlistApi] = useRemoveFromWishlistApiMutation();
 
   // Loading states for individual items
-  const [wishlistLoadingStates, setWishlistLoadingStates] = useState<{[key: string]: boolean}>({});
+  const [wishlistLoadingStates, setWishlistLoadingStates] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   // Get DIY boxes data
   const { data: activities = [], isLoading, isError } = useGetDIYBoxesQuery();
@@ -67,9 +69,9 @@ export default function DiyBoxes() {
   // Wishlist toggle with API integration only
   const toggleLike = async (item: DIYProduct) => {
     const isInWishlist = checkIsInWishlist(String(item.id));
-    
+
     // Set loading state for this specific item
-    setWishlistLoadingStates(prev => ({ ...prev, [item.id]: true }));
+    setWishlistLoadingStates((prev) => ({ ...prev, [item.id]: true }));
 
     try {
       if (isInWishlist) {
@@ -82,23 +84,23 @@ export default function DiyBoxes() {
         toast.success(`${item.title} added to wishlist!`);
       }
     } catch (error) {
-      console.error('Wishlist API error:', error);
-      const errorMessage = isInWishlist 
+      console.error("Wishlist API error:", error);
+      const errorMessage = isInWishlist
         ? `Failed to remove ${item.title} from wishlist. Please try again.`
         : `Failed to add ${item.title} to wishlist. Please try again.`;
       toast.error(errorMessage);
-      
-      if (error && typeof error === 'object' && 'status' in error) {
+
+      if (error && typeof error === "object" && "status" in error) {
         const apiError = error as { status: number };
         if (apiError.status === 401) {
-          toast.error('Please log in to manage your wishlist');
+          toast.error("Please log in to manage your wishlist");
         } else if (apiError.status === 500) {
-          toast.error('Server error. Please try again later.');
+          toast.error("Server error. Please try again later.");
         }
       }
     } finally {
       // Clear loading state for this item
-      setWishlistLoadingStates(prev => ({ ...prev, [item.id]: false }));
+      setWishlistLoadingStates((prev) => ({ ...prev, [item.id]: false }));
     }
   };
 
@@ -117,20 +119,29 @@ export default function DiyBoxes() {
 
   // Enhanced filtering
   const filteredActivities = activities.filter((activity) => {
-    const matchesSearch = activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         activity.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesAge = !ageRange || activity.age_range.toLowerCase().includes(ageRange.toLowerCase());
-    
-    const matchesTheme = !theme || 
-                        (activity.theme && activity.theme.toLowerCase().includes(theme.toLowerCase())) ||
-                        activity.product_type.toLowerCase().includes(theme.toLowerCase());
-    
+    const matchesSearch =
+      activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      activity.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesAge =
+      !ageRange ||
+      activity.age_range.toLowerCase().includes(ageRange.toLowerCase());
+
+    const matchesTheme =
+      !theme ||
+      (activity.theme &&
+        activity.theme.toLowerCase().includes(theme.toLowerCase())) ||
+      activity.product_type.toLowerCase().includes(theme.toLowerCase());
+
     return matchesSearch && matchesAge && matchesTheme;
   });
 
-  if (isLoading) return <p className="text-center mt-20">Loading DIY boxes...</p>;
-  if (isError) return <p className="text-center mt-20 text-red-500">Failed to load DIY boxes</p>;
+  if (isLoading)
+    return <p className="mt-20 text-center">Loading DIY boxes...</p>;
+  if (isError)
+    return (
+      <p className="mt-20 text-center text-red-500">Failed to load DIY boxes</p>
+    );
 
   return (
     <div className="mx-auto w-full">
@@ -204,8 +215,10 @@ export default function DiyBoxes() {
         {/* Products Grid */}
         <div className="container mx-auto">
           {filteredActivities.length === 0 ? (
-            <div className="text-center p-10">
-              <p className="text-gray-600">No DIY boxes found matching your criteria.</p>
+            <div className="p-10 text-center">
+              <p className="text-gray-600">
+                No DIY boxes found matching your criteria.
+              </p>
             </div>
           ) : (
             <div className="mx-auto mt-20 grid grid-cols-1 gap-6 px-4 pb-14 md:grid-cols-2 lg:grid-cols-3">
@@ -213,7 +226,7 @@ export default function DiyBoxes() {
                 const liked = checkIsInWishlist(String(activity.id));
                 const inCart = isInCart(String(activity.id));
                 const wishlistLoading = isWishlistLoading(String(activity.id));
-                
+
                 return (
                   <div
                     key={activity.id}
@@ -226,18 +239,20 @@ export default function DiyBoxes() {
                         alt={activity.title}
                         className="h-full w-full object-cover"
                       />
-                      
+
                       {/* Product type badge */}
                       <div className="absolute top-3 right-3 rounded-full bg-[#223B7D] px-3 py-1 text-sm text-white">
                         DIY Box
                       </div>
-                      
+
                       {/* Wishlist button */}
                       <button
-                        className="absolute top-3 left-3 rounded-full bg-white p-2 shadow-sm hover:bg-gray-50 transition-colors"
+                        className="absolute top-3 left-3 rounded-full bg-white p-2 shadow-sm transition-colors hover:bg-gray-50"
                         onClick={() => toggleLike(activity)}
                         disabled={wishlistLoading}
-                        aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
+                        aria-label={
+                          liked ? "Remove from wishlist" : "Add to wishlist"
+                        }
                       >
                         {wishlistLoading ? (
                           <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-red-500" />
@@ -274,7 +289,9 @@ export default function DiyBoxes() {
 
                       {/* Rating */}
                       <div className="mb-4 flex items-center gap-2">
-                        <div className="flex">{renderStars(activity.avg_rating)}</div>
+                        <div className="flex">
+                          {renderStars(activity.avg_rating)}
+                        </div>
                         <span className="text-sm font-medium text-gray-900">
                           {activity.avg_rating}
                         </span>
@@ -289,11 +306,12 @@ export default function DiyBoxes() {
                           <span className="text-2xl font-bold text-[#223B7D]">
                             ${activity.discounted_price || activity.price}
                           </span>
-                          {activity.discounted_price && activity.discounted_price < activity.price && (
-                            <span className="text-lg text-gray-500 line-through">
-                              ${activity.price}
-                            </span>
-                          )}
+                          {activity.discounted_price &&
+                            activity.discounted_price < activity.price && (
+                              <span className="text-lg text-gray-500 line-through">
+                                ${activity.price}
+                              </span>
+                            )}
                         </div>
                         <div className="rounded-full bg-[#58C06478]/70 px-3 py-2 text-xs font-medium text-[#19AE19]">
                           {activity.age_range}
@@ -302,8 +320,11 @@ export default function DiyBoxes() {
 
                       {/* Actions */}
                       <div className="mt-auto flex gap-3">
-                        <Link to={`/home/diyboxe/details/${activity.id}`} className="flex-1">
-                          <button className="w-full rounded-lg bg-[#223B7D] px-4 py-3 font-medium text-white hover:bg-secondary-light">
+                        <Link
+                          to={`/home/diyboxe/details/${activity.id}`}
+                          className="flex-1"
+                        >
+                          <button className="hover:bg-secondary-light w-full cursor-pointer rounded-lg bg-[#223B7D] px-4 py-3 font-medium text-white">
                             View Details
                           </button>
                         </Link>
@@ -315,25 +336,28 @@ export default function DiyBoxes() {
                                   id: String(activity.id),
                                   title: activity.title,
                                   price: activity.price,
-                                  discounted_price: activity.discounted_price ?? activity.price,
+                                  discounted_price:
+                                    activity.discounted_price ?? activity.price,
                                   quantity: 1,
                                   image: activity.imges?.[0] || "",
                                   rating: activity.avg_rating,
-                                })
+                                }),
                               );
                               toast.success(`${activity.title} added to cart!`);
                             }
                           }}
                           disabled={inCart}
-                          className={`rounded-lg border border-[#223B7D] p-3 transition-colors ${
-                            inCart 
-                              ? "opacity-50 cursor-not-allowed bg-gray-100" 
+                          className={`cursor-pointer rounded-lg border border-[#223B7D] p-3 transition-colors ${
+                            inCart
+                              ? "cursor-not-allowed bg-gray-100 opacity-50"
                               : "hover:bg-gray-50"
                           }`}
-                          aria-label={inCart ? "Already in cart" : "Add to cart"}
+                          aria-label={
+                            inCart ? "Already in cart" : "Add to cart"
+                          }
                         >
-                          <ShoppingCart 
-                            className={`h-5 w-5 ${inCart ? "text-gray-400" : "text-gray-600"}`} 
+                          <ShoppingCart
+                            className={`h-5 w-5 ${inCart ? "text-gray-400" : "text-gray-600"}`}
                           />
                         </button>
                       </div>
