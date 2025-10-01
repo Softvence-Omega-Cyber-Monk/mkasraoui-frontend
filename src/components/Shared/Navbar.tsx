@@ -520,7 +520,7 @@ const Navbar: React.FC = () => {
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="block w-full rounded-xl px-4 py-2 text-left text-red-500 hover:bg-red-100"
+                  className="block w-full cursor-pointer rounded-xl px-4 py-2 text-left text-red-500 hover:bg-red-100"
                 >
                   Logout
                 </button>
