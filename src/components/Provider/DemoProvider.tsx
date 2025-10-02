@@ -1,8 +1,17 @@
+import React from "react";
 
 const DemoProvider = () => {
   return (
-    <div>DemoProvider</div>
-  )
-}
+    <div>
+      <div>DemoProvider</div>
+      <h2>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Excepturi
+        maiores libero ratione perspiciatis consequatur totam natus corrupti
+        laboriosam vitae repellendus illo eos sint, nobis odit voluptates ullam.
+        At, quibusdam praesentium.
+      </h2>
+    </div>
+  );
+};
 
-export default DemoProvider
+export default DemoProvider;
