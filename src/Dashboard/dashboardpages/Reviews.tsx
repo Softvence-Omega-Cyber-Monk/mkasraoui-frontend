@@ -1,6 +1,7 @@
 import { SlDislike, SlLike } from "react-icons/sl";
 import Analytics from "../components/reviews/Analytics";
 import { useGetProviderReviewsQuery } from "@/redux/features/review/providerReviewApi";
+import PageLoader from "@/components/Shared/PageLoader";
 
 function Reviews() {
   const { data: reviews = [], isLoading } = useGetProviderReviewsQuery();
@@ -19,7 +20,11 @@ function Reviews() {
   };
 
   if (isLoading) {
-    return <div>Loading reviews...</div>;
+    return (
+      <div>
+        <PageLoader />
+      </div>
+    );
   }
 
   return (

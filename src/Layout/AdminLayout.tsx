@@ -1,7 +1,7 @@
 import NavLogo from "@/assets/navlogo-new.png";
 import {
   DashboardIcon,
-  EarningsIcon,
+  // EarningsIcon,
   MessagesIcon,
   ReviewsIcon,
   ServicesIcon,
@@ -128,11 +128,11 @@ function AdminLayout() {
       label: "Reviews",
       icon: ReviewsIcon,
     },
-    {
-      to: "/admin-dashboard/earnings",
-      label: "Earnings",
-      icon: EarningsIcon,
-    },
+    // {
+    //   to: "/admin-dashboard/earnings",
+    //   label: "Earnings",
+    //   icon: EarningsIcon,
+    // },
   ];
 
   const NavItem = ({
