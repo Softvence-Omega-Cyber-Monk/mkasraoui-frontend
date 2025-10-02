@@ -66,6 +66,8 @@ import AdminCustomerOrderPage from "./Pages/Admin/AdminCustomerOrderPage";
 import ProviderPage from "./Pages/Provider/ProviderPage";
 import ProvidersList from "./components/Provider/ProvidersList";
 import DiyBoxChackout from "./Pages/DiyBoxChackout";
+import ChatMessagePage from "./Pages/ChatMessagePage";
+import PaymentSuccess from "./components/Shared/PaymentSuccess";
 import AdminAddBlogPage from "./Pages/Admin/AdminAddBlogPage";
 
 // Define your router with type-safe components
@@ -78,6 +80,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <LandingPage />,
+      },
+      {
+        path: "/success",
+        element: <PaymentSuccess />,
       },
     ],
   },
@@ -260,10 +266,10 @@ const router = createBrowserRouter([
         path: "messages",
         element: <Messages />,
       },
-      // {
-      //   path: "chat-message",
-      //   element: <ChatMessagePage />,
-      // },
+      {
+        path: "chat-message",
+        element: <ChatMessagePage />,
+      },
 
       {
         path: "reviews",

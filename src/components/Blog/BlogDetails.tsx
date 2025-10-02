@@ -931,7 +931,7 @@ export default function BlogDetails() {
 //     },
 //     {
 //       id: 6,
-//       title: "Unicorn Party Magic: Creating Rainbow Dreams",
+//       title: "Box DIY, générateur d’idées et cadeaux personnalisés : découvrez tous les services de Ma Fête Facile",
 //       description:
 //         "Dig into these fantastic dinosaur party ideas that will make your celebration roar with excitement and prehistoric fun.",
 //       image: blog6,

@@ -86,9 +86,10 @@ export default function BlogCard() {
     },
     {
       id: 6,
-      title: "Unicorn Party Magic: Creating Rainbow Dreams",
+      title:
+        "Box DIY, générateur d’idées et cadeaux personnalisés : découvrez tous les services de Ma Fête Facile",
       description:
-        "Bring the magic of unicorns to life with these colorful and creative ideas.",
+        "Préparer un anniversaire, c’est jongler entre plusieurs détails : imaginer un concept qui surprend, soigner l’ambiance avec la bonne déco, prévoir de quoi amuser les invités et choisir le présent qui fera plaisir… .",
       image: blog6,
       author: "Sarah Johnson",
       readTime: "8 min read",
@@ -328,7 +329,7 @@ export default function BlogCard() {
 //     },
 //     {
 //       id: 6,
-//       title: "Unicorn Party Magic: Creating Rainbow Dreams",
+//       title: "Box DIY, générateur d’idées et cadeaux personnalisés : découvrez tous les services de Ma Fête Facile",
 //       description:
 //         "Dig into these fantastic dinosaur party ideas that will make your celebration roar with excitement and prehistoric fun.",
 //       image: blog6,

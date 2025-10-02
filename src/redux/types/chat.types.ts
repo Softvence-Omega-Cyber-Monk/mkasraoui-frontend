@@ -13,13 +13,15 @@ export interface ChatUser {
 
 export interface ChatMessage {
   id: string;
+  conversationId: string; // ✅ Add this
   senderId: string;
   content: string;
-  createdAt: string; // make required
-  type?: MessageType; // optional, default can be "text" in code
+  createdAt: string; // keep required
+  type?: MessageType; // optional
   fileName?: string | null;
   fileSize?: number | null;
 }
+
 
 export interface Conversation {
   id: string;
