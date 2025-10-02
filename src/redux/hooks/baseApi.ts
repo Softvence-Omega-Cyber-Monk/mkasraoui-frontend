@@ -69,8 +69,40 @@ export const baseApi = createApi({
     "Conversation",
     "Orders",
     "Tasks",
-    "Invitations"
+    "Invitations",
+     "Blogs"
   ],
 
   endpoints: () => ({}),
 });
+
+
+// dont delete above code
+
+
+// export const baseApi = createApi({
+//   reducerPath: "api",
+//   baseQuery: fetchBaseQuery({ baseUrl: "/api" }),
+//   tagTypes: [
+//     "User",
+//     "Providers",
+//     "Quotes",
+//     "ProviderReviews",
+//     "Products",
+//     "DIY",
+//     "Cart",
+//     "Wishlist",
+//     "Bookings",
+//     "Plan",
+//     "ProviderPlans",
+//     "Dashboard",
+//     "NewsLetter",
+//     "Provider",
+//     "Conversation",
+//     "Orders",
+//     "Tasks",
+//     "Invitations",
+//  "Blogs", //.................
+//   ],
+//   endpoints: () => ({}),
+// });

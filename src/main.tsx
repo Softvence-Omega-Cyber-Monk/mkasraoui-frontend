@@ -66,6 +66,7 @@ import AdminCustomerOrderPage from "./Pages/Admin/AdminCustomerOrderPage";
 import ProviderPage from "./Pages/Provider/ProviderPage";
 import ProvidersList from "./components/Provider/ProvidersList";
 import DiyBoxChackout from "./Pages/DiyBoxChackout";
+import AdminAddBlogPage from "./Pages/Admin/AdminAddBlogPage";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -310,6 +311,10 @@ const router = createBrowserRouter([
       {
         path: "add-product",
         element: <AdminAddProductPage />,
+      },
+      {
+        path: "add-blog",
+        element: <AdminAddBlogPage/>,
       },
       {
         path: "subscription-plan",
