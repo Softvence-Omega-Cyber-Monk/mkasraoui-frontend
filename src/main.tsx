@@ -68,6 +68,7 @@ import ProvidersList from "./components/Provider/ProvidersList";
 import DiyBoxChackout from "./Pages/DiyBoxChackout";
 import ChatMessagePage from "./Pages/ChatMessagePage";
 import PaymentSuccess from "./components/Shared/PaymentSuccess";
+import AdminAddBlogPage from "./Pages/Admin/AdminAddBlogPage";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -316,6 +317,10 @@ const router = createBrowserRouter([
       {
         path: "add-product",
         element: <AdminAddProductPage />,
+      },
+      {
+        path: "add-blog",
+        element: <AdminAddBlogPage/>,
       },
       {
         path: "subscription-plan",

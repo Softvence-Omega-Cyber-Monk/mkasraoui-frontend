@@ -12,10 +12,7 @@ export const productApi = baseApi.injectEndpoints({
     //   providesTags: ["Products"],
     // }),
 
-    getProducts: builder.query<
-      ApiResponse<{ diyBoxes: Product[]; gifts: Product[] }>,
-      void
-    >({
+    getProducts: builder.query<ApiResponse<{ diyBoxes: Product[]; gifts: Product[] }>,void>({
       query: () => ({
         url: "/products",
         method: "GET",
