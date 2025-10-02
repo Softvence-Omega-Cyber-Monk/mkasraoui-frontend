@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  Search,
-  Clock,
-  Users,
-  ShoppingCart,
-  ChevronDown,
-  Heart,
-} from "lucide-react";
+import { Search, Clock, Users, ShoppingCart, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
 import MyHeader from "@/components/MyHeader/MyHeader";
@@ -185,9 +178,6 @@ export default function DiyBoxes() {
                 <option value="10+">10+ years</option>
                 <option value="13+">13+ years</option>
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
-                <ChevronDown className="h-4 w-4 text-gray-400" />
-              </div>
             </div>
 
             {/* Theme */}
@@ -205,9 +195,6 @@ export default function DiyBoxes() {
                 <option value="creative">Creative</option>
                 <option value="educational">Educational</option>
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
-                <ChevronDown className="h-4 w-4 text-gray-400" />
-              </div>
             </div>
           </div>
         </div>
