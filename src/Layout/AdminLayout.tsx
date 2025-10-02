@@ -97,6 +97,11 @@ function AdminLayout() {
       icon: MdOutlineAddChart,
     },
     {
+      to: "/admin-dashboard/add-blog",
+      label: "Add Blog",
+      icon: MdOutlineAddChart,
+    },
+    {
       to: "/admin-dashboard/subscription-plan",
       label: "General Plan",
       icon: FaMoneyCheckDollar,
