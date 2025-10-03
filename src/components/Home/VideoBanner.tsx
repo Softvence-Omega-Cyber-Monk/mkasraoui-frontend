@@ -1,7 +1,9 @@
+ 
+
 import bgImage from "@/assets/videobanner.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { EdgeWave, PlayIcon } from "../Icons";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -9,6 +11,7 @@ gsap.registerPlugin(ScrollTrigger);
 const VideoBanner: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -22,16 +25,8 @@ const VideoBanner: React.FC = () => {
       });
 
       tl.from(".video-overlay", { opacity: 0, duration: 1.2 })
-        .from(
-          ".video-wave-top",
-          { y: -50, opacity: 0, duration: 1, ease: "power2.out" },
-          "<0.2",
-        )
-        .from(
-          ".video-headline",
-          { y: 40, opacity: 0, duration: 1.1, ease: "power4.out" },
-          "<0.2",
-        )
+        .from(".video-wave-top", { y: -50, opacity: 0, duration: 1 }, "<0.2")
+        .from(".video-headline", { y: 40, opacity: 0, duration: 1.1 }, "<0.2")
         .from(".video-paragraph", { y: 20, opacity: 0, duration: 0.8 }, "<0.2")
         .to(
           buttonRef.current,
@@ -43,11 +38,7 @@ const VideoBanner: React.FC = () => {
           },
           "<0.3",
         )
-        .from(
-          ".video-wave-bottom",
-          { y: 50, opacity: 0, duration: 1, ease: "power2.out" },
-          "<0.2",
-        );
+        .from(".video-wave-bottom", { y: 50, opacity: 0, duration: 1 }, "<0.2");
     }, sectionRef);
 
     return () => ctx.revert();
@@ -62,6 +53,7 @@ const VideoBanner: React.FC = () => {
       <div className="video-wave-top absolute top-0 left-1/2 z-10 -translate-x-1/2 overflow-hidden leading-none">
         <EdgeWave />
       </div>
+
       <section
         className="relative border-t border-b border-white bg-cover bg-center"
         style={{
@@ -86,16 +78,45 @@ const VideoBanner: React.FC = () => {
           {/* Play Button */}
           <button
             ref={buttonRef}
+            onClick={() => setIsOpen(true)}
             className="gsap-hidden text-primary mt-8 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-white shadow-lg transition hover:scale-105 sm:h-20 sm:w-20"
           >
             <PlayIcon />
           </button>
         </div>
       </section>
+
       {/* Bottom wave */}
       <div className="video-wave-bottom absolute bottom-0 left-1/2 -translate-x-1/2 rotate-180 overflow-hidden leading-none">
         <EdgeWave />
       </div>
+
+      {/* Video Modal */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+          <div className="relative w-full max-w-3xl aspect-video">
+            {/* Example YouTube iframe */}
+   <iframe
+              width="100%"
+              height="500"
+              src="https://www.youtube.com/embed/tCDvOQI3pco?autoplay=1"
+              title="10 Second Timer"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+              className="rounded-lg"
+            ></iframe>
+            {/* Close Button */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="absolute -top-10 right-0 text-white text-2xl"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
