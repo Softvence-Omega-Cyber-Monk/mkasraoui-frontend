@@ -537,15 +537,15 @@ const AdminProductTable: React.FC = () => {
             <div className="mt-8 flex justify-end gap-4">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="rounded-lg bg-gray-200 px-6 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-300"
+                className="cursor-pointer rounded-lg bg-gray-200 px-6 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:outline-none"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSubmit}
-                className="rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white transition hover:bg-blue-700"
+                className="cursor-pointer rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white transition hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:outline-none"
               >
-                {editingProduct ? "Update" : "Add"}
+                {editingProduct ? "Update" : "Add Product"}
               </button>
             </div>
           </div>

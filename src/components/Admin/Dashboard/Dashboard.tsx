@@ -4,15 +4,16 @@ import DashboardCard from "./DashboardCard";
 
 const Dashboard = () => {
   const { data: me } = useGetMeQuery();
+
+  console.log("Logged-in Admin Info:", me);
   return (
     <div className="space-y-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">
-          Welcome, {me?.name}
+          Welcome, {me?.role}
         </h1>
         <p className="mt-1 text-gray-600">Manage and monitor your dashboard.</p>
       </div>
-
       <DashboardCard />
       <AdminProvidersTable />
     </div>
