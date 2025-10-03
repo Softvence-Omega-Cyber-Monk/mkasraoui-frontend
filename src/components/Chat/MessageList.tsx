@@ -1,18 +1,22 @@
 import { useEffect, useRef } from "react";
 import type { ChatMessage } from "@/redux/types/chat.types";
 
+
 interface Props {
   messages: ChatMessage[];
   myUserId: string;
 }
 
+
 export default function MessageList({ messages, myUserId }: Props) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+
 
   useEffect(() => {
     if (scrollRef.current)
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
+
 
   return (
     <div className="flex-1 overflow-y-auto p-6" ref={scrollRef}>
@@ -24,6 +28,7 @@ export default function MessageList({ messages, myUserId }: Props) {
         messages.map((m) => {
           // ✅ Compare IDs properly
           const isOwn = String(m.senderId) === String(myUserId);
+
 
           return (
             <div

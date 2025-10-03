@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 
+
 export function useSocket(userId: string) {
   const socketRef = useRef<Socket | null>(null);
   useEffect(() => {
@@ -11,7 +12,8 @@ export function useSocket(userId: string) {
     socket.on("connect", () => {
       console.log("Connected Socket io:", socket.id);
     });
-  }, []);
+  }, [userId]);
+
 
   socketRef.current?.on("connect", () =>
     console.debug("[socket] connected", socketRef.current?.id),
