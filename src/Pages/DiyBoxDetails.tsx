@@ -351,7 +351,7 @@ export default function DiyBoxDetails() {
   const navigate = useNavigate();
   const { data, isLoading, error, refetch } = useGetDIYProductByIdQuery(id!);
 const { data: userData   } = useGetMeQuery();
-
+const [selectedImage, setSelectedImage] = useState<string | null>(null);
 // console.log({ firstUser: userData?.email });
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
@@ -526,22 +526,62 @@ const { data: userData   } = useGetMeQuery();
         <div className="overflow-hidden rounded-2xl p-4">
           <div className="flex flex-col lg:flex-row">
             {/* Left side - Product Images */}
-            <div className="lg:w-1/2">
-              <div className="mb-4 h-[70vh] w-auto">
-                <img
-                  src={product.imges?.[0]}
-                  alt={product.title}
-                  className="h-full w-full rounded-xl object-cover"
-                />
-              </div>
-              <div className="flex gap-3">
-                {product.imges?.map((img: string, idx: number) => (
-                  <div key={idx} className="h-20 w-20 overflow-hidden rounded-xl bg-gray-200">
-                    <img src={img} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" />
-                  </div>
-                ))}
-              </div>
-            </div>
+           
+ 
+<div className="lg:w-1/2">
+  {/* <div className="mb-4 h-[70vh] w-auto">
+    <img
+      src={selectedImage || product.imges?.[0]} // Show selected image or default first image
+      alt={product.title}
+      className="h-full w-full rounded-xl object-cover"
+    />
+  </div> */}
+
+
+
+<div
+  className="mb-4 h-[70vh] w-auto overflow-hidden rounded-xl relative cursor-zoom-in"
+  onMouseMove={(e) => {
+    const img = e.currentTarget.querySelector("img") as HTMLImageElement;
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    img.style.transformOrigin = `${x}% ${y}%`;
+    img.style.transform = "scale(2)";
+  }}
+  onMouseLeave={(e) => {
+    const img = e.currentTarget.querySelector("img") as HTMLImageElement;
+    img.style.transformOrigin = "center center";
+    img.style.transform = "scale(1)";
+  }}
+>
+  <img
+    src={selectedImage || product.imges?.[0]}
+    alt={product.title}
+    className="h-full w-full object-cover transition-transform duration-300 ease-in-out"
+  />
+</div>
+
+
+
+
+
+  <div className="flex gap-3">
+    {product.imges?.map((img: string, idx: number) => (
+      <div
+        key={idx}
+        className={`h-20 w-20 overflow-hidden rounded-xl border-2 cursor-pointer ${
+          selectedImage === img ? "border-[#223B7D]" : "border-transparent"
+        }`}
+        onClick={() => setSelectedImage(img)} // Set the clicked image as main image
+      >
+        <img src={img} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" />
+      </div>
+    ))}
+  </div>
+</div>
+
+
 
             {/* Right side - Product Details */}
             <div className="p-6 lg:w-1/2 lg:p-8">
