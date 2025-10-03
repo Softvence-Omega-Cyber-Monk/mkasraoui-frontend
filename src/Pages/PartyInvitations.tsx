@@ -8,6 +8,7 @@ import ManageRSVPsTab from "@/components/Party Invitations/Tab/ManageRSVPsTab";
 import {
   Calendar,
   ChevronDown,
+  Copy,
   Download,
   Mail,
   Share2,
@@ -19,7 +20,8 @@ import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useGenerateCardMutation } from "@/redux/features/generateCard/generateCard";
-import { useSendInvitationMutation} from "@/redux/features/invitations/invitationsApi";
+import { useSendInvitationMutation } from "@/redux/features/invitations/invitationsApi";
+import jsPDF from "jspdf";
 
 export default function PartyInvitations() {
   const [activeTab, setActiveTab] = useState("Create Invitation");
@@ -27,38 +29,70 @@ export default function PartyInvitations() {
 
   // Redux mutation hook
   const [generateCard, { isLoading: isGenerating, error: generateError }] = useGenerateCardMutation();
-  const [sendInvitation, {isLoading}] = useSendInvitationMutation();
+  const [sendInvitation, { isLoading }] = useSendInvitationMutation();
   // const [deleteInvitation] = useDeleteInvitationMutation();
   // const { getInvitations } = useGetInvitationsQuery();
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
   const [generatedPartyId, setGeneratedPartyId] = useState<string | null>(null);
-  const [showPopup, setShowPopup] = useState(false);
-        const [formData, setFormData] = useState({
-          email: "",
-          guest_name: "",
-          quest_phone: "",
-        });
-        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-          setFormData({ ...formData, [e.target.name]: e.target.value });
-        };
 
-        const handleSubmit = async (e: React.FormEvent) => {
-          e.preventDefault();
-          try {
-            await sendInvitation({
-              email: formData.email,
-              guest_name: formData.guest_name,
-              quest_phone: formData.quest_phone,
-              imageUrl: generatedImageUrl!,
-              party_id: generatedPartyId!,
-            }).unwrap();
-            setShowPopup(false);
-            alert("Invitation sent successfully!");
-          } catch (err) {
-            console.error(err);
-            alert("Failed to send invitation");
-          }
-        };
+  const [showPopup, setShowPopup] = useState(false);
+  const [showCopyPopup, setShowCopyPopup] = useState(false);
+
+  const handleDownloadPDF = () => {
+    if(!generatedImageUrl){
+      alert("Please Generate Image First");
+      return
+    }
+    const pdf = new jsPDF("p", "mm", "a4");
+    const img = new Image();
+    img.crossOrigin = "anonymous"; // to avoid CORS issue
+    img.src = generatedImageUrl!;
+
+    img.onload = () => {
+      const imgWidth = 190; // fit image to page width
+      const imgHeight = (img.height * imgWidth) / img.width;
+      pdf.addImage(img, "PNG", 10, 10, imgWidth, imgHeight);
+      pdf.save("invitation.pdf");
+    };
+  };
+
+  // Copy link to clipboard
+  const handleCopyLink = () => {
+    if(!generatedImageUrl){
+      alert("Please Generate Image First");
+      return
+    }
+    navigator.clipboard.writeText(generatedImageUrl!).then(() => {
+      alert("Image URL copied to clipboard!");
+    });
+  };
+
+  const [formData, setFormData] = useState({
+    email: "",
+    guest_name: "",
+    quest_phone: "",
+  });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await sendInvitation({
+        email: formData.email,
+        guest_name: formData.guest_name,
+        quest_phone: formData.quest_phone,
+        imageUrl: generatedImageUrl!,
+        party_id: generatedPartyId!,
+      }).unwrap();
+      setShowPopup(false);
+      alert("Invitation sent successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to send invitation");
+    }
+  };
 
   const tabs = [
     { id: "Create Invitation", label: "Create Invitation" },
@@ -597,7 +631,7 @@ export default function PartyInvitations() {
                       Send Via Email
                     </button>
 
-                    <button className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white font-normal text-[#223B7D] transition-colors hover:bg-gray-50">
+                    <button onClick={handleDownloadPDF} className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white font-normal text-[#223B7D] transition-colors hover:bg-gray-50">
                       <Download className="text-sm" />
                       Download PDF
                     </button>
@@ -701,6 +735,35 @@ export default function PartyInvitations() {
                       {isLoading ? "Sending..." : "Send Invitation"}
                     </button>
                   </form>
+                </div>
+              </div>
+            )}
+            {showCopyPopup && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+                <div className="bg-white p-6 rounded-2xl shadow-lg w-[400px]">
+                  <h3 className="text-lg font-semibold mb-4">Share Invitation</h3>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={generatedImageUrl!}
+                      readOnly
+                      className="flex-1 border rounded-lg px-3 py-2 text-sm"
+                    />
+                    <button
+                      onClick={handleCopyLink}
+                      className="flex items-center gap-1 px-3 py-2 bg-[#223B7D] text-white rounded-lg hover:bg-blue-900"
+                    >
+                      <Copy size={16} />
+                      Copy
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => setShowCopyPopup(false)}
+                    className="mt-4 w-full rounded-lg border border-gray-300 bg-gray-100 py-2 hover:bg-gray-200"
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
             )}
