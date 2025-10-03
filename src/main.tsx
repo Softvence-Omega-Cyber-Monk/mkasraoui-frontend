@@ -320,7 +320,7 @@ const router = createBrowserRouter([
       },
       {
         path: "add-blog",
-        element: <AdminAddBlogPage/>,
+        element: <AdminAddBlogPage />,
       },
       {
         path: "subscription-plan",
