@@ -195,19 +195,6 @@ export default function ProviderDirectory() {
             </div>
           </>
         ) : (
-          // <div className="overflow-hidden rounded-lg bg-white shadow-sm">
-          //   <div id="map" className="relative h-96 w-full">
-          //     <iframe
-          //       src="https://www.openstreetmap.org/export/embed.html?bbox=90.3000%2C23.7000%2C90.5000%2C23.8500&layer=mapnik&marker=23.7800%2C90.4000"
-          //       width="100%"
-          //       height="100%"
-          //       frameBorder="0"
-          //       style={{ border: 0 }}
-          //       allowFullScreen
-          //       title="Dhaka Map"
-          //     ></iframe>
-          //   </div>
-          // </div>
           <div>
             <ProviderDirectoryMap />
           </div>
@@ -216,3 +203,17 @@ export default function ProviderDirectory() {
     </div>
   );
 }
+
+// <div className="overflow-hidden rounded-lg bg-white shadow-sm">
+//   <div id="map" className="relative h-96 w-full">
+//     <iframe
+//       src="https://www.openstreetmap.org/export/embed.html?bbox=90.3000%2C23.7000%2C90.5000%2C23.8500&layer=mapnik&marker=23.7800%2C90.4000"
+//       width="100%"
+//       height="100%"
+//       frameBorder="0"
+//       style={{ border: 0 }}
+//       allowFullScreen
+//       title="Dhaka Map"
+//     ></iframe>
+//   </div>
+// </div>
