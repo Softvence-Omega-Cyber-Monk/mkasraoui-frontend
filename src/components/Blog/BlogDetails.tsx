@@ -1,8 +1,3 @@
- 
-
-
-
-
 // src/pages/BlogDetails.tsx
 import { useParams } from "react-router-dom";
 import { useGetBlogsQuery } from "@/redux/features/blog/blogApi";

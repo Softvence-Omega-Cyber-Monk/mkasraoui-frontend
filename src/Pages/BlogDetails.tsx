@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import bannerImg from "@/assets/new-blog-detailes.png";
 import blog1 from "@/assets/blog-1.jpg";
@@ -13,9 +12,11 @@ import NeverMissPartyTip from "@/components/Never miss party tip/NeverMissPartyT
 const blogDetailsData = [
   {
     id: 1,
-    title: "Ma Fête Facile : l’assistant IA qui organise l’anniversaire parfait pour vos enfants",
+    title:
+      "Ma Fête Facile : l’assistant IA qui organise l’anniversaire parfait pour vos enfants",
     image: "blog-1.jpg",
-    intro: "Organiser l’anniversaire de son enfant est toujours un moment de joie… mais aussi un vrai défi. Et si l’IA pouvait transformer cette mission en une expérience simple, ludique et personnalisée ?",
+    intro:
+      "Organiser l’anniversaire de son enfant est toujours un moment de joie… mais aussi un vrai défi. Et si l’IA pouvait transformer cette mission en une expérience simple, ludique et personnalisée ?",
     sections: [
       {
         heading: "Une IA au service des parents débordés",
@@ -50,7 +51,8 @@ const blogDetailsData = [
     title:
       "Pourquoi les parents adorent Ma Fête Facile: gain de temps, organisation simplifiée et souvenirs inoubliables",
     image: "blog-2.jpg",
-    intro: "Organiser l’anniversaire de son enfant peut vite tourner au casse-tête. Ma Fête Facile apporte une solution simple et magique grâce à l’IA.",
+    intro:
+      "Organiser l’anniversaire de son enfant peut vite tourner au casse-tête. Ma Fête Facile apporte une solution simple et magique grâce à l’IA.",
     sections: [
       {
         heading: "1. Un gain de temps considérable",
@@ -77,7 +79,8 @@ const blogDetailsData = [
     id: 3,
     title: "Les erreurs à éviter quand on organise une fête d’enfants",
     image: "blog-3.jpg",
-    intro: "Entre l’excitation des petits, les attentes des parents et les imprévus, organiser une fête d’enfants n’est pas toujours simple. Voici les erreurs à éviter.",
+    intro:
+      "Entre l’excitation des petits, les attentes des parents et les imprévus, organiser une fête d’enfants n’est pas toujours simple. Voici les erreurs à éviter.",
     sections: [
       {
         heading: "Inviter trop (ou pas assez) d’enfants",
@@ -115,7 +118,8 @@ const blogDetailsData = [
     id: 4,
     title: "Comment organiser un anniversaire sans stress en 2025 ?",
     image: "blog-4.jpg",
-    intro: "Avec les bons outils, organiser un anniversaire en 2025 devient un jeu d’enfant. Voici un guide simple pour une fête sans stress.",
+    intro:
+      "Avec les bons outils, organiser un anniversaire en 2025 devient un jeu d’enfant. Voici un guide simple pour une fête sans stress.",
     sections: [
       {
         heading: "Planifier à l’avance",
@@ -154,7 +158,8 @@ const blogDetailsData = [
     title:
       "Du gâteau aux cadeaux : le guide complet pour un anniversaire réussi avec Ma Fête Facile",
     image: "blog-5.jpg",
-    intro: "De la déco au gâteau en passant par les activités et les cadeaux, chaque détail compte pour un anniversaire réussi.",
+    intro:
+      "De la déco au gâteau en passant par les activités et les cadeaux, chaque détail compte pour un anniversaire réussi.",
     sections: [
       {
         heading: "Choisir le thème parfait",
@@ -189,7 +194,8 @@ const blogDetailsData = [
     title:
       "Box DIY, générateur d’idées et cadeaux personnalisés : découvrez tous les services de Ma Fête Facile",
     image: "blog-6.jpg",
-    intro: "Avec Ma Fête Facile, chaque détail d’un anniversaire est pensé pour être simple, créatif et unique.",
+    intro:
+      "Avec Ma Fête Facile, chaque détail d’un anniversaire est pensé pour être simple, créatif et unique.",
     sections: [
       {
         heading: "Le générateur d’idées",
@@ -229,7 +235,7 @@ export default function BlogDetails() {
 
   if (!blog) {
     return (
-      <div className="text-center py-20 text-xl text-gray-600">
+      <div className="py-20 text-center text-xl text-gray-600">
         Blog not found.
       </div>
     );
@@ -239,12 +245,12 @@ export default function BlogDetails() {
     <div>
       {/* Banner */}
       <div
-        className="relative w-full mx-auto bg-cover bg-center"
+        className="relative mx-auto w-full bg-cover bg-center"
         style={{ backgroundImage: `url(${bannerImg})` }}
       >
         <div className="bg-opacity-50 absolute inset-0 bg-black/50"></div>
-        <div className="relative z-10 py-56 flex items-center justify-center">
-          <h1 className="text-center text-2xl md:text-4xl font-bold text-white px-4">
+        <div className="relative z-10 flex items-center justify-center py-56">
+          <h1 className="px-4 text-center text-2xl font-bold text-white md:text-4xl">
             {blog.title}
           </h1>
         </div>
@@ -252,14 +258,14 @@ export default function BlogDetails() {
 
       {/* Blog Content */}
       <div className="mt-20">
-        <div className="max-w-4xl mx-auto px-6 py-6">
+        <div className="mx-auto max-w-4xl px-6 py-6">
           <article className="prose prose-lg max-w-none">
             {/* Intro */}
             <header className="mb-6">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <h2 className="mb-4 text-3xl font-bold text-gray-900">
                 Introduction
               </h2>
-              <p className="text-gray-700 leading-relaxed">{blog.intro}</p>
+              <p className="leading-relaxed text-gray-700">{blog.intro}</p>
             </header>
 
             {/* Image */}
@@ -267,9 +273,9 @@ export default function BlogDetails() {
               <img
                 src={images[blog.image]}
                 alt={blog.title}
-                className="w-full h-96 object-cover rounded-lg shadow-md"
+                className="h-96 w-full rounded-lg object-cover shadow-md"
               />
-              <p className="text-sm text-gray-500 mt-2 italic">
+              <p className="mt-2 text-sm text-gray-500 italic">
                 Illustration for: {blog.title}
               </p>
             </div>
@@ -278,18 +284,18 @@ export default function BlogDetails() {
             <div className="space-y-10">
               {blog.sections.map((section, idx) => (
                 <section key={idx}>
-                  <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+                  <h3 className="mb-4 text-2xl font-semibold text-gray-800">
                     {section.heading}
                   </h3>
 
                   {section.text && (
-                    <p className="text-gray-700 leading-relaxed mb-4">
+                    <p className="mb-4 leading-relaxed text-gray-700">
                       {section.text}
                     </p>
                   )}
 
                   {section.points && (
-                    <ul className="list-disc pl-6 text-gray-700 space-y-1">
+                    <ul className="list-disc space-y-1 pl-6 text-gray-700">
                       {section.points.map((point, i) => (
                         <li key={i}>{point}</li>
                       ))}
@@ -297,7 +303,7 @@ export default function BlogDetails() {
                   )}
 
                   {section.list && (
-                    <ul className="list-none pl-0 space-y-2">
+                    <ul className="list-none space-y-2 pl-0">
                       {section.list.map((item, i) => (
                         <li
                           key={i}
@@ -314,10 +320,10 @@ export default function BlogDetails() {
 
             {/* Conclusion */}
             <div className="mt-16">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6 border-b pb-2">
+              <h2 className="mb-6 border-b pb-2 text-3xl font-bold text-gray-900">
                 Conclusion
               </h2>
-              <p className="text-gray-700 leading-relaxed">{blog.conclusion}</p>
+              <p className="leading-relaxed text-gray-700">{blog.conclusion}</p>
             </div>
           </article>
         </div>
@@ -331,8 +337,6 @@ export default function BlogDetails() {
   );
 }
 
-
-
 // import { useParams } from "react-router-dom";
 // import bannerImg from "@/assets/new-blog-detailes.png";
 // import blog1 from "@/assets/blog-1.jpg";
@@ -343,8 +347,6 @@ export default function BlogDetails() {
 // import blog6 from "@/assets/blog-6.jpg";
 // import NeverMissPartyTip from "@/components/Never miss party tip/NeverMissPartyTip";
 // // import userCicler from "@/assets/profile-circle.png";
-
-
 
 // export default function BlogDetails() {
 //   const { id } = useParams(); // id is a string
@@ -408,7 +410,7 @@ export default function BlogDetails() {
 //     },
 //     {
 //       id: 6,
-//       title: "Unicorn Party Magic: Creating Rainbow Dreams",
+//       title: "Box DIY, générateur d’idées et cadeaux personnalisés : découvrez tous les services de Ma Fête Facile",
 //       description:
 //         "Dig into these fantastic dinosaur party ideas that will make your celebration roar with excitement and prehistoric fun.",
 //       image: blog6,
@@ -429,8 +431,7 @@ export default function BlogDetails() {
 //         backgroundImage: `url(${bannerImg})`
 //       }}
 //       >
-        
-          
+
 //         {/* Black Overlay */}
 //         <div className="bg-opacity-50 absolute inset-0 bg-black/50"></div>
 
@@ -443,7 +444,7 @@ export default function BlogDetails() {
 //       </div>
 //       {/* intro text start here  */}
 //       <div className=" mt-20">
-      
+
 //         <div className="max-w-4xl mx-auto px-6 py-6">
 //         <article className="prose prose-lg max-w-none">
 //           {/* Header */}
@@ -456,23 +457,23 @@ export default function BlogDetails() {
 //           {/* Main Content */}
 //           <div className="space-y-8">
 //             <p className="text-gray-700 leading-relaxed">
-//               In consequat elit vel tempor lacus ut lorem ipsum. Vestibulum suscipit nulla bibendum facilisis aliquam 
-//               ipsum. Mauris blandit luctus mauris, et ut. Nulla aliquet lorem velit, nam. Mauris potenti vulputate erat 
+//               In consequat elit vel tempor lacus ut lorem ipsum. Vestibulum suscipit nulla bibendum facilisis aliquam
+//               ipsum. Mauris blandit luctus mauris, et ut. Nulla aliquet lorem velit, nam. Mauris potenti vulputate erat
 //               amet lorem in velit. Vestibulum ut mauris mauris a mauris. Dolor elit erat mauris turpis, at pellentesque et amet eu nec.
 //             </p>
 
 //             <p className="text-gray-700 leading-relaxed">
-//               Cursus quis turpis tristique pulvinar. Aliquam ac. Eget in vulputate rhodo ac vulputate lorem vitae sed molestie 
-//               vulputate. Vulputate sed lorem ipsum convallis, dolor eu mauris donec ac. Suscipit bibendum nunc, at lorem. In 
+//               Cursus quis turpis tristique pulvinar. Aliquam ac. Eget in vulputate rhodo ac vulputate lorem vitae sed molestie
+//               vulputate. Vulputate sed lorem ipsum convallis, dolor eu mauris donec ac. Suscipit bibendum nunc, at lorem. In
 //               mauris velit et suspendisse, ipsum molestie aliquam donec aliquet ut vel vulputate.
 //             </p>
 
 //             {/* Image Section */}
 //             <div className="my-12">
 //               <div className="relative h-96 w-auto ">
-//                 <img 
+//                 <img
 //                   src={findBlog?.image}
-//                   alt="Children celebrating with party decorations" 
+//                   alt="Children celebrating with party decorations"
 //                   className="w-full h-full  object-cover rounded-lg shadow-md"
 //                 />
 //               </div>
@@ -482,32 +483,32 @@ export default function BlogDetails() {
 //             </div>
 
 //             <p className="text-black font-bold leading-relaxed">
-//               Dolor amet eu lorem ante sed felis nulla. Aliquam vestibulum, nulla odio elit nitor. In 
-//               aliquot pellentesque annean nunc vestibulum tempus in ut bibendum diam. Rhoncus 
+//               Dolor amet eu lorem ante sed felis nulla. Aliquam vestibulum, nulla odio elit nitor. In
+//               aliquot pellentesque annean nunc vestibulum tempus in ut bibendum diam. Rhoncus
 //               integer aliquam ut vitae molestudae tristique. felis nulla. Aliquam vestibulum.
 //             </p>
 
 //             <p className="text-gray-700 leading-relaxed">
-//               Lorem ipsum dolor sed nulla facilisis ut eius velit congue mollis semper convallis convallis mau. Sed 
-//               felis ut ipsum a volutpat phasellus ut leo velit. Donec leo, urna tempor ut posuere 
-//               lorem blandit vestibus neque porta ut congue sceleris volutpat. Aliquot magna et feugiat cursus gravida 
-//               lorem. Sed aliquam dolor sed magna mauris. Bibendum in tae. Sed eget mauris 
+//               Lorem ipsum dolor sed nulla facilisis ut eius velit congue mollis semper convallis convallis mau. Sed
+//               felis ut ipsum a volutpat phasellus ut leo velit. Donec leo, urna tempor ut posuere
+//               lorem blandit vestibus neque porta ut congue sceleris volutpat. Aliquot magna et feugiat cursus gravida
+//               lorem. Sed aliquam dolor sed magna mauris. Bibendum in tae. Sed eget mauris
 //               lorem sed aliquam mauris ut neque, mauris amet quam velit sem, tempus velit eget lorem ut.
 //             </p>
 
 //             {/* Quote Section */}
 //             <blockquote className="border-l-4 borderblack  italic pl-6 py-4 my-8 text-[#000000] bg-blue-50 rounded-r-lg">
 //               <p className="text-gray-800 italic leading-relaxed">
-//                 "Aliquam elit mauris rhctu vitiem quam nulla. Gravidas ut gravidas ac arco mauris mollis id. Nam 
-//                 pellentesque congue eget consectetur tempor. Sapien, viverra mauris amet mauris mollis 
+//                 "Aliquam elit mauris rhctu vitiem quam nulla. Gravidas ut gravidas ac arco mauris mollis id. Nam
+//                 pellentesque congue eget consectetur tempor. Sapien, viverra mauris amet mauris mollis
 //                 aliquam. Rhon velit vitae, ullamcoper pellaque tempor."
 //               </p>
 //             </blockquote>
 
 //             <p className="text-gray-700 leading-relaxed">
-//               Tempus nulla demenat velit potenti cursus leo metus, viverra. Blandit dui ultrices vulputate mauris 
-//               eugas nec alique et. Aliquam feugaceper quam. A cursus, nascent lectum sagittis dolor et mauris mauris. 
-//               Consectetur nulla justo quis vitae posuere turpis. Aliquam vitae ut amet sagittis interdum dolor eu turpis 
+//               Tempus nulla demenat velit potenti cursus leo metus, viverra. Blandit dui ultrices vulputate mauris
+//               eugas nec alique et. Aliquam feugaceper quam. A cursus, nascent lectum sagittis dolor et mauris mauris.
+//               Consectetur nulla justo quis vitae posuere turpis. Aliquam vitae ut amet sagittis interdum dolor eu turpis
 //               vestibulum.
 //             </p>
 
@@ -519,21 +520,21 @@ export default function BlogDetails() {
 
 //               <div className="space-y-6">
 //                 <p className="text-gray-700 leading-relaxed">
-//                   Mauris gravida mauris augure tellus gravida et tellentibus elit ut taciturn. Ullam id molestique est ulttam libero. Amet et 
-//                   congue urna lorem ut eget gravida. Suscipit imperia consequent justo velit, etiam ut vestibulum ante metus 
+//                   Mauris gravida mauris augure tellus gravida et tellentibus elit ut taciturn. Ullam id molestique est ulttam libero. Amet et
+//                   congue urna lorem ut eget gravida. Suscipit imperia consequent justo velit, etiam ut vestibulum ante metus
 //                   porta bibendum.
 //                 </p>
 
 //                 <p className="text-gray-700 leading-relaxed">
-//                   Mauris ut lacinia blanquet tellentibus ut eius alique nulla phasellus amet gravida sed magna. Ut tristique 
-//                   bibendum convallis velit eget lacinia mauris. Eget sapien ut lorem velit ut. Quam blandit id ut vel congue 
+//                   Mauris ut lacinia blanquet tellentibus ut eius alique nulla phasellus amet gravida sed magna. Ut tristique
+//                   bibendum convallis velit eget lacinia mauris. Eget sapien ut lorem velit ut. Quam blandit id ut vel congue
 //                   velit mauris tempetus cursus.
 //                 </p>
 
 //                 <p className="text-gray-700 leading-relaxed">
-//                   Lorem ipsum dolor et lorem ut velit mauris lorem alique. Nam ulla mauris turpis vel posuere velit 
-//                   diam lorem. Cursus et mauris eget quam. Aliquam auiseuele mauris et ut eget consectetur aliquir. Donec 
-//                   dolor amet sed cursus elit consequat amet et eu dui verum tellus alique eu quis. Mauris et blandit 
+//                   Lorem ipsum dolor et lorem ut velit mauris lorem alique. Nam ulla mauris turpis vel posuere velit
+//                   diam lorem. Cursus et mauris eget quam. Aliquam auiseuele mauris et ut eget consectetur aliquir. Donec
+//                   dolor amet sed cursus elit consequat amet et eu dui verum tellus alique eu quis. Mauris et blandit
 //                   pellentesque elit lacinia turpis lorem tempor.
 //                 </p>
 //               </div>
@@ -545,7 +546,7 @@ export default function BlogDetails() {
 //       {/* intro text end here  */}
 //       {/* never miss trip start here  */}
 //       <div className="">
-        
+
 //         <NeverMissPartyTip/>
 //       </div>
 //       {/* never miss trip end here */}

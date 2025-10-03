@@ -1,8 +1,8 @@
 // src/components/Chat/ConversationList.tsx
-
 import { setSelectedConversation } from "@/redux/features/chatmessage/chatSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks/redux-hook";
 import type { Conversation } from "@/redux/types/chat.types";
+import { useSocket } from "@/services/Usesocket";
 
 interface Props {
   conversations: Conversation[];
@@ -12,6 +12,16 @@ interface Props {
 export default function ConversationList({ conversations, loading }: Props) {
   const dispatch = useAppDispatch();
   const selected = useAppSelector((s) => s.chat.selectedConversationId);
+
+  const handleClick = (id: string) => {
+    dispatch(setSelectedConversation(id));
+    try {
+      const socket = useSocket(id);
+      socket?.current?.emit("conversation:join", { conversationId: id });
+    } catch (e) {
+      // socket not ready or not connected
+    }
+  };
 
   return (
     <div className="w-80 border-r border-[#BDBDBE] bg-white">
@@ -27,7 +37,7 @@ export default function ConversationList({ conversations, loading }: Props) {
             return (
               <div
                 key={c.id}
-                onClick={() => dispatch(setSelectedConversation(c.id))}
+                onClick={() => handleClick(c.id)}
                 className={`cursor-pointer p-4 hover:bg-gray-50 ${selected === c.id ? "bg-blue-50" : ""}`}
               >
                 <div className="flex items-center justify-between">

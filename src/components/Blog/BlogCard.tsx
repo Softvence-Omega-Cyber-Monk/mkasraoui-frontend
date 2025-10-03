@@ -1,6 +1,3 @@
- 
-
-
 import { useGetBlogsQuery } from "@/redux/features/blog/blogApi";
 import type { Blog } from "@/redux/types/blog.type";
 import { ArrowUpRight, Clock } from "lucide-react";
