@@ -22,6 +22,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useGenerateCardMutation } from "@/redux/features/generateCard/generateCard";
 import { useSendInvitationMutation } from "@/redux/features/invitations/invitationsApi";
 import jsPDF from "jspdf";
+import toast from "react-hot-toast";
 
 export default function PartyInvitations() {
   const [activeTab, setActiveTab] = useState("Create Invitation");
@@ -63,7 +64,7 @@ export default function PartyInvitations() {
       return
     }
     navigator.clipboard.writeText(generatedImageUrl!).then(() => {
-      alert("Image URL copied to clipboard!");
+      toast.success("URL Copied to Clipboard");
     });
   };
 
@@ -636,7 +637,7 @@ export default function PartyInvitations() {
                       Download PDF
                     </button>
 
-                    <button className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white font-normal text-[#223B7D] transition-colors hover:bg-gray-50">
+                    <button onClick={handleCopyLink} className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white font-normal text-[#223B7D] transition-colors hover:bg-gray-50">
                       <Share2 className="text-sm" />
                       Share Link
                     </button>
@@ -644,7 +645,7 @@ export default function PartyInvitations() {
                 </div>
 
                 {/* Quick Stats */}
-                <div className="rounded-3xl border border-gray-200 bg-white shadow-sm">
+                {/* <div className="rounded-3xl border border-gray-200 bg-white shadow-sm">
                   <div className="p-6">
                     <h2 className="text-2xl font-semibold text-gray-900">
                       Quick Stats
@@ -666,7 +667,7 @@ export default function PartyInvitations() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
 

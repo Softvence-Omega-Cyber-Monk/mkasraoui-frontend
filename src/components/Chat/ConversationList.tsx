@@ -1,17 +1,20 @@
-// src/components/Chat/ConversationList.tsx
+/* eslint-disable react-hooks/rules-of-hooks */
 import { setSelectedConversation } from "@/redux/features/chatmessage/chatSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks/redux-hook";
 import type { Conversation } from "@/redux/types/chat.types";
 import { useSocket } from "@/services/Usesocket";
+
 
 interface Props {
   conversations: Conversation[];
   loading?: boolean;
 }
 
+
 export default function ConversationList({ conversations, loading }: Props) {
   const dispatch = useAppDispatch();
   const selected = useAppSelector((s) => s.chat.selectedConversationId);
+
 
   const handleClick = (id: string) => {
     dispatch(setSelectedConversation(id));
@@ -20,8 +23,10 @@ export default function ConversationList({ conversations, loading }: Props) {
       socket?.current?.emit("conversation:join", { conversationId: id });
     } catch (e) {
       // socket not ready or not connected
+      console.log(e)
     }
   };
+
 
   return (
     <div className="w-80 border-r border-[#BDBDBE] bg-white">
@@ -63,6 +68,7 @@ export default function ConversationList({ conversations, loading }: Props) {
     </div>
   );
 }
+
 
 // // src/components/Chat/ConversationList.tsx
 

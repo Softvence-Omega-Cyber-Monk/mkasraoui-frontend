@@ -9,12 +9,15 @@ import {
 import type { ChatMessage, Conversation } from "@/redux/types/chat.types";
 import { useSocket } from "@/services/Usesocket";
 
+
 export default function useChatSocket(myUserId: string | null) {
   const dispatch = useAppDispatch();
   const socket = useSocket(myUserId || "");
 
+
   useEffect(() => {
     if (!myUserId) return;
+
 
     // Socket event listeners
     socket?.current?.on("conversations", (payload: Conversation[]) =>
@@ -49,6 +52,7 @@ export default function useChatSocket(myUserId: string | null) {
         }
       },
     );
+
 
     // return () => disconnectSocket();
   }, [myUserId, dispatch]);
