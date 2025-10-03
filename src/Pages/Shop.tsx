@@ -199,7 +199,7 @@ export default function Shop(): JSX.Element {
       })
     );
     toast.success(`${item.title} added to cart — redirecting to checkout`);
-    navigate("/checkout");
+    navigate("/home/diyboxChackout");
   };
 
   const handleWishlistToggle = async (item: CardItem, e?: React.MouseEvent) => {

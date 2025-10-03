@@ -360,6 +360,7 @@ if (!rootElement) {
   throw new Error("Root element not found");
 }
 
+
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <ReduxProviderWrapper>
