@@ -111,24 +111,6 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
                     className="mb-1 h-16 w-16 object-contain"
                   />
                 )}
-                {!uploadedImage && (
-                  <div className="mb-1 text-5xl">
-                    {selectedTheme.find((theme) => theme.id === selectedThemeId)?.icon}
-                  </div>
-                )}
-                {childName && (
-                  <div className="text-center text-xs leading-tight font-bold text-purple-600">
-                    {childName}
-                  </div>
-                )}
-                {age && (
-                  <div className="text-center text-xs text-purple-500">Age {age}</div>
-                )}
-                {optionalMessage && (
-                  <div className="mt-1 text-center text-xs leading-tight text-gray-600">
-                    {optionalMessage}
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -151,24 +133,6 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
                     alt="Uploaded design"
                     className="mb-1 h-16 w-16 object-contain"
                   />
-                )}
-                {!uploadedImage && (
-                  <div className="mb-1 text-5xl">
-                    {selectedTheme.find((theme) => theme.id === selectedThemeId)?.icon}
-                  </div>
-                )}
-                {childName && (
-                  <div className="text-center text-xs leading-tight font-bold text-purple-600">
-                    {childName}
-                  </div>
-                )}
-                {age && (
-                  <div className="text-center text-xs text-purple-500">Age {age}</div>
-                )}
-                {optionalMessage && (
-                  <div className="mt-1 text-center text-xs leading-tight text-gray-600">
-                    {optionalMessage}
-                  </div>
                 )}
               </div>
             </div>

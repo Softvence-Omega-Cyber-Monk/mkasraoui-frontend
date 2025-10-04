@@ -23,6 +23,8 @@ import { useGenerateCardMutation } from "@/redux/features/generateCard/generateC
 import { useSendInvitationMutation } from "@/redux/features/invitations/invitationsApi";
 import jsPDF from "jspdf";
 import toast from "react-hot-toast";
+import { useGetPartyPlansQuery } from "@/redux/features/partyGeneration/partyGenerationApi";
+import { useGenerateMessageMutation } from "@/redux/features/generatedMessage/generatedMessageApi";
 
 export default function PartyInvitations() {
   const [activeTab, setActiveTab] = useState("Create Invitation");
@@ -34,14 +36,29 @@ export default function PartyInvitations() {
   // const [deleteInvitation] = useDeleteInvitationMutation();
   // const { getInvitations } = useGetInvitationsQuery();
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
-  const [generatedPartyId, setGeneratedPartyId] = useState<string | null>(null);
 
   const [showPopup, setShowPopup] = useState(false);
   const [showCopyPopup, setShowCopyPopup] = useState(false);
 
+  const { data: parties } = useGetPartyPlansQuery();
+
+  const [generateMessageApi, { isLoading: isGeneratingMessage }] = useGenerateMessageMutation();
+
+  const [partyDetails, setPartyDetails] = useState({
+    selectedPartyId: "",
+    childName: "",
+    age: 0,
+    partyDate: "",
+    partyTime: "",
+    gender: "",
+    location: "",
+    rsvpContact: "",
+    description: "",
+  });
+
   const handleDownloadPDF = () => {
-    if(!generatedImageUrl){
-      alert("Please Generate Image First");
+    if (!generatedImageUrl) {
+      toast.error("Please Generate Image First");
       return
     }
     const pdf = new jsPDF("p", "mm", "a4");
@@ -59,8 +76,8 @@ export default function PartyInvitations() {
 
   // Copy link to clipboard
   const handleCopyLink = () => {
-    if(!generatedImageUrl){
-      alert("Please Generate Image First");
+    if (!generatedImageUrl) {
+      toast.error("Please Generate Image First");
       return
     }
     navigator.clipboard.writeText(generatedImageUrl!).then(() => {
@@ -85,13 +102,13 @@ export default function PartyInvitations() {
         guest_name: formData.guest_name,
         quest_phone: formData.quest_phone,
         imageUrl: generatedImageUrl!,
-        party_id: generatedPartyId!,
+        party_id: partyDetails.selectedPartyId!,
       }).unwrap();
       setShowPopup(false);
-      alert("Invitation sent successfully!");
+      toast.success("Invitation sent successfully!");
     } catch (err) {
       console.error(err);
-      alert("Failed to send invitation");
+      toast.error("Failed to send invitation");
     }
   };
 
@@ -102,16 +119,7 @@ export default function PartyInvitations() {
   ];
 
   const [isAgeDropdownOpen, setIsAgeDropdownOpen] = useState(false);
-  const [partyDetails, setPartyDetails] = useState({
-    childName: "",
-    age: 0,
-    partyDate: "",
-    partyTime: "",
-    gender: "",
-    location: "",
-    rsvpContact: "",
-    description: "",
-  });
+
 
 
 
@@ -149,6 +157,31 @@ export default function PartyInvitations() {
     }
   };
 
+  const handleGenerateMessage = async () => {
+    if (!partyDetails.childName || !partyDetails.age || !partyDetails.gender) {
+      toast.error("Please fill at least name, age, and gender before generating message.");
+      return;
+    }
+    try {
+      const response = await generateMessageApi({
+        theme: "Birthday",
+        description: partyDetails.description || "",
+        age: partyDetails.age,
+        gender: partyDetails.gender,
+        birthday_person_name: partyDetails.childName,
+        venue: partyDetails.location || "",
+        date: partyDetails.partyDate || "",
+        time: partyDetails.partyTime || "",
+        contact_info: partyDetails.rsvpContact || "",
+      }).unwrap();
+      handleInputChange("description", response.invitation_Message);
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Message Generation Failed");
+    }
+  };
+
   // Handle AI generation
   const handleGenerateCard = async () => {
     if (!partyDetails.description.trim()) {
@@ -175,18 +208,14 @@ export default function PartyInvitations() {
       }).unwrap();
 
       console.log(result)
-
-      if (result.images) {
-        setGeneratedImageUrl(result.images[0].url);
-        setGeneratedPartyId(result.images[0].public_id)
-        Swal.fire({
-          icon: "success",
-          title: "Card Generated!",
-          text: "Your custom invitation card has been created.",
-          confirmButtonColor: "#223B7D",
-        });
-        handleNext()
-      }
+      setGeneratedImageUrl(result.images[0].url);
+      Swal.fire({
+        icon: "success",
+        title: "Card Generated!",
+        text: "Your custom invitation card has been created.",
+        confirmButtonColor: "#223B7D",
+      });
+      handleNext()
     } catch (error) {
       console.error("Failed to generate card:", error);
       Swal.fire({
@@ -295,19 +324,6 @@ export default function PartyInvitations() {
     email: "",
     phone: "",
   });
-
-  const handleAddGuest = () => {
-    if (newGuest.name && newGuest.email && newGuest.phone) {
-      const guest = {
-        id: Date.now().toString(),
-        ...newGuest,
-        status: "pending",
-      };
-      setGuests([...guests, guest]);
-      setNewGuest({ name: "", email: "", phone: "" });
-    }
-  };
-
   const getStatusStyles = (status: string) => {
     switch (status) {
       case "pending":
@@ -393,6 +409,25 @@ export default function PartyInvitations() {
                     Party Details
                   </h2>
                   <div className="space-y-6">
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        Select Party
+                      </label>
+                      <select
+                        className="w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        value={partyDetails.selectedPartyId || ""}
+                        onChange={(e) =>
+                          handleInputChange("selectedPartyId", e.target.value)
+                        }
+                      >
+                        <option value="">-- Select a Party --</option>
+                        {parties?.map((party) => (
+                          <option key={party.id} value={party.id}>
+                            {party.title} - {new Date(party.scheduledDate).toLocaleDateString()}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-700">
                         Child's Name
@@ -540,7 +575,7 @@ export default function PartyInvitations() {
                             !emailRegex.test(value) &&
                             !phoneRegex.test(value)
                           ) {
-                            alert(
+                            toast.error(
                               "Please enter a valid phone number or email address.",
                             );
                           }
@@ -555,8 +590,8 @@ export default function PartyInvitations() {
                         </label>
                         <button
                           type="button"
-                          onClick={handleGenerateCard}
-                          disabled={isGenerating}
+                          onClick={handleGenerateMessage}
+                          disabled={isGeneratingMessage}
                           className="flex cursor-pointer items-center rounded-sm border border-[#C3C3C3] px-6 py-2 text-sm text-[#223B7D] hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           <Sparkles className="h-4 w-4" />
@@ -584,6 +619,7 @@ export default function PartyInvitations() {
                     <div className="flex justify-end">
                       <button
                         onClick={handleGenerateCard}
+                        disabled={isGenerating}
                         className="hover:bg-secondary-light cursor-pointer rounded-md bg-[#223B7D] px-6 py-3 text-white transition-all duration-300"
                       >
                         Next
@@ -731,7 +767,7 @@ export default function PartyInvitations() {
                     <button
                       type="submit"
                       disabled={isLoading}
-                      className="w-full rounded-md bg-[#223B7D] p-2 text-white hover:bg-blue-900 transition-colors"
+                      className="w-full rounded-md bg-[#223B7D] p-2 text-white hover:bg-blue-900 transition-colors cursor-pointer"
                     >
                       {isLoading ? "Sending..." : "Send Invitation"}
                     </button>
@@ -775,11 +811,6 @@ export default function PartyInvitations() {
         return (
           <div>
             <ManageRSVPsTab
-              guests={guests}
-              newGuest={newGuest}
-              setNewGuest={setNewGuest}
-              handleAddGuest={handleAddGuest}
-              getStatusStyles={getStatusStyles}
               handleBack={handleBack}
             />
           </div>
