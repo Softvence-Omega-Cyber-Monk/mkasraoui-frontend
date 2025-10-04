@@ -14,6 +14,7 @@ import chatReducer from "./features/chatmessage/chatSlice";
 import { tShirtApi } from "./features/tShirt/tshirtApi";
 import { partyPlanApi } from "./features/partyPlan/partyPlanApi";
 import { generateCardApi } from "./features/generateCard/generateCard";
+import { messageApi } from "./features/generatedMessage/generatedMessageApi";
 // import { chatApi } from "./features/chatmessage/chatApi";
 
 export const store = configureStore({
@@ -22,6 +23,7 @@ export const store = configureStore({
     [tShirtApi.reducerPath]: tShirtApi.reducer,
     [partyPlanApi.reducerPath]: partyPlanApi.reducer,
     [generateCardApi.reducerPath]: generateCardApi.reducer,
+    [messageApi.reducerPath]: messageApi.reducer,
     // [chatApi.reducerPath]: chatApi.reducer,
     auth: authReducer,
     cart: cartReducer,
@@ -44,7 +46,8 @@ export const store = configureStore({
       .concat(baseApi.middleware)
       .concat(tShirtApi.middleware)
       .concat(partyPlanApi.middleware)
-      .concat(generateCardApi.middleware),
+      .concat(generateCardApi.middleware)
+      .concat(messageApi.middleware),
   // .concat(chatApi.middleware),
 });
 

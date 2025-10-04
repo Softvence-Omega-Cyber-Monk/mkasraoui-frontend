@@ -65,6 +65,7 @@ export const invitationsApi = baseApi.injectEndpoints({
     getInvitations: builder.query<ApiResponse<Invitation[]>, void>({
       query: () => "/invitations",
       providesTags: ["Invitations"],
+      transformResponse: (response:any) => response.data
     }),
 
     // Get Invitations by User
