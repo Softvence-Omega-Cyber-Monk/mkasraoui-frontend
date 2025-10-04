@@ -1,37 +1,22 @@
-import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useCreatePartyPlanMutation } from "@/redux/features/partyPlan/partyPlanApi";
 import toast from "react-hot-toast";
-
-interface Product {
-  id: string;
-  title: string;
-  description: string;
-  product_type: string;
-  age_range: string;
-  price: number;
-  discounted_price: number | null;
-  included: string[];
-  tutorial: string | null;
-  imges: string[];
-  avg_rating: number;
-  total_review: number;
-  theme: string;
-}
 
 interface PartyPlan {
   [key: string]: string[];
 }
 
+interface AdventureSongMovie {
+  title: string;
+  description: string;
+  channel: string;
+  url: string;
+  views: string;
+}
+
 interface PartyPlanResponse {
   party_plan: PartyPlan;
-  suggest_gifts: {
-    product_ids: string[];
-  };
-  all_product: {
-    diyBoxes: Product[];
-    gifts: Product[];
-  };
+  adventure_song_movie_links?: AdventureSongMovie[];
 }
 
 interface YourPerfectPartyTabProps {
@@ -71,16 +56,24 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
     );
   }
 
-  const { party_plan, suggest_gifts, all_product } = partyPlanData;
+  const { party_plan, adventure_song_movie_links } = partyPlanData;
 
-  const getSuggestedProducts = (): Product[] => {
-    const allProducts = [...all_product.diyBoxes, ...all_product.gifts];
-    return suggest_gifts.product_ids
-      .map(id => allProducts.find(product => product.id === id))
-      .filter((product): product is Product => product !== undefined);
-  };
-
-  const suggestedProducts = getSuggestedProducts();
+  // Check if party_plan exists and is valid
+  if (!party_plan || typeof party_plan !== 'object') {
+    return (
+      <div className="mx-auto max-w-6xl">
+        <div className="text-center py-20">
+          <div className="text-red-500 text-xl mb-4">⚠️ Invalid party plan data</div>
+          <button
+            onClick={() => setActiveStep("Preferences")}
+            className="px-8 py-3 bg-[#223B7D] text-white rounded-xl font-semibold hover:bg-[#1a2f66] transition-colors shadow-lg"
+          >
+            Go Back to Preferences
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleBackToPreferences = () => {
     setActiveStep("Preferences");
@@ -99,7 +92,7 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
           theme: preferencesData?.theme || "",
           favorite_activities: preferencesData?.favorite_activities || []
         },
-        num_product: suggestedProducts.length
+        num_product: 0
       };
 
       const response = await createPartyPlan(requestBody).unwrap();
@@ -114,21 +107,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
     }
-  };
-
-  const renderStars = (rating: number) => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <span
-          key={i}
-          className={`text-lg ${i <= rating ? "text-yellow-400" : "text-gray-300"}`}
-        >
-          ★
-        </span>
-      );
-    }
-    return stars;
   };
 
   return (
@@ -188,103 +166,56 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
 
       <hr className="my-16 border-gray-200" />
 
-      {suggestedProducts.length > 0 && (
+      {adventure_song_movie_links && adventure_song_movie_links.length > 0 && (
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-gray-800 border-b pb-3 mb-8">
-            🎁 Recommended Products
+            🎵 Party Music & Entertainment
           </h2>
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
-            {suggestedProducts.map((product) => (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+            {adventure_song_movie_links.map((video, index) => (
               <div
-                key={product.id}
+                key={index}
                 className="bg-white rounded-xl overflow-hidden shadow-2xl hover:shadow-primary transition-all duration-300 transform hover:-translate-y-1"
               >
-                {product.imges && product.imges.length > 0 && (
-                  <div className="h-48 w-80">
-                    <img
-                      src={product.imges[0]}
-                      alt={product.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "https://via.placeholder.com/400x300?text=No+Image";
-                      }}
-                    />
-                  </div>
-                )}
+                <div className="aspect-video w-full bg-gray-200">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${video.url.split('v=')[1]}`}
+                    title={video.title}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  ></iframe>
+                </div>
 
                 <div className="p-5">
-                  <h3 className="font-extrabold text-xl text-gray-900 mb-2 truncate">
-                    {product.title}
+                  <h3 className="font-extrabold text-lg text-gray-900 mb-2 line-clamp-2">
+                    {video.title}
                   </h3>
 
-                  <p className="text-gray-500 text-sm mb-4 line-clamp-3 h-[60px]">
-                    {product.description}
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-xs bg-red-100 text-red-800 px-2.5 py-1 rounded-full font-medium">
+                      {video.channel}
+                    </span>
+                    <span className="text-xs text-gray-500 font-medium">
+                      👁️ {parseInt(video.views).toLocaleString()} views
+                    </span>
+                  </div>
+
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                    {video.description}
                   </p>
 
-                  {product.total_review > 0 && (
-                    <div className="flex items-center mb-4">
-                      {renderStars(Math.round(product.avg_rating))}
-                      <span className="ml-2 text-sm text-gray-600 font-medium">
-                        ({product.total_review})
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      {product.discounted_price ? (
-                        <div className="flex flex-col">
-                          <span className="text-xl font-bold text-red-600">
-                            ${product.discounted_price.toFixed(2)}
-                          </span>
-                          <span className="text-sm text-gray-500 line-through">
-                            ${product.price.toFixed(2)}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-xl font-bold text-[#223B7D]">
-                          ${product.price.toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-
-                    <Link to={`/home/diyboxe/details/${product.id}`}>
-                      <button className="bg-[#223B7D] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#1a2f66] transition-colors shadow-md">
-                        Details
-                      </button>
-                    </Link>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <span className="text-xs bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full font-medium">
-                      {product.age_range}
-                    </span>
-                    <span className="text-xs bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full font-medium">
-                      {product.product_type.replace('_', ' ')}
-                    </span>
-                  </div>
-
-                  {product.included && product.included.length > 0 && (
-                    <div className="mt-3 border-t pt-3">
-                      <p className="text-xs text-gray-500 mb-2 font-semibold">What's Inside:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {product.included.slice(0, 3).map((item, idx) => (
-                          <span
-                            key={idx}
-                            className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full"
-                          >
-                            {item}
-                          </span>
-                        ))}
-                        {product.included.length > 3 && (
-                          <span className="text-xs text-gray-500 font-medium self-center">
-                            +{product.included.length - 3} more
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                  <a
+                    href={video.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block w-full text-center bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-700 transition-colors shadow-md"
+                  >
+                    Watch on YouTube
+                  </a>
                 </div>
               </div>
             ))}
@@ -297,7 +228,7 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
       <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
         <button
           onClick={handleBackToPreferences}
-          className="px-8 py-3 border-2 border-[#223B7D] text-[#223B7D] rounded-xl font-semibold hover:bg-[#223B7D] hover:text-white transition-all shadow-md"
+          className="px-8 py-3 cursor-pointer border-2 border-[#223B7D] text-[#223B7D] rounded-xl font-semibold hover:bg-[#223B7D] hover:text-white transition-all shadow-md"
         >
           🔄 Generate New Plan
         </button>
@@ -305,7 +236,7 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
         <button
           onClick={handleSaveParty}
           disabled={isSaving}
-          className={`px-8 py-3 bg-[#223B7D] text-white rounded-xl font-semibold hover:bg-[#1a2f66] transition-colors shadow-lg ${isSaving ? 'opacity-50 cursor-not-allowed' : ''
+          className={`px-8 py-3 bg-[#223B7D] cursor-pointer text-white rounded-xl font-semibold hover:bg-[#1a2f66] transition-colors shadow-lg ${isSaving ? 'opacity-50 cursor-not-allowed' : ''
             }`}
         >
           {isSaving ? (
@@ -326,7 +257,7 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
         <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
           Party Plan Summary
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 text-center">
           <div className="p-4 bg-white rounded-lg shadow-md">
             <div className="text-3xl font-extrabold text-[#223B7D]">
               {Object.keys(party_plan).length}
@@ -341,15 +272,9 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
           </div>
           <div className="p-4 bg-white rounded-lg shadow-md">
             <div className="text-3xl font-extrabold text-[#223B7D]">
-              {suggestedProducts.length}
+              {adventure_song_movie_links?.length || 0}
             </div>
-            <div className="text-sm text-gray-600 font-medium mt-1">Recommended Products</div>
-          </div>
-          <div className="p-4 bg-white rounded-lg shadow-md">
-            <div className="text-3xl font-extrabold text-[#223B7D]">
-              ${suggestedProducts.reduce((sum, product) => sum + (product.discounted_price || product.price), 0).toFixed(2)}
-            </div>
-            <div className="text-sm text-gray-600 font-medium mt-1">Products Total</div>
+            <div className="text-sm text-gray-600 font-medium mt-1">Music Videos</div>
           </div>
         </div>
       </div>

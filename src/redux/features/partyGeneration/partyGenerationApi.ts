@@ -1,6 +1,5 @@
 import { baseApi } from "@/redux/hooks/baseApi";
 
-// Define request & response types
 export interface PartySectionItem {
   description: string;
   sortOrder: number;
@@ -23,7 +22,7 @@ export interface SuggestedGift {
 
 export interface PartyGenerationRequest {
   title: string;
-  scheduledDate: string; // ISO string
+  scheduledDate: string; 
   sections: PartySection[];
   timelineEvents: PartyTimelineEvent[];
   suggestedGifts: SuggestedGift[];
@@ -42,6 +41,7 @@ export interface PartyGenerationResponse {
 
 export const partyGenerationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    // Create new Party Plan
     createPartyPlan: builder.mutation<
       PartyGenerationResponse,
       PartyGenerationRequest
@@ -51,8 +51,28 @@ export const partyGenerationApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["PartyPlans"], 
+    }),
+
+    // Fetch single Party Plan
+    getPartyPlan: builder.query<PartyGenerationResponse, string>({
+      query: (id) => `/part-generation/${id}`,
+      providesTags: ["PartyPlans"],
+    }),
+
+    // Fetch all Party Plans
+    getPartyPlans: builder.query<PartyGenerationResponse[], void>({
+      query: () => "/part-generation",
+      providesTags: ["PartyPlans"],
+      transformResponse: (response: any) => response.data
     }),
   }),
+
+  overrideExisting: false,
 });
 
-export const { useCreatePartyPlanMutation } = partyGenerationApi;
+export const {
+  useCreatePartyPlanMutation,
+  useGetPartyPlanQuery,
+  useGetPartyPlansQuery,
+} = partyGenerationApi;
