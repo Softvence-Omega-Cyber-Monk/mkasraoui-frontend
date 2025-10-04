@@ -1,5 +1,10 @@
 import { baseApi } from "@/redux/hooks/baseApi";
-import type { Newsletter, PromotionalMailPayload, SubscribePayload } from "@/redux/types/newsLetter";
+import type {
+  Newsletter,
+  PromotionalMailPayload,
+  PromotionalMailResponse,
+  SubscribePayload,
+} from "@/redux/types/newsLetter";
 
 export const newsLetterApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -36,7 +41,18 @@ export const newsLetterApi = baseApi.injectEndpoints({
       invalidatesTags: ["NewsLetter"],
     }),
 
-    sendPromotionalMail: builder.mutation<{ success: boolean }, PromotionalMailPayload>({
+    // sendPromotionalMail: builder.mutation<{ success: boolean }, PromotionalMailPayload>({
+    //   query: (body) => ({
+    //     url: "/news-letter/promotional-mail",
+    //     method: "POST",
+    //     body,
+    //   }),
+    // }),
+
+    sendPromotionalMail: builder.mutation<
+      PromotionalMailResponse,
+      PromotionalMailPayload
+    >({
       query: (body) => ({
         url: "/news-letter/promotional-mail",
         method: "POST",
