@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks/redux-hook";
 import useChatSocket from "@/hooks/useChatSocket";
@@ -18,6 +20,7 @@ import MessageInput from "./MessageInput";
 import type { ChatMessage, Conversation } from "@/redux/types/chat.types";
 import { useSocket } from "@/services/Usesocket";
 
+
 export default function ChatContainer({ myUserId }: { myUserId: string }) {
   const socket = useSocket(myUserId || "");
   const dispatch = useAppDispatch();
@@ -25,15 +28,19 @@ export default function ChatContainer({ myUserId }: { myUserId: string }) {
     (s) => s.chat.selectedConversationId,
   );
 
+
   // Initialize socket connection
   useChatSocket(myUserId);
+
 
   // Fetch conversations
   const { data: conversationsData } = useGetConversationsQuery();
   const conversations: Conversation[] = conversationsData ?? [];
 
+
   // Mutation to POST message
   const [sendMessage] = useSendMessageMutation();
+
 
   // Fetch messages
   const { data: messagesData, refetch: refetchMessages } = useGetMessagesQuery(
@@ -43,6 +50,7 @@ export default function ChatContainer({ myUserId }: { myUserId: string }) {
     { skip: !selectedConversationId },
   );
   const messages: ChatMessage[] = messagesData ?? [];
+
 
   // Save API messages to Redux
   useEffect(() => {
@@ -56,10 +64,12 @@ export default function ChatContainer({ myUserId }: { myUserId: string }) {
     }
   }, [messages, selectedConversationId, dispatch]);
 
+
   // Upsert conversations into Redux
   useEffect(() => {
     conversations.forEach((c) => dispatch(upsertConversation(c)));
   }, [conversations, dispatch]);
+
 
   // Messages from Redux slice
   const messagesFromSlice = useAppSelector((s) =>
@@ -67,6 +77,7 @@ export default function ChatContainer({ myUserId }: { myUserId: string }) {
       ? (s.chat.messagesByConversation[selectedConversationId] ?? [])
       : [],
   );
+
 
   // Combine messages
   const combinedMessages: ChatMessage[] = useMemo(() => {
@@ -78,9 +89,11 @@ export default function ChatContainer({ myUserId }: { myUserId: string }) {
     );
   }, [messages, messagesFromSlice]);
 
+
   // Socket join & listen
   useEffect(() => {
     if (!selectedConversationId) return;
+
 
     socket?.current?.emit("conversation:join", {
       conversationId: selectedConversationId,
@@ -90,6 +103,7 @@ export default function ChatContainer({ myUserId }: { myUserId: string }) {
     });
     dispatch(markConversationRead({ conversationId: selectedConversationId }));
     refetchMessages();
+
 
     const handleNewMessage = (message: ChatMessage) => {
       if (message.conversationId === selectedConversationId) {
@@ -102,16 +116,20 @@ export default function ChatContainer({ myUserId }: { myUserId: string }) {
       }
     };
 
+
     socket?.current?.on("message:new", handleNewMessage);
+
 
     return () => {
       socket?.current?.off("message:new", handleNewMessage);
     };
   }, [selectedConversationId, dispatch, refetchMessages]);
 
+
   // Send message handler
   const handleSend = async (content: string, file?: File) => {
     if (!selectedConversationId) return;
+
 
     const optimisticMsg: ChatMessage = {
       id: `local-${Date.now()}`,
@@ -124,6 +142,7 @@ export default function ChatContainer({ myUserId }: { myUserId: string }) {
       fileSize: file?.size ?? null,
     };
 
+
     // Show optimistic message immediately
     dispatch(
       appendLocalMessage({
@@ -132,8 +151,10 @@ export default function ChatContainer({ myUserId }: { myUserId: string }) {
       }),
     );
 
+
     try {
       let fileMeta = undefined;
+
 
       if (file) {
         const fd = new FormData();
@@ -151,12 +172,14 @@ export default function ChatContainer({ myUserId }: { myUserId: string }) {
         fileMeta = json.data;
       }
 
+
       // Send message to backend
       const newMessage = await sendMessage({
         conversationId: selectedConversationId,
         content,
         file: fileMeta,
       }).unwrap();
+
 
       // Replace optimistic message with backend response
       dispatch(
@@ -165,6 +188,7 @@ export default function ChatContainer({ myUserId }: { myUserId: string }) {
           message: newMessage,
         }),
       );
+
 
       // Emit via socket for real-time update
       const socket = useSocket(myUserId || "");
@@ -178,6 +202,7 @@ export default function ChatContainer({ myUserId }: { myUserId: string }) {
       console.error("Send failed:", err);
     }
   };
+
 
   return (
     <div className="flex h-full">

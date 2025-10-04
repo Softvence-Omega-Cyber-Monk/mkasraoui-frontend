@@ -7,6 +7,7 @@ import {
 import type { QuoteResponse } from "@/redux/types/quotes.type";
 import Title from "../Shared/Title";
 import PageLoader from "../Shared/PageLoader";
+import toast from "react-hot-toast";
 
 const statusColors: Record<string, string> = {
   BOOKED: "bg-green-100 text-green-700",
@@ -33,9 +34,9 @@ const ProviderQuotesTable = () => {
   ) => {
     try {
       await updateStatus({ id, status }).unwrap();
-      alert(`Quote marked as ${status}`);
+      toast.success(`Quote marked as ${status}`);
     } catch {
-      alert("Failed to update status");
+      toast.error("Failed to update status");
     }
   };
 
@@ -127,20 +128,47 @@ const ProviderQuotesTable = () => {
                         {quote.status}
                       </span>
                     </td>
-                    <td className="flex justify-center space-x-2 px-6 py-5">
+                    <td className="flex justify-center space-x-3 px-6 py-5">
                       <button
                         onClick={() => handleStatusUpdate(quote.id, "BOOKED")}
-                        className="flex cursor-pointer items-center justify-center rounded-md bg-green-500 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-green-600"
+                        className="flex cursor-pointer items-center justify-center space-x-1 rounded-lg bg-green-600 px-3 py-1.5 text-sm font-semibold text-white shadow transition duration-200 hover:bg-green-700 hover:shadow-lg"
                       >
-                        Book
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                        <span>Accept</span>
                       </button>
+
                       <button
                         onClick={() =>
                           handleStatusUpdate(quote.id, "CANCELLED")
                         }
-                        className="flex cursor-pointer items-center justify-center rounded-md bg-red-500 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-red-600"
+                        className="flex cursor-pointer items-center justify-center space-x-1 rounded-lg bg-red-600 px-4 py-1 text-sm font-semibold text-white shadow transition duration-200 hover:bg-red-700 hover:shadow-lg"
                       >
-                        Cancel
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                        <span>Cancel</span>
                       </button>
                     </td>
                   </tr>
