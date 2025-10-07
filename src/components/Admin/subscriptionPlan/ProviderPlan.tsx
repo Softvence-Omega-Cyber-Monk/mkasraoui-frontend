@@ -221,14 +221,14 @@ export default function ProviderPlan() {
   return (
     <div className="mx-auto w-full font-sans">
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Title title="ProviderPlan" />
         <button
           onClick={() => {
             resetForm();
             setIsDialogOpen(true);
           }}
-          className="flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 px-5 py-2 font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:from-blue-600 hover:to-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:outline-none"
+          className="bg-secondary-dark hover:bg-secondary-light flex cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-2 font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:from-blue-600 hover:to-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:outline-none"
         >
           <Plus className="h-5 w-5" /> Add New Plan
         </button>
@@ -305,7 +305,7 @@ export default function ProviderPlan() {
                   name="is_active"
                   checked={newPlan.is_active}
                   onChange={handleInputChange}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="text-secondary-dark focus:ring-secondary-dark bg-secondary-dark h-4 w-4 rounded border-gray-300"
                 />
                 <label className="text-sm font-medium text-gray-700">
                   Active
@@ -343,7 +343,7 @@ export default function ProviderPlan() {
                   <button
                     onClick={addFeature}
                     disabled={!newFeature.name.trim()}
-                    className="flex items-center justify-center rounded-lg bg-blue-600 px-3 text-white transition hover:bg-blue-700"
+                    className="bg-secondary-dark hover:bg-secondary-light flex cursor-pointer items-center justify-center rounded-lg px-3 text-white transition"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -359,7 +359,7 @@ export default function ProviderPlan() {
                     </span>
                     <button
                       onClick={() => removeFeature(i)}
-                      className="text-red-500 hover:text-red-700"
+                      className="cursor-pointer text-red-500 hover:text-red-700"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -387,7 +387,7 @@ export default function ProviderPlan() {
                   Number(newPlan.price) < 0 ||
                   (editingPlan ? isUpdating : isCreating)
                 }
-                className="flex cursor-pointer items-center gap-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-5 py-2 font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:from-blue-600 hover:to-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:outline-none"
+                className="bg-secondary-dark hover:bg-secondary-light flex cursor-pointer items-center gap-2 rounded-lg px-5 py-2 font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:from-blue-600 hover:to-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:outline-none"
               >
                 {(editingPlan ? isUpdating : isCreating) && (
                   <Loader2 className="h-4 w-4 animate-spin" />
