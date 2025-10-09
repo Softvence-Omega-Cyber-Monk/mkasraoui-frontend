@@ -2,7 +2,7 @@
 import { useParams } from "react-router-dom";
 import { useGetBlogsQuery } from "@/redux/features/blog/blogApi";
 import NeverMissPartyTip from "@/components/Never miss party tip/NeverMissPartyTip";
- 
+
 interface Blog {
   id: string | number;
   title: string;
@@ -18,13 +18,15 @@ export default function BlogDetails() {
   const { data, isLoading, isError } = useGetBlogsQuery();
 
   if (isLoading) return <p className="py-10 text-center">Loading...</p>;
-  if (isError) return <p className="py-10 text-center text-red-500">Error loading blog</p>;
+  if (isError)
+    return <p className="py-10 text-center text-red-500">Error loading blog</p>;
 
   const blog: Blog | undefined = data?.data.find(
-    (b: Blog) => b.id === id || b.id === Number(id)
+    (b: Blog) => b.id === id || b.id === Number(id),
   );
 
-  if (!blog) return <p className="py-10 text-center text-red-500">Blog not found</p>;
+  if (!blog)
+    return <p className="py-10 text-center text-red-500">Blog not found</p>;
 
   return (
     <div>
@@ -36,25 +38,25 @@ export default function BlogDetails() {
   {/* Dark overlay */}
   <div className="absolute inset-0  "></div>
 
-  {/* Title */}
-  <div className="relative z-10 h-full flex items-center justify-center">
-    <h1 className="text-center text-2xl md:text-4xl lg:text-5xl font-bold text-white px-4 leading-snug">
-      {blog.title}
-    </h1>
-  </div>
-</div>
+        {/* Title */}
+        <div className="relative z-10 flex h-full items-center justify-center">
+          <h1 className="px-4 text-center text-2xl leading-snug font-bold text-white md:text-4xl lg:text-5xl">
+            {blog.title}
+          </h1>
+        </div>
+      </div>
 
       {/* Main Content */}
-      <div className="mt-20 max-w-4xl mx-auto px-6 py-6">
+      <div className="mx-auto max-w-4xl px-6 py-6">
         <article className="prose prose-lg max-w-none">
-          <header className="mb-4">
+          {/* <header className="mb-4">
             <h1 className="text-4xl font-bold text-gray-900 mb-8">Introduction</h1>
-          </header>
+          </header> */}
 
           <div className="space-y-8">
-            <p className="text-gray-700 leading-relaxed">{blog.description}</p>
+            {/* <p className="text-gray-700 leading-relaxed">{blog.description}</p>
 
-            {/* First Image */}
+          
             {blog.images && blog.images.length > 0 && (
               <div className="my-12">
                 <div className="relative h-96 w-auto">
@@ -68,24 +70,24 @@ export default function BlogDetails() {
                   Image caption goes here
                 </p>
               </div>
-            )}
+            )} */}
 
             {/* Additional Content */}
             {blog.content && (
               <div
-                className="text-gray-700 leading-relaxed"
+                className="leading-relaxed text-gray-700"
                 dangerouslySetInnerHTML={{ __html: blog.content }}
               />
             )}
 
             {/* Conclusion */}
             {blog.conclusion && (
-              <div className="mt-16">
-                <h2 className="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-gray-200 pb-3">
+              <div className="">
+                {/* <h2 className="mb-6 border-b-2 border-gray-200 pb-3 text-3xl font-bold text-gray-900">
                   Conclusion
-                </h2>
+                </h2> */}
                 <div
-                  className="p-4      min-h-[200px] [&_img]:w-full [&_img]:h-auto"
+                  className="min-h-[200px] p-4 [&_img]:h-auto [&_img]:w-full"
                   dangerouslySetInnerHTML={{ __html: blog.conclusion }}
                 />
               </div>
@@ -113,44 +115,3 @@ export default function BlogDetails() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 

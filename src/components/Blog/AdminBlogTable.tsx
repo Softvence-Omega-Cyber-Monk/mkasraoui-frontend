@@ -1,8 +1,3 @@
-
-
-
-
-
 import React, { useState, useEffect, type ChangeEvent } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { RichTextEditor } from "@mantine/rte";
@@ -22,15 +17,16 @@ import {
 import type { Blog } from "@/redux/types/blog.type";
 
 interface RichTextInputProps {
-
   value: string;
   onChange: (value: string) => void;
 }
 const RichTextInput: React.FC<RichTextInputProps> = ({ value, onChange }) => (
-  <div className="p-2 border border-[#DBE0E5] rounded-lg overflow-hidden lg:h-[350px]">
-
-
-    <RichTextEditor className="lg:h-[330px] overflow-hidden overflow-y-scroll" value={value} onChange={onChange} />
+  <div className="overflow-hidden rounded-lg border border-[#DBE0E5] p-2 lg:h-[350px]">
+    <RichTextEditor
+      className="overflow-hidden overflow-y-scroll lg:h-[330px]"
+      value={value}
+      onChange={onChange}
+    />
   </div>
 );
 
@@ -50,8 +46,16 @@ interface BlogFormType {
 }
 
 const tagOptions = [
-  "Tutorial", "Guide", "How To", "Tips & Tricks", "Best Practices",
-  "Case Study", "Opinion", "Review", "News", "Trends",
+  "Tutorial",
+  "Guide",
+  "How To",
+  "Tips & Tricks",
+  "Best Practices",
+  "Case Study",
+  "Opinion",
+  "Review",
+  "News",
+  "Trends",
 ];
 
 const AdminBlogTable: React.FC = () => {
@@ -69,18 +73,23 @@ const AdminBlogTable: React.FC = () => {
   const [tagOpen, setTagOpen] = useState(false);
   const [badgeOpen, setbadgeOpen] = useState(false);
 
-  const { control, handleSubmit, setValue, watch, formState: { errors } } =
-    useForm<BlogFormType>({
-      defaultValues: {
-        title: "",
-        description: "",
-        conclusion: "",
-        badge: "",
-        tag: [],
-        files: [],
-        previewUrls: [],
-      },
-    });
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<BlogFormType>({
+    defaultValues: {
+      title: "",
+      description: "",
+      conclusion: "",
+      badge: "",
+      tag: [],
+      files: [],
+      previewUrls: [],
+    },
+  });
 
   const formData = watch();
 
@@ -92,7 +101,10 @@ const AdminBlogTable: React.FC = () => {
 
   useEffect(() => setPage(1), [total]);
 
-  const paginatedBlogs = blogs.slice((page - 1) * blogsPerPage, page * blogsPerPage);
+  const paginatedBlogs = blogs.slice(
+    (page - 1) * blogsPerPage,
+    page * blogsPerPage,
+  );
 
   // Modal Handlers
   const openAddModal = () => {
@@ -115,9 +127,9 @@ const AdminBlogTable: React.FC = () => {
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-    formData.previewUrls.forEach(url => URL.revokeObjectURL(url));
+    formData.previewUrls.forEach((url) => URL.revokeObjectURL(url));
     const filesArray = Array.from(e.target.files);
-    const previewUrls = filesArray.map(file => URL.createObjectURL(file));
+    const previewUrls = filesArray.map((file) => URL.createObjectURL(file));
     setValue("files", filesArray);
     setValue("previewUrls", previewUrls);
   };
@@ -133,7 +145,7 @@ const AdminBlogTable: React.FC = () => {
         tag: data.tag,
       };
       formDataToSend.append("data", JSON.stringify(payload));
-      data.files.forEach(file => formDataToSend.append("files", file));
+      data.files.forEach((file) => formDataToSend.append("files", file));
 
       if (editingBlog) {
         await updateBlog({ id: editingBlog.id, data: formDataToSend }).unwrap();
@@ -165,11 +177,11 @@ const AdminBlogTable: React.FC = () => {
   return (
     <div>
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Title title="Blogs" />
         <button
           onClick={openAddModal}
-          className="flex items-center gap-2 hover:cursor-pointer rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 px-5 py-2 font-semibold text-white shadow-lg hover:scale-105 transition"
+          className="bg-secondary-dark hover:bg-secondary-light flex items-center justify-center gap-2 rounded-xl px-5 py-2 font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:cursor-pointer focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:outline-none"
         >
           <Plus className="h-5 w-5" /> Add Blog
         </button>
@@ -181,13 +193,27 @@ const AdminBlogTable: React.FC = () => {
           <table className="w-full min-w-[900px]">
             <thead className="border-b-2 border-[#DBE0E5] bg-gray-50">
               <tr>
-                <th className="px-6 py-5 text-left text-sm font-medium">Title</th>
-                <th className="px-6 py-5 text-left text-sm font-medium">Description</th>
-                <th className="px-6 py-5 text-left text-sm font-medium">Conclusion</th>
-                <th className="px-6 py-5 text-left text-sm font-medium">Badge</th>
-                <th className="px-6 py-5 text-left text-sm font-medium">Tags</th>
-                <th className="px-6 py-5 text-left text-sm font-medium">Image</th>
-                <th className="px-6 py-5 text-center text-sm font-medium">Action</th>
+                <th className="px-6 py-5 text-left text-sm font-medium">
+                  Title
+                </th>
+                <th className="px-6 py-5 text-left text-sm font-medium">
+                  Description
+                </th>
+                <th className="px-6 py-5 text-left text-sm font-medium">
+                  Conclusion
+                </th>
+                <th className="px-6 py-5 text-left text-sm font-medium">
+                  Badge
+                </th>
+                <th className="px-6 py-5 text-left text-sm font-medium">
+                  Tags
+                </th>
+                <th className="px-6 py-5 text-left text-sm font-medium">
+                  Image
+                </th>
+                <th className="px-6 py-5 text-center text-sm font-medium">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -199,34 +225,59 @@ const AdminBlogTable: React.FC = () => {
                 </tr>
               ) : blogs.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-6 text-center text-sm text-gray-600">
+                  <td
+                    colSpan={7}
+                    className="p-6 text-center text-sm text-gray-600"
+                  >
                     No blogs found.
                   </td>
                 </tr>
               ) : (
-                paginatedBlogs.map(blog => (
-                  <tr key={blog.id} className="border-b border-gray-100 hover:bg-gray-50">
+                paginatedBlogs.map((blog) => (
+                  <tr
+                    key={blog.id}
+                    className="border-b border-gray-100 hover:bg-gray-50"
+                  >
                     <td className="px-6 py-4">{blog.title.slice(0, 30)}...</td>
 
-                    <td className="px-6 py-4">{stripHtml(blog.description).slice(0, 30)}...</td>
-                    <td className="px-6 py-4">{stripHtml(blog.conclusion).slice(0, 30)}...</td>
+                    <td className="px-6 py-4">
+                      {stripHtml(blog.description).slice(0, 30)}...
+                    </td>
+                    <td className="px-6 py-4">
+                      {stripHtml(blog.conclusion).slice(0, 30)}...
+                    </td>
                     <td className="px-6 py-4">{blog.badge}</td>
-                    <td className="px-6 py-4">{blog.tag.join(", ").slice(0, 10)}......</td>
+                    <td className="px-6 py-4">
+                      {blog.tag.join(", ").slice(0, 10)}......
+                    </td>
                     <td className="px-6 py-4">
                       {blog.images?.length ? (
-                        <img src={blog.images[0]} alt={blog.title} className="h-14 w-14 object-cover rounded" />
+                        <img
+                          src={blog.images[0]}
+                          alt={blog.title}
+                          className="h-14 w-14 rounded object-cover"
+                        />
                       ) : (
                         <span className="text-xs text-gray-500">No image</span>
                       )}
                     </td>
-                    <td className="flex justify-center gap-2 px-6 py-4 mt-3">
-                      <button onClick={() => openEditModal(blog)} className="bg-yellow-500 p-2 hover:cursor-pointer  rounded text-white hover:bg-yellow-600">
+                    <td className="mt-3 flex justify-center gap-2 px-6 py-4">
+                      <button
+                        onClick={() => openEditModal(blog)}
+                        className="rounded bg-yellow-500 p-2 text-white hover:cursor-pointer hover:bg-yellow-600"
+                      >
                         <FaRegEdit />
                       </button>
-                      <button onClick={() => setConfirmDelete(blog)} className="bg-red-600 p-2 hover:cursor-pointer  rounded text-white hover:bg-red-700">
+                      <button
+                        onClick={() => setConfirmDelete(blog)}
+                        className="rounded bg-red-600 p-2 text-white hover:cursor-pointer hover:bg-red-700"
+                      >
                         <MdDelete />
                       </button>
-                      <button onClick={() => setViewBlog(blog)} className="bg-emerald-500 p-2 hover:cursor-pointer  rounded text-white hover:bg-emerald-600">
+                      <button
+                        onClick={() => setViewBlog(blog)}
+                        className="rounded bg-emerald-500 p-2 text-white hover:cursor-pointer hover:bg-emerald-600"
+                      >
                         <GrView />
                       </button>
                     </td>
@@ -242,13 +293,14 @@ const AdminBlogTable: React.FC = () => {
       {blogs.length > 0 && (
         <div className="mt-6 flex items-center justify-between px-4 py-3">
           <div className="text-sm text-gray-600">
-            Showing <span className="font-medium">{paginatedBlogs.length}</span> of <span className="font-medium">{total}</span>
+            Showing <span className="font-medium">{paginatedBlogs.length}</span>{" "}
+            of <span className="font-medium">{total}</span>
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="rounded-lg border hover:cursor-pointer  px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+              className="rounded-lg border px-3 py-1.5 text-sm text-gray-600 hover:cursor-pointer hover:bg-gray-100 disabled:opacity-50"
             >
               Prev
             </button>
@@ -256,9 +308,9 @@ const AdminBlogTable: React.FC = () => {
               {page} / {totalPages}
             </div>
             <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
-              className="rounded-lg border px-3 hover:cursor-pointer  py-1.5 text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+              className="rounded-lg border px-3 py-1.5 text-sm text-gray-600 hover:cursor-pointer hover:bg-gray-100 disabled:opacity-50"
             >
               Next
             </button>
@@ -268,45 +320,58 @@ const AdminBlogTable: React.FC = () => {
 
       {/* Add/Edit Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center  justify-center bg-black/50 overflow-y-auto">
-          <div className="w-full lg:max-w-7xl lg:h-screen bg-white rounded-lg shadow-lg p-6 overflow-y-auto">
-            <div className="flex justify-between items-center">
-              <h3 className="mb-4 text-xl font-semibold">{editingBlog ? "Edit Blog" : "Add Blog"}</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50">
+          <div className="w-full overflow-y-auto rounded-lg bg-white p-6 shadow-lg lg:h-screen lg:max-w-7xl">
+            <div className="flex items-center justify-between">
+              <h3 className="mb-4 text-xl font-semibold">
+                {editingBlog ? "Edit Blog" : "Add Blog"}
+              </h3>
 
-              <button type="button" onClick={() => setIsModalOpen(false)} className="bg-gray-50 hover:cursor-pointer  px-5 py-2 rounded hover:bg-gray-400">
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="rounded bg-gray-50 px-5 py-2 hover:cursor-pointer hover:bg-gray-400"
+              >
                 X
               </button>
             </div>
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-
-
-
-
-
-
-
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col gap-4"
+            >
               <div className="flex flex-col gap-6">
                 {/* Title + Badge on one line */}
-                <div className="flex gap-4 items-center">
+                <div className="flex items-center gap-4">
                   <div className="flex-1">
-                    <label className=''>Title</label>
+                    <label className="">Title</label>
                     <input
                       type="text"
                       placeholder="Title"
-                      {...control.register("title", { required: "Title required" })}
-                      className="w-full border border-[#DBE0E5] rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      {...control.register("title", {
+                        required: "Title required",
+                      })}
+                      className="w-full rounded-lg border border-[#DBE0E5] p-3 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                     />
-                    {errors.title && <p className="text-red-500 mt-1">{errors.title.message}</p>}
+                    {errors.title && (
+                      <p className="mt-1 text-red-500">
+                        {errors.title.message}
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex flex-1 flex-col">
-                    <label className=''>Badge</label>
-                    <div className="relative w-full" onClick={() => setbadgeOpen(!badgeOpen)}>
+                    <label className="">Badge</label>
+                    <div
+                      className="relative w-full"
+                      onClick={() => setbadgeOpen(!badgeOpen)}
+                    >
                       <select
-                        {...control.register("badge", { required: "Badge required" })}
-                        className="w-full appearance-none border border-[#DBE0E5] rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        {...control.register("badge", {
+                          required: "Badge required",
+                        })}
+                        className="w-full appearance-none rounded-lg border border-[#DBE0E5] p-3 pr-10 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                       >
-                        <div className=" border border-[#DBE0E5]">
+                        <div className="border border-[#DBE0E5]">
                           <option value="">Select Badge</option>
                           <option value="Featured">Featured</option>
                           <option value="Trending">Trending</option>
@@ -324,20 +389,33 @@ const AdminBlogTable: React.FC = () => {
                         )}
                       </div>
                     </div>
-                    {errors.badge && <p className="text-red-500 mt-1">{errors.badge.message}</p>}
+                    {errors.badge && (
+                      <p className="mt-1 text-red-500">
+                        {errors.badge.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 {/* Image Upload on same line if needed */}
-                <div className="flex gap-4 items-start ">
+                <div className="flex items-start gap-4">
                   <div className="flex flex-1 flex-col">
-                    <label className=''>Choose File</label>
-                    <div className="flex-1 flex flex-col gap-2">
-                      <input type="file" multiple onChange={handleFileChange} className="border border-[#DBE0E5] rounded-lg px-2 py-3" />
+                    <label className="">Choose File</label>
+                    <div className="flex flex-1 flex-col gap-2">
+                      <input
+                        type="file"
+                        multiple
+                        onChange={handleFileChange}
+                        className="rounded-lg border border-[#DBE0E5] px-2 py-3"
+                      />
                       {formData.previewUrls.length > 0 && (
-                        <div className="flex gap-2 flex-wrap">
+                        <div className="flex flex-wrap gap-2">
                           {formData.previewUrls.map((url, i) => (
-                            <img key={i} src={url} className="h-16 w-16 rounded object-cover" />
+                            <img
+                              key={i}
+                              src={url}
+                              className="h-16 w-16 rounded object-cover"
+                            />
                           ))}
                         </div>
                       )}
@@ -346,19 +424,22 @@ const AdminBlogTable: React.FC = () => {
 
                   {/* Tags on same line if needed */}
                   <div className="flex-1">
-                    <label className=''>Tag</label>
+                    <label className="">Tag</label>
                     <Controller
                       name="tag"
                       control={control}
                       rules={{ required: "Select at least one tag" }}
-
                       render={({ field }) => (
                         <div className="relative">
                           <div
                             onClick={() => setTagOpen(!tagOpen)}
-                            className="flex cursor-pointer items-center border-[#DBE0E5] justify-between rounded-lg border p-3 bg-white"
+                            className="flex cursor-pointer items-center justify-between rounded-lg border border-[#DBE0E5] bg-white p-3"
                           >
-                            <span>{field.value?.length ? field.value.join(", ") : "Select tags"}</span>
+                            <span>
+                              {field.value?.length
+                                ? field.value.join(", ")
+                                : "Select tags"}
+                            </span>
                             {tagOpen ? (
                               <ChevronUp className="h-5 w-5 text-gray-500" />
                             ) : (
@@ -367,11 +448,11 @@ const AdminBlogTable: React.FC = () => {
                           </div>
 
                           {tagOpen && (
-                            <ul className="absolute z-10 mt-1 w-full rounded-lg border border-[#DBE0E5] bg-white shadow max-h-64 overflow-y-auto">
+                            <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-lg border border-[#DBE0E5] bg-white shadow">
                               {tagOptions.map((tag) => (
                                 <li
                                   key={tag}
-                                  className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                                  className="flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-gray-100"
                                   onClick={() => {
                                     const newValue = field.value?.includes(tag)
                                       ? field.value.filter((v) => v !== tag)
@@ -381,7 +462,9 @@ const AdminBlogTable: React.FC = () => {
                                 >
                                   <input
                                     type="checkbox"
-                                    checked={field.value?.includes(tag) || false}
+                                    checked={
+                                      field.value?.includes(tag) || false
+                                    }
                                     readOnly
                                     className="h-4 w-4 border-[#DBE0E5]"
                                   />
@@ -391,61 +474,71 @@ const AdminBlogTable: React.FC = () => {
                             </ul>
                           )}
 
-                          {errors.tag && <p className="text-red-500 mt-1">{errors.tag.message}</p>}
+                          {errors.tag && (
+                            <p className="mt-1 text-red-500">
+                              {errors.tag.message}
+                            </p>
+                          )}
                         </div>
                       )}
-
                     />
                   </div>
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className=''>Description</label>
+                  <label className="">Description</label>
                   <textarea
                     placeholder="Description"
-                    {...control.register("description", { required: "Description required" })}
-                    className="w-full rounded-lg border-[#DBE0E5] border px-4 py-3 text-sm focus:border-blue-500 focus:ring focus:ring-blue-100"
+                    {...control.register("description", {
+                      required: "Description required",
+                    })}
+                    className="w-full rounded-lg border border-[#DBE0E5] px-4 py-3 text-sm focus:border-blue-500 focus:ring focus:ring-blue-100"
                     rows={4}
                   />
-                  {errors.description && <p className="text-red-500 mt-1">{errors.description.message}</p>}
+                  {errors.description && (
+                    <p className="mt-1 text-red-500">
+                      {errors.description.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Rich Text Editor */}
                 <div>
-                  <label className=''>
-                    <h2 className="font-semibold mb-1">Conclusion</h2>
+                  <label className="">
+                    <h2 className="mb-1 font-semibold">Conclusion</h2>
                   </label>
                   <Controller
                     name="conclusion"
                     control={control}
                     render={({ field }) => (
-                      <RichTextInput value={field.value} onChange={field.onChange} />
+                      <RichTextInput
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
                     )}
                   />
-                  {errors.conclusion && <p className="text-red-500 mt-1">{errors.conclusion.message}</p>}
+                  {errors.conclusion && (
+                    <p className="mt-1 text-red-500">
+                      {errors.conclusion.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-              <div className="flex justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="bg-gray-300 hover:cursor-pointer  px-5 py-2 rounded hover:bg-gray-400">
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="rounded-xl bg-gray-300 px-5 py-2 hover:cursor-pointer hover:bg-gray-400"
+                >
                   Cancel
                 </button>
-                <button type="submit" className="bg-blue-600 px-5 py-2 hover:cursor-pointer  rounded text-white hover:bg-blue-700">
-                  {editingBlog ? "Update" : "Add"}
+                <button
+                  type="submit"
+                  className="bg-secondary-dark hover:bg-secondary-light rounded-xl px-5 py-2 text-white hover:cursor-pointer"
+                >
+                  {editingBlog ? "Update Blog" : "Add Blog"}
                 </button>
               </div>
             </form>
@@ -456,14 +549,20 @@ const AdminBlogTable: React.FC = () => {
       {/* Delete Modal */}
       {confirmDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-6 rounded-lg shadow max-w-sm w-full">
-            <h3 className="mb-4 font-bold text-lg">Delete Blog</h3>
+          <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow">
+            <h3 className="mb-4 text-lg font-bold">Delete Blog</h3>
             <p>Are you sure you want to delete "{confirmDelete.title}"?</p>
-            <div className="flex justify-end gap-3 mt-6">
-              <button onClick={() => setConfirmDelete(null)} className="bg-gray-300 hover:cursor-pointer  px-5 py-2 rounded hover:bg-gray-400">
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="rounded bg-gray-300 px-5 py-2 hover:cursor-pointer hover:bg-gray-400"
+              >
                 Cancel
               </button>
-              <button onClick={handleDelete} className="bg-red-600 px-5 py-2 rounded hover:cursor-pointer  text-white hover:bg-red-700">
+              <button
+                onClick={handleDelete}
+                className="rounded bg-red-600 px-5 py-2 text-white hover:cursor-pointer hover:bg-red-700"
+              >
                 Delete
               </button>
             </div>
@@ -473,16 +572,31 @@ const AdminBlogTable: React.FC = () => {
 
       {/* View Modal */}
       {viewBlog && (
-        <div className="fixed inset-0 z-50 flex items-center overflow-y-scroll justify-center bg-black/50">
-          <div className="bg-white p-6 rounded-lg shadow max-w-lg w-full">
-            <h3 className="mb-4 font-bold text-xl">{viewBlog.title}</h3>
-            <div dangerouslySetInnerHTML={{ __html: viewBlog.description }} className="prose" />
-            <div dangerouslySetInnerHTML={{ __html: viewBlog.conclusion }} className="prose mt-4" />
-            <div className="flex flex-wrap gap-2 mt-3">
-              {viewBlog.images?.map((img, idx) => <img key={idx} src={img} className="h-20 w-20 rounded object-cover" />)}
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-scroll bg-black/50">
+          <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow">
+            <h3 className="mb-4 text-xl font-bold">{viewBlog.title}</h3>
+            <div
+              dangerouslySetInnerHTML={{ __html: viewBlog.description }}
+              className="prose"
+            />
+            <div
+              dangerouslySetInnerHTML={{ __html: viewBlog.conclusion }}
+              className="prose mt-4"
+            />
+            <div className="mt-3 flex flex-wrap gap-2">
+              {viewBlog.images?.map((img, idx) => (
+                <img
+                  key={idx}
+                  src={img}
+                  className="h-20 w-20 rounded object-cover"
+                />
+              ))}
             </div>
-            <div className="flex justify-end mt-6">
-              <button onClick={() => setViewBlog(null)} className="bg-gray-500 px-5 py-2 hover:cursor-pointer  rounded text-white hover:bg-gray-600">
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setViewBlog(null)}
+                className="rounded bg-gray-500 px-5 py-2 text-white hover:cursor-pointer hover:bg-gray-600"
+              >
                 Close
               </button>
             </div>

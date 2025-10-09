@@ -1,43 +1,54 @@
-import user from "@/assets/profile-user.png";
+import userPlaceholder from "@/assets/profile-user.png";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { useGetMeQuery, useUpdateUserMutation } from "@/redux/features/user/userApi";
 
-type Settings = {
-  emailNotifications: boolean;
-  marketingEmails: boolean;
-  smsReminders: boolean;
-};
-type FormData = {
-  fullName: string;
-  email: string;
-  phone: number; // changed to number
-  postalCode: string;
+type FormInputs = {
+  name: string;
+  phone: string;
+  file?: FileList;
 };
 
 function ProfileTab() {
-  const [settings, setSettings] = useState<Settings>({
-    emailNotifications: true,
-    marketingEmails: false,
-    smsReminders: true,
-  });
-
-  const toggleSetting = (key: keyof Settings) => {
-    setSettings((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  };
+  // Fetch logged-in user data
+  const { data: userData, isLoading } = useGetMeQuery();
+  const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<FormInputs>({
+    values: {
+      name: userData?.name || "",
+      phone: userData?.phone || "",
+    },
+  });
 
-  const onSubmit = (data: FormData) => {
-    console.log("Form Data:", data);
+  const onSubmit = async (data: FormInputs) => {
+    try {
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("phone", data.phone);
+      if (data.file && data.file.length > 0) {
+        formData.append("files", data.file[0]);
+      }
+
+      const res = await updateUser(formData).unwrap();
+      console.log("✅ User updated:", res);
+      alert("Profile updated successfully!");
+    } catch (error: any) {
+      console.error("❌ Update failed:", error);
+      alert("Failed to update profile.");
+    }
   };
+
+  if (isLoading) return <p>Loading user data...</p>;
+
+  const profileImage = userData?.profile_image
+    ? userData.profile_image
+    : userPlaceholder;
 
   return (
     <div>
@@ -49,77 +60,64 @@ function ProfileTab() {
               Profile Information
             </h2>
           </div>
+
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid gap-6 p-6 pt-0">
+              {/* Avatar + Basic Info */}
               <div className="flex items-center gap-4">
                 <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-full border border-gray-200">
                   <img
-                    src={user}
-                    alt="Sarah Johnson"
+                    src={profileImage}
+                    alt={userData?.name || "User"}
                     className="h-full w-full object-cover"
                   />
                 </div>
                 <div className="grid gap-1">
                   <div className="text-lg font-medium whitespace-nowrap text-gray-900">
-                    Sarah Johnson
+                    {userData?.name || "N/A"}
                   </div>
-                  <div className="text-sm text-gray-500">
-                    Member since January 2024
-                  </div>
+                  <div className="text-sm text-gray-500">{userData?.email}</div>
                   <span className="inline-block w-full rounded-md bg-[#C5FFD9] px-2 py-2 text-center text-xs font-medium whitespace-nowrap text-[#39B42E] md:w-1/2">
-                    Pro Member
+                    {userData?.subscription?.[0]?.plan_name || "Free Member"}
                   </span>
                 </div>
+              </div>
+
+              {/* File Upload */}
+              <div className="grid gap-2">
+                <label
+                  htmlFor="file"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Profile Picture
+                </label>
+                <input
+                  type="file"
+                  id="file"
+                  {...register("file")}
+                  accept="image/*"
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-[#223B7D] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-[#2C4890]"
+                />
               </div>
 
               {/* Full Name */}
               <div className="grid gap-2">
                 <label
-                  htmlFor="fullName"
+                  htmlFor="name"
                   className="text-sm font-medium text-gray-700"
                 >
                   Full Name
                 </label>
                 <input
-                  id="fullName"
+                  id="name"
                   placeholder="Enter Full Name"
-                  {...register("fullName", {
-                    required: "Full name is required",
-                  })}
+                  {...register("name", { required: "Full name is required" })}
                   className="flex h-10 w-full rounded-md border border-[#C6CAD1] bg-white px-3 py-3 text-sm text-[#00000099] placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   type="text"
                 />
-                {errors.fullName && (
+                {errors.name && (
                   <p className="mt-1 text-sm text-red-500">
-                    {errors.fullName.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Email */}
-              <div className="grid gap-2">
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  placeholder="Enter Your Email"
-                  {...register("email", {
-                    required: "Email is required",
-                    pattern: {
-                      value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                      message: "Invalid email address",
-                    },
-                  })}
-                  className="flex h-10 w-full rounded-md border border-[#C6CAD1] bg-white px-3 py-3 text-sm text-[#00000099] placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  type="email"
-                />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.email.message}
+                    {errors.name.message}
                   </p>
                 )}
               </div>
@@ -134,13 +132,13 @@ function ProfileTab() {
                 </label>
                 <input
                   id="phone"
-                  type="text" // use text to allow placeholder but validate as number
+                  type="text"
                   placeholder="Enter phone number"
                   {...register("phone", {
                     required: "Phone number is required",
                     pattern: {
-                      value: /^[0-9]+$/,
-                      message: "Phone must be a number",
+                      value: /^[+0-9\s-]+$/,
+                      message: "Invalid phone number",
                     },
                   })}
                   className="flex h-10 w-full rounded-md border border-[#C6CAD1] bg-white px-3 py-3 text-sm text-[#00000099] placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
@@ -152,43 +150,32 @@ function ProfileTab() {
                 )}
               </div>
 
-              {/* Postal Address */}
-              <div className="grid gap-2">
-                <label
-                  htmlFor="postalCode"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Postal Address
-                </label>
-                <input
-                  id="postalCode"
-                  placeholder="Full Postal Address Here"
-                  {...register("postalCode", {
-                    required: "Postal address is required",
-                  })}
-                  className="flex h-10 w-full rounded-md border border-[#C6CAD1] bg-white px-3 py-3 text-sm text-[#00000099] placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  type="text"
-                />
-                {errors.postalCode && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.postalCode.message}
-                  </p>
-                )}
-              </div>
-
               {/* Submit */}
               <button
                 type="submit"
-                className="mt-2 inline-flex h-10 w-full cursor-pointer items-center justify-center rounded-md bg-[#223B7D] px-4 py-2 text-sm font-medium whitespace-nowrap text-white transition-colors hover:bg-[#2C4890]/90"
+                disabled={isUpdating}
+                className="mt-2 inline-flex h-10 w-full cursor-pointer items-center justify-center rounded-md bg-[#223B7D] px-4 py-2 text-sm font-medium whitespace-nowrap text-white transition-colors hover:bg-[#2C4890]/90 disabled:opacity-70"
               >
-                Update Profile
+                {isUpdating ? "Updating..." : "Update Profile"}
               </button>
+
+              <Link to="/auth/reset-password">
+                <button className="inline-flex -mt-8 h-10 w-full cursor-pointer items-center justify-center rounded-md bg-[#223B7D] px-4 py-2 text-sm font-medium whitespace-nowrap text-white transition-colors hover:bg-[#2C4890]/90">
+                  Change Password
+                </button>
+              </Link>
             </div>
           </form>
         </div>
+      </div>
+    </div>
+  );
+}
 
-        {/* Account Settings Card */}
-        <div className="w-full rounded-2xl border-2 border-[#DFE1E6] bg-white md:max-w-md">
+export default ProfileTab;
+
+
+{/* <div className="w-full rounded-2xl border-2 border-[#DFE1E6] bg-white md:max-w-md">
           <div className="p-6 pb-6">
             <h2 className="text-xl font-semibold text-gray-800">
               Account Settings
@@ -266,10 +253,4 @@ function ProfileTab() {
               Delete Account
             </button>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default ProfileTab;
+        </div> */}

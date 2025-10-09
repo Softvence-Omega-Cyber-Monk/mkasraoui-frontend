@@ -1,199 +1,133 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Mail, Trash } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Trash } from "lucide-react";
+import {
+  useGetInvitationsQuery,
+  useDeleteInvitationMutation,
+} from "@/redux/features/invitations/invitationsApi"; // adjust path if needed
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
-interface Guest {
+interface Invitation {
   id: string;
-  name: string;
+  guest_name: string;
   email: string;
-  phone: string;
+  guest_phone: string;
   status: string;
+  image?: string | undefined;
 }
 
 interface ManageRSVPsProps {
-  guests: Guest[];
-  newGuest: {
-    name: string;
-    email: string;
-    phone: string;
-  };
-  setNewGuest: React.Dispatch<
-    React.SetStateAction<{
-      name: string;
-      email: string;
-      phone: string;
-    }>
-  >;
-  handleAddGuest: () => void;
-  getStatusStyles: (status: string) => string;
   handleBack: () => void;
 }
 
-// ✅ Validation schema
-const guestSchema = z.object({
-  name: z.string().min(1, "Guest name is required"),
-  email: z.string().email("Invalid email address"),
-  // optional: restrict to specific domains
-  //.regex(/@gmail\.com$/, "Email must be a Gmail address"),
-  phone: z
-    .string()
-    .min(6, "Phone must be at least 6 characters")
-    .regex(/^\+?\d{6,15}$/, "Phone must be a valid number"),
-});
+// ✅ Optional helper for guest status styles
+const getStatusStyles = (status: string) => {
+  switch (status.toUpperCase()) {
+    case "PENDING":
+      return "border-yellow-400 text-yellow-600 bg-yellow-50";
+    case "CONFIRMED":
+      return "border-green-400 text-green-600 bg-green-50";
+    case "DECLINED":
+      return "border-red-400 text-red-600 bg-red-50";
+    default:
+      return "border-gray-300 text-gray-600 bg-gray-50";
+  }
+};
 
-type GuestFormData = z.infer<typeof guestSchema>;
+export default function ManageRSVPsTab({ handleBack }: ManageRSVPsProps) {
+  const { data: invitations, isLoading, isError } = useGetInvitationsQuery();
+  console.log(invitations)
+  const [deleteInvitation, { isLoading: isDeleting }] =
+    useDeleteInvitationMutation();
 
-export default function ManageRSVPsTab({
-  guests,
-  getStatusStyles,
-  handleBack,
-}: ManageRSVPsProps) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<GuestFormData>({
-    resolver: zodResolver(guestSchema),
-  });
+  const handleDelete = async (id: string) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          deleteInvitation(id).unwrap();
+          toast.success("Deleted Successfully");
+        } catch (error) {
+          console.error("Delete failed:", error);
+          toast.error("Something went wrong");
+        }
+      }
+    });
 
-  // ✅ Submit handler
-  const onSubmit = (data: GuestFormData) => {
-    console.log("Form submitted:", data);
-    reset(); // clear after submit
+
   };
 
+  if (isLoading) return <p className="text-gray-600">Loading invitations...</p>;
+  if (isError) return <p className="text-red-500">Failed to load invitations.</p>;
+  const guestList = Array.isArray(invitations) ? invitations : []
+
   return (
-    <div className="">
+    <div>
       <div className="space-y-6">
         <h1 className="text-2xl font-bold text-gray-900">Guest List & RSVPs</h1>
 
-        <div className="bg-white">
-          <div className="rounded-xl bg-[#F9FAFB] p-6">
-            <h2 className="mb-4 text-lg font-semibold text-[#000000]">
-              Add New Guest
-            </h2>
-
-            {/* ✅ Form */}
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-col items-center gap-4 md:flex-row md:items-start"
-            >
-              <div className="flex flex-1 flex-col">
-                <input
-                  type="text"
-                  placeholder="Guest name"
-                  required
-                  {...register("name", {
-                    pattern: {
-                      value: /^[A-Za-z\s]*$/, // only letters and spaces
-                      message: "Only letters are allowed",
-                    },
-                  })}
-                  onInput={(e) => {
-                    e.currentTarget.value = e.currentTarget.value.replace(
-                      /[^A-Za-z\s]/g,
-                      "",
-                    );
-                  }}
-                  className="h-12 w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.name.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="flex flex-1 flex-col">
-                <input
-                  type="email"
-                  placeholder="Email"
-                  required
-                  {...register("email")}
-                  className="h-12 w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="flex flex-1 flex-col">
-                <input
-                  type="text"
-                  placeholder="Phone"
-                  required
-                  {...register("phone", {
-                    pattern: {
-                      value: /^[0-9]*$/, // only numbers
-                      message: "Only numbers are allowed",
-                    },
-                  })}
-                  onInput={(e) => {
-                    e.currentTarget.value = e.currentTarget.value.replace(
-                      /[^0-9]/g,
-                      "",
-                    );
-                  }}
-                  className="h-12 w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
-                {errors.phone && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.phone.message}
-                  </p>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                className="hover:bg-secondary-light h-12 cursor-pointer rounded-md bg-[#223B7D] px-8 font-medium text-white transition-colors duration-200 focus:outline-none"
-              >
-                Add Guest
-              </button>
-            </form>
-          </div>
-        </div>
-
-        {/* guest list section */}
+        {/* Guest list section */}
         <div className="space-y-4">
-          {guests.map((guest) => (
-            <div
-              key={guest.id}
-              className="rounded-xl border border-[#DFDFDF] bg-white"
-            >
-              <div className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {guest.name}
-                    </h3>
-                    <p className="text-gray-600">
-                      {guest.email} • {guest.phone}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`inline-flex items-center rounded-full border px-2 py-1 text-xs font-medium ${getStatusStyles(
-                        guest.status,
-                      )}`}
-                    >
-                      {guest.status}
-                    </span>
-                    <button className="hover:bg-secondary-dark flex h-10 w-10 cursor-pointer items-center justify-center rounded-md bg-[#223B7D] text-white transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none">
-                      <Mail className="h-4 w-4" />
-                    </button>
-                    <button className="hover:bg-secondary-dark flex h-10 w-10 cursor-pointer items-center justify-center rounded-md bg-[#223B7D] text-white transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none">
-                      <Trash className="h-4 w-4" />
-                    </button>
+          {guestList?.length === 0 ? (
+            <p className="text-gray-600">No guests found.</p>
+          ) : (
+            guestList?.map((guest: Invitation) => (
+              <div
+                key={guest.id}
+                className="rounded-xl border border-[#DFDFDF] bg-white"
+              >
+                <div className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 flex-1">
+                      {/* ✅ Fallback image if guest.image is missing */}
+                      <img
+                        src={
+                          guest.image ||
+                          "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                        }
+                        alt={guest.guest_name!}
+                        className="h-12 w-12 rounded-full object-cover border"
+                      />
+
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {guest.guest_name}
+                        </h3>
+                        <p className="text-gray-600">
+                          {guest.email} • {guest.guest_phone}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`inline-flex items-center rounded-full border px-2 py-1 text-xs font-medium ${getStatusStyles(
+                          guest.status!
+                        )}`}
+                      >
+                        {guest.status}
+                      </span>
+
+                      <button
+                        onClick={() => handleDelete(guest.id)}
+                        disabled={isDeleting}
+                        className="hover:bg-secondary-dark flex h-10 w-10 cursor-pointer items-center justify-center rounded-md bg-[#223B7D] text-white transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        <Trash className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         <div className="flex justify-between">
