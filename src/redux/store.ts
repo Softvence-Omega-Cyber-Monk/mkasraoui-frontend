@@ -34,7 +34,9 @@ export const store = configureStore({
     providerPlan: adminProviderPlanReducer,
     newsLetter: newsLetterReducer,
     chat: chatReducer,
+
   },
+  
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
@@ -44,9 +46,10 @@ export const store = configureStore({
       .concat(baseApi.middleware)
       .concat(tShirtApi.middleware)
       .concat(partyPlanApi.middleware)
-      .concat(generateCardApi.middleware),
-  // .concat(chatApi.middleware),
+      .concat(generateCardApi.middleware)
+      // .concat(chatApi.middleware),
 });
 
+ 
 export type AppRootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

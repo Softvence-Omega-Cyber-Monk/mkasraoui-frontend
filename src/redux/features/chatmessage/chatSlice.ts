@@ -79,6 +79,7 @@ const chatSlice = createSlice({
       const arr = state.messagesByConversation[action.payload.conversationId] ?? [];
       const newArr = arr.map((m) => (m.id === action.payload.tempId ? action.payload.newMessage : m));
       state.messagesByConversation[action.payload.conversationId] = dedupeAndSort(newArr);
+      console.log(newArr,"replaceLocalMessage")
     },
 
     markConversationRead(state, action: PayloadAction<{ conversationId: string }>) {

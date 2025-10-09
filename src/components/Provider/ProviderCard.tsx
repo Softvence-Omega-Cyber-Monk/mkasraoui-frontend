@@ -12,6 +12,8 @@ const ProviderCard = () => {
     limit: 1000,
   });
 
+console.log(quotesData,"quotesData")
+
   const colors = ["#FFA600", "#9747FF", "#12CC1E", "#009CDE"];
   const bgColors = ["#FFA6001A", "#9747FF1A", "#12CC1E1A", "#009CDE1A"];
 

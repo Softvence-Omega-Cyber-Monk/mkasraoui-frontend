@@ -394,6 +394,13 @@ export default function Shop(): JSX.Element {
         </div>
       </section>
 
+
+ 
+
+
+
+
+
       {/* ---------- Search & Filters ---------- */}
       <section className="mt-10">
         <div className="mx-auto flex max-w-7xl flex-col items-center space-y-4 rounded-xl bg-white p-4 sm:flex-row sm:space-y-0 sm:space-x-4">

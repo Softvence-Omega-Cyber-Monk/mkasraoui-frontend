@@ -66,9 +66,13 @@ import AdminCustomerOrderPage from "./Pages/Admin/AdminCustomerOrderPage";
 import ProviderPage from "./Pages/Provider/ProviderPage";
 import ProvidersList from "./components/Provider/ProvidersList";
 import DiyBoxChackout from "./Pages/DiyBoxChackout";
-import ChatMessagePage from "./Pages/ChatMessagePage";
-import PaymentSuccess from "./components/Shared/PaymentSuccess";
+ import PaymentSuccess from "./components/Shared/PaymentSuccess";
 import AdminAddBlogPage from "./Pages/Admin/AdminAddBlogPage";
+// import ChatMessagePage from "./Pages/ChatMessagePage";
+import ChatContainer from "./components/mychat/ChatContainer";
+import ProviderPaymentPage from "./Pages/Provider/ProviderPaymentPage";
+// import { SocketProvider } from "./services/SocketContext";
+   // import ChatMessagePage from "./components/mychat/ChatMessagePage";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -266,10 +270,15 @@ const router = createBrowserRouter([
         path: "messages",
         element: <Messages />,
       },
+      // {
+      //   path: "chat-message",
+      //   element: <ChatMessagePage />,
+      // },
       {
-        path: "chat-message",
-        element: <ChatMessagePage />,
-      },
+        path: "myChat",
+        element: <ChatContainer />,
+       },
+       
 
       {
         path: "reviews",
@@ -283,6 +292,16 @@ const router = createBrowserRouter([
         path: "provider-account",
         element: <ProviderUpdateProfile />,
       },
+      {
+        path: "payment",
+        element: <ProviderPaymentPage />,
+      },
+      // i added taht
+
+
+    
+
+
     ],
   },
   // admin Dashboard routes can be added here
@@ -364,8 +383,10 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <ReduxProviderWrapper>
-      <RouterProvider router={router} />
-      <Toaster position="top-right" reverseOrder={false} />
+      {/* <SocketProvider> */}
+        <RouterProvider router={router} />
+        <Toaster position="top-right" reverseOrder={false} />
+      {/* </SocketProvider> */}
     </ReduxProviderWrapper>
-  </React.StrictMode>,
+  </React.StrictMode>
 );

@@ -34,7 +34,7 @@ export default function BlogDetails() {
   style={{ backgroundImage: `url(${blog.images?.[0]})` }}
 >
   {/* Dark overlay */}
-  <div className="absolute inset-0 bg-black/50"></div>
+  <div className="absolute inset-0  "></div>
 
   {/* Title */}
   <div className="relative z-10 h-full flex items-center justify-center">
@@ -93,7 +93,7 @@ export default function BlogDetails() {
           </div>
 
           {/* Tags */}
-          {blog.tag && blog.tag.length > 0 && (
+          {/* {blog.tag && blog.tag.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-6">
               {blog.tag.map((tag) => (
                 <span
@@ -104,7 +104,7 @@ export default function BlogDetails() {
                 </span>
               ))}
             </div>
-          )}
+          )} */}
         </article>
       </div>
 
