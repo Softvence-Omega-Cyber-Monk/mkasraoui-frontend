@@ -340,6 +340,7 @@ import { User } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "@/redux/store";
 import { useEffect, useRef, useState } from "react";
+import GoogleTranslate from "./GoogleTranslate";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -456,6 +457,7 @@ const Navbar: React.FC = () => {
 
       {/* Desktop cart & user */}
       <div className="hidden items-center gap-4 lg:flex">
+        <GoogleTranslate />
         <Link
           to="/home/my-cart"
           className="relative flex items-center gap-1 rounded-lg p-2 transition hover:bg-gray-50"

@@ -13,22 +13,16 @@ export const propertyApi = baseApi.injectEndpoints({
         limit?: number;
         page?: number;
         search?: string;
-        priceRange?: string;
+        price?: string;
         serviceCategory?: string;
       }
     >({
-      query: ({
-        limit = 10,
-        page = 1,
-        search,
-        priceRange,
-        serviceCategory,
-      }) => {
+      query: ({ limit = 10, page = 1, search, price, serviceCategory }) => {
         const params = new URLSearchParams();
         params.append("limit", String(limit));
         params.append("page", String(page));
         if (search) params.append("search", search);
-        if (priceRange) params.append("priceRange", priceRange);
+        if (price) params.append("price", price);
         if (serviceCategory) params.append("serviceCategory", serviceCategory);
 
         return {
@@ -113,7 +107,7 @@ export const {
 //         limit?: number;
 //         page?: number;
 //         search?: string;
-//         priceRange?: string;
+//         price?: string;
 //         serviceCategory?: string;
 //       }
 //     >({
@@ -121,14 +115,14 @@ export const {
 //         limit = 10,
 //         page = 1,
 //         search,
-//         priceRange,
+//         price,
 //         serviceCategory,
 //       }) => {
 //         const params = new URLSearchParams();
 //         params.append("limit", String(limit));
 //         params.append("page", String(page));
 //         if (search) params.append("search", search);
-//         if (priceRange) params.append("priceRange", priceRange);
+//         if (price) params.append("price", price);
 //         if (serviceCategory) params.append("serviceCategory", serviceCategory);
 
 //         return {
