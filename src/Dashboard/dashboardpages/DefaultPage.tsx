@@ -56,13 +56,18 @@ const DefaultPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="space-y-6">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+        <div className="mb-8 clas">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
             Welcome back, {me?.name}
           </h1>
           <p className="mt-1 text-gray-600">
             Here's what's happening with your business today.
           </p>
+          </div>
+          <div>
+            
+          </div>
         </div>
 
         <div>
