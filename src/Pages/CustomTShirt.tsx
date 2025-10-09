@@ -163,7 +163,7 @@ function CustomTShirt() {
                             setSize(sizeOption);
                             setShowSizeDropdown(false);
                           }}
-                          className="w-full p-3 text-left text-sm text-gray-700 hover:bg-gray-50"
+                          className="w-full p-3 text-left text-sm text-gray-700 hover:bg-gray-50 hover:cursor-pointer"
                         >
                           {sizeOption}
                         </button>
@@ -196,7 +196,7 @@ function CustomTShirt() {
                             setGender(genderOption);
                             setShowGenderDropdown(false);
                           }}
-                          className="w-full p-3 text-left text-sm text-gray-700 hover:bg-gray-50"
+                          className="w-full p-3 text-left text-sm text-gray-700 hover:cursor-pointer hover:bg-gray-50"
                         >
                           {genderOption}
                         </button>
@@ -261,7 +261,7 @@ function CustomTShirt() {
                             setAge(ageOption);
                             setShowAgeDropdown(false);
                           }}
-                          className="w-full p-3 text-left text-sm text-gray-700 hover:bg-gray-50"
+                          className="w-full p-3 text-left text-sm text-gray-700 hover:cursor-pointer hover:bg-gray-50"
                         >
                           {ageOption}
                         </button>
@@ -341,7 +341,7 @@ function CustomTShirt() {
               <button
                 onClick={handleGenerate}
                 disabled={isLoading}
-                className="w-full rounded-lg bg-[#223B7D] px-6 py-3 font-medium text-white shadow-md hover:bg-[#1a2d61] disabled:opacity-50"
+                className="w-full rounded-lg bg-[#223B7D] px-6 py-3 font-medium hover:cursor-pointer text-white shadow-md hover:bg-[#1a2d61] disabled:opacity-50"
               >
                 {isLoading ? "Generating..." : "✨ Generate T-Shirt"}
               </button>

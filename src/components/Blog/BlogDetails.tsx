@@ -31,12 +31,12 @@ export default function BlogDetails() {
   return (
     <div>
       {/* Banner */}
-      <div
-        className="relative mx-auto h-[400px] w-11/12 overflow-hidden rounded-xl bg-cover bg-center md:h-[500px] lg:h-[600px]"
-        style={{ backgroundImage: `url(${blog.images?.[0]})` }}
-      >
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/50"></div>
+     <div
+  className="relative w-11/12 mx-auto h-[400px] md:h-[500px] lg:h-[600px] bg-cover bg-center rounded-xl overflow-hidden"
+  style={{ backgroundImage: `url(${blog.images?.[0]})` }}
+>
+  {/* Dark overlay */}
+  <div className="absolute inset-0  "></div>
 
         {/* Title */}
         <div className="relative z-10 flex h-full items-center justify-center">
@@ -95,8 +95,8 @@ export default function BlogDetails() {
           </div>
 
           {/* Tags */}
-          {blog.tag && blog.tag.length > 0 && (
-            <div className="mt-6 flex flex-wrap gap-2">
+          {/* {blog.tag && blog.tag.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-6">
               {blog.tag.map((tag) => (
                 <span
                   key={tag}
@@ -106,7 +106,7 @@ export default function BlogDetails() {
                 </span>
               ))}
             </div>
-          )}
+          )} */}
         </article>
       </div>
 

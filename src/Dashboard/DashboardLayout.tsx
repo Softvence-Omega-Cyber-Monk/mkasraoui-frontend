@@ -16,6 +16,7 @@ import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   BookingIcon,
   DashboardIcon,
+  EarningsIcon,
   MessagesIcon,
   ReviewsIcon,
   // ServicesIcon,
@@ -96,11 +97,17 @@ function DashboardLayout() {
       label: "Reviews",
       icon: ReviewsIcon,
     },
-    // {
-    //   to: "/dashboard/earnings",
-    //   label: "Earnings",
-    //   icon: EarningsIcon,
-    // },
+    {
+      to: "/dashboard/earnings",
+      label: "Earnings",
+      icon: EarningsIcon,
+    },
+    {
+      to: "/dashboard/payment",
+      label: "payment",
+      icon: EarningsIcon,
+    },
+   
   ];
 
   const NavItem = ({
