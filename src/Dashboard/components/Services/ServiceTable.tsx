@@ -5,17 +5,17 @@ function ServiceTable() {
     {
       id: 1,
       title: "Wedding Photography Package",
-      priceRange: "$800 - $1500",
+      price: "$800 - $1500",
     },
     {
       id: 2,
       title: "Event Videography",
-      priceRange: "$500 - $1200",
+      price: "$500 - $1200",
     },
     {
       id: 3,
       title: "Portrait Photography",
-      priceRange: "$300 - $800",
+      price: "$300 - $800",
     },
   ];
   return (
@@ -70,7 +70,7 @@ function ServiceTable() {
               {/* Price Range */}
               <div className="flex-1 sm:col-span-4">
                 <span className="block text-sm font-medium text-green-600 sm:text-base">
-                  {service.priceRange}
+                  {service.price}
                 </span>
               </div>
 

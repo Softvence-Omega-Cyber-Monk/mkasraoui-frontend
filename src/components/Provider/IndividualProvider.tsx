@@ -26,7 +26,7 @@ const IndividualProvider: React.FC = () => {
     phone: "",
     description: "",
     serviceArea: "",
-    priceRange: "",
+    price: "",
     website: "",
     instagram: "",
   });
@@ -42,7 +42,7 @@ const IndividualProvider: React.FC = () => {
         phone: provider.phone || "",
         description: provider.description || "",
         serviceArea: provider.serviceArea || "",
-        priceRange: provider.priceRange || "",
+        price: provider.price || "",
         website: provider.website || "",
         instagram: provider.instagram || "",
       });
@@ -192,8 +192,8 @@ const IndividualProvider: React.FC = () => {
                 Price Range
                 <input
                   type="text"
-                  name="priceRange"
-                  value={formState.priceRange}
+                  name="price"
+                  value={formState.price}
                   onChange={handleChange}
                   placeholder="Enter price range"
                   className="mt-1 block w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -328,7 +328,7 @@ export default IndividualProvider;
 //     phone: "",
 //     description: "",
 //     serviceArea: "",
-//     priceRange: "",
+//     price: "",
 //     website: "",
 //     instagram: "",
 //   });
@@ -344,7 +344,7 @@ export default IndividualProvider;
 //         phone: provider.phone || "",
 //         description: provider.description || "",
 //         serviceArea: provider.serviceArea || "",
-//         priceRange: provider.priceRange || "",
+//         price: provider.price || "",
 //         website: provider.website || "",
 //         instagram: provider.instagram || "",
 //       });
@@ -494,8 +494,8 @@ export default IndividualProvider;
 //                 Price Range
 //                 <input
 //                   type="text"
-//                   name="priceRange"
-//                   value={formState.priceRange}
+//                   name="price"
+//                   value={formState.price}
 //                   onChange={handleChange}
 //                   placeholder="Enter price range"
 //                   className="mt-1 block w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"

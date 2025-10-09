@@ -97,7 +97,7 @@ export default function ProviderDetails() {
                 <div className="text-body mb-4 flex items-center">
                   <CircleDollarSign className="mr-2 h-4.5 w-4.5" />
                   <span className="text-base font-semibold">
-                    {provider.priceRange ?? "N/A"}
+                    {provider.price ?? "N/A"}
                   </span>
                 </div>
               </div>
@@ -407,7 +407,7 @@ export default function ProviderDetails() {
 //                 <div className="text-body mb-4 flex items-center">
 //                   <CircleDollarSign className="mr-2 h-4.5 w-4.5" />
 //                   <span className="text-base font-semibold">
-//                     {provider.priceRange ?? "N/A"}
+//                     {provider.price ?? "N/A"}
 //                   </span>
 //                 </div>
 //               </div>

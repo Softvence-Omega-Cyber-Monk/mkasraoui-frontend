@@ -305,8 +305,8 @@ const AdminProvidersTable: React.FC = () => {
                     {viewProvider.serviceArea}
                   </p>
                   <p>
-                    <span className="font-semibold">Price Range:</span>{" "}
-                    {viewProvider.priceRange}
+                    <span className="font-semibold">Price:</span>{" "}
+                    {viewProvider.price}
                   </p>
                   <p>
                     <span className="font-semibold">Website:</span>{" "}

@@ -92,7 +92,7 @@ const ProvidersList = () => {
                 </div>
                 <div className="flex items-center gap-2 text-[#5A5C5F]">
                   <CircleDollarSign className="h-4.5 w-4.5" />
-                  <span className="text-base">{provider.priceRange}</span>
+                  <span className="text-base">{provider.price}</span>
                 </div>
               </div>
 
