@@ -1,6 +1,9 @@
 // src/redux/features/adminOrder/adminOrderApi.ts
 import { baseApi } from "@/redux/hooks/baseApi";
-import type { OrderResponse } from "@/redux/types/adminOder.type";
+import type {
+  CustomOrderResponse,
+  OrderResponse,
+} from "@/redux/types/adminOder.type";
 
 export const adminOrderApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -24,8 +27,58 @@ export const adminOrderApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Orders"],
     }),
+
+    getMyCustomOrders: builder.query<
+      {
+        meta: {
+          total: number;
+          page: number;
+          limit: number;
+          totalPages: number;
+        };
+        orders: CustomOrderResponse[];
+      },
+      { page?: number; limit?: number }
+    >({
+      query: ({ page = 1, limit = 10 }) =>
+        `/custom-orders/my-orders?limit=${limit}&page=${page}`,
+      providesTags: ["Orders"],
+      transformResponse: (response: any) => {
+        // Match Swagger response format
+        return {
+          meta: response?.data?.meta,
+          orders: response?.data?.orders,
+        };
+      },
+    }),
+
+    /* <OrderResponse> */
+    getMyOrders: builder.query<
+      {
+        meta: {
+          total: number;
+          page: number;
+          limit: number;
+          totalPages: number;
+        };
+        orders: OrderResponse[];
+      },
+      { page?: number; limit?: number }
+    >({
+      query: ({ page = 1, limit = 10 }) =>
+        `/orders/my-orders?limit=${limit}&page=${page}`,
+      providesTags: ["Orders"],
+      transformResponse: (response: any) => ({
+        meta: response?.data?.meta,
+        orders: response?.data?.orders,
+      }),
+    }),
   }),
 });
 
-export const { useGetOrdersQuery, useUpdateOrderStatusMutation } =
-  adminOrderApi;
+export const {
+  useGetOrdersQuery,
+  useUpdateOrderStatusMutation,
+  useGetMyCustomOrdersQuery,
+  useGetMyOrdersQuery,
+} = adminOrderApi;

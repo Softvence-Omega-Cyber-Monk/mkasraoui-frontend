@@ -7,6 +7,7 @@ import FavositesTab from "../DashBoardTabComponent/FavositesTab";
 import ProfileTab from "../DashBoardTabComponent/ProfileTab";
 import { useLocation } from "react-router-dom";
 import PaymentTab from "../DashBoardTabComponent/PaymentTab";
+import UserAllActivity from "../DashBoardTabComponent/UserAllActivity";
 export default function PartyInvitations() {
   // const [activeTab, setActiveTab] = useState("Overview");
   const location = useLocation();
@@ -54,7 +55,7 @@ export default function PartyInvitations() {
           </div>
         );
       case "Pay":
-        return <PaymentTab />; // ✅ Payment tab content here
+        return <UserAllActivity />; // ✅ Payment tab content here
       default:
         return null;
     }

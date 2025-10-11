@@ -1,36 +1,52 @@
-import { useNavigate, useSearchParams } from "react-router-dom"; // or Next.js router if using Next.js
-import { CheckCircleIcon } from "@heroicons/react/24/solid"; // optional icon
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 export default function PaymentSuccess() {
-  const navigate = useNavigate(); // for react-router
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
   const handleBackHome = () => {
-    navigate("/"); // redirect to home page
+    navigate("/");
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-8 text-center shadow-lg">
-        <CheckCircleIcon className="mx-auto h-16 w-16 text-green-500" />
-        <h1 className="mt-4 text-2xl font-bold text-gray-800">
-          Payment Successful!
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-xl">
+        <CheckCircleIcon className="mx-auto h-20 w-20 text-[#223B7D]" />
+
+        <h1 className="mt-6 text-3xl font-bold text-gray-800">
+          Payment Successful
         </h1>
-        <p className="mt-2 text-gray-600">
-          Your payment has been processed successfully.
+
+        <p className="mt-4 text-base leading-relaxed text-gray-600">
+          Your payment has been processed successfully. Thank you for your
+          purchase.
         </p>
+
         {sessionId && (
-          <p className="mt-2 text-sm text-gray-500">
-            Session ID: <span className="font-mono">{sessionId}</span>
+          <p className="mt-4 text-sm text-gray-500">
+            Transaction ID:{" "}
+            <span className="font-mono text-gray-700">{sessionId}</span>
           </p>
         )}
+
         <button
           onClick={handleBackHome}
-          className="mt-6 w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700"
+          className="mt-8 w-full cursor-pointer rounded-lg bg-[#223B7D] px-6 py-3 font-semibold text-white shadow-md transition-colors hover:bg-[#031d64]"
         >
           Back to Home
         </button>
+
+        <p className="mt-4 text-xs text-gray-400">
+          Need help?{" "}
+          <a
+            href="/support"
+            className="font-medium text-[#223B7D] hover:text-[#031d66]"
+          >
+            Contact Support
+          </a>
+        </p>
       </div>
     </div>
   );
