@@ -47,7 +47,7 @@ export const propertyApi = baseApi.injectEndpoints({
         url: "/user/request-provider",
         method: "POST",
         body: formData,
-        formData: true,
+        // formData: true,
       }),
       invalidatesTags: ["Providers"],
     }),

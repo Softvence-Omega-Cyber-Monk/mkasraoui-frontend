@@ -31,12 +31,12 @@ export default function BlogDetails() {
   return (
     <div>
       {/* Banner */}
-     <div
-  className="relative w-11/12 mx-auto h-[400px] md:h-[500px] lg:h-[600px] bg-cover bg-center rounded-xl overflow-hidden"
-  style={{ backgroundImage: `url(${blog.images?.[0]})` }}
->
-  {/* Dark overlay */}
-  <div className="absolute inset-0  "></div>
+      <div
+        className="relative mx-auto h-[400px] w-11/12 overflow-hidden rounded-xl bg-cover bg-center md:h-[500px] lg:h-[600px]"
+        style={{ backgroundImage: `url(${blog.images?.[0]})` }}
+      >
+        {/* Dark overlay */}
+        <div className="absolute inset-0"></div>
 
         {/* Title */}
         <div className="relative z-10 flex h-full items-center justify-center">
@@ -47,7 +47,7 @@ export default function BlogDetails() {
       </div>
 
       {/* Main Content */}
-      <div className="mx-auto max-w-4xl px-6 py-6">
+      <div className="mx-auto max-w-7xl px-6 py-6">
         <article className="prose prose-lg max-w-none">
           {/* <header className="mb-4">
             <h1 className="text-4xl font-bold text-gray-900 mb-8">Introduction</h1>

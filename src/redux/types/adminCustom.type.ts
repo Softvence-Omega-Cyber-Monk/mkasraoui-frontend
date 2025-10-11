@@ -46,12 +46,40 @@ export interface Meta {
   totalPages: number;
 }
 
-export interface CustomOrderResponse {
-  success: boolean;
-  message: string;
-  data: {
-    meta: Meta;
-    orders: CustomOrder[];
-  };
-}
+// export interface CustomOrderResponse {
+//   success: boolean;
+//   message: string;
+//   data: {
+//     meta: Meta;
+//     orders: CustomOrder[];
+//   };
+// }
 
+export interface CustomOrderResponse {
+  id: string;
+  userId: string;
+  tShirtType: string;
+  size: string;
+  gender: string;
+  color: string;
+  Age: string;
+  theme: string;
+  name: string;
+  age: string;
+  optionalMessage: string;
+  quantity: number;
+  shippingFee: number;
+  designUrl: string;
+  mockupUrl: string;
+  total: number;
+  paymentIntentId: string | null;
+  status: string;
+  address: string;
+  zipCode: string;
+  state: string;
+  city: string;
+  contactName: string;
+  contactPhone: string;
+  createdAt: string;
+  updatedAt: string;
+}
