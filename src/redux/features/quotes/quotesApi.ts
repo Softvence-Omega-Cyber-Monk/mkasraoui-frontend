@@ -48,6 +48,31 @@ export const quotesApi = baseApi.injectEndpoints({
       providesTags: ["Quotes"],
     }),
 
+    /* Payment */
+    // checkoutPayment: builder.mutation<
+    //   { url: string }, // ✅ API returns a redirect URL
+    //   { quoteId: string }
+    // >({
+    //   query: ({ quoteId }) => ({
+    //     url: "/provider/payment/checkout",
+    //     method: "POST",
+    //     body: { quoteId },
+    //   }),
+    //   invalidatesTags: ["Quotes"],
+    // }),
+
+    checkoutPayment: builder.mutation<
+      { data: { url: string } },
+      { quoteId: string }
+    >({
+      query: ({ quoteId }) => ({
+        url: "/provider/payment/checkout",
+        method: "POST",
+        body: { quoteId },
+      }),
+      invalidatesTags: ["Quotes"],
+    }),
+
     // ✅ Update quote status (Provider only)
     updateQuoteStatus: builder.mutation<
       { data: QuoteResponse },
@@ -69,23 +94,5 @@ export const {
   useGetProviderQuotesQuery,
   useUpdateQuoteStatusMutation,
   useCancelQuoteMutation,
+  useCheckoutPaymentMutation,
 } = quotesApi;
-
-// import { baseApi } from "@/redux/hooks/baseApi";
-// import type { QuoteRequest, QuoteResponse } from "@/redux/types/quotes.type";
-
-// export const quotesApi = baseApi.injectEndpoints({
-//   overrideExisting: false,
-//   endpoints: (builder) => ({
-//     createQuote: builder.mutation<{ data: QuoteResponse }, QuoteRequest>({
-//       query: (body) => ({
-//         url: "/quotes",
-//         method: "POST",
-//         body,
-//       }),
-//       invalidatesTags: ["Quotes", "Providers"],
-//     }),
-//   }),
-// });
-
-// export const { useCreateQuoteMutation } = quotesApi;

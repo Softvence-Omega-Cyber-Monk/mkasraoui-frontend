@@ -13,13 +13,17 @@ export interface ChatUser {
 
 export interface ChatMessage {
   id: string;
+  conversationId: string; // ✅ Add this
   senderId: string;
   content: string;
-  createdAt: string; // make required
-  type?: MessageType; // optional, default can be "text" in code
+  createdAt: string; // keep required
+  updatedAt?: string;
+  status?: "sending" | "sent" | "failed";
+  type?: MessageType; // optional
   fileName?: string | null;
   fileSize?: number | null;
 }
+
 
 export interface Conversation {
   id: string;
@@ -27,6 +31,7 @@ export interface Conversation {
   providerId: string;
   createdAt?: string;
   updatedAt?: string;
+  lastMessagePreview?: string;
   user?: ChatUser | null;
   provider?: ChatUser | null;
   messages?: ChatMessage[]; // can be undefined, but better default []

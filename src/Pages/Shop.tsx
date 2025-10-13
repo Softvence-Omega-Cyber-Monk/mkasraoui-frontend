@@ -199,7 +199,7 @@ export default function Shop(): JSX.Element {
       })
     );
     toast.success(`${item.title} added to cart — redirecting to checkout`);
-    navigate("/checkout");
+    navigate("/home/diyboxChackout");
   };
 
   const handleWishlistToggle = async (item: CardItem, e?: React.MouseEvent) => {
@@ -311,7 +311,7 @@ export default function Shop(): JSX.Element {
       />
 
       {/* ---------- AI Recommended Section ---------- */}
-      <section className="mt-6">
+      {/* <section className="mt-6">
         <div className="mx-auto max-w-7xl rounded-xl bg-[#BBDEFB] p-4 md:p-6">
           <div className="mb-6 flex items-center gap-2 text-[#223B7D]">
             <img src={shopIcon} alt="shop-icon" className="h-7 w-7" />
@@ -319,7 +319,6 @@ export default function Shop(): JSX.Element {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {/* Product Card 1 */}
             <div className="overflow-hidden rounded-xl bg-white p-4 shadow-md">
               <div className="rounded-lg bg-[#FFF7ED]">
                 <img
@@ -342,8 +341,6 @@ export default function Shop(): JSX.Element {
                 </div>
               </div>
             </div>
-
-            {/* Product Card 2 */}
             <div className="overflow-hidden rounded-xl bg-white p-4 shadow-md">
               <div className="rounded-lg bg-[#FFF7ED]">
                 <img
@@ -366,8 +363,6 @@ export default function Shop(): JSX.Element {
                 </div>
               </div>
             </div>
-
-            {/* Product Card 3 */}
             <div className="overflow-hidden rounded-xl bg-white p-4 shadow-md">
               <div className="rounded-lg bg-[#FFF7ED]">
                 <img
@@ -392,7 +387,14 @@ export default function Shop(): JSX.Element {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
+
+
+ 
+
+
+
+
 
       {/* ---------- Search & Filters ---------- */}
       <section className="mt-10">

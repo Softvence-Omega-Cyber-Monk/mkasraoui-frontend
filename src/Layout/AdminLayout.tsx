@@ -97,6 +97,11 @@ function AdminLayout() {
       icon: MdOutlineAddChart,
     },
     {
+      to: "/admin-dashboard/add-blog",
+      label: "Add Blog",
+      icon: MdOutlineAddChart,
+    },
+    {
       to: "/admin-dashboard/subscription-plan",
       label: "General Plan",
       icon: FaMoneyCheckDollar,
@@ -271,7 +276,7 @@ function AdminLayout() {
               <div className="absolute top-0 right-0 -mr-12 pt-2">
                 <button
                   type="button"
-                  className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:ring-2 focus:ring-white focus:outline-none focus:ring-inset"
+                  className="ml-1 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full focus:ring-2 focus:ring-white focus:outline-none focus:ring-inset"
                   onClick={() => setSidebarOpen(false)}
                 >
                   <span className="sr-only">Close sidebar</span>
@@ -326,7 +331,7 @@ function AdminLayout() {
           {/* Mobile menu button */}
           <button
             type="button"
-            className="focus:ring-secondary-light/60 text-gray-500 focus:ring-2 focus:outline-none focus:ring-inset lg:hidden"
+            className="focus:ring-secondary-light/60 cursor-pointer text-gray-500 focus:ring-2 focus:outline-none focus:ring-inset lg:hidden"
             onClick={() => setSidebarOpen(true)}
             aria-label="Open sidebar"
           >

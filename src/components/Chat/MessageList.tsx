@@ -1,20 +1,22 @@
-// src/components/Chat/MessageList.tsx
 import { useEffect, useRef } from "react";
 import type { ChatMessage } from "@/redux/types/chat.types";
 
+
 interface Props {
   messages: ChatMessage[];
-  myUserId: string; // current user's id (string)
+  myUserId: string;
 }
+
 
 export default function MessageList({ messages, myUserId }: Props) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+ 
   useEffect(() => {
-    if (scrollRef.current) {
+    if (scrollRef.current)
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
   }, [messages]);
 
+console.log(messages,myUserId)
   return (
     <div className="flex-1 overflow-y-auto p-6" ref={scrollRef}>
       {messages.length === 0 ? (
@@ -23,14 +25,19 @@ export default function MessageList({ messages, myUserId }: Props) {
         </div>
       ) : (
         messages.map((m) => {
+          // ✅ Compare IDs properly
           const isOwn = String(m.senderId) === String(myUserId);
+console.log(isOwn)
+
           return (
             <div
               key={m.id}
               className={`mb-4 flex ${isOwn ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[70%] rounded-xl p-3 ${isOwn ? "bg-blue-600 text-white" : "border bg-white"}`}
+                className={`max-w-[70%] rounded-xl p-3 ${
+                  isOwn ? "bg-blue-600 text-white  " : "border   bg-white"
+                }`}
               >
                 {m.type === "image" ? (
                   <img
@@ -42,7 +49,7 @@ export default function MessageList({ messages, myUserId }: Props) {
                   <a
                     href={m.content}
                     download={m.fileName}
-                    className="underline"
+                    className="text-sm underline"
                   >
                     {m.fileName ?? "Download file"}
                   </a>
@@ -62,3 +69,14 @@ export default function MessageList({ messages, myUserId }: Props) {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+ 

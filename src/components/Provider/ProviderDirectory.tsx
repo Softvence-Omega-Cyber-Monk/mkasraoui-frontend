@@ -16,7 +16,7 @@ export default function ProviderDirectory() {
   const [activeTab, setActiveTab] = useState<"list" | "map">("list");
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
-  const [priceRange, setPriceRange] = useState("");
+  const [price, setPrice] = useState("");
 
   // ✅ Fetch providers with filters
   const { data, isLoading, error } = useGetProvidersQuery({
@@ -24,7 +24,7 @@ export default function ProviderDirectory() {
     page: 1,
     search,
     serviceCategory: category || undefined,
-    priceRange: priceRange || undefined,
+    price: price || undefined,
   });
 
   // const providers = data?.data?.data ?? [];
@@ -83,8 +83,8 @@ export default function ProviderDirectory() {
 
             {/* Price Range */}
             <select
-              value={priceRange}
-              onChange={(e) => setPriceRange(e.target.value)}
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
               className="w-full rounded-lg border border-gray-200 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:outline-none md:w-auto"
             >
               <option value="">All Price Ranges</option>
@@ -172,7 +172,7 @@ export default function ProviderDirectory() {
                       </div>
                       <div className="flex items-center gap-2 text-[#5A5C5F]">
                         <CircleDollarSign className="h-4.5 w-4.5" />
-                        <span className="text-base">{provider.priceRange}</span>
+                        <span className="text-base">{provider.price}</span>
                       </div>
                     </div>
                     <div className="flex flex-col gap-3 xl:flex-row">
@@ -195,19 +195,6 @@ export default function ProviderDirectory() {
             </div>
           </>
         ) : (
-          // <div className="overflow-hidden rounded-lg bg-white shadow-sm">
-          //   <div id="map" className="relative h-96 w-full">
-          //     <iframe
-          //       src="https://www.openstreetmap.org/export/embed.html?bbox=90.3000%2C23.7000%2C90.5000%2C23.8500&layer=mapnik&marker=23.7800%2C90.4000"
-          //       width="100%"
-          //       height="100%"
-          //       frameBorder="0"
-          //       style={{ border: 0 }}
-          //       allowFullScreen
-          //       title="Dhaka Map"
-          //     ></iframe>
-          //   </div>
-          // </div>
           <div>
             <ProviderDirectoryMap />
           </div>
@@ -216,3 +203,17 @@ export default function ProviderDirectory() {
     </div>
   );
 }
+
+// <div className="overflow-hidden rounded-lg bg-white shadow-sm">
+//   <div id="map" className="relative h-96 w-full">
+//     <iframe
+//       src="https://www.openstreetmap.org/export/embed.html?bbox=90.3000%2C23.7000%2C90.5000%2C23.8500&layer=mapnik&marker=23.7800%2C90.4000"
+//       width="100%"
+//       height="100%"
+//       frameBorder="0"
+//       style={{ border: 0 }}
+//       allowFullScreen
+//       title="Dhaka Map"
+//     ></iframe>
+//   </div>
+// </div>

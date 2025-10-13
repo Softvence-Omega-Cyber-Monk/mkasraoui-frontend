@@ -1,4 +1,3 @@
-// src/pages/AdminProviders.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -14,12 +13,15 @@ import PageLoader from "@/components/Shared/PageLoader";
 import { toast } from "react-hot-toast";
 
 const AdminProvidersTable: React.FC = () => {
-  const [page, setPage] = useState<number>(1);
-  const [limit] = useState<number>(6);
-  const [search, setSearch] = useState<string>("");
-
-  // state for view modal
+  const [page, setPage] = useState(1);
+  const [limit] = useState(6);
+  const [search, setSearch] = useState("");
   const [viewProviderId, setViewProviderId] = useState<string | null>(null);
+
+  const [activeActionId, setActiveActionId] = useState<string | null>(null);
+  const [activeActionType, setActiveActionType] = useState<
+    "approve" | "reject" | null
+  >(null);
 
   const { data, isLoading, isFetching, refetch } = useGetProvidersQuery({
     limit,
@@ -27,41 +29,47 @@ const AdminProvidersTable: React.FC = () => {
     search,
   });
 
-  const [approveRequest, { isLoading: isApproving }] =
-    useApproveProviderRequestMutation();
-  const [rejectRequest, { isLoading: isRejecting }] =
-    useRejectProviderRequestMutation();
+  const [approveRequest] = useApproveProviderRequestMutation();
+  const [rejectRequest] = useRejectProviderRequestMutation();
 
   const providers: Provider[] = data?.data?.data ?? [];
   const total = data?.data?.total ?? 0;
   const pageFromServer = data?.data?.page ?? page;
 
-  // Get provider details for view modal
   const { data: viewProvider, isLoading: isViewLoading } =
-    useGetProviderByIdQuery(viewProviderId!, {
+    useGetProviderByIdQuery(viewProviderId as string, {
       skip: !viewProviderId,
     });
 
-  // Direct Approve / Reject handlers
   const handleApprove = async (providerId: string) => {
+    setActiveActionId(providerId);
+    setActiveActionType("approve");
     try {
       await approveRequest(providerId).unwrap();
       toast.success("Provider approved successfully.");
       await refetch();
     } catch (err) {
-      console.error(err);
       toast.error("Failed to approve provider.");
+      console.error(err);
+    } finally {
+      setActiveActionId(null);
+      setActiveActionType(null);
     }
   };
 
   const handleReject = async (providerId: string) => {
+    setActiveActionId(providerId);
+    setActiveActionType("reject");
     try {
       await rejectRequest(providerId).unwrap();
       toast.success("Provider rejected successfully.");
       await refetch();
     } catch (err) {
-      console.error(err);
       toast.error("Failed to reject provider.");
+      console.error(err);
+    } finally {
+      setActiveActionId(null);
+      setActiveActionType(null);
     }
   };
 
@@ -89,30 +97,23 @@ const AdminProvidersTable: React.FC = () => {
             <table className="w-full min-w-[900px]">
               <thead className="border-b-2 border-[#DBE0E5] bg-gray-50">
                 <tr>
-                  <th className="px-6 py-5 text-left text-base font-medium text-gray-700">
-                    Business Name
-                  </th>
-                  <th className="px-6 py-5 text-left text-base font-medium text-gray-700">
-                    User Info
-                  </th>
-                  <th className="px-6 py-5 text-left text-base font-medium text-gray-700">
-                    Area
-                  </th>
-                  <th className="px-6 py-5 text-left text-base font-medium text-gray-700">
-                    Created
-                  </th>
-                  <th className="px-6 py-5 text-left text-base font-medium text-gray-700">
-                    Rating
-                  </th>
-                  <th className="px-6 py-5 text-left text-base font-medium text-gray-700">
-                    Role
-                  </th>
-                  <th className="px-6 py-5 text-left text-base font-medium text-gray-700">
-                    Status
-                  </th>
-                  <th className="px-6 py-5 text-left text-base font-medium text-gray-500">
-                    Action
-                  </th>
+                  {[
+                    "Business Name",
+                    "User Info",
+                    "Area",
+                    "Created",
+                    "Rating",
+                    "Role",
+                    "Status",
+                    "Action",
+                  ].map((head) => (
+                    <th
+                      key={head}
+                      className="px-6 py-5 text-left text-base font-medium text-gray-700"
+                    >
+                      {head}
+                    </th>
+                  ))}
                 </tr>
               </thead>
 
@@ -133,104 +134,115 @@ const AdminProvidersTable: React.FC = () => {
                     </td>
                   </tr>
                 ) : (
-                  providers.map((p) => (
-                    <tr
-                      key={p.id}
-                      className="border-b-2 border-gray-100 hover:bg-gray-50"
-                    >
-                      {/* Business Info */}
-                      <td className="px-6 py-4 text-xs font-medium text-gray-900">
-                        <div className="flex items-center gap-3">
-                          {p.portfolioImages?.[0] ? (
-                            <img
-                              src={p.portfolioImages[0]}
-                              alt={p.bussinessName}
-                              className="h-12 w-12 rounded-md object-cover"
-                            />
-                          ) : (
-                            <div className="h-12 w-12 rounded-md bg-gray-200" />
-                          )}
-                          <div>
-                            <div className="text-sm font-semibold">
-                              {p.bussinessName}
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              {p.email}
+                  providers.map((p) => {
+                    const isApproving =
+                      activeActionId === p.id && activeActionType === "approve";
+                    const isRejecting =
+                      activeActionId === p.id && activeActionType === "reject";
+
+                    return (
+                      <tr
+                        key={p.id}
+                        className="border-b-2 border-gray-100 hover:bg-gray-50"
+                      >
+                        {/* Business Info */}
+                        <td className="px-6 py-4 text-xs font-medium text-gray-900">
+                          <div className="flex items-center gap-3">
+                            {p.portfolioImages?.[0] ? (
+                              <img
+                                src={p.portfolioImages[0]}
+                                alt={p.bussinessName}
+                                className="h-12 w-12 rounded-md object-cover"
+                              />
+                            ) : (
+                              <div className="h-12 w-12 rounded-md bg-gray-200" />
+                            )}
+                            <div>
+                              <div className="text-sm font-semibold">
+                                {p.bussinessName}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {p.email}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
+                        </td>
 
-                      {/* User Info */}
-                      <td className="px-6 py-4 text-xs text-gray-600">
-                        <div className="text-sm">{p.contactName}</div>
-                        <div className="text-xs">{p.phone}</div>
-                      </td>
+                        {/* User Info */}
+                        <td className="px-6 py-4 text-xs text-gray-600">
+                          <div className="text-sm">{p.contactName}</div>
+                          <div className="text-xs">{p.phone}</div>
+                          <div className="text-xs">{p.price}</div>
+                        </td>
 
-                      {/* Area */}
-                      <td className="px-6 py-4 text-xs text-gray-600">
-                        {p.serviceArea.split(" ").slice(0, 3).join(" ")}
-                      </td>
+                        {/* Area */}
+                        <td className="px-6 py-4 text-xs text-gray-600">
+                          {p.serviceArea?.split(" ").slice(0, 3).join(" ")}
+                        </td>
 
-                      {/* Created */}
-                      <td className="px-6 py-4 text-xs text-gray-600">
-                        {new Date(p.createdAt).toLocaleString()}
-                      </td>
+                        {/* Created */}
+                        <td className="px-6 py-4 text-xs text-gray-600">
+                          {new Date(p.createdAt).toLocaleString()}
+                        </td>
 
-                      {/* Rating */}
-                      <td className="px-6 py-4 text-xs text-gray-600">
-                        {p.avg_ratting ?? 0} ({p.total_review ?? 0})
-                      </td>
+                        {/* Rating */}
+                        <td className="px-6 py-4 text-xs text-gray-600">
+                          {p.avg_ratting ?? 0} ({p.total_review ?? 0})
+                        </td>
+                        <td className="px-6 py-4 text-xs text-gray-600">
+                          <div className="text-xs">{p.price}</div>
+                        </td>
 
-                      {/* Role */}
-                      <td className="px-6 py-4 text-xs text-gray-600">
-                        {p.user.role}
-                      </td>
+                        {/* Role */}
+                        <td className="px-6 py-4 text-xs text-gray-600">
+                          {p.user?.role}
+                        </td>
 
-                      {/* Status */}
-                      <td className="px-6 py-4 text-xs md:text-sm">
-                        <span
-                          className={`inline-flex w-28 items-center justify-center rounded-xl px-4 py-1.5 font-medium ${
-                            p.isApproved
-                              ? "bg-green-100 text-green-800"
-                              : "bg-yellow-100 text-yellow-600"
-                          } text-xs`}
-                        >
-                          {p.isApproved ? "Approved" : "Pending"}
-                        </span>
-                      </td>
+                        {/* Status */}
+                        <td className="px-6 py-4 text-xs md:text-sm">
+                          <span
+                            className={`inline-flex w-28 items-center justify-center rounded-xl px-4 py-1.5 text-xs font-medium ${
+                              p.isApproved
+                                ? "bg-green-100 text-green-800"
+                                : "bg-yellow-100 text-yellow-600"
+                            }`}
+                          >
+                            {p.isApproved ? "Approved" : "Pending"}
+                          </span>
+                        </td>
 
-                      {/* Actions */}
-                      <td className="flex space-x-2 px-6 py-4 text-xs md:text-sm">
-                        {!p.isApproved && (
-                          <>
-                            <button
-                              onClick={() => handleApprove(p.id)}
-                              disabled={isApproving}
-                              className="cursor-pointer rounded-lg bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700 disabled:opacity-50"
-                            >
-                              {isApproving ? "Approving..." : "Approve"}
-                            </button>
+                        {/* Actions */}
+                        <td className="flex space-x-2 px-6 py-7 text-xs md:text-sm">
+                          {!p.isApproved && (
+                            <>
+                              <button
+                                onClick={() => handleApprove(p.id)}
+                                disabled={isApproving || isRejecting}
+                                className="cursor-pointer rounded-lg bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700 disabled:opacity-50"
+                              >
+                                {isApproving ? "Approving..." : "Approve"}
+                              </button>
 
-                            <button
-                              onClick={() => handleReject(p.id)}
-                              disabled={isRejecting}
-                              className="cursor-pointer rounded-lg bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50"
-                            >
-                              {isRejecting ? "Rejecting..." : "Reject"}
-                            </button>
-                          </>
-                        )}
+                              <button
+                                onClick={() => handleReject(p.id)}
+                                disabled={isApproving || isRejecting}
+                                className="cursor-pointer rounded-lg bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                              >
+                                {isRejecting ? "Rejecting..." : "Reject"}
+                              </button>
+                            </>
+                          )}
 
-                        <button
-                          onClick={() => setViewProviderId(p.id)}
-                          className="ml-2 cursor-pointer rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium hover:bg-gray-50"
-                        >
-                          View
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                          <button
+                            onClick={() => setViewProviderId(p.id)}
+                            className="ml-2 cursor-pointer rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium hover:bg-gray-50"
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -248,7 +260,7 @@ const AdminProvidersTable: React.FC = () => {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="rounded-lg border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+              className="cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Prev
             </button>
@@ -259,7 +271,7 @@ const AdminProvidersTable: React.FC = () => {
 
             <button
               onClick={() => setPage((p) => p + 1)}
-              className="rounded-lg border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
+              className="cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
             >
               Next
             </button>
@@ -267,11 +279,11 @@ const AdminProvidersTable: React.FC = () => {
         </div>
       </div>
 
-      {/* View Details Modal */}
+      {/* View Modal */}
       {viewProviderId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-[0.2px]">
           <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl sm:p-8">
-            <div className="mb-6 border-b pb-3">
+            <div className="mb-6 border-b border-[#E3E3E4] pb-3">
               <h2 className="text-2xl font-bold text-gray-900">
                 {viewProvider?.bussinessName || "Provider"} Details
               </h2>
@@ -283,33 +295,28 @@ const AdminProvidersTable: React.FC = () => {
               <div className="space-y-4 text-gray-700">
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <p>
-                    <span className="font-semibold">Contact Name:</span>{" "}
-                    {viewProvider.contactName}
+                    <strong>Contact Name:</strong> {viewProvider.contactName}
                   </p>
                   <p>
-                    <span className="font-semibold">Email:</span>{" "}
-                    {viewProvider.email}
+                    <strong>Email:</strong> {viewProvider.email}
                   </p>
                   <p>
-                    <span className="font-semibold">Phone:</span>{" "}
-                    {viewProvider.phone}
+                    <strong>Phone:</strong> {viewProvider.phone}
                   </p>
                   <p>
-                    <span className="font-semibold">Service Category:</span>{" "}
+                    <strong>Service Category:</strong>{" "}
                     {Array.isArray(viewProvider.serviceCategory)
                       ? viewProvider.serviceCategory.join(", ")
                       : viewProvider.serviceCategory}
                   </p>
                   <p>
-                    <span className="font-semibold">Service Area:</span>{" "}
-                    {viewProvider.serviceArea}
+                    <strong>Service Area:</strong> {viewProvider.serviceArea}
                   </p>
                   <p>
-                    <span className="font-semibold">Price Range:</span>{" "}
-                    {viewProvider.priceRange}
+                    <strong>Price:</strong> {viewProvider.price}
                   </p>
                   <p>
-                    <span className="font-semibold">Website:</span>{" "}
+                    <strong>Website:</strong>{" "}
                     <a
                       href={viewProvider.website}
                       target="_blank"
@@ -323,27 +330,31 @@ const AdminProvidersTable: React.FC = () => {
 
                 <div>
                   <p>
-                    <span className="font-semibold">Description:</span>
+                    <strong>Description:</strong>
                   </p>
                   <p className="text-gray-600">{viewProvider.description}</p>
                 </div>
 
-                {viewProvider?.portfolioImages &&
-                  viewProvider.portfolioImages.length > 0 && (
-                    <div>
-                      <p className="mb-2 font-semibold">Portfolio:</p>
-                      <div className="grid max-h-60 grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3">
-                        {viewProvider.portfolioImages.map((img, idx) => (
-                          <img
-                            key={idx}
-                            src={img}
-                            alt={`${viewProvider.bussinessName}-${idx}`}
-                            className="h-28 w-full rounded-lg object-cover transition-transform duration-300 hover:scale-105"
-                          />
-                        ))}
-                      </div>
+                {Array.isArray(viewProvider.portfolioImages) &&
+                viewProvider.portfolioImages.length > 0 ? (
+                  <div>
+                    <p className="mb-2 font-semibold">Portfolio:</p>
+                    <div className="grid max-h-60 grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3">
+                      {viewProvider.portfolioImages.map((img, idx) => (
+                        <img
+                          key={idx}
+                          src={img}
+                          alt={`${viewProvider.bussinessName}-${idx}`}
+                          className="h-28 w-full rounded-lg object-cover transition-transform duration-300 hover:scale-105"
+                        />
+                      ))}
                     </div>
-                  )}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">
+                    No portfolio images available.
+                  </p>
+                )}
               </div>
             ) : (
               <p className="text-center text-gray-500">No details found.</p>
@@ -352,7 +363,7 @@ const AdminProvidersTable: React.FC = () => {
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setViewProviderId(null)}
-                className="rounded-lg bg-gray-100 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+                className="cursor-pointer rounded-lg bg-gray-100 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
               >
                 Close
               </button>
@@ -360,22 +371,9 @@ const AdminProvidersTable: React.FC = () => {
 
             <button
               onClick={() => setViewProviderId(null)}
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+              className="absolute top-3 right-3 cursor-pointer text-gray-400 hover:text-gray-600"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              ✕
             </button>
           </div>
         </div>
@@ -387,7 +385,6 @@ const AdminProvidersTable: React.FC = () => {
 export default AdminProvidersTable;
 
 // // src/pages/AdminProviders.tsx
-// "use client";
 
 // import React, { useState } from "react";
 // import {
@@ -399,21 +396,14 @@ export default AdminProvidersTable;
 // import type { Provider } from "@/redux/types/property.type";
 // import Title from "@/components/Shared/Title";
 // import PageLoader from "@/components/Shared/PageLoader";
+// import { toast } from "react-hot-toast";
 
 // const AdminProvidersTable: React.FC = () => {
 //   const [page, setPage] = useState<number>(1);
 //   const [limit] = useState<number>(6);
 //   const [search, setSearch] = useState<string>("");
 
-//   // modal state for approve/reject
-//   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(
-//     null,
-//   );
-//   const [actionType, setActionType] = useState<"approve" | "reject" | null>(
-//     null,
-//   );
-
-//   // modal state for view details
+//   // state for view modal
 //   const [viewProviderId, setViewProviderId] = useState<string | null>(null);
 
 //   const { data, isLoading, isFetching, refetch } = useGetProvidersQuery({
@@ -431,45 +421,33 @@ export default AdminProvidersTable;
 //   const total = data?.data?.total ?? 0;
 //   const pageFromServer = data?.data?.page ?? page;
 
-//   // Get provider details when viewProviderId changes
+//   // Get provider details for view modal
 //   const { data: viewProvider, isLoading: isViewLoading } =
 //     useGetProviderByIdQuery(viewProviderId!, {
 //       skip: !viewProviderId,
 //     });
 
-//   // Approve / Reject handlers
-//   const openConfirmDialog = (
-//     provider: Provider,
-//     type: "approve" | "reject",
-//   ) => {
-//     setSelectedProvider(provider);
-//     setActionType(type);
-//   };
-
-//   const handleConfirm = async () => {
-//     if (!selectedProvider || !actionType) return;
-
+//   // Direct Approve / Reject handlers
+//   const handleApprove = async (providerId: string) => {
 //     try {
-//       if (actionType === "approve") {
-//         await approveRequest(selectedProvider.id).unwrap();
-//         alert("Provider approved.");
-//       } else {
-//         await rejectRequest(selectedProvider.id).unwrap();
-//         alert("Provider rejected.");
-//       }
+//       await approveRequest(providerId).unwrap();
+//       toast.success("Provider approved successfully.");
 //       await refetch();
 //     } catch (err) {
 //       console.error(err);
-//       alert("Something went wrong.");
-//     } finally {
-//       setSelectedProvider(null);
-//       setActionType(null);
+//       toast.error("Failed to approve provider.");
 //     }
 //   };
 
-//   const handleCancel = () => {
-//     setSelectedProvider(null);
-//     setActionType(null);
+//   const handleReject = async (providerId: string) => {
+//     try {
+//       await rejectRequest(providerId).unwrap();
+//       toast.success("Provider rejected successfully.");
+//       await refetch();
+//     } catch (err) {
+//       console.error(err);
+//       toast.error("Failed to reject provider.");
+//     }
 //   };
 
 //   return (
@@ -608,11 +586,11 @@ export default AdminProvidersTable;
 //                       </td>
 
 //                       {/* Actions */}
-//                       <td className="flex space-x-2 px-6 py-4 text-xs md:text-sm">
+//                       <td className="flex space-x-2 px-6 py-7 text-xs md:text-sm">
 //                         {!p.isApproved && (
 //                           <>
 //                             <button
-//                               onClick={() => openConfirmDialog(p, "approve")}
+//                               onClick={() => handleApprove(p.id)}
 //                               disabled={isApproving}
 //                               className="cursor-pointer rounded-lg bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700 disabled:opacity-50"
 //                             >
@@ -620,7 +598,7 @@ export default AdminProvidersTable;
 //                             </button>
 
 //                             <button
-//                               onClick={() => openConfirmDialog(p, "reject")}
+//                               onClick={() => handleReject(p.id)}
 //                               disabled={isRejecting}
 //                               className="cursor-pointer rounded-lg bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50"
 //                             >
@@ -655,7 +633,7 @@ export default AdminProvidersTable;
 //             <button
 //               onClick={() => setPage((p) => Math.max(1, p - 1))}
 //               disabled={page <= 1}
-//               className="rounded-lg border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+//               className="cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
 //             >
 //               Prev
 //             </button>
@@ -666,7 +644,7 @@ export default AdminProvidersTable;
 
 //             <button
 //               onClick={() => setPage((p) => p + 1)}
-//               className="rounded-lg border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
+//               className="cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
 //             >
 //               Next
 //             </button>
@@ -674,48 +652,11 @@ export default AdminProvidersTable;
 //         </div>
 //       </div>
 
-//       {/* Approve / Reject Modal */}
-//       {selectedProvider && actionType && (
-//         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-[0.2px]">
-//           <div className="w-[400px] rounded-lg bg-white p-6 shadow-lg">
-//             <h2 className="mb-4 text-lg font-semibold text-gray-900">
-//               Confirm {actionType === "approve" ? "Approval" : "Rejection"}
-//             </h2>
-//             <p className="mb-6 text-sm text-gray-700">
-//               Are you sure you want to{" "}
-//               <span className="font-medium">{actionType}</span> provider{" "}
-//               <span className="font-semibold">
-//                 {selectedProvider.bussinessName}
-//               </span>{" "}
-//               ({selectedProvider.contactName})?
-//             </p>
-//             <div className="flex justify-end gap-3">
-//               <button
-//                 onClick={handleCancel}
-//                 className="cursor-pointer rounded-md border border-[#E5E7EB] px-4 py-2 text-sm text-gray-600 hover:bg-gray-100"
-//               >
-//                 Cancel
-//               </button>
-//               <button
-//                 onClick={handleConfirm}
-//                 className={`cursor-pointer rounded-md px-4 py-2 text-sm text-white ${
-//                   actionType === "approve"
-//                     ? "bg-green-600 hover:bg-green-700"
-//                     : "bg-red-600 hover:bg-red-700"
-//                 }`}
-//               >
-//                 {actionType === "approve" ? "Approve" : "Reject"}
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       )}
-
 //       {/* View Details Modal */}
 //       {viewProviderId && (
 //         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-[0.2px]">
 //           <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl sm:p-8">
-//             <div className="mb-6 border-b pb-3">
+//             <div className="mb-6 border-b border-[#E3E3E4] pb-3">
 //               <h2 className="text-2xl font-bold text-gray-900">
 //                 {viewProvider?.bussinessName || "Provider"} Details
 //               </h2>
@@ -749,8 +690,8 @@ export default AdminProvidersTable;
 //                     {viewProvider.serviceArea}
 //                   </p>
 //                   <p>
-//                     <span className="font-semibold">Price Range:</span>{" "}
-//                     {viewProvider.priceRange}
+//                     <span className="font-semibold">Price:</span>{" "}
+//                     {viewProvider.price}
 //                   </p>
 //                   <p>
 //                     <span className="font-semibold">Website:</span>{" "}
@@ -796,7 +737,7 @@ export default AdminProvidersTable;
 //             <div className="mt-6 flex justify-end">
 //               <button
 //                 onClick={() => setViewProviderId(null)}
-//                 className="rounded-lg bg-gray-100 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+//                 className="cursor-pointer rounded-lg bg-gray-100 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
 //               >
 //                 Close
 //               </button>
@@ -804,7 +745,7 @@ export default AdminProvidersTable;
 
 //             <button
 //               onClick={() => setViewProviderId(null)}
-//               className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+//               className="absolute top-3 right-3 cursor-pointer text-gray-400 hover:text-gray-600"
 //             >
 //               <svg
 //                 xmlns="http://www.w3.org/2000/svg"

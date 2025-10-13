@@ -16,6 +16,7 @@ import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   BookingIcon,
   DashboardIcon,
+  EarningsIcon,
   MessagesIcon,
   ReviewsIcon,
   // ServicesIcon,
@@ -96,11 +97,17 @@ function DashboardLayout() {
       label: "Reviews",
       icon: ReviewsIcon,
     },
-    // {
-    //   to: "/dashboard/earnings",
-    //   label: "Earnings",
-    //   icon: EarningsIcon,
-    // },
+    {
+      to: "/dashboard/earnings",
+      label: "Earnings",
+      icon: EarningsIcon,
+    },
+    {
+      to: "/dashboard/payment",
+      label: "payment",
+      icon: EarningsIcon,
+    },
+   
   ];
 
   const NavItem = ({
@@ -244,7 +251,7 @@ function DashboardLayout() {
               <div className="absolute top-0 right-0 -mr-12 pt-2">
                 <button
                   type="button"
-                  className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:ring-2 focus:ring-white focus:outline-none focus:ring-inset"
+                  className="ml-1 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full focus:ring-2 focus:ring-white focus:outline-none focus:ring-inset"
                   onClick={() => setSidebarOpen(false)}
                 >
                   <span className="sr-only">Close sidebar</span>
@@ -299,7 +306,7 @@ function DashboardLayout() {
           {/* Mobile menu button */}
           <button
             type="button"
-            className="focus:ring-secondary-light/60 text-gray-500 focus:ring-2 focus:outline-none focus:ring-inset lg:hidden"
+            className="focus:ring-secondary-light/60 cursor-pointer text-gray-500 focus:ring-2 focus:outline-none focus:ring-inset lg:hidden"
             onClick={() => setSidebarOpen(true)}
             aria-label="Open sidebar"
           >

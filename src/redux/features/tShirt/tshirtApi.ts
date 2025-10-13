@@ -21,7 +21,7 @@ export interface GenerateTShirtResponse {
 export const tShirtApi = createApi({
   reducerPath: "tShirtApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://partyplanegenerator.onrender.com", 
+    baseUrl: "http://72.60.190.101:8000", 
   }),
   endpoints: (builder) => ({
     generateTShirt: builder.mutation<

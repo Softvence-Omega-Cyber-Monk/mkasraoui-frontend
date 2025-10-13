@@ -49,7 +49,7 @@ type FormValues = {
   serviceCategory: string[];
   primaryServiceArea: string;
   serviceDescription: string;
-  priceRange: string;
+  price: string;
   website?: string;
   instagram?: string;
 };
@@ -119,31 +119,34 @@ const BecomeProvider = () => {
     setUploadedFiles((prev) => prev.filter((file) => file.id !== id));
   };
 
+  /* submit handler */
   const onSubmit = async (data: FormValues) => {
     try {
       const formData = new FormData();
 
-      // Only add lat/lng if location is selected
-      const latitude = addPlaceData.location?.lat || null;
-      const longitude = addPlaceData.location?.lng || null;
+      const latitude = addPlaceData.location?.lat ?? 0;
+      const longitude = addPlaceData.location?.lng ?? 0;
 
-      const payload: Record<string, unknown> = {
+      // ✅ Build payload exactly as backend expects
+      const payload = {
         bussinessName: data.businessName,
         email: data.email,
         contactName: data.contactName,
         phone: data.phone,
         serviceCategory: data.serviceCategory,
-        serviceArea: data.primaryServiceArea,
+        serviceArea: data.primaryServiceArea || "Unknown Area",
         latitude,
         longitude,
         description: data.serviceDescription,
-        priceRange: data.priceRange,
-        website: data.website || null,
-        instagram: data.instagram || null,
+        price: Number(data.price),
+        website: data.website || "",
+        instagram: data.instagram || "",
       };
 
+      // ✅ Must be stringified exactly like Swagger
       formData.append("data", JSON.stringify(payload));
 
+      // ✅ Append all selected files
       uploadedFiles.forEach((file) => {
         formData.append("files", file.file);
       });
@@ -152,10 +155,48 @@ const BecomeProvider = () => {
       console.log("✅ Provider request submitted successfully", res);
 
       navigate("/dashboard");
-    } catch (err) {
+    } catch (err: any) {
       console.error("❌ Failed to submit provider request:", err);
     }
   };
+
+  // const onSubmit = async (data: FormValues) => {
+  //   try {
+  //     const formData = new FormData();
+
+  //     // Only add lat/lng if location is selected
+  //     const latitude = addPlaceData.location?.lat || null;
+  //     const longitude = addPlaceData.location?.lng || null;
+
+  //     const payload: Record<string, unknown> = {
+  //       bussinessName: data.businessName,
+  //       email: data.email,
+  //       contactName: data.contactName,
+  //       phone: data.phone,
+  //       serviceCategory: data.serviceCategory,
+  //       serviceArea: data.primaryServiceArea,
+  //       latitude,
+  //       longitude,
+  //       description: data.serviceDescription,
+  //       price: data.price,
+  //       website: data.website || null,
+  //       instagram: data.instagram || null,
+  //     };
+
+  //     formData.append("data", JSON.stringify(payload));
+
+  //     uploadedFiles.forEach((file) => {
+  //       formData.append("files", file.file);
+  //     });
+
+  //     const res = await requestProvider(formData).unwrap();
+  //     console.log("✅ Provider request submitted successfully", res);
+
+  //     navigate("/dashboard");
+  //   } catch (err) {
+  //     console.error("❌ Failed to submit provider request:", err);
+  //   }
+  // };
 
   return (
     <div className="container mx-auto mt-10 px-3 xl:px-0">
@@ -339,13 +380,13 @@ const BecomeProvider = () => {
               </div>
 
               {/* Primary Service Area */}
+
               <div className="">
                 <label className="mb-2 flex items-center font-medium text-gray-700">
                   <MapPin className="text-secondary mr-2 h-5 w-5" /> Primary
                   Service Area
                 </label>
                 <GetStarted
-                
                   location={addPlaceData.location}
                   destination={addPlaceData.destination}
                   onLocationChange={(coords) => {
@@ -364,22 +405,46 @@ const BecomeProvider = () => {
                 )}
               </div>
 
-              {/* Price Range */}
+              {/* <div className="">
+                <label className="mb-2 flex items-center font-medium text-gray-700">
+                  <MapPin className="text-secondary mr-2 h-5 w-5" /> Primary
+                  Service Area
+                </label>
+                <GetStarted
+                  location={addPlaceData.location}
+                  destination={addPlaceData.destination}
+                  onLocationChange={(coords) => {
+                    if (coords) handleDataUpdate({ location: coords });
+                  }}
+                  onDestinationChange={() => {}}
+                  onLocationAddressChange={(homeAddress) =>
+                    handleDataUpdate({ homeAddress })
+                  }
+                  onDestinationAddressChange={() => {}}
+                />
+                {errors.primaryServiceArea && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.primaryServiceArea.message}
+                  </p>
+                )}
+              </div> */}
+
+              {/* Price  */}
               <div>
                 <label className="mb-2 flex items-center font-medium text-gray-700">
                   <DollarSign className="text-secondary mr-2 h-5 w-5" /> Price
-                  Range
+                
                 </label>
                 <input
                   type="text"
-                  {...register("priceRange", {
-                    required: "Price range is required",
+                  {...register("price", {
+                    required: "Price  is required",
                   })}
                   className="focus:border-secondary focus:ring-secondary/20 w-full rounded-lg border border-gray-300 p-3 focus:ring-2"
                 />
-                {errors.priceRange && (
+                {errors.price && (
                   <p className="mt-1 text-sm text-red-500">
-                    {errors.priceRange.message}
+                    {errors.price.message}
                   </p>
                 )}
               </div>
@@ -575,7 +640,7 @@ export default BecomeProvider;
 //   serviceCategory: string[];
 //   primaryServiceArea: string;
 //   serviceDescription: string;
-//   priceRange: string;
+//   price: string;
 //   website?: string;
 //   instagram?: string;
 // };
@@ -646,7 +711,7 @@ export default BecomeProvider;
 //         latitude: 40.7128,
 //         longitude: -74.006,
 //         description: data.serviceDescription,
-//         priceRange: data.priceRange,
+//         price: data.price,
 //         website: data.website || null,
 //         instagram: data.instagram || null,
 //       };
@@ -903,14 +968,14 @@ export default BecomeProvider;
 //                 </label>
 //                 <input
 //                   type="text"
-//                   {...register("priceRange", {
+//                   {...register("price", {
 //                     required: "Price range is required",
 //                   })}
 //                   className="focus:border-secondary focus:ring-secondary/20 w-full rounded-lg border border-gray-300 p-3 focus:ring-2"
 //                 />
-//                 {errors.priceRange && (
+//                 {errors.price && (
 //                   <p className="mt-1 text-sm text-red-500">
-//                     {errors.priceRange.message}
+//                     {errors.price.message}
 //                   </p>
 //                 )}
 //               </div>

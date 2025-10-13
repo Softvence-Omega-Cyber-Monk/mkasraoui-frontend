@@ -20,7 +20,6 @@ export default function RequestQuote() {
     numberOfGuest: "",
     partyTheme: "",
     partyLocation: "",
-    budgetRange: "",
     description: "",
   });
 
@@ -44,8 +43,6 @@ export default function RequestQuote() {
       newErrors.partyLocation = "Party location is required";
     if (!formData.partyTheme.trim())
       newErrors.partyTheme = "Party Theme is required";
-    if (!formData.budgetRange.trim())
-      newErrors.budgetRange = "Budget range is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -73,7 +70,6 @@ export default function RequestQuote() {
       partyTheme: formData.partyTheme,
       partyLocation: formData.partyLocation,
       description: formData.description,
-      budgetRange: formData.budgetRange,
     };
 
     try {
@@ -89,7 +85,6 @@ export default function RequestQuote() {
         numberOfGuest: "",
         partyTheme: "",
         partyLocation: "",
-        budgetRange: "",
         description: "",
       });
       setErrors({});
@@ -256,22 +251,6 @@ export default function RequestQuote() {
             )}
           </div>
 
-          {/* Budget */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Budget Range
-            </label>
-            <input
-              type="text"
-              value={formData.budgetRange}
-              onChange={(e) => handleInputChange("budgetRange", e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.budgetRange && (
-              <p className="mt-1 text-sm text-red-500">{errors.budgetRange}</p>
-            )}
-          </div>
-
           {/* Description */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -302,13 +281,13 @@ export default function RequestQuote() {
   );
 }
 
-// import { ArrowLeft, ChevronDown } from "lucide-react";
+
+
+// import { ArrowLeft } from "lucide-react";
 // import { useState } from "react";
 // import { Link, useSearchParams } from "react-router-dom";
 // import { useCreateQuoteMutation } from "@/redux/features/quotes/quotesApi";
-// import { useGetProvidersQuery } from "@/redux/features/property/propertyApi";
 // import type { QuoteRequest } from "@/redux/types/quotes.type";
-// import type { Provider } from "@/redux/types/property.type";
 // import toast from "react-hot-toast";
 // import RequestContent from "./RequestContent";
 
@@ -331,14 +310,6 @@ export default function RequestQuote() {
 //   });
 
 //   const [errors, setErrors] = useState<Partial<typeof formData>>({});
-
-//   const { data: providersData, isLoading: providersLoading } =
-//     useGetProvidersQuery({ limit: 10, page: 1 });
-
-//   const providersList: Provider[] = (providersData?.data?.data || []).filter(
-//     (provider) => provider.isApproved,
-//   );
-
 //   const [createQuote, { isLoading }] = useCreateQuoteMutation();
 
 //   const handleInputChange = (field: keyof typeof formData, value: string) => {
@@ -347,7 +318,6 @@ export default function RequestQuote() {
 
 //   const validate = (): boolean => {
 //     const newErrors: Partial<typeof formData> = {};
-//     if (!formData.providerId) newErrors.providerId = "Select a provider";
 //     if (!formData.name.trim()) newErrors.name = "Name is required";
 //     if (!formData.email.trim()) newErrors.email = "Email is required";
 //     if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
@@ -369,14 +339,13 @@ export default function RequestQuote() {
 //   const handleSubmit = async () => {
 //     if (!validate()) return;
 
-//     let formattedDate = "";
-//     let formattedTime = "";
-
-//     if (formData.date) formattedDate = new Date(formData.date).toISOString();
-//     if (formData.date && formData.time)
-//       formattedTime = new Date(
-//         `${formData.date}T${formData.time}`,
-//       ).toISOString();
+//     const formattedDate = formData.date
+//       ? new Date(formData.date).toISOString()
+//       : "";
+//     const formattedTime =
+//       formData.date && formData.time
+//         ? new Date(`${formData.date}T${formData.time}`).toISOString()
+//         : "";
 
 //     const payload: QuoteRequest = {
 //       providerId: formData.providerId,
@@ -394,8 +363,7 @@ export default function RequestQuote() {
 
 //     try {
 //       await createQuote(payload).unwrap();
-//       toast.success(" Quote submitted successfully!"); // ✅ Show toast
-
+//       toast.success("Quote submitted successfully!");
 //       setFormData({
 //         providerId: "",
 //         name: "",
@@ -411,10 +379,11 @@ export default function RequestQuote() {
 //       });
 //       setErrors({});
 //     } catch (err) {
-//       console.error("❌ Failed to submit quote:", err);
-//       toast.error("❌ Failed to submit quote");
+//       console.error("Failed to submit quote:", err);
+//       toast.error("Failed to submit quote");
 //     }
 //   };
+
 //   return (
 //     <div className="container mx-auto mt-10 max-w-7xl px-3 xl:px-0">
 //       <header className="mb-6">
@@ -436,38 +405,7 @@ export default function RequestQuote() {
 //           <p className="text-gray-500">Typical price range: $50-200</p>
 //         </div>
 
-//         <div className="space-y-8 p-6">
-//           {/* Provider Selection */}
-//           <div>
-//             <label className="mb-2 block text-sm font-medium text-gray-700">
-//               Select Provider <span className="text-red-500">*</span>
-//             </label>
-//             <div className="relative">
-//               <select
-//                 value={formData.providerId}
-//                 onChange={(e) =>
-//                   handleInputChange("providerId", e.target.value)
-//                 }
-//                 className="w-full appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2 focus:ring-2 focus:ring-blue-500"
-//               >
-//                 <option value="">Select provider</option>
-//                 {providersLoading ? (
-//                   <option>Loading...</option>
-//                 ) : (
-//                   providersList.map((provider) => (
-//                     <option key={provider.id} value={provider.id}>
-//                       {provider.bussinessName}
-//                     </option>
-//                   ))
-//                 )}
-//               </select>
-//               <ChevronDown className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-//             </div>
-//             {errors.providerId && (
-//               <p className="mt-1 text-sm text-red-500">{errors.providerId}</p>
-//             )}
-//           </div>
-
+//         <div className="space-y-6 p-6">
 //           {/* Name & Email */}
 //           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 //             <div>
@@ -633,7 +571,6 @@ export default function RequestQuote() {
 //           </div>
 
 //           {/* Submit Button */}
-
 //           <button
 //             type="button"
 //             onClick={handleSubmit}
@@ -644,6 +581,7 @@ export default function RequestQuote() {
 //           </button>
 //         </div>
 //       </div>
+
 //       <RequestContent />
 //     </div>
 //   );

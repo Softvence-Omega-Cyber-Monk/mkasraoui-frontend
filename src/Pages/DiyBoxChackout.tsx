@@ -8,8 +8,7 @@ import {
   User,
   Mail,
   Phone,
-  AlertCircle,
-  Package,
+   Package,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useGetMeQuery } from "@/redux/features/user/userApi";
@@ -98,23 +97,23 @@ console.log(calculateOriginalSubtotal())
   const tax = subtotal * 0.08;
   const total = subtotal + shippingFee + tax;
 
-  if (cart.length === 0) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <AlertCircle className="mx-auto h-16 w-16 text-red-400 mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
-          <p className="text-gray-600 mb-6">Add some DIY boxes to your cart before checkout</p>
-          <button
-            onClick={() => navigate("/home/shop")}
-            className="bg-[#223B7D] text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Browse Products
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // if (cart.length === 0) {
+  //   return (
+  //     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <AlertCircle className="mx-auto h-16 w-16 text-red-400 mb-4" />
+  //         <h2 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
+  //         <p className="text-gray-600 mb-6">Add some DIY boxes to your cart before checkout</p>
+  //         <button
+  //           onClick={() => navigate("/home/shop")}
+  //           className="bg-[#223B7D] text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+  //         >
+  //           Browse Products
+  //         </button>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>

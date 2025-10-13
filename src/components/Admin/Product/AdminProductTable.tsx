@@ -180,12 +180,11 @@ const AdminProductTable: React.FC = () => {
   return (
     <div className="">
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Title title="Products" />
-
         <button
           onClick={openAddModal}
-          className="flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 px-5 py-2 font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:from-blue-600 hover:to-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:outline-none"
+          className="bg-secondary-dark hover:bg-secondary-light flex cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-2 font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:outline-none"
         >
           <Plus className="h-5 w-5" /> Add Product
         </button>
@@ -537,15 +536,15 @@ const AdminProductTable: React.FC = () => {
             <div className="mt-8 flex justify-end gap-4">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="rounded-lg bg-gray-200 px-6 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-300"
+                className="cursor-pointer rounded-xl bg-gray-200 px-6 py-3 text-base font-medium text-gray-700 transition hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:outline-none"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSubmit}
-                className="rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white transition hover:bg-blue-700"
+                className="bg-secondary-dark hover:bg-secondary-light cursor-pointer rounded-lg px-6 py-2 text-base font-medium text-white transition focus:outline-none"
               >
-                {editingProduct ? "Update" : "Add"}
+                {editingProduct ? "Update" : "Add Product"}
               </button>
             </div>
           </div>

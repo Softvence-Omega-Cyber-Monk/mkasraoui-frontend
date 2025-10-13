@@ -12,7 +12,7 @@ export interface Provider {
   latitude: number;
   longitude: number;
   description: string;
-  priceRange: string;
+  price: string;
   website: string;
   instagram: string;
   portfolioImages: string[];
@@ -30,8 +30,8 @@ export interface Booking {
   name: string;
   email: string;
   phone: string;
-  date: string;   // ISO string
-  time: string;   // ISO string
+  date: string; // ISO string
+  time: string; // ISO string
   numberOfGuest: number;
   partyTheme: string;
   partyLocation: string;
