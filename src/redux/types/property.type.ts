@@ -39,7 +39,8 @@ export interface Provider {
   latitude: number;
   longitude: number;
   description: string;
-  price: string;
+  price: number;
+  // price: string;
   // price: string;
   website?: string;
   instagram?: string;

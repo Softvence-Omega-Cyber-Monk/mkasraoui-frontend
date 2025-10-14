@@ -46,14 +46,14 @@ export interface Meta {
   totalPages: number;
 }
 
-// export interface CustomOrderResponse {
-//   success: boolean;
-//   message: string;
-//   data: {
-//     meta: Meta;
-//     orders: CustomOrder[];
-//   };
-// }
+export interface CustomOrderResponse {
+  success: boolean;
+  message: string;
+  data: {
+    meta: Meta;
+    orders: CustomOrder[];
+  };
+}
 
 export interface CustomOrderResponse {
   id: string;

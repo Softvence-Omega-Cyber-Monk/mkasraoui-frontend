@@ -73,7 +73,7 @@ import ChatContainer from "./components/mychat/ChatContainer";
 import ProviderPaymentPage from "./Pages/Provider/ProviderPaymentPage";
 import PaymentSuccess from "./components/Shared/PaymentSuccess";
 // import { SocketProvider } from "./services/SocketContext";
-   // import ChatMessagePage from "./components/mychat/ChatMessagePage";
+// import ChatMessagePage from "./components/mychat/ChatMessagePage";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -278,8 +278,7 @@ const router = createBrowserRouter([
       {
         path: "myChat",
         element: <ChatContainer />,
-       },
-       
+      },
 
       {
         path: "reviews",
@@ -298,11 +297,6 @@ const router = createBrowserRouter([
         element: <ProviderPaymentPage />,
       },
       // i added taht
-
-
-    
-
-
     ],
   },
   // admin Dashboard routes can be added here
