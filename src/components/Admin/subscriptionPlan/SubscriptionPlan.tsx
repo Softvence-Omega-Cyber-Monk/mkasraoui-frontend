@@ -438,6 +438,7 @@ export default function SubscriptionPlan() {
         </div>
       )}
 
+
       {/* Plans Table */}
       <div className="overflow-hidden rounded-xl border border-[#DBE0E5] bg-white">
         <div className="w-full overflow-x-auto">
