@@ -1,5 +1,3 @@
-import React from 'react'
-
 const Demo = () => {
   return (
     <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat repudiandae impedit iusto minima, cumque consectetur at quisquam. Id at perferendis molestias modi nisi vero incidunt? 
