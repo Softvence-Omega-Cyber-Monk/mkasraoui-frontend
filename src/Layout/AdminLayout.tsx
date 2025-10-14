@@ -100,6 +100,10 @@ function AdminLayout() {
       to: "/admin-dashboard/add-blog",
       label: "Add Blog",
       icon: MdOutlineAddChart,
+    },{
+      to: "/admin-dashboard/add-diyactivity",
+      label: "Add Diy Activity",
+      icon: FaJediOrder,
     },
     {
       to: "/admin-dashboard/subscription-plan",
