@@ -75,7 +75,7 @@ const AdminProvidersTable: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-6">
-      <div className="mx-auto w-full px-4">
+      <div className="mx-auto w-full">
         {/* Header */}
         <div className="mb-6 flex flex-col items-start justify-between gap-3 sm:flex-row">
           <Title title="Providers" />
