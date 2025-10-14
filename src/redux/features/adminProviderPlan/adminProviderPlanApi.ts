@@ -11,7 +11,7 @@ export const adminProviderPlanApi = baseApi.injectEndpoints({
       query: () => ({ url: "/provider-plan", method: "GET" }),
       providesTags: (result) =>
         result
-          ? [...result.data.map((p) => ({ type: "Plan" as const, id: p.id }))]
+          ? [...result.data.map((p: Plan) => ({ type: "Plan" as const, id: p.id }))]
           : [],
     }),
 
