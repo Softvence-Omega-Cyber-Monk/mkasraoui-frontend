@@ -71,15 +71,13 @@ export const baseApi = createApi({
     "Tasks",
     "Invitations",
     "Blogs",
-    "PartyPlans"
+    "PartyPlans",
   ],
 
   endpoints: () => ({}),
 });
 
-
 // dont delete above code
-
 
 // export const baseApi = createApi({
 //   reducerPath: "api",

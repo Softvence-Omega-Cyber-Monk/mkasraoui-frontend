@@ -6,6 +6,8 @@ import InvitationsTab from "../DashBoardTabComponent/InvitationsTab";
 import FavositesTab from "../DashBoardTabComponent/FavositesTab";
 import ProfileTab from "../DashBoardTabComponent/ProfileTab";
 import { useLocation } from "react-router-dom";
+import PaymentTab from "../DashBoardTabComponent/PaymentTab";
+import UserAllActivity from "../DashBoardTabComponent/UserAllActivity";
 export default function PartyInvitations() {
   // const [activeTab, setActiveTab] = useState("Overview");
   const location = useLocation();
@@ -32,44 +34,28 @@ export default function PartyInvitations() {
     { id: "Invitations", label: "Invitations" },
     { id: "Favorite", label: "Favorite" },
     { id: "Profile", label: "Profile" },
-    // { id: "reviews", label: "Reviews" },
+    { id: "Pay", label: "Payment" },
   ];
 
   // this is tab content
   const renderContent = () => {
     switch (activeTab) {
       case "Overview":
-        return (
-          <div className="">
-            <div className="">
-              <OverviewTab />
-            </div>
-          </div>
-        );
+        return <OverviewTab />;
       case "My Parties":
-        return (
-          <div className="">
-            <MyParties />
-          </div>
-        );
+        return <MyParties />;
       case "Invitations":
-        return (
-          <div className="">
-            <InvitationsTab />
-          </div>
-        );
+        return <InvitationsTab />;
       case "Favorite":
-        return (
-          <div>
-            <FavositesTab />
-          </div>
-        );
+        return <FavositesTab />;
       case "Profile":
         return (
           <div ref={profileRef}>
             <ProfileTab />
           </div>
         );
+      case "Pay":
+        return <UserAllActivity />; // ✅ Payment tab content here
       default:
         return null;
     }

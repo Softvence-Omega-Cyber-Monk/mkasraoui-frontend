@@ -39,7 +39,9 @@ export interface Provider {
   latitude: number;
   longitude: number;
   description: string;
-  priceRange: string;
+  price: number;
+  // price: string;
+  // price: string;
   website?: string;
   instagram?: string;
   portfolioImages?: string[];
@@ -82,7 +84,7 @@ export interface ProviderResponse {
 //   latitude: number;
 //   longitude: number;
 //   description: string;
-//   priceRange: string;
+//   price: string;
 //   website?: string;
 //   instagram?: string;
 //   portfolioImages?: string[];

@@ -21,7 +21,7 @@ export interface IProvider {
   latitude: number;
   longitude: number;
   description: string;
-  priceRange: string;
+  price: string;
   website: string;
   instagram: string;
   portfolioImages: string[];

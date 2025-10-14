@@ -55,3 +55,32 @@ export interface OrderResponse {
   items: OrderItem[];
   user: User;
 }
+
+export interface CustomOrderResponse {
+  id: string;
+  userId: string;
+  tShirtType: string;
+  size: string;
+  gender: string;
+  color: string;
+  Age: string;
+  theme: string;
+  name: string;
+  age: string;
+  optionalMessage: string;
+  quantity: number;
+  shippingFee: number;
+  designUrl: string;
+  mockupUrl: string;
+  total: number;
+  paymentIntentId: string | null;
+  status: string;
+  address: string;
+  zipCode: string;
+  state: string;
+  city: string;
+  contactName: string;
+  contactPhone: string;
+  createdAt: string;
+  updatedAt: string;
+}

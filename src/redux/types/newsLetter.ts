@@ -19,3 +19,13 @@ export interface PromotionalMailPayload {
   subject: string;
   message: string;
 }
+
+
+export interface PromotionalMailResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    message: string;
+  };
+}

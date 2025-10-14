@@ -83,21 +83,15 @@ body {
   opacity: 0;
 }
 
-
 /* for modul  */
-
 
 .swal-popup {
   width: 30rem; /* default desktop width */
   padding: 1.5rem;
- 
-  
 }
-  .swal2-confirm {
-  
-    background-color: #0f1f4c;
-   
-  }
+.swal2-confirm {
+  background-color: #0f1f4c;
+}
 .swal2-confirm:hover {
   background-color: #223b7d; /* color on hover */
 }
@@ -110,14 +104,14 @@ body {
 /* Mobile screens only */
 @media (max-width: 640px) {
   .swal2-icon {
-    width: 60px !important;  /* smaller icon */
+    width: 60px !important; /* smaller icon */
     height: 60px !important; /* smaller icon */
   }
 }
 @media (max-width: 640px) {
   .swal-popup {
-    width:80% !important; /* mobile width */
-    padding:  .5rem !important;
+    width: 80% !important; /* mobile width */
+    padding: 0.5rem !important;
   }
   .swal-title {
     font-size: 16 !important;
@@ -126,12 +120,12 @@ body {
     font-size: 16px !important;
     background-color: white;
   }
- .swal2-confirm {
-  font-size: 0.875rem !important;
-  padding: 0.5rem 0.5rem !important;
-  background-color: #0f1f4c;
-  margin-bottom: 30px;
-}
+  .swal2-confirm {
+    font-size: 0.875rem !important;
+    padding: 0.5rem 0.5rem !important;
+    background-color: #0f1f4c;
+    margin-bottom: 30px;
+  }
 }
 
 /* Mobile: stack buttons in column */
@@ -139,33 +133,60 @@ body {
   .swal2-actions {
     display: flex !important;
     flex-direction: column !important; /* stack vertically */
-    align-items: stretch !important;   /* make buttons full width */
+    align-items: stretch !important; /* make buttons full width */
     gap: 10px; /* spacing between buttons */
   }
-  
+
   .swal2-confirm,
   .swal2-cancel {
     width: 100% !important;
   }
 }
- /* Add this to your global CSS (e.g., index.css, styles.css, etc.) */
+/* Add this to your global CSS (e.g., index.css, styles.css, etc.) */
 
 .custom-shadow {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-
 /* for remove button  others browser  */
 /* For Chrome, Safari, Edge, Opera */
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button {
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
 /* For Chrome, Safari, Edge, Opera */
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button {
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+
+
+
+/* Translation design  */
+.goog-te-gadget {
+  font-size: 0 !important;
+}
+
+.goog-te-gadget .goog-te-combo {
+  font-size: 13px !important;
+  padding: 3px 6px !important;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.goog-te-gadget img {
+  display: none !important; /* hide Google logo icon */
+}
+
+.goog-te-gadget-simple {
+  background: transparent !important;
+  border: none !important;
+}
+
+.goog-te-combo {
+  height: 28px !important; /* smaller height */
 }

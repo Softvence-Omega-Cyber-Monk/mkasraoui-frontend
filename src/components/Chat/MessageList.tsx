@@ -10,14 +10,13 @@ interface Props {
 
 export default function MessageList({ messages, myUserId }: Props) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-
-
+ 
   useEffect(() => {
     if (scrollRef.current)
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
 
-
+console.log(messages,myUserId)
   return (
     <div className="flex-1 overflow-y-auto p-6" ref={scrollRef}>
       {messages.length === 0 ? (
@@ -28,7 +27,7 @@ export default function MessageList({ messages, myUserId }: Props) {
         messages.map((m) => {
           // ✅ Compare IDs properly
           const isOwn = String(m.senderId) === String(myUserId);
-
+console.log(isOwn)
 
           return (
             <div
@@ -37,7 +36,7 @@ export default function MessageList({ messages, myUserId }: Props) {
             >
               <div
                 className={`max-w-[70%] rounded-xl p-3 ${
-                  isOwn ? "bg-blue-600 text-white" : "border bg-white"
+                  isOwn ? "bg-blue-600 text-white  " : "border   bg-white"
                 }`}
               >
                 {m.type === "image" ? (
@@ -70,3 +69,14 @@ export default function MessageList({ messages, myUserId }: Props) {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+ 

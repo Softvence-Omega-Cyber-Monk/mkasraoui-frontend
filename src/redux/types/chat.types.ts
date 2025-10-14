@@ -17,9 +17,12 @@ export interface ChatMessage {
   senderId: string;
   content: string;
   createdAt: string; // keep required
+  updatedAt?: string;
+  status?: "sending" | "sent" | "failed";
   type?: MessageType; // optional
   fileName?: string | null;
   fileSize?: number | null;
+  fileUrl?: string | null; // ✅ Add this for image/file URL
 }
 
 
@@ -29,10 +32,12 @@ export interface Conversation {
   providerId: string;
   createdAt?: string;
   updatedAt?: string;
+  lastMessagePreview?: string;
   user?: ChatUser | null;
   provider?: ChatUser | null;
   messages?: ChatMessage[]; // can be undefined, but better default []
   unreadCount?: number;
+ // ✅ Add this for last message image preview
 }
 
 
