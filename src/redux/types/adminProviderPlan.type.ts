@@ -17,7 +17,13 @@ export interface PlanFormData {
   price_id?: string | null;
 }
 
-
+// Response for fetching all plans
+export interface GetPlansResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: Plan[];
+}
 
 // // Plan duration type
 // export type PlanDuration = "MONTHLY" | "YEARLY";

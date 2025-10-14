@@ -1,6 +1,11 @@
- import { useEffect, useMemo } from "react";
+
+
+"use client";
+import { useEffect, useMemo, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks/redux-hook";
 import {
+  useStartConversationMutation,
   useGetConversationsQuery,
   useGetMessagesQuery,
   useSendMessageMutation,
@@ -8,25 +13,28 @@ import {
 import {
   setSelectedConversation,
   appendLocalMessage,
-  replaceLocalMessage,
 } from "@/redux/features/chatmessage/chatSlice";
 import type { ChatMessage, Conversation } from "@/redux/types/chat.types";
-import useChatSocket from "@/hooks/useChatSocket";
-
+import { useChatSocket } from "@/hooks/useChatSocket";
 import ConversationList from "./ConversationList";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
- 
+
 export default function ChatContainer({ isProvider = false }: { isProvider?: boolean }) {
   const dispatch = useAppDispatch();
-  const currentUserId = useAppSelector((s) => s.auth.user?.id) || "";
+  const [searchParams] = useSearchParams();
+
+  const providerId = searchParams.get("providerId");
+  const providerName = searchParams.get("providerName") || "Provider";
+
+  const MY_USER_ID = useAppSelector((s) => s.auth.user?.id) || "";
   const token = useAppSelector((s) => s.auth.token);
-  const MY_USER_ID = currentUserId || token || "";
 
   const selectedConversationId = useAppSelector((s) => s.chat.selectedConversationId);
-  const messagesFromSlice = useAppSelector((s) =>
-    selectedConversationId ? s.chat.messagesByConversation[selectedConversationId] ?? [] : []
-  );
+  const messagesByConversation = useAppSelector((s) => s.chat.messagesByConversation ?? {});
+  const messagesFromSlice = selectedConversationId
+    ? messagesByConversation[selectedConversationId] ?? []
+    : [];
 
   const { data: conversations = [] } = useGetConversationsQuery(undefined, { skip: !MY_USER_ID });
   const { data: fetchedMessages = [], isLoading, isFetching } = useGetMessagesQuery(
@@ -34,161 +42,222 @@ export default function ChatContainer({ isProvider = false }: { isProvider?: boo
     { skip: !selectedConversationId }
   );
 
-  // 🔹 API থেকে মেসেজগুলো প্রথমে store-এ append
+  const [startConversation] = useStartConversationMutation();
+  const [sendMessageMutation] = useSendMessageMutation();
+
+  const { socket, connected, sendMessage: sendSocketMessage } = useChatSocket({
+    userId: MY_USER_ID,
+    token: token || undefined,
+    isProvider,
+  });
+
+  // 🔹 Auto-start conversation with provider
   useEffect(() => {
-    if (!selectedConversationId || !fetchedMessages.length) return;
+    if (!providerId || !MY_USER_ID) return;
+
+    const existing = conversations.find(
+      (c) => String(c.provider?.id) === String(providerId)
+    );
+    if (existing) {
+      dispatch(setSelectedConversation(existing.id));
+      return;
+    }
+
+    const tempId = `temp-${providerId}`;
+    dispatch(setSelectedConversation(tempId));
+
+    (async () => {
+      try {
+        console.log("Starting conversation with provider:", providerId);
+        const res = await startConversation({ providerId }).unwrap();
+        console.log("Backend started conversation:", res);
+        if (res?.data?.id) {
+          dispatch(setSelectedConversation(res.data.id));
+        }
+      } catch (err) {
+        console.error("Backend failed to start conversation, using temp:", err);
+      }
+    })();
+  }, [providerId, MY_USER_ID, conversations, startConversation, dispatch]);
+
+  // // 🔹 Auto-select provider conversation if none selected
+  // const providerConversation = useMemo(() => {
+  //   if (!providerId) return null;
+
+  //   const existing = conversations.find((c) => String(c.provider?.id) === String(providerId));
+  //   if (existing) return existing;
+
+  //   return {
+  //     id: `temp-${providerId}`,
+  //     provider: { id: providerId, name: providerName },
+  //     user: { id: MY_USER_ID },
+  //     lastMessagePreview: "Start a conversation",
+  //     unreadCount: 0,
+  //   };
+  // }, [conversations, providerId, providerName, MY_USER_ID]);
+
+
+const providerConversation = useMemo<Conversation | null>(() => {
+  if (!providerId) return null;
+
+  const existing = conversations.find((c) => String(c.provider?.id) === String(providerId));
+  if (existing) return existing;
+
+  return {
+    id: `temp-${providerId}`,
+    userId: MY_USER_ID,               // ✅ Added
+    providerId: providerId,           // ✅ Added
+    provider: { id: providerId, name: providerName },
+    user: { id: MY_USER_ID },
+    lastMessagePreview: "Start a conversation",
+    unreadCount: 0,
+  };
+}, [conversations, providerId, providerName, MY_USER_ID]);
+
+
+
+
+  useEffect(() => {
+    if (!selectedConversationId && providerConversation) {
+      dispatch(setSelectedConversation(providerConversation.id));
+    }
+  }, [providerConversation, selectedConversationId, dispatch]);
+
+  // 🔹 Merge API messages into Redux
+  useEffect(() => {
+    if (!selectedConversationId || !fetchedMessages?.length) return;
 
     const localMessages = messagesFromSlice ?? [];
     const newMessages = fetchedMessages.filter(
       (msg) => !localMessages.some((local) => local.id === msg.id)
     );
-
     newMessages.forEach((msg) =>
       dispatch(appendLocalMessage({ conversationId: selectedConversationId, message: msg }))
     );
-  }, [fetchedMessages, selectedConversationId, dispatch]);
+  }, [fetchedMessages, selectedConversationId, messagesFromSlice, dispatch]);
 
-  // 🔹 Socket
-  const socket = useChatSocket(MY_USER_ID, isProvider);
-
-  // 🔹 Join conversation room
-
-
+  // 🔹 Join socket room when conversation changes
   useEffect(() => {
-    if (selectedConversationId && socket?.current?.connected) {
-      socket.current.emit("joinConversation", selectedConversationId);
+    if (selectedConversationId && connected) {
+      console.log("Joining socket room:", selectedConversationId);
+      socket?.emit("joinConversation", selectedConversationId);
     }
-  }, [selectedConversationId, socket]);
-
-
-useEffect(() => {
-  if (selectedConversationId && socket?.current?.connected) {
-    console.log("Joining conversation:", selectedConversationId);
-    socket.current.emit("joinConversation", selectedConversationId);
-  }
-}, [selectedConversationId, socket]);
-
-
-
-  // 🔹 Handle incoming messages from Socket
-  // useEffect(() => {
-  //   if (!socket.current) return;
-
-  //   const s = socket.current;
-
-  //   const handleNewMessage = (msg: ChatMessage) => {
-  //     dispatch(appendLocalMessage({ conversationId: msg.conversationId, message: msg }));
-
-  //     if (msg.senderId !== MY_USER_ID) {
-  //       toast(`New message: ${msg.content}`, { position: "bottom-right" });
-  //     }
-  //   };
-
-  //   s.on("newMessage", handleNewMessage);
-
-  //   return () => {
-  //     s.off("newMessage", handleNewMessage);
-  //   };
-  // }, [socket, MY_USER_ID, dispatch]);
-
-
- 
-
-  const [sendMessage] = useSendMessageMutation();
+  }, [selectedConversationId, connected, socket]);
 
   const getPartnerDetails = (conversation: Conversation) => {
-    const partner = String(conversation.user?.id) === String(MY_USER_ID)
-      ? conversation.provider
-      : conversation.user;
+    const partner =
+      String(conversation.user?.id) === String(MY_USER_ID)
+        ? conversation.provider
+        : conversation.user;
     return { name: partner?.name || `User ${partner?.id?.slice(0, 4)}` || "Unknown" };
   };
 
-  const conversationListProps = useMemo(() =>
-    conversations?.map((c) => ({
-      id: c.id,
-      otherUserName: getPartnerDetails(c).name,
-      lastMessage: c.lastMessagePreview || "No messages yet",
-      unreadCount: c.unreadCount || 0,
-    })), [conversations, MY_USER_ID]
-  );
+  const conversationListProps = useMemo(() => {
+    let list = Array.isArray(conversations)
+      ? conversations.map((c) => ({
+          id: c.id,
+          otherUserName: getPartnerDetails(c).name,
+          lastMessage: c.lastMessagePreview || "No messages yet",
+          unreadCount: c.unreadCount || 0,
+        }))
+      : [];
 
+    if (providerConversation && !list.some((c) => c.id === providerConversation.id)) {
+      list = [
+        {
+          id: providerConversation.id,
+          otherUserName: providerConversation.provider?.name || "Provider",
+          lastMessage: providerConversation.lastMessagePreview || "No messages yet",
+          unreadCount: providerConversation.unreadCount || 0,
+        },
+        ...list,
+      ];
+    }
 
-
-// const conversationListProps = useMemo(() => {
-//   if (!Array.isArray(conversations)) return [];
-
-//   return conversations.map((c) => ({
-//     id: c.id,
-//     otherUserName: getPartnerDetails(c).name,
-//     lastMessage: c.lastMessagePreview || "No messages yet",
-//     unreadCount: c.unreadCount || 0,
-//   }));
-// }, [conversations, MY_USER_ID]);
-
+    return list;
+  }, [conversations, providerConversation]);
 
   const currentPartnerName = useMemo(() => {
-    const currentConversation = conversations.find((c) => c.id === selectedConversationId);
-    return currentConversation ? getPartnerDetails(currentConversation).name : "Select a chat";
-  }, [conversations, selectedConversationId, MY_USER_ID]);
+    const currentConversation = [...conversations, providerConversation].find(
+      (c) => c?.id === selectedConversationId
+    );
 
+    
+    return currentConversation ? getPartnerDetails(currentConversation  ).name : "Select a chat";
+  }, [conversations, selectedConversationId, providerConversation, MY_USER_ID]);
 
-// const currentPartnerName = useMemo(() => {
-//   if (!Array.isArray(conversations)) return "Select a chat";
+  // 🔹 File to Base64 helper
+  const fileToBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
 
-//   const currentConversation = conversations.find(
-//     (c) => c.id === selectedConversationId
-//   );
-//   return currentConversation ? getPartnerDetails(currentConversation).name : "Select a chat";
-// }, [conversations, selectedConversationId, MY_USER_ID]);
+  // 🔹 Send message handler (socket + backend)
+  const handleSendMessage = useCallback(
+    async (content: string, file?: File) => {
+      if (!selectedConversationId || !MY_USER_ID || (!content.trim() && !file)) return;
 
+      let fileBase64: string | undefined;
+      if (file) fileBase64 = await fileToBase64(file);
 
-  // 🔹 Send message handler
-  const handleSendMessage = async (content: string, file?: File) => {
-    if (!selectedConversationId || !MY_USER_ID || (!content.trim() && !file)) return;
+      const tempId = `temp-msg-${Date.now()}`;
+      const optimisticMessage: ChatMessage = {
+        id: tempId,
+        conversationId: selectedConversationId,
+        senderId: MY_USER_ID,
+        content: file ? "[image]" : content,
+        fileUrl: file ? URL.createObjectURL(file) : undefined,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        status: "sending",
+      };
 
-    const tempId = `temp-${Date.now()}`;
-    const optimisticMessage: ChatMessage = {
-      id: tempId,
-      conversationId: selectedConversationId,
-      senderId: MY_USER_ID,
-      content,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      status: "sending",
-    };
+      dispatch(
+        appendLocalMessage({ conversationId: selectedConversationId, message: optimisticMessage })
+      );
 
-    dispatch(appendLocalMessage({ conversationId: selectedConversationId, message: optimisticMessage }));
+      // Send via socket
+      sendSocketMessage({ ...optimisticMessage, fileUrl: fileBase64 });
 
-    try {
-      const res = await sendMessage({ conversationId: selectedConversationId, content, file }).unwrap();
-      const serverMessage = res?.data ?? res;
-
-      if (serverMessage?.id) {
-        dispatch(replaceLocalMessage({
-          conversationId: selectedConversationId,
-          tempId,
-          newMessage: serverMessage as ChatMessage
-        }));
-      }
-    } catch (err) {
-      console.error("❌ Failed to send message:", err);
-    }
-  };
+      // Also send to backend
+      // try {
+      //   const res = await sendMessageMutation({ conversationId: selectedConversationId, content, file }).unwrap();
+      //   console.log("Backend message sent:", res);
+      // } catch (err) {
+      //   console.error("Failed to send message to backend:", err);
+      // }
+    },
+    [selectedConversationId, MY_USER_ID, dispatch, sendSocketMessage, sendMessageMutation]
+  );
 
   return (
-    <div className="flex h-[calc(100vh_-_100px)] border rounded-lg overflow-hidden shadow-xl">
+    <div className="flex h-[calc(100vh_-_100px)] border rounded-lg overflow-hidden shadow-xl bg-white">
       <ConversationList
         conversations={conversationListProps}
         selectedId={selectedConversationId ?? undefined}
         onSelect={(id) => dispatch(setSelectedConversation(id))}
       />
+
       <div className="flex flex-1 flex-col bg-gray-50">
-        <div className="p-4 border-b bg-white font-semibold text-lg">{currentPartnerName}</div>
-        
+        <div className="p-4 border-b bg-white font-semibold text-lg">
+          {currentPartnerName}
+          {connected ? (
+            <span className="ml-2 text-green-500 text-sm">(online)</span>
+          ) : (
+            <span className="ml-2 text-gray-400 text-sm">(offline)</span>
+          )}
+        </div>
+
         {selectedConversationId && MY_USER_ID ? (
           <>
-            <MessageList messages={messagesFromSlice} myUserId={MY_USER_ID} />
-            <MessageInput onSend={handleSendMessage} disabled={isLoading || isFetching} />
+            <MessageList messages={messagesFromSlice ?? []} myUserId={MY_USER_ID} />
+            <MessageInput
+              onSend={(msg, file) => handleSendMessage(msg, file)}
+              disabled={isLoading || isFetching}
+            />
           </>
         ) : (
           <div className="flex flex-1 items-center justify-center text-gray-500">
@@ -221,59 +290,151 @@ useEffect(() => {
 
 
 
-
-
-
-
-
-
-
-
-
+// "use client";
 // import { useEffect, useMemo } from "react";
+// import { useSearchParams } from "react-router-dom";
 // import { useAppDispatch, useAppSelector } from "@/redux/hooks/redux-hook";
 // import {
 //   useGetConversationsQuery,
 //   useGetMessagesQuery,
-//   useSendMessageMutation,
+//   useStartConversationMutation,
 // } from "@/redux/features/chatmessage/chatApi";
 // import {
 //   setSelectedConversation,
 //   appendLocalMessage,
-//   replaceLocalMessage,
 // } from "@/redux/features/chatmessage/chatSlice";
 // import type { ChatMessage, Conversation } from "@/redux/types/chat.types";
-// import useChatSocket from "@/hooks/useChatSocket";
-
+// import { useChatSocket } from "@/hooks/useChatSocket";
 // import ConversationList from "./ConversationList";
 // import MessageList from "./MessageList";
 // import MessageInput from "./MessageInput";
-// import toast from "react-hot-toast";
 
 // export default function ChatContainer({ isProvider = false }: { isProvider?: boolean }) {
 //   const dispatch = useAppDispatch();
-//   const currentUserId = useAppSelector((s) => s.auth.user?.id) || "";
+//   const [searchParams] = useSearchParams();
+//   const providerId = searchParams.get("providerId");
+//   // const providerName = searchParams.get("providerName") || "Provider";
+//    // 🔹 User info
+//   const MY_USER_ID = useAppSelector((s) => s.auth.user?.id) || "";
 //   const token = useAppSelector((s) => s.auth.token);
-//   const MY_USER_ID = currentUserId || token || "";
 
+//   // 🔹 Selected conversation & messages
 //   const selectedConversationId = useAppSelector((s) => s.chat.selectedConversationId);
-//   const messagesFromSlice = useAppSelector((s) =>
-//     selectedConversationId ? s.chat.messagesByConversation[selectedConversationId] ?? [] : []
-//   );
+//   const messagesByConversation = useAppSelector((s) => s.chat.messagesByConversation ?? {});
+//   const messagesFromSlice = selectedConversationId
+//     ? messagesByConversation[selectedConversationId] ?? []
+//     : [];
 
-//   const { data: conversations = [] } = useGetConversationsQuery(undefined, { skip: !MY_USER_ID });
+//   // 🔹 Fetch conversations
+//   const { data: conversations = [] } = useGetConversationsQuery(undefined, {
+//     skip: !MY_USER_ID,
+//   });
+
+//   // 🔹 Fetch messages for selected conversation
 //   const { data: fetchedMessages = [], isLoading, isFetching } = useGetMessagesQuery(
 //     selectedConversationId ? { conversationId: selectedConversationId } : ({} as any),
 //     { skip: !selectedConversationId }
 //   );
 
-//   // Merge fetched messages
+//   // 🔹 Start conversation mutation
+//   const [startConversation] = useStartConversationMutation();
+
+//   // 🔹 Setup socket
+//   const { socket, connected, sendMessage: sendSocketMessage } = useChatSocket({
+//     userId: MY_USER_ID,
+//     token: token || undefined,
+//     isProvider,
+//   });
+
+//   // 🔹 Create temporary conversation for provider if none exists
+//   // const providerConversation = useMemo(() => {
+//   //   if (!providerId) return null;
+
+//   //   const existing = conversations.find(
+//   //     (c) => String(c.provider?.id) === String(providerId)
+//   //   );
+
+//   //   if (existing) return existing;
+
+//   //   // Temporary conversation
+//   //   return {
+//   //     id: "temp-" + providerId,
+//   //     provider: { id: providerId, name: providerName },
+//   //     user: null,
+//   //     lastMessagePreview: "Start a conversation",
+//   //     unreadCount: 0,
+//   //   } as Conversation;
+//   // }, [conversations, providerId, providerName]);
+
+
+ 
+// const providerName = searchParams.get("providerName") || "Provider";
+
+// const providerConversation = useMemo(() => {
+//   if (!providerId) return null;
+
+//   const existing = conversations.find(
+//     (c) => String(c.provider?.id) === String(providerId)
+//   );
+
+//   if (existing) return existing;
+
+//   // Temporary conversation with actual provider name
+//   return {
+//     id: "temp-" + providerId,
+//     provider: { id: providerId, name: providerName },
+//     user: null,
+//     lastMessagePreview: "Start a conversation",
+//     unreadCount: 0,
+//   } as Conversation;
+// }, [conversations, providerId, providerName]);
+
+
+// // 🟢 Automatically start conversation when providerId is passed
+// useEffect(() => {
+//   const createConversationIfNeeded = async () => {
+//     if (!providerId || !MY_USER_ID) return;
+
+//     // Check if conversation already exists in DB
+//     const existing = conversations.find(
+//       (c) => String(c.provider?.id) === String(providerId)
+//     );
+
+//     if (existing) {
+//       // Already exists — select it
+//       dispatch(setSelectedConversation(existing.id));
+//       return;
+//     }
+
+//     try {
+//       // Start a new conversation on backend
+//       const res = await startConversation({ providerId }).unwrap();
+//       if (res?.data?.id) {
+//         dispatch(setSelectedConversation(res.data.id));
+//       }
+//     } catch (err) {
+//       console.error("Error starting conversation:", err);
+//     }
+//   };
+
+//   createConversationIfNeeded();
+// }, [providerId, MY_USER_ID, conversations, startConversation, dispatch]);
+
+
+//   // 🔹 Auto-select provider conversation if not selected
 //   useEffect(() => {
-//     if (!selectedConversationId || !fetchedMessages.length) return;
+//     if (!selectedConversationId && providerConversation) {
+//       dispatch(setSelectedConversation(providerConversation.id));
+//     }
+//   }, [providerConversation, selectedConversationId, dispatch]);
+
+//   // 🔹 Merge API messages into Redux
+//   useEffect(() => {
+//     if (!selectedConversationId || !fetchedMessages?.length) return;
 
 //     const localMessages = messagesFromSlice ?? [];
 //     const newMessages = fetchedMessages.filter(
-//       (msg) => !localMessages.some((local) => local.id === msg.id || local.id.startsWith("temp-"))
+//       (msg) => !localMessages.some((local) => local.id === msg.id)
 //     );
 
 //     newMessages.forEach((msg) =>
@@ -281,957 +442,121 @@ useEffect(() => {
 //     );
 //   }, [fetchedMessages, selectedConversationId, messagesFromSlice, dispatch]);
 
-//   // Socket
-//   const socket = useChatSocket(MY_USER_ID, isProvider);
-
-//   // Join conversation room
+//   // 🔹 Join socket room when conversation changes
 //   useEffect(() => {
-//     if (selectedConversationId && socket?.current?.connected) {
-//       socket.current.emit("joinConversation", selectedConversationId);
+//     if (selectedConversationId && connected) {
+//       socket?.emit("joinConversation", selectedConversationId);
 //     }
-//   }, [selectedConversationId, socket]);
+//   }, [selectedConversationId, connected, socket]);
 
-//   const [sendMessage] = useSendMessageMutation();
-
-//   // Partner helper
+//   // 🔹 Helper to get chat partner
 //   const getPartnerDetails = (conversation: Conversation) => {
-//     const partner = String(conversation.user?.id) === String(MY_USER_ID)
-//       ? conversation.provider
-//       : conversation.user;
+//     const partner =
+//       String(conversation.user?.id) === String(MY_USER_ID)
+//         ? conversation.provider
+//         : conversation.user;
 //     return { name: partner?.name || `User ${partner?.id?.slice(0, 4)}` || "Unknown" };
 //   };
 
-//   const conversationListProps = useMemo(() =>
-//     conversations.map((c) => ({
-//       id: c.id,
-//       otherUserName: getPartnerDetails(c).name,
-//       lastMessage: c.lastMessagePreview || "No messages yet",
-//       unreadCount: c.unreadCount || 0,
-//     })), [conversations, MY_USER_ID]
-//   );
-
-//   const currentPartnerName = useMemo(() => {
-//     const currentConversation = conversations.find((c) => c.id === selectedConversationId);
-//     return currentConversation ? getPartnerDetails(currentConversation).name : "Select a chat";
-//   }, [conversations, selectedConversationId, MY_USER_ID]);
-
-//   // Send message
-//   const handleSendMessage = async (content: string, file?: File) => {
-//     if (!selectedConversationId || !MY_USER_ID || (!content.trim() && !file)) return;
-
-//     const tempId = `temp-${Date.now()}`;
-//     const optimisticMessage: ChatMessage = {
-//       id: tempId,
-//       conversationId: selectedConversationId,
-//       senderId: MY_USER_ID,
-//       content,
-//       createdAt: new Date().toISOString(),
-//       updatedAt: new Date().toISOString(),
-//       status: "sending",
-//     };
-
-//     dispatch(appendLocalMessage({ conversationId: selectedConversationId, message: optimisticMessage }));
-
-//     try {
-//       const res = await sendMessage({ conversationId: selectedConversationId, content, file }).unwrap();
-//       const serverMessage = res?.data ?? res;
-
-//       if (serverMessage?.id) {
-//         dispatch(replaceLocalMessage({
-//           conversationId: selectedConversationId,
-//           tempId,
-//           newMessage: serverMessage as ChatMessage
-//         }));
-//       }
-//     } catch (err) {
-//       console.error("❌ Failed to send message:", err);
-//     }
-//   };
-
-//   // Toast for incoming messages
-//   useEffect(() => {
-//     if (!messagesFromSlice.length) return;
-//     const lastMessage = messagesFromSlice[messagesFromSlice.length - 1];
-//     if (lastMessage.senderId !== MY_USER_ID) {
-//       toast(`New message: ${lastMessage.content}`, { position: "bottom-right" });
-//     }
-//   }, [messagesFromSlice, MY_USER_ID]);
-
-//   return (
-//     <div className="flex h-[calc(100vh_-_100px)] border rounded-lg overflow-hidden shadow-xl">
-//       <ConversationList
-//         conversations={conversationListProps}
-//         selectedId={selectedConversationId ?? undefined}
-//         onSelect={(id) => dispatch(setSelectedConversation(id))}
-//       />
-//       <div className="flex flex-1 flex-col bg-gray-50">
-//         <div className="p-4 border-b bg-white font-semibold text-lg">{currentPartnerName}</div>
-//         {selectedConversationId && MY_USER_ID ? (
-//           <>
-//             <MessageList messages={messagesFromSlice} myUserId={MY_USER_ID} />
-//             <MessageInput onSend={handleSendMessage} disabled={isLoading || isFetching} />
-//           </>
-//         ) : (
-//           <div className="flex flex-1 items-center justify-center text-gray-500">
-//             {MY_USER_ID ? "Select a conversation to start chatting." : "Please log in to chat."}
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // src/components/chat/ChatContainer.tsx
-
-// import { useEffect, useMemo } from "react";
-// import { useAppDispatch, useAppSelector } from "@/redux/hooks/redux-hook";
-// import {
-//   useGetConversationsQuery,
-//   useGetMessagesQuery,
-//   useSendMessageMutation,
-// } from "@/redux/features/chatmessage/chatApi";
-// import {
-//   setSelectedConversation,
-//   appendLocalMessage,
-//   replaceLocalMessage,
-// } from "@/redux/features/chatmessage/chatSlice";
-// import type { ChatMessage, Conversation } from "@/redux/types/chat.types";
-// import useChatSocket from "@/hooks/useChatSocket";
-
-// import ConversationList from "./ConversationList";
-// import MessageList from "./MessageList";
-// import MessageInput from "./MessageInput";
-
-// export default function ChatContainer() {
-//   const dispatch = useAppDispatch();
-
- 
-//   // --- Authenticated User ---
-//   const currentUserId = useAppSelector((state) => state.auth.user?.id);
-//   const MY_USER_ID = currentUserId || "";
-//   console.log(MY_USER_ID, "MY_USER_ID");
-
-//   // --- Redux State ---
-//   const selectedConversationId = useAppSelector((s) => s.chat.selectedConversationId);
-//   const messagesFromSlice = useAppSelector((s) =>
-//     selectedConversationId ? s.chat.messagesByConversation[selectedConversationId] ?? [] : []
-//   );
-
-//   // --- RTK Query Hooks ---
-//   const { data: conversations = [] } = useGetConversationsQuery(undefined, {
-//     skip: !MY_USER_ID,
-//   });
-// console.log("🟢 Conversations from backend:", conversations);
- 
-//   const {
-//     data: fetchedMessages = [],
-//     isLoading: isMessagesLoading,
-//     isFetching: isMessagesFetching,
-//   } = useGetMessagesQuery(
-//     selectedConversationId ? { conversationId: selectedConversationId } : ({} as any),
-//     { skip: !selectedConversationId }
-//   );
-
-
-// console.log("🟢 Messages from backend for conversation", selectedConversationId, ":", fetchedMessages);
-// console.log("Loading:", isMessagesLoading, "Fetching:", isMessagesFetching, );
-
-//   // --- Merge fetched messages with local messages (optimistic ones) ---
-//   useEffect(() => {
-//     if (!selectedConversationId || !fetchedMessages.length) return;
-
-//     const localMessages = messagesFromSlice ?? [];
-
-//     // Filter fetched messages not already in localMessages
-//     const newMessages = fetchedMessages.filter(
-//       (msg) => !localMessages.some((local) => local.id === msg.id)
-//     );
-
-//     if (newMessages.length > 0) {
-//       // Append new messages without overwriting optimistic ones
-//       newMessages.forEach((msg) =>
-//         dispatch(appendLocalMessage({ conversationId: selectedConversationId, message: msg }))
-//       );
-//     }
-//   }, [fetchedMessages, selectedConversationId, dispatch, messagesFromSlice]);
-
-
-
-//   const [sendMessage] = useSendMessageMutation();
-
-//   // --- Realtime Socket Listener ---
-//   // useChatSocket(MY_USER_ID);
-
-
-//   // --- Partner Info Helper ---
-//   const getPartnerDetails = (conversation: Conversation) => {
-//     const partner =
-//       String(conversation.user?.id) === String(MY_USER_ID)
-//         ? conversation.provider
-//         : conversation.user;
-
-//     return {
-//       name: partner?.name || `User ${partner?.id?.slice(0, 4)}` || "Unknown User",
-//     };
-//   };
-
-//   const conversationListProps = useMemo(
-//     () =>
-//       conversations.map((c) => ({
-//         id: c.id,
-//         otherUserName: getPartnerDetails(c).name,
-//         lastMessage: c.lastMessagePreview || "No messages yet",
-//         unreadCount: c.unreadCount || 0,
-//       })),
-//     [conversations, MY_USER_ID]
-//   );
-
-//   const currentPartnerName = useMemo(() => {
-//     const currentConversation = conversations.find((c) => c.id === selectedConversationId);
-//     return currentConversation ? getPartnerDetails(currentConversation).name : "Select a Chat";
-//   }, [conversations, selectedConversationId, MY_USER_ID]);
-
-//   // --- Handle Message Sending ---
-//   const handleSendMessage = async (content: string, file?: File) => {
-//     if (!selectedConversationId || !MY_USER_ID || (!content.trim() && !file)) return;
-
-//     // 1️⃣ Create optimistic message
-//     const tempId = `temp-${Date.now()}`;
-//     const optimisticMessage: ChatMessage = {
-//       id: tempId,
-//       conversationId: selectedConversationId,
-//       senderId: MY_USER_ID,
-//       content,
-//       createdAt: new Date().toISOString(),
-//       updatedAt: new Date().toISOString(),
-//       status: "sending",
-//     };
-
-//     dispatch(appendLocalMessage({ conversationId: selectedConversationId, message: optimisticMessage }));
-
-//     try {
-//       // 2️⃣ Send to backend
-//       const res = await sendMessage({ conversationId: selectedConversationId, content, file }).unwrap();
-//       const serverMessage = res?.data ?? res;
-//       console.log("Server response:", serverMessage);
-
-//       // 3️⃣ Replace optimistic with server message
-//       if (serverMessage?.id) {
-//         dispatch(
-//           replaceLocalMessage({
-//             conversationId: selectedConversationId,
-//             tempId,
-//             newMessage: serverMessage as ChatMessage,
-//           })
-//         );
-//       }
-//     } catch (err) {
-//       console.error("❌ Failed to send message:", err);
-//     }
-//   };
-
-//   // --- Render ---
-//   return (
-//     <div className="flex h-[calc(100vh_-_100px)] border rounded-lg overflow-hidden shadow-xl">
-//       {/* Left: Conversation List */}
-//       <ConversationList
-//         conversations={conversationListProps}
-//         selectedId={selectedConversationId ?? undefined}
-//         onSelect={(id) => dispatch(setSelectedConversation(id))}
-//       />
-
-//       {/* Right: Chat Area */}
-//       <div className="flex flex-1 flex-col bg-gray-50">
-//         <div className="p-4 border-b bg-white font-semibold text-lg">
-//           {currentPartnerName}
-//         </div>
-
-//         {selectedConversationId && MY_USER_ID ? (
-//           <>
-//             <MessageList
-//               messages={messagesFromSlice}
-//               myUserId={MY_USER_ID}
-//             />
-//             <MessageInput
-//               onSend={handleSendMessage}
-//               disabled={isMessagesFetching || isMessagesLoading}
-//             />
-//           </>
-//         ) : (
-//           <div className="flex flex-1 items-center justify-center text-gray-500">
-//             {MY_USER_ID
-//               ? "Select a conversation to start chatting."
-//               : "Please log in to chat."}
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-// // src/components/chat/ChatContainer.tsx
-
-// import { useEffect, useMemo } from "react";
-// import { useAppDispatch, useAppSelector } from "@/redux/hooks/redux-hook";
-// import {
-//   useGetConversationsQuery,
-//   useGetMessagesQuery,
-//   useSendMessageMutation,
-// } from "@/redux/features/chatmessage/chatApi";
-// import {
-//   setConversationMessages,
-//   setSelectedConversation,
-//   appendLocalMessage,
-//   replaceLocalMessage,
-// } from "@/redux/features/chatmessage/chatSlice";
-// import type { ChatMessage, Conversation } from "@/redux/types/chat.types";
-// import useChatSocket from "@/hooks/useChatSocket";
-
-// import ConversationList from "./ConversationList";
-// import MessageList from "./MessageList";
-// import MessageInput from "./MessageInput";
-
-// export default function ChatContainer() {
-//   const dispatch = useAppDispatch();
-
-//   // --- Authenticated User ---
-//   const currentUserId = useAppSelector((state) => state.auth.user?.id);
-//   const MY_USER_ID = currentUserId || "";
-// console.log(MY_USER_ID,"MY_USER_ID")
-//   // --- Redux State ---
-//   const selectedConversationId = useAppSelector((s) => s.chat.selectedConversationId);
-//   const messagesFromSlice = useAppSelector((s) =>
-//     selectedConversationId ? s.chat.messagesByConversation[selectedConversationId] ?? [] : []
-//   );
-
-//   // --- RTK Query Hooks ---
-//   const { data: conversations = [] } = useGetConversationsQuery(undefined, {
-//     skip: !MY_USER_ID,
-//   });
-//  console.log(conversations,"conversations")
-//   const {
-//     data: fetchedMessages = [],
-//     isLoading: isMessagesLoading,
-//     isFetching: isMessagesFetching,
-//   } = useGetMessagesQuery(
-//     selectedConversationId ? { conversationId: selectedConversationId } : ({} as any),
-//     { skip: !selectedConversationId }
-//   );
-// console.log(fetchedMessages,"fetchedMessages")
-//   // const [sendMessage] = useSendMessageMutation();
-//   // --- Realtime Socket Listener ---
-//   useChatSocket(MY_USER_ID);
-
-//   // --- Sync messages only once when fetching (avoid overwriting optimistic ones) ---
-//   useEffect(() => {
-//     if (!selectedConversationId || !fetchedMessages.length) return;
-
-//     // Only set if local store is empty (first load)
-//     const localMessages = messagesFromSlice ?? [];
-//     if (localMessages.length === 0) {
-//       dispatch(setConversationMessages({ conversationId: selectedConversationId, messages: fetchedMessages }));
-//     }
-//   }, [fetchedMessages, selectedConversationId, dispatch, messagesFromSlice]);
-
-//   // --- Partner Info Helper ---
-//   const getPartnerDetails = (conversation: Conversation) => {
-//     const partner =
-//       String(conversation.user?.id) === String(MY_USER_ID)
-//         ? conversation.provider
-//         : conversation.user;
-
-//     return {
-//       name: partner?.name || `User ${partner?.id?.slice(0, 4)}` || "Unknown User",
-//     };
-//   };
-
-//   const conversationListProps = useMemo(
-//     () =>
-//       conversations?.map((c) => ({
-//         id: c.id,
-//         otherUserName: getPartnerDetails(c).name,
-//         lastMessage: c.lastMessagePreview || "No messages yet",
-//         unreadCount: c.unreadCount || 0,
-//       })),
-//     [conversations, MY_USER_ID]
-//   );
-
-//   const currentPartnerName = useMemo(() => {
-//     const currentConversation = conversations.find((c) => c.id === selectedConversationId);
-//     return currentConversation ? getPartnerDetails(currentConversation).name : "Select a Chat";
-//   }, [conversations, selectedConversationId, MY_USER_ID]);
-
-// //   // --- Handle Message Sending ---
-// //   const handleSendMessage = async (content: string, file?: File) => {
-// //     if (!selectedConversationId || !MY_USER_ID || (!content.trim() && !file)) return;
-
-// //     // 1️⃣ Create optimistic message (shows instantly on the right)
-// //     const tempId = `temp-${Date.now()}`;
-// //     const optimisticMessage: ChatMessage = {
-// //       id: tempId,
-// //       conversationId: selectedConversationId,
-// //       senderId: MY_USER_ID,
-// //       content,
-// //       createdAt: new Date().toISOString(),
-// //       updatedAt: new Date().toISOString(),
-// //       status: "sending",
-// //     };
-
-// //     dispatch(appendLocalMessage({ conversationId: selectedConversationId, message: optimisticMessage }));
-
-// //     try {
-// //       // 2️⃣ Send to backend
-// //       const res = await sendMessage({ conversationId: selectedConversationId, content, file }).unwrap();
-// //       const serverMessage = res?.data ?? res;
-// // console.log(res,"res")
-
-// //       // 3️⃣ Replace optimistic with server message
-// //       if (serverMessage?.id) {
-// //         dispatch(
-// //           replaceLocalMessage({
-// //             conversationId: selectedConversationId,
-// //             tempId,
-// //             newMessage: serverMessage as ChatMessage,
-// //           })
-// //         );
-// //       } else {
-// //         console.warn("⚠️ Unexpected response:", res);
-// //       }
-// //     } catch (err) {
-// //       console.error("❌ Failed to send message:", err);
-// //     }
-// //   };
-
-
-
-// const [sendMessage] = useSendMessageMutation();
-
-// const handleSendMessage = async (content: string, file?: File) => {
-//   if (!selectedConversationId || !MY_USER_ID || (!content.trim() && !file)) return;
-
-//   const tempId = `temp-${Date.now()}`;
-//   const optimisticMessage: ChatMessage = {
-//     id: tempId,
-//     conversationId: selectedConversationId,
-//     senderId: MY_USER_ID,
-//     content,
-//     createdAt: new Date().toISOString(),
-//     updatedAt: new Date().toISOString(),
-//     status: "sending",
-//   };
-
-//   dispatch(appendLocalMessage({ conversationId: selectedConversationId, message: optimisticMessage }));
-
-//   try {
-//     const res = await sendMessage({ conversationId: selectedConversationId, content, file }).unwrap();
-//     const serverMessage = res?.data ?? res;
-//     console.log(res,"res")
-
-//     if (serverMessage?.id) {
-//       dispatch(
-//         replaceLocalMessage({
-//           conversationId: selectedConversationId,
-//           tempId,
-//           newMessage: serverMessage as ChatMessage,
-//         })
-//       );
-//     }
-//   } catch (err) {
-//     console.error("❌ Failed to send message:", err);
-//   }
-// };
-
-
-
-
-//   // --- Render ---
-//   return (
-//     <div className="flex h-[calc(100vh_-_100px)] border rounded-lg overflow-hidden shadow-xl">
-//       {/* Left: Conversation List */}
-//       <ConversationList
-//         conversations={conversationListProps}
-//         selectedId={selectedConversationId ?? undefined}
-//         onSelect={(id) => dispatch(setSelectedConversation(id))}
-//       />
-
-//       {/* Right: Chat Area */}
-//       <div className="flex flex-1 flex-col bg-gray-50">
-//         <div className="p-4 border-b bg-white font-semibold text-lg">
-//           {currentPartnerName}
-//         </div>
-
-//         {selectedConversationId && MY_USER_ID ? (
-//           <>
-//             <MessageList
-//               messages={messagesFromSlice}
-//               myUserId={MY_USER_ID}
-//             />
-//             <MessageInput
-//               onSend={handleSendMessage}
-//               disabled={isMessagesFetching || isMessagesLoading}
-//             />
-//           </>
-//         ) : (
-//           <div className="flex flex-1 items-center justify-center text-gray-500">
-//             {MY_USER_ID
-//               ? "Select a conversation to start chatting."
-//               : "Please log in to chat."}
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
- 
-
- 
-
-
-
-
-
-// // src/components/chat/ChatContainer.tsx
-
-// import { useEffect, useMemo, useRef } from "react";
-// import { useAppDispatch, useAppSelector } from "@/redux/hooks/redux-hook";
-// import {
-//   useGetConversationsQuery,
-//   useGetMessagesQuery,
-//   useSendMessageMutation,
-// } from "@/redux/features/chatmessage/chatApi";
-// import {
-//   setConversationMessages,
-//   setSelectedConversation,
-//   appendLocalMessage,
-//   replaceLocalMessage,
-// } from "@/redux/features/chatmessage/chatSlice";
-// import type { ChatMessage, Conversation } from "@/redux/types/chat.types";
-
-// // Import your components
-// import ConversationList from "./ConversationList";
-// import MessageList from "./MessageList";
-// import MessageInput from "./MessageInput";
-
-// // Placeholder for custom socket hook
-// const useSocket = (userId: string) => {
-//     // Implement your socket connection here
-//     return useRef<any>(null);
-// };
-
-
-// export default function ChatContainer() {
-//   const dispatch = useAppDispatch();
-  
-//   // 💡 FIX: Dynamically fetch the authenticated user's ID from the Auth slice.
-//   // Assuming your state structure is: state.auth.user.id
-//   const currentUserId = useAppSelector((state) => state.auth.user?.id);
-//   const MY_USER_ID = currentUserId || ""; 
-
-//   // --- Chat State ---
-//   const selectedConversationId = useAppSelector((s) => s.chat.selectedConversationId);
-//   const messagesFromSlice = useAppSelector((s) =>
-//     selectedConversationId ? s.chat.messagesByConversation[selectedConversationId] ?? [] : [],
-//   );
-
-//   // --- RTK Query Hooks ---
-//   // Ensure MY_USER_ID exists before fetching
-//   const { data: conversations } = useGetConversationsQuery(undefined, { skip: !MY_USER_ID });
-//   const { data: messages, isLoading: isMessagesLoading, isFetching: isMessagesFetching } = useGetMessagesQuery(
-//     selectedConversationId ? { conversationId: selectedConversationId } : ({} as any),
-//     { skip: !selectedConversationId },
-//   );
-//   const [sendMessage] = useSendMessageMutation();
-// console.log(sendMessage)
-//   useSocket(MY_USER_ID);
-
-//   // --- Effects ---
-//   useEffect(() => {
-//     if (messages && selectedConversationId) {
-//       dispatch(setConversationMessages({ conversationId: selectedConversationId, messages }));
-//     }
-//   }, [messages, selectedConversationId, dispatch]);
-
-
-//   // --- Logic to get Partner Name ---
-//   // This logic now relies on MY_USER_ID being correctly fetched.
-//   const getPartnerDetails = (conversation: Conversation) => {
-//     // Check if the current user is the 'user' or the 'provider' in the conversation
-//     const partner = 
-//         (String(conversation.user?.id) === String(MY_USER_ID)) 
-//         ? conversation.provider 
-//         : conversation.user;
-
-//     return {
-//         // Use partner's name or create a fallback name
-//         name: partner?.name || `User ${partner?.id?.slice(0, 4)}` || "Unknown User",
-//     };
-//   };
-
-
-//   // --- Memoized Data for Components ---
+//   // 🔹 Build conversation list props
 //   const conversationListProps = useMemo(() => {
-//     return conversations?.map(c => ({
-//         id: c.id,
-//         otherUserName: getPartnerDetails(c).name,
-//         lastMessage: c.lastMessagePreview || 'No messages yet', 
-//         unreadCount: c.unreadCount || 0,
-//     })) || [];
-//   }, [conversations, MY_USER_ID]); // Dependency on MY_USER_ID added for safety
+//     let list = Array.isArray(conversations)
+//       ? conversations.map((c) => ({
+//           id: c.id,
+//           otherUserName: getPartnerDetails(c).name,
+//           lastMessage: c.lastMessagePreview || "No messages yet",
+//           unreadCount: c.unreadCount || 0,
+//         }))
+//       : [];
 
-//   const currentPartnerName = useMemo(() => {
-//     const currentConversation = conversations?.find(c => c.id === selectedConversationId);
-//     return currentConversation ? getPartnerDetails(currentConversation).name : "Select a Chat";
-//   }, [conversations, selectedConversationId, MY_USER_ID]);
-
-
-//   // --- Handlers ---
-//   const handleSelectConversation = (id: string) => {
-//     dispatch(setSelectedConversation(id));
-//   };
-  
-//   const handleSendMessage = (content: string, file?: File) => {
-//     if (!selectedConversationId || !MY_USER_ID || (!content.trim() && !file)) return;
-
-//     // 1. Optimistic Update (Crucial: Uses MY_USER_ID for immediate right alignment)
-//     const tempId = `temp-${Date.now()}`;
-//     const newMessage: ChatMessage = {
-//       id: tempId,
-//       senderId: MY_USER_ID, // This is the key to aligning the optimistic message to the right
-//       content: content,
-//       createdAt: new Date().toISOString(),
-//       updatedAt: new Date().toISOString(),
-//     };
-//     dispatch(appendLocalMessage({ conversationId: selectedConversationId, message: newMessage }));
-
-//     // 2. Send via RTK Mutation
-//     sendMessage({ conversationId: selectedConversationId, content, file })
-//       .unwrap()
-//       .then((res) => {
-//         console.log(res.data)
-//         // 3. Replace Optimistic Message
-//         if (res.data) {
-//            dispatch(replaceLocalMessage({
-//             conversationId: selectedConversationId,
-//             tempId: tempId,
-//             newMessage: res.data as ChatMessage, 
-//           }));
-//         }
-//       })
-//       .catch((err) => {
-//         console.error("Failed to send message:", err);
-//       });
-//   };
-
-//   // --- Render ---
-//   return (
-//     <div className="flex h-[calc(100vh_-_100px)] border rounded-lg overflow-hidden shadow-xl">
-//       {/* 1. Conversation List */}
-//       <ConversationList
-//         conversations={conversationListProps}
-//         selectedId={selectedConversationId ?? undefined}
-//         onSelect={handleSelectConversation}
-//       />
-
-//       {/* 2. Chat Area */}
-//       <div className="flex flex-1 flex-col bg-gray-50">
-//         <div className="p-4 border-b bg-white font-semibold text-lg">
-//           {currentPartnerName}
-//         </div>
-        
-//         {selectedConversationId && MY_USER_ID ? (
-//           <>
-//             {/* Message Display */}
-//             <MessageList 
-//                 messages={messagesFromSlice}
-//                 myUserId={MY_USER_ID} // Pass the dynamic, authenticated user ID
-//             />
-//             {/* Input */}
-//             <MessageInput 
-//                 onSend={handleSendMessage} 
-//                 disabled={isMessagesFetching || isMessagesLoading}
-//             />
-//           </>
-//         ) : (
-//           <div className="flex flex-1 items-center justify-center text-gray-500">
-//             {MY_USER_ID ? "Select a conversation to start chatting." : "Please log in to chat."}
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-// // src/components/chat/ChatContainer.tsx
-// import { useEffect, useMemo, useRef } from "react";
-// import { useAppDispatch, useAppSelector } from "@/redux/hooks/redux-hook";
-// import {
-//   useGetConversationsQuery,
-//   useGetMessagesQuery,
-// } from "@/redux/features/chatmessage/chatApi";
-// import {
-//   setSelectedConversation,
-//   appendLocalMessage,
-//   replaceLocalMessage,
-//   receiveMessage,
-//   upsertConversation,
-// } from "@/redux/features/chatmessage/chatSlice";
-// import type { ChatMessage, Conversation } from "@/redux/types/chat.types";
-// import useChatSocket from "@/hooks/useChatSocket";
-
-// import ConversationList from "./ConversationList";
-// import MessageList from "./MessageList";
-// import MessageInput from "./MessageInput";
-
-// export default function ChatContainer() {
-//   const dispatch = useAppDispatch();
-
-//   // --- Authenticated user ---
-//   const currentUserId = useAppSelector((state) => state.auth.user?.id);
-//   const MY_USER_ID = currentUserId || "";
-
-//   // --- Redux state ---
-//   const selectedConversationId = useAppSelector((s) => s.chat.selectedConversationId);
-//   const messagesFromSlice = useAppSelector(
-//     (s) =>
-//       selectedConversationId
-//         ? s.chat.messagesByConversation[selectedConversationId] ?? []
-//         : []
-//   );
-
-//   // --- RTK Query hooks ---
-//   const { data: conversations = [] } = useGetConversationsQuery(undefined, {
-//     skip: !MY_USER_ID,
-//   });
-
-//   const {
-//     data: fetchedMessages = [],
-//     isLoading: isMessagesLoading,
-//     isFetching: isMessagesFetching,
-//   } = useGetMessagesQuery(
-//     selectedConversationId ? { conversationId: selectedConversationId } : ({} as any),
-//     { skip: !selectedConversationId }
-//   );
-
-//   // --- Socket setup ---
-//   const socket = useChatSocket(MY_USER_ID);
-//   const socketRef = useRef(socket);
-//   socketRef.current = socket;
-
-//   // --- Listen to real-time socket events ---
-//   useEffect(() => {
-//     if (!socket) return;
-
-//     // ✅ New message arrived
-//     socket.on("newMessage", (msg: ChatMessage) => {
-//       dispatch(receiveMessage({ conversationId: msg.conversationId, message: msg }));
-//     });
-
-//     // ✅ Conversation updated (last message, unread count)
-//     socket.on("conversationUpdated", (payload: any) => {
-//       dispatch(
-//         upsertConversation({
-//           id: payload.conversationId,
-//           lastMessagePreview: payload.lastMessage.content,
-//           updatedAt: payload.lastMessage.createdAt,
-//         })
-//       );
-//     });
-
-//     // Cleanup on unmount
-//     return () => {
-//       socket.off("newMessage");
-//       socket.off("conversationUpdated");
-//     };
-//   }, [socket, dispatch]);
-
-//   // --- Merge fetched messages with local messages (avoid duplicates) ---
-//   useEffect(() => {
-//     if (!selectedConversationId || !fetchedMessages.length) return;
-
-//     const localMessages = messagesFromSlice ?? [];
-//     const newMessages = fetchedMessages.filter(
-//       (msg) => !localMessages.some((local) => local.id === msg.id)
-//     );
-
-//     if (newMessages.length > 0) {
-//       newMessages.forEach((msg) =>
-//         dispatch(appendLocalMessage({ conversationId: selectedConversationId, message: msg }))
-//       );
+//     // Add provider conversation if not in list
+//     if (providerConversation && !list.some((c) => c.id === providerConversation.id)) {
+//       list = [
+//         {
+//           id: providerConversation.id,
+//           otherUserName: providerConversation.provider?.name || "Provider",
+//           lastMessage: providerConversation.lastMessagePreview||"No messages yet",
+//           unreadCount: providerConversation.unreadCount || 0,
+//         },
+//         ...list,
+//       ];
 //     }
-//   }, [fetchedMessages, selectedConversationId, messagesFromSlice, dispatch]);
 
-//   // --- Partner info helper ---
-//   const getPartnerDetails = (conversation: Conversation) => {
-//     const partner =
-//       String(conversation.user?.id) === String(MY_USER_ID)
-//         ? conversation.provider
-//         : conversation.user;
+//     return list;
+//   }, [conversations, providerConversation]);
 
-//     return {
-//       name: partner?.name || `User ${partner?.id?.slice(0, 4)}` || "Unknown User",
-//     };
-//   };
-
-//   // --- Conversations sidebar list ---
-//   const conversationListProps = useMemo(
-//     () =>
-//       conversations.map((c) => ({
-//         id: c.id,
-//         otherUserName: getPartnerDetails(c).name,
-//         lastMessage: c.lastMessagePreview || "No messages yet",
-//         unreadCount: c.unreadCount || 0,
-//       })),
-//     [conversations, MY_USER_ID]
-//   );
-
-//   // --- Current chat header ---
 //   const currentPartnerName = useMemo(() => {
-//     const currentConversation = conversations.find((c) => c.id === selectedConversationId);
-//     return currentConversation ? getPartnerDetails(currentConversation).name : "Select a Chat";
-//   }, [conversations, selectedConversationId, MY_USER_ID]);
+//     const currentConversation = [...conversations, providerConversation].find(
+//       (c) => c?.id === selectedConversationId
+//     );
+//     return currentConversation ? getPartnerDetails(currentConversation).name : "Select a chat";
+//   }, [conversations, selectedConversationId, providerConversation, MY_USER_ID]);
 
-//   // --- Send message handler ---
+//   // 🔹 File to Base64 helper
+//   const fileToBase64 = (file: File): Promise<string> =>
+//     new Promise((resolve, reject) => {
+//       const reader = new FileReader();
+//       reader.readAsDataURL(file);
+//       reader.onload = () => resolve(reader.result as string);
+//       reader.onerror = (error) => reject(error);
+//     });
+
+//   // 🔹 Send message handler
 //   const handleSendMessage = async (content: string, file?: File) => {
 //     if (!selectedConversationId || !MY_USER_ID || (!content.trim() && !file)) return;
+
+//     let fileBase64: string | undefined;
+//     if (file) fileBase64 = await fileToBase64(file);
 
 //     const tempId = `temp-${Date.now()}`;
 //     const optimisticMessage: ChatMessage = {
 //       id: tempId,
 //       conversationId: selectedConversationId,
 //       senderId: MY_USER_ID,
-//       content,
+//       content: file ? "[image]" : content,
+//       fileUrl: file ? URL.createObjectURL(file) : undefined,
 //       createdAt: new Date().toISOString(),
 //       updatedAt: new Date().toISOString(),
 //       status: "sending",
 //     };
 
 //     dispatch(
-//       appendLocalMessage({
-//         conversationId: selectedConversationId,
-//         message: optimisticMessage,
-//       })
+//       appendLocalMessage({ conversationId: selectedConversationId, message: optimisticMessage })
 //     );
 
-//     try {
-//       // ✅ Use socket instead of REST API
-//       socketRef.current?.emit("sendMessage", {
-//         conversationId: selectedConversationId,
-//         senderId: MY_USER_ID,
-//         content,
-//       });
-
-//       // Optional: update optimistic status
-//       dispatch(
-//         replaceLocalMessage({
-//           conversationId: selectedConversationId,
-//           tempId,
-//           newMessage: { ...optimisticMessage, status: "sent" },
-//         })
-//       );
-//     } catch (err) {
-//       console.error("❌ Failed to send message via socket:", err);
-//     }
+//     sendSocketMessage({
+//       ...optimisticMessage,
+//       fileUrl: fileBase64,
+//     });
 //   };
 
-//   // --- Render ---
+//   // 🔹 Render
 //   return (
-//     <div className="flex h-[calc(100vh_-_100px)] border rounded-lg overflow-hidden shadow-xl">
-//       {/* Left: Conversation list */}
+//     <div className="flex h-[calc(100vh_-_100px)] border rounded-lg overflow-hidden shadow-xl bg-white">
+//       {/* Sidebar */}
 //       <ConversationList
 //         conversations={conversationListProps}
 //         selectedId={selectedConversationId ?? undefined}
 //         onSelect={(id) => dispatch(setSelectedConversation(id))}
 //       />
 
-//       {/* Right: Chat area */}
+//       {/* Main Chat */}
 //       <div className="flex flex-1 flex-col bg-gray-50">
 //         <div className="p-4 border-b bg-white font-semibold text-lg">
 //           {currentPartnerName}
+//           {connected ? (
+//             <span className="ml-2 text-green-500 text-sm">(online)</span>
+//           ) : (
+//             <span className="ml-2 text-gray-400 text-sm">(offline)</span>
+//           )}
 //         </div>
 
 //         {selectedConversationId && MY_USER_ID ? (
 //           <>
-//             <MessageList messages={messagesFromSlice} myUserId={MY_USER_ID} />
+//             <MessageList messages={messagesFromSlice ?? []} myUserId={MY_USER_ID} />
 //             <MessageInput
-//               onSend={handleSendMessage}
-//               disabled={isMessagesFetching || isMessagesLoading}
+//               onSend={(msg, file) => handleSendMessage(msg, file)}
+//               disabled={isLoading || isFetching}
 //             />
 //           </>
 //         ) : (
@@ -1245,3 +570,6 @@ useEffect(() => {
 //     </div>
 //   );
 // }
+
+
+

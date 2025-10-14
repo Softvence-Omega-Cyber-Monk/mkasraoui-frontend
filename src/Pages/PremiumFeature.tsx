@@ -1,5 +1,5 @@
 import CombinationPacks from "@/components/PremiumFeature/CombinationPacks";
-import CTAButtons from "@/components/PremiumFeature/CTAButtons";
+// import CTAButtons from "@/components/PremiumFeature/CTAButtons";
 import ExtrasAddons from "@/components/PremiumFeature/ExtrasAddons";
 import FeaturesGrid from "@/components/PremiumFeature/FeaturesGrid";
 import Header from "@/components/PremiumFeature/Header";
@@ -22,7 +22,7 @@ export default function PremiumFeature() {
       <ExtrasAddons />
       <ServiceProvidersArea />
       <LoyaltyReferralBonuses />
-      <CTAButtons />
+      {/* <CTAButtons /> */}
       <Testimonials />
     </div>
   );

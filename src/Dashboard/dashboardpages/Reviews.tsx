@@ -30,12 +30,8 @@ function Reviews() {
 
   return (
     <div>
-      <div className="w-full space-y-3">
-        <Title title="Reviews & Ratings" />
-
-        <h2 className="mb-6 text-xl font-semibold text-gray-800">
-          Provider Reviews
-        </h2>
+      <div className="w-full space-y-6">
+        <Title title="Provider Reviews & Ratings" />
 
         <div className="space-y-6">
           {reviews.map((review) => (
