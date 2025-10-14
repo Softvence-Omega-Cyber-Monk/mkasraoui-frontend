@@ -295,48 +295,6 @@ export default function PartyInvitations() {
     },
   ];
 
-  const [guests, setGuests] = useState([
-    {
-      id: "1",
-      name: "Emma Johnson",
-      email: "emma@email.com",
-      phone: "555-0123",
-      status: "pending",
-    },
-    {
-      id: "2",
-      name: "Emma Johnson",
-      email: "emma@email.com",
-      phone: "555-0123",
-      status: "confirmed",
-    },
-    {
-      id: "3",
-      name: "Emma Johnson",
-      email: "emma@email.com",
-      phone: "555-0123",
-      status: "declined",
-    },
-  ]);
-
-  const [newGuest, setNewGuest] = useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
-  const getStatusStyles = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "confirmed":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "declined":
-        return "bg-red-100 text-red-800 border-red-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
   const renderContent = () => {
     switch (activeTab) {
       case "Create Invitation":
