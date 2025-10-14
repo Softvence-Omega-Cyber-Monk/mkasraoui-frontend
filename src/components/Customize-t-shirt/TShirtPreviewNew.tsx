@@ -28,8 +28,6 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
   tShirtMockup,
   selectedColor,
   uploadedImage,
-  selectedTheme,
-  selectedThemeId,
   childName,
   age,
   optionalMessage,

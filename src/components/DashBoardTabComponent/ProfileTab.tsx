@@ -1,5 +1,4 @@
 import userPlaceholder from "@/assets/profile-user.png";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { useGetMeQuery, useUpdateUserMutation } from "@/redux/features/user/userApi";
