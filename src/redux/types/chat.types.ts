@@ -22,6 +22,7 @@ export interface ChatMessage {
   type?: MessageType; // optional
   fileName?: string | null;
   fileSize?: number | null;
+  fileUrl?: string | null; // ✅ Add this for image/file URL
 }
 
 
@@ -36,6 +37,7 @@ export interface Conversation {
   provider?: ChatUser | null;
   messages?: ChatMessage[]; // can be undefined, but better default []
   unreadCount?: number;
+ // ✅ Add this for last message image preview
 }
 
 

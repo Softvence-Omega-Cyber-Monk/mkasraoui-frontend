@@ -1,112 +1,93 @@
-// /* eslint-disable react-hooks/rules-of-hooks */
-// import { setSelectedConversation } from "@/redux/features/chatmessage/chatSlice";
-// import { useAppDispatch, useAppSelector } from "@/redux/hooks/redux-hook";
-// import type { Conversation } from "@/redux/types/chat.types";
-// import { useSocket } from "@/services/Usesocket";
 
 
-// interface Props {
-//   conversations: Conversation[];
-//   loading?: boolean;
-// }
+"use client";
+import { useState, useEffect } from "react";
 
+interface Conversation {
+  id: string;
+  otherUserName?: string;
+  lastMessage?: string;
+  unreadCount?: number;
+}
 
-// export default function ConversationList({ conversations, loading }: Props) {
-//   const dispatch = useAppDispatch();
-//   const selected = useAppSelector((s) => s.chat.selectedConversationId);
-
-
-//   const handleClick = (id: string) => {
-//     dispatch(setSelectedConversation(id));
-//     try {
-//       const socket = useSocket(id);
-//       socket?.current?.emit("conversation:join", { conversationId: id });
-//     } catch (e) {
-//       // socket not ready or not connected
-//       console.log(e)
-//     }
-//   };
-
-
-//   return (
-//     <div className="w-80 border-r border-[#BDBDBE] bg-white">
-//       <div className="border-b border-[#BDBDBE] p-4">
-//         <h3 className="font-semibold">Conversations</h3>
-//       </div>
-//       <div className="h-[calc(100vh-120px)] overflow-y-auto">
-//         {loading ? (
-//           <div className="p-4 text-sm text-gray-500">Loading...</div>
-//         ) : (
-//           conversations.map((c) => {
-//             const partner = c.provider?.id === c.userId ? c.user : c.provider;
-//             return (
-//               <div
-//                 key={c.id}
-//                 onClick={() => handleClick(c.id)}
-//                 className={`cursor-pointer p-4 hover:bg-gray-50 ${selected === c.id ? "bg-blue-50" : ""}`}
-//               >
-//                 <div className="flex items-center justify-between">
-//                   <div>
-//                     <div className="font-medium">
-//                       {partner?.name ?? "Unknown"}
-//                     </div>
-//                     <div className="text-xs text-gray-500">
-//                       {partner?.address ?? partner?.email ?? ""}
-//                     </div>
-//                   </div>
-//                   {c.unreadCount ? (
-//                     <div className="ml-3 rounded-full bg-red-500 px-2 py-0.5 text-xs text-white">
-//                       {c.unreadCount}
-//                     </div>
-//                   ) : null}
-//                 </div>
-//               </div>
-//             );
-//           })
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-
- 
-
-
- 
-
-
-
-
-// ConversationList.tsx
 interface Props {
-  conversations: any[];
+  conversations: Conversation[];
   selectedId?: string;
   onSelect: (id: string) => void;
 }
 
 export default function ConversationList({ conversations, selectedId, onSelect }: Props) {
-  console.log("🧾 Conversations list component received:", conversations);
+  const [search, setSearch] = useState("");
+  const [unreadMap, setUnreadMap] = useState<Record<string, number>>({});
+
+  // Track unread counts
+  useEffect(() => {
+    const map: Record<string, number> = {};
+    conversations.forEach((c) => {
+      if (c.unreadCount && c.unreadCount > 0) {
+        map[c.id] = c.unreadCount;
+      }
+    });
+    setUnreadMap(map);
+  }, [conversations]);
+
+  const handleSelect = (id: string) => {
+    onSelect(id);
+    // Clear unread for selected conversation
+    setUnreadMap((prev) => ({ ...prev, [id]: 0 }));
+  };
+
+  const filteredConversations = conversations
+    .filter((c) => (c.otherUserName || c.id).toLowerCase().includes(search.toLowerCase()))
+    // Ensure selected conversation is always on top
+    .sort((a, b) => (a.id === selectedId ? -1 : b.id === selectedId ? 1 : 0));
 
   return (
-    <div className="w-64 border-r overflow-y-auto">
-      {conversations.length === 0 ? (
-        <div className="text-gray-400 p-4">No conversations found</div>
-      ) : (
-        conversations.map((c) => (
-          <div
-            key={c.id}
-            className={`p-3 cursor-pointer hover:bg-gray-100 ${
-              c.id === selectedId ? "bg-blue-100" : ""
-            }`}
-            onClick={() => onSelect(c.id)}
-          >
-            <div className="font-medium">{c.otherUserName || c.id}</div>
-            <div className="text-sm text-gray-500 truncate">
-              {c.lastMessage || "No messages yet"}
-            </div>
-          </div>
-        ))
-      )}
+    <div className="w-64 border-r flex flex-col">
+      {/* Search */}
+      <div className="p-2 border-b">
+        <input
+          type="text"
+          placeholder="Search conversations..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+      </div>
+
+      {/* Conversation List */}
+      <div className="overflow-y-auto flex-1">
+        {filteredConversations.length === 0 ? (
+          <div className="text-gray-400 p-4">No conversations found</div>
+        ) : (
+          filteredConversations.map((c) => {
+            const isUnread = unreadMap[c.id] && unreadMap[c.id] > 0;
+            const isSelected = c.id === selectedId;
+
+            return (
+              <div
+                key={c.id}
+                className={`p-3 cursor-pointer hover:bg-gray-100 transition-colors ${
+                  isSelected ? "bg-blue-100" : ""
+                }`}
+                onClick={() => handleSelect(c.id)}
+              >
+                <div className="flex justify-between items-center">
+                  <div className="font-medium">{c.otherUserName || c.id}</div>
+                  {isUnread && (
+                    <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                      {unreadMap[c.id]}
+                    </span>
+                  )}
+                </div>
+                <div className="text-sm text-gray-500 truncate mt-1">{c.lastMessage || ""}</div>
+              </div>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }
+
+

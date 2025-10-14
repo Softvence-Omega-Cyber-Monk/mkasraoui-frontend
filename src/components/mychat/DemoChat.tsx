@@ -7,5 +7,4 @@ const DemoChat = () => {
     </div>
   )
 }
-
 export default DemoChat
