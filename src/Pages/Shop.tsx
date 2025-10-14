@@ -3,12 +3,7 @@ import { ChevronDown, Search } from "lucide-react";
 import { useEffect, useState, type JSX } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
-import CustomizeTshirtModal from "@/components/shop/CustomizeTshirtModal";
 import MyHeader from "@/components/MyHeader/MyHeader";
-import { useGetAllProductsFlatQuery } from "@/redux/features/diyProducts/diyProductsApi";
-import type { DIYProduct } from "@/redux/types/diy.types";
-
-
 export default function Shop(): JSX.Element {
   // UI controls
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,95 +11,10 @@ export default function Shop(): JSX.Element {
   const [theme, setTheme] = useState("");
   const [productType, setProductType] = useState<"" | "DIY_BOX" | "GIFT">("");
   const navigate = useNavigate();
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedDIYProduct, setSelectedDIYProduct] = useState<DIYProduct | null>(null);
-  const { data: diyProducts = [], isLoading, isError } = useGetAllProductsFlatQuery();
 
   useEffect(() => {
     console.log("Search params:", { searchTerm, ageRange, theme, productType });
   }, [searchTerm, ageRange, theme, productType]);
-
-
-  type CardItem = {
-    id: string;
-    image: string;
-    imageAlt: string;
-    title: string;
-    description: string;
-    rating: number;
-    reviews: number;
-    price: number;
-    currentPrice: number;
-    discountedPrice?: number;
-    tags: string[];
-    buttonText: string;
-    buttonVariant: "orange" | "blue";
-    tag?: string;
-    age_range?: string;
-    product_type?: string;
-    theme?: string;
-    raw: DIYProduct;
-  };
-
-  const mapToCardItem = (p: DIYProduct): CardItem => {
-    return {
-      id: String(p.id),
-      image: p.imges?.[0] || "/placeholder.svg",
-      imageAlt: p.title || "Product",
-      title: p.title || "Untitled",
-      description: p.description || "",
-      rating: p.avg_rating ?? 5,
-      reviews: p.total_review ?? 0,
-      currentPrice: p.discounted_price ?? p.price ?? 0,
-      price: p.price ?? 0,
-      discountedPrice: p.discounted_price!,
-      tags: [p.product_type ?? "", p.age_range ?? "", p.theme ?? ""].filter(Boolean),
-      buttonText: "Add to Cart",
-      buttonVariant: "blue",
-      tag: p.theme ?? undefined,
-      age_range: p.age_range,
-      product_type: p.product_type,
-      theme: p.theme,
-      raw: p,
-    };
-  };
-
-  // Transform for CustomizeTshirtModal expected shape
-  type ModalProduct = {
-    id: number;
-    image: string;
-    imageAlt: string;
-    title: string;
-    description: string;
-    rating: number;
-    reviews: number;
-    currentPrice: number;
-    originalPrice: number;
-    tags: string[];
-    buttonText: string;
-    buttonVariant: string;
-    tag?: string;
-  };
-
-  const transformForModal = (p: DIYProduct): ModalProduct => {
-    return {
-      id: Number(p.id ?? 0),
-      image: p.imges?.[0] || "/placeholder.svg",
-      imageAlt: p.title || "Product",
-      title: p.title || "Untitled",
-      description: p.description || "",
-      rating: p.avg_rating ?? 5,
-      reviews: p.total_review ?? 0,
-      currentPrice: p.discounted_price ?? p.price ?? 0,
-      originalPrice: p.price ?? 0,
-      tags: [p.product_type ?? "", p.age_range ?? "", p.theme ?? ""].filter(Boolean),
-      buttonText: "Customize T-Shirt",
-      buttonVariant: "orange",
-      tag: p.theme ?? undefined,
-    };
-  };
-
-  // Render stars
   const renderStars = (rating: number) => {
     const stars = [];
     const fullStars = Math.floor(rating);
@@ -125,49 +35,6 @@ export default function Shop(): JSX.Element {
 
     return stars;
   };
-
-  const cardItems: CardItem[] = diyProducts.map(mapToCardItem);
-
-  // ---------- Updated filtering logic ----------
-  const filteredItems = cardItems.filter((item) => {
-    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesAge = !ageRange || ageRange === "all" ||
-      (item.age_range ?? "").toLowerCase().includes(ageRange.toLowerCase());
-
-    const matchesTheme = !theme || theme === "all" ||
-      (item.theme ?? "").toLowerCase().includes(theme.toLowerCase());
-
-    const matchesProductType = !productType || item.product_type === productType;
-
-    return matchesSearch && matchesAge && matchesTheme && matchesProductType;
-  });
-
-  // ---------- Loading / Error UI ----------
-  if (isLoading) {
-    return (
-      <div className="px-4">
-        <MyHeader title="Gift Shop" subtitle="Discover the perfect gifts with AI-powered recommendations" />
-        <div className="mt-10 max-w-7xl mx-auto text-center p-10">
-          <p className="text-gray-600">Loading products...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="px-4">
-        <MyHeader title="Gift Shop" subtitle="Discover the perfect gifts with AI-powered recommendations" />
-        <div className="mt-10 max-w-7xl mx-auto text-center p-10">
-          <p className="text-red-500">Failed to load products. Try again later.</p>
-        </div>
-      </div>
-    );
-  }
-
-  // ---------- JSX ----------
   return (
     <div className="px-4">
       <MyHeader
@@ -251,11 +118,6 @@ export default function Shop(): JSX.Element {
 
       {/* ---------- Products Grid ---------- */}
       <section className="mx-auto max-w-7xl">
-        {filteredItems.length === 0 ? (
-          <div className="mt-20 text-center p-10">
-            <p className="text-gray-600">No products found matching your criteria.</p>
-          </div>
-        ) : (
           <div className="mt-20 grid grid-cols-1 gap-6 pb-14 md:grid-cols-2 lg:grid-cols-3">
             <article
               role="button"
@@ -566,7 +428,7 @@ export default function Shop(): JSX.Element {
               </div>
             </article>
           </div>
-        )}
+
 
         <div className="mb-20 flex justify-center md:justify-end">
           <button
@@ -578,16 +440,7 @@ export default function Shop(): JSX.Element {
         </div>
       </section>
 
-      {/* Modal */}
-      {openModal && selectedDIYProduct && (
-        <CustomizeTshirtModal
-          product={transformForModal(selectedDIYProduct)}
-          onClose={() => {
-            setOpenModal(false);
-            setSelectedDIYProduct(null);
-          }}
-        />
-      )}
+
     </div>
   );
 }

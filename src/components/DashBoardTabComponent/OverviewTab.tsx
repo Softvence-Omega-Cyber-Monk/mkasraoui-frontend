@@ -1,8 +1,4 @@
 import { Calendar, Plus, Star } from "lucide-react";
-
-import p1 from "@/assets/dashbord-overview-p1.png";
-import p2 from "@/assets/dashbord-overview-p2.jpg";
-import p3 from "@/assets/dashbord-overview-p3.png";
 import { FaListCheck } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
@@ -20,11 +16,6 @@ function OverviewTab() {
             <div className="grid gap-1 p-2 pt-0 lg:p-6">
               {/* Party Item 1 */}
               <div className="flex items-center gap-4 rounded-xl bg-[#F9FAFB] p-3">
-                <img
-                  src={p1}
-                  alt="Kids dressed as superheroes at a birthday party"
-                  className="h-20 w-20 rounded-md object-cover"
-                />
                 <div className="grid flex-1 gap-0.5">
                   <div className="font text-xs font-semibold md:text-lg">
                     Emma's 7th Birthday
@@ -38,50 +29,6 @@ function OverviewTab() {
                 </div>
                 <span className="mr-4 rounded-full bg-[#BBDEFB] px-3 py-2 text-xs font-medium text-blue-700">
                   Planned
-                </span>
-              </div>
-              {/* Party Item 2 */}
-              <div className="flex items-center gap-4 rounded-lg bg-[#F9FAFB] p-3 shadow-sm">
-                <img
-                  src={p2}
-                  alt="Kids celebrating a birthday with a cake"
-                  className="h-20 w-20 rounded-md object-cover"
-                />
-                <div className="grid flex-1 gap-0.5">
-                  <div className="font text-xs font-semibold md:text-lg">
-                    Alfe's 7th Birthday
-                  </div>
-                  <div className="text-xs text-gray-500 md:text-sm">
-                    Superhero Adventure
-                  </div>
-                  <div className="text-xs text-gray-500 md:text-sm">
-                    2/15/2024
-                  </div>
-                </div>
-                <span className="mr-4 rounded-full bg-yellow-100 px-3 py-2 text-xs font-medium whitespace-nowrap text-yellow-700">
-                  in-progress
-                </span>
-              </div>
-              {/* Party Item 3 */}
-              <div className="flex items-center gap-4 rounded-lg bg-[#F9FAFB] p-3 shadow-sm">
-                <img
-                  src={p3}
-                  alt="Colorful confetti at a birthday party"
-                  className="h-20 w-20 rounded-md object-cover"
-                />
-                <div className="grid flex-1 gap-0.5">
-                  <div className="font text-xs font-semibold md:text-lg">
-                    Emma's 7th Birthday
-                  </div>
-                  <div className="text-xs text-gray-500 md:text-sm">
-                    Superhero Adventure
-                  </div>
-                  <div className="text-xs text-gray-500 md:text-sm">
-                    2/15/2024
-                  </div>
-                </div>
-                <span className="mr-4 rounded-full bg-[#D8FFCD] px-3 py-2 text-xs font-medium text-green-700">
-                  completed
                 </span>
               </div>
             </div>

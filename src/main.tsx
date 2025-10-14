@@ -72,6 +72,7 @@ import AdminAddBlogPage from "./Pages/Admin/AdminAddBlogPage";
 import ChatContainer from "./components/mychat/ChatContainer";
 import ProviderPaymentPage from "./Pages/Provider/ProviderPaymentPage";
 import PaymentSuccess from "./components/Shared/PaymentSuccess";
+import AdminDiyActivity from "./components/AdminDiyActivity/AdminDiyActivity";
 // import { SocketProvider } from "./services/SocketContext";
 // import ChatMessagePage from "./components/mychat/ChatMessagePage";
 
@@ -335,6 +336,10 @@ const router = createBrowserRouter([
       {
         path: "add-blog",
         element: <AdminAddBlogPage />,
+      },
+      {
+        path: "add-diyactivity",
+        element: <AdminDiyActivity />,
       },
       {
         path: "subscription-plan",

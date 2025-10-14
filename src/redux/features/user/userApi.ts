@@ -36,6 +36,11 @@ export const userApi = baseApi.injectEndpoints({
         result ? [{ type: "User" as const, id: result.id }] : [],
     }),
 
+    getUserMeta: build.query<any, void>({
+      query: () => "/user/meta-data/user",
+      transformResponse: (response: ApiResponse<User>) => response.data,
+    }),
+
     // POST /user -> create user
     createUser: build.mutation<User, CreateUserRequest>({
       query: (body) => ({
@@ -45,6 +50,8 @@ export const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: "User", id: "LIST" }],
     }),
+
+
 
     // PATCH /user/:id -> update user
     updateUser: build.mutation<User, FormData>({
@@ -80,6 +87,7 @@ export const {
   useGetUsersQuery,
   useGetUserQuery,
   useGetMeQuery,
+  useGetUserMetaQuery,
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
