@@ -43,6 +43,8 @@ export default function DiyBoxes() {
   // Get DIY boxes data
   const { data: activities = [], isLoading, isError } = useGetDIYBoxesQuery();
 
+  console.log(activities)
+
   // Star rating renderer
   const renderStars = (rating: number) => {
     const stars = [];

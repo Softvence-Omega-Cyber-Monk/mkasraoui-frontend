@@ -6,7 +6,6 @@ import InvitationsTab from "../DashBoardTabComponent/InvitationsTab";
 import FavositesTab from "../DashBoardTabComponent/FavositesTab";
 import ProfileTab from "../DashBoardTabComponent/ProfileTab";
 import { useLocation } from "react-router-dom";
-import PaymentTab from "../DashBoardTabComponent/PaymentTab";
 import UserAllActivity from "../DashBoardTabComponent/UserAllActivity";
 export default function PartyInvitations() {
   // const [activeTab, setActiveTab] = useState("Overview");
