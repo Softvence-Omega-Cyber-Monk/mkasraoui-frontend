@@ -256,7 +256,7 @@ export default function ProviderDetails() {
             </Link>
 
             <Link
-              to={`/dashboard/myChat?providerId=${provider.id}&providerName=${encodeURIComponent(provider.bussinessName)}`}
+              to={`/dashboard/myChat?providerId=${provider.userId}&providerName=${encodeURIComponent(provider.bussinessName)}`}
               className="hover:bg-secondary-dark mb-4 inline-block w-full cursor-pointer rounded-lg border bg-white px-4 py-3 text-center font-medium text-[#223B7D] transition-colors hover:text-white"
             >
               Chat Message

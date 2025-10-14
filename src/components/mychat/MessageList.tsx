@@ -56,9 +56,9 @@ export default function MessageList({ messages, myUserId }: MessageListProps) {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}
-                {msg.id?.startsWith("temp-") && (
+                {/* {msg.id?.startsWith("temp-") && (
                   <span className="ml-2 italic text-gray-200">Sending...</span>
-                )}
+                )} */}
               </div>
             </div>
           </div>
