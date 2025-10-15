@@ -7,7 +7,7 @@ import "./index.css";
 import DashboardLayout from "./Dashboard/DashboardLayout";
 import DefaultPage from "./Dashboard/dashboardpages/DefaultPage";
 import Earnings from "./Dashboard/dashboardpages/Earnings";
-import Messages from "./Dashboard/dashboardpages/Messages";
+// import Messages from "./Dashboard/dashboardpages/Messages";
 import Reviews from "./Dashboard/dashboardpages/Reviews";
 import Services from "./Dashboard/dashboardpages/Services";
 import AuthLayout from "./Layout/Auth/AuthLayout";
@@ -73,6 +73,7 @@ import ChatContainer from "./components/mychat/ChatContainer";
 import ProviderPaymentPage from "./Pages/Provider/ProviderPaymentPage";
 import PaymentSuccess from "./components/Shared/PaymentSuccess";
 import AdminDiyActivity from "./components/AdminDiyActivity/AdminDiyActivity";
+import Earning from "./Dashboard/dashboardpages/Earning";
 // import { SocketProvider } from "./services/SocketContext";
 // import ChatMessagePage from "./components/mychat/ChatMessagePage";
 
@@ -90,6 +91,10 @@ const router = createBrowserRouter([
       {
         path: "/success",
         element: <PaymentSuccess />,
+      },
+      {
+        path: "userChat",
+        element: <ChatContainer />,
       },
     ],
   },
@@ -269,14 +274,6 @@ const router = createBrowserRouter([
         element: <BookingParent />,
       },
       {
-        path: "messages",
-        element: <Messages />,
-      },
-      // {
-      //   path: "chat-message",
-      //   element: <ChatMessagePage />,
-      // },
-      {
         path: "myChat",
         element: <ChatContainer />,
       },
@@ -287,7 +284,7 @@ const router = createBrowserRouter([
       },
       {
         path: "earnings",
-        element: <Earnings />,
+        element: <Earning />,
       },
       {
         path: "provider-account",
@@ -357,10 +354,10 @@ const router = createBrowserRouter([
         path: "provider-plan",
         element: <ProviderPlanPage />,
       },
-      {
-        path: "messages",
-        element: <Messages />,
-      },
+      // {
+      //   path: "messages",
+      //   element: <Messages />,
+      // },
       {
         path: "reviews",
         element: <Reviews />,

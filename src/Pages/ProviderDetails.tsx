@@ -173,10 +173,11 @@ export default function ProviderDetails() {
                   <Star
                     key={star}
                     onClick={() => setRating(star)}
-                    className={`h-6 w-6 cursor-pointer ${star <= rating
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-gray-300"
-                      }`}
+                    className={`h-6 w-6 cursor-pointer ${
+                      star <= rating
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "text-gray-300"
+                    }`}
                   />
                 ))}
                 <span className="ml-2 text-gray-700">{rating} / 5</span>
@@ -226,10 +227,11 @@ export default function ProviderDetails() {
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Star
                           key={star}
-                          className={`h-4 w-4 ${star <= (review.rating ?? 0)
-                            ? "fill-yellow-400 text-yellow-400"
-                            : "text-gray-300"
-                            }`}
+                          className={`h-4 w-4 ${
+                            star <= (review.rating ?? 0)
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-gray-300"
+                          }`}
                         />
                       ))}
                     </div>
@@ -256,12 +258,11 @@ export default function ProviderDetails() {
             </Link>
 
             <Link
-              to={`/dashboard/myChat?providerId=${provider.userId}&providerName=${encodeURIComponent(provider.bussinessName)}`}
+              to={`/userChat?providerId=${provider.userId}&providerName=${encodeURIComponent(provider.bussinessName)}`}
               className="hover:bg-secondary-dark mb-4 inline-block w-full cursor-pointer rounded-lg border bg-white px-4 py-3 text-center font-medium text-[#223B7D] transition-colors hover:text-white"
             >
               Chat Message
             </Link>
-
 
             {/* <Link
   to={`/dashboard/myChat?userId=${provider.userId}`}
@@ -269,10 +270,6 @@ export default function ProviderDetails() {
 >
   Chat Message
 </Link> */}
-
-
-
-
           </div>
 
           {/* Contact Info */}
@@ -324,10 +321,13 @@ export default function ProviderDetails() {
               <h2 className="mb-4 text-2xl font-bold text-black">Map</h2>
               <div className="aspect-square overflow-hidden rounded-lg bg-gray-200">
                 <iframe
-                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${provider.longitude - 0.01
-                    }%2C${provider.latitude - 0.01}%2C${provider.longitude + 0.01
-                    }%2C${provider.latitude + 0.01}&layer=mapnik&marker=${provider.latitude
-                    }%2C${provider.longitude}`}
+                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${
+                    provider.longitude - 0.01
+                  }%2C${provider.latitude - 0.01}%2C${
+                    provider.longitude + 0.01
+                  }%2C${provider.latitude + 0.01}&layer=mapnik&marker=${
+                    provider.latitude
+                  }%2C${provider.longitude}`}
                   width="100%"
                   height="100%"
                   frameBorder="0"
