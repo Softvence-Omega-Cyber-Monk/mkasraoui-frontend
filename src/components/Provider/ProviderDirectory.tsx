@@ -16,7 +16,7 @@ export default function ProviderDirectory() {
   const [activeTab, setActiveTab] = useState<"list" | "map">("list");
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
-  const [price, setPrice] = useState("");
+  const [price] = useState("");
 
   // ✅ Fetch providers with filters
   const { data, isLoading, error } = useGetProvidersQuery({
@@ -82,7 +82,7 @@ export default function ProviderDirectory() {
             </select>
 
             {/* Price Range */}
-            <select
+            {/* <select
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               className="w-full rounded-lg border border-gray-200 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:outline-none md:w-auto"
@@ -92,7 +92,7 @@ export default function ProviderDirectory() {
               <option value="$100-$500">$100 - $500</option>
               <option value="$500-$1000">$500 - $1000</option>
               <option value="$1000+">$1000+</option>
-            </select>
+            </select> */}
           </div>
         </div>
 

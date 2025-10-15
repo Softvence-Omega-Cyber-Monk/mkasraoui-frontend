@@ -1,7 +1,5 @@
 import { useState, useMemo } from "react";
 import {  ChevronRight, Play } from "lucide-react";
-import vedio from "@/assets/5.png";
-import img from "@/assets/5.png";
 
 interface Activity {
   id: number;
