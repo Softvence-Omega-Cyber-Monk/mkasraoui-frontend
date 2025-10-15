@@ -157,7 +157,7 @@ export default function Shop(): JSX.Element {
                 <div className="mt-auto flex gap-3">
                   <button
                     onClick={() => window.location.href = "https://amzn.to/3KHm6Ye"}
-                    className="w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
+                    className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
                   >
                     Buy Now
                   </button>
@@ -201,7 +201,7 @@ export default function Shop(): JSX.Element {
                 <div className="mt-auto flex gap-3">
                   <button
                     onClick={() => window.location.href = "https://amzn.to/48pBouy"}
-                    className="w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
+                    className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
                   >
                     Buy Now
                   </button>
@@ -245,7 +245,7 @@ export default function Shop(): JSX.Element {
                 <div className="mt-auto flex gap-3">
                   <button
                     onClick={() => window.location.href = "https://amzn.to/3VVLJa7"}
-                    className="w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
+                    className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
                   >
                     Buy Now
                   </button>
@@ -287,7 +287,7 @@ export default function Shop(): JSX.Element {
                 <div className="mt-auto flex gap-3">
                   <button
                     onClick={() => window.location.href = "https://amzn.to/47i2xOO"}
-                    className="w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
+                    className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
                   >
                     Buy Now
                   </button>
@@ -331,7 +331,7 @@ export default function Shop(): JSX.Element {
                 <div className="mt-auto flex gap-3">
                   <button
                     onClick={() => window.location.href = "https://amzn.to/3Wy6xEK"}
-                    className="w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
+                    className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
                   >
                     Buy Now
                   </button>
@@ -376,7 +376,7 @@ export default function Shop(): JSX.Element {
                 <div className="mt-auto flex gap-3">
                   <button
                     onClick={() => window.location.href = "https://amzn.to/4mXtXyg"}
-                    className="w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
+                    className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
                   >
                     Buy Now
                   </button>
@@ -420,7 +420,7 @@ export default function Shop(): JSX.Element {
                 <div className="mt-auto flex gap-3">
                   <button
                     onClick={() => window.location.href = "https://amzn.to/3IYedx1"}
-                    className="w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
+                    className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
                   >
                     Buy Now
                   </button>
