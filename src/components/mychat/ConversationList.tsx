@@ -17,6 +17,7 @@ interface Props {
 }
 
 export default function ConversationList({ conversations, selectedId, onSelect }: Props) {
+  console.log(conversations,"conversations");
   const [search, setSearch] = useState("");
   const [unreadMap, setUnreadMap] = useState<Record<string, number>>({});
 
@@ -43,15 +44,15 @@ export default function ConversationList({ conversations, selectedId, onSelect }
     .sort((a, b) => (a.id === selectedId ? -1 : b.id === selectedId ? 1 : 0));
 
   return (
-    <div className="w-64 border-r flex flex-col">
+    <div className="w-64 border-r border-[#DBE0E5] flex flex-col">
       {/* Search */}
-      <div className="p-2 border-b">
+      <div className="p-2 border-b border-[#DBE0E5]">
         <input
           type="text"
           placeholder="Search conversations..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="w-full p-2 border border-[#DBE0E5] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
