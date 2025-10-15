@@ -1,9 +1,33 @@
+import { useGetUserMetaQuery } from "@/redux/features/user/userApi";
+
+
 export default function StatsMetrics() {
+  // ✅ Fetch meta data
+  const { data: meta, isLoading, isError } = useGetUserMetaQuery();
+
+  // ✅ Show loading or error states
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <p>Loading statistics...</p>
+      </div>
+    );
+  }
+
+  if (isError || !meta) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <p>Failed to load stats</p>
+      </div>
+    );
+  }
+
+  // ✅ Map API response to UI
   const stats = [
-    { number: "5", label: "Parties Planned" },
-    { number: "47", label: "Invitations Sent" },
-    { number: "123", label: "Guests Invited" },
-    { number: "3", label: "Favorite Boxes" },
+    { number: meta.totalCustomOrder ?? 0, label: "Custom Orders" },
+    { number: meta.totalQuotes ?? 0, label: "Quotes" },
+    { number: meta.totalOrder ?? 0, label: "Total Orders" },
+    { number: meta.totalFavorite ?? 0, label: "Favorite Boxes" },
   ];
 
   return (

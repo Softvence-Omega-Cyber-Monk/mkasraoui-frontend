@@ -2,7 +2,6 @@ import allBgImg from "@/assets/party-al-bg.png";
 import { useEffect, useRef, useState } from "react";
 import OverviewTab from "../DashBoardTabComponent/OverviewTab";
 import MyParties from "../DashBoardTabComponent/MyParties";
-import InvitationsTab from "../DashBoardTabComponent/InvitationsTab";
 import FavositesTab from "../DashBoardTabComponent/FavositesTab";
 import ProfileTab from "../DashBoardTabComponent/ProfileTab";
 import { useLocation } from "react-router-dom";
@@ -30,7 +29,6 @@ export default function PartyInvitations() {
   const tabs = [
     { id: "Overview", label: "Overview" },
     { id: "My Parties", label: "My Parties" },
-    { id: "Invitations", label: "Invitations" },
     { id: "Favorite", label: "Favorite" },
     { id: "Profile", label: "Profile" },
     { id: "Pay", label: "Payment" },
@@ -43,8 +41,6 @@ export default function PartyInvitations() {
         return <OverviewTab />;
       case "My Parties":
         return <MyParties />;
-      case "Invitations":
-        return <InvitationsTab />;
       case "Favorite":
         return <FavositesTab />;
       case "Profile":
