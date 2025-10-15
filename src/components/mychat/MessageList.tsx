@@ -35,7 +35,7 @@ export default function MessageList({ messages, myUserId }: MessageListProps) {
               className={`max-w-[75%] break-words rounded-2xl px-4 py-2 shadow-sm ${
                 isMine
                   ? "bg-blue-500 text-white rounded-br-none"
-                  : "bg-white text-gray-800 border border-gray-200 rounded-bl-none"
+                  : "bg-white text-gray-800 border border-[#DBE0E5] rounded-bl-none"
               }`}
             >
               {/* Render image if fileUrl exists */}

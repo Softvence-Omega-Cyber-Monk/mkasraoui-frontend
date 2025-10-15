@@ -61,16 +61,6 @@ function DashboardLayout() {
       icon: DashboardIcon,
       end: true,
     },
-    // {
-    //   to: "/dashboard/services",
-    //   label: "Provider",
-    //   icon: ServicesIcon,
-    // },
-    // {
-    //   to: "/dashboard/booking",
-    //   label: "Bookings",
-    //   icon: BookingIcon,
-    // },
     {
       to: "/",
       label: "Home",
@@ -87,7 +77,7 @@ function DashboardLayout() {
       icon: BookingIcon,
     },
     {
-      to: "/dashboard/messages",
+      to: "/dashboard/myChat",
       label: "Messages",
       icon: MessagesIcon,
       badge: 3, // Example notification badge
@@ -102,12 +92,6 @@ function DashboardLayout() {
       label: "Earnings",
       icon: EarningsIcon,
     },
-    {
-      to: "/dashboard/payment",
-      label: "payment",
-      icon: EarningsIcon,
-    },
-   
   ];
 
   const NavItem = ({
@@ -315,16 +299,6 @@ function DashboardLayout() {
 
           {/* Header content */}
           <div className="flex flex-1 items-center justify-end gap-4">
-            {/* Notifications */}
-            {/* <button
-              type="button"
-              className="relative rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              aria-label="View notifications"
-            >
-              <BellIcon className="h-6 w-6" aria-hidden="true" />
-              <span className="absolute -right-1 -top-1 block h-3 w-3 rounded-full bg-red-400 ring-2 ring-white" />
-            </button> */}
-
             {/* User Menu */}
             <Menu as="div" className="relative">
               <MenuButton className="focus:ring-secondary-light/60 flex cursor-pointer items-center gap-3 rounded-lg bg-white p-1.5 text-sm hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:outline-none">
@@ -375,41 +349,7 @@ function DashboardLayout() {
 
                     {/* Render PartyInvitations only when button is clicked */}
                   </div>
-                  <div className="py-1">
-                    {/* <MenuItem>
-                      {({ focus }) => (
-                        <Link
-                          to="/dashboard/profile"
-                          className={`block px-4 py-2 text-sm transition-colors ${focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
-                            }`}
-                        >
-                          View Profile
-                        </Link>
-                      )}
-                    </MenuItem> */}
-                    {/* <MenuItem>
-                      {({ focus }) => (
-                        <Link
-                          to="/dashboard/settings"
-                          className={`block px-4 py-2 text-sm transition-colors ${focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
-                            }`}
-                        >
-                          Settings
-                        </Link>
-                      )}
-                    </MenuItem> */}
-                    {/* <MenuItem>
-                      {({ focus }) => (
-                        <Link
-                          to="/help"
-                          className={`block px-4 py-2 text-sm transition-colors ${focus ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
-                            }`}
-                        >
-                          Help & Support
-                        </Link>
-                      )}
-                    </MenuItem> */}
-                  </div>
+                  <div className="py-1"></div>
                   <div className="border-t border-gray-100 py-1">
                     <MenuItem>
                       {({ focus }) => (
