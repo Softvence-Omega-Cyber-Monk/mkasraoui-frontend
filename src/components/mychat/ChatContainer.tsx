@@ -37,6 +37,7 @@ export default function ChatContainer({ isProvider = false }: { isProvider?: boo
     : [];
 
   const { data: conversations = [] } = useGetConversationsQuery(undefined, { skip: !MY_USER_ID });
+  console.log(conversations,"conversations");
   const { data: fetchedMessages = [], isLoading, isFetching } = useGetMessagesQuery(
     selectedConversationId ? { conversationId: selectedConversationId } : ({} as any),
     { skip: !selectedConversationId }
@@ -152,30 +153,72 @@ const providerConversation = useMemo<Conversation | null>(() => {
     return { name: partner?.name || `User ${partner?.id?.slice(0, 4)}` || "Unknown" };
   };
 
+  // const conversationListProps = useMemo(() => {
+  //   let list = Array.isArray(conversations)
+  //     ? conversations.map((c) => ({
+  //         id: c.id,
+  //         otherUserName: getPartnerDetails(c).name,
+  //         lastMessage: c.lastMessagePreview || "No messages yet",
+  //         unreadCount: c.unreadCount || 0,
+  //       }))
+  //     : [];
+
+  //   if (providerConversation && !list.some((c) => c.id === providerConversation.id)) {
+  //     list = [
+  //       {
+  //         id: providerConversation.id,
+  //         otherUserName: providerConversation.provider?.name || "Provider",
+  //         lastMessage: providerConversation.lastMessagePreview || "No messages yet",
+  //         unreadCount: providerConversation.unreadCount || 0,
+  //       },
+  //       ...list,
+  //     ];
+  //   }
+
+  //   return list;
+  // }, [conversations, providerConversation]);
+
+
+
+
   const conversationListProps = useMemo(() => {
-    let list = Array.isArray(conversations)
-      ? conversations.map((c) => ({
-          id: c.id,
-          otherUserName: getPartnerDetails(c).name,
-          lastMessage: c.lastMessagePreview || "No messages yet",
-          unreadCount: c.unreadCount || 0,
-        }))
-      : [];
+  // ✅ Map backend conversations
+  const listFromBackend = Array.isArray(conversations)
+    ? conversations.map((c) => ({
+        id: c.id,
+        providerId: c.provider?.id,
+        otherUserName: getPartnerDetails(c).name,
+        lastMessage: c.lastMessagePreview || "No messages yet",
+        unreadCount: c.unreadCount || 0,
+      }))
+    : [];
 
-    if (providerConversation && !list.some((c) => c.id === providerConversation.id)) {
-      list = [
+  // ✅ Add temp provider conversation only if it doesn't already exist for same provider
+  const alreadyExists = listFromBackend.some(
+    (c) => String(c.providerId) === String(providerId)
+  );
+
+  const finalList = alreadyExists
+    ? listFromBackend
+    : [
         {
-          id: providerConversation.id,
-          otherUserName: providerConversation.provider?.name || "Provider",
-          lastMessage: providerConversation.lastMessagePreview || "No messages yet",
-          unreadCount: providerConversation.unreadCount || 0,
+          id: providerConversation?.id ?? "",
+          providerId: providerId,
+          otherUserName: providerConversation?.provider?.name || "Provider",
+          lastMessage: providerConversation?.lastMessagePreview || "No messages yet",
+          unreadCount: providerConversation?.unreadCount || 0,
         },
-        ...list,
+        ...listFromBackend,
       ];
-    }
 
-    return list;
-  }, [conversations, providerConversation]);
+  // ✅ Remove any accidental duplicates by providerId
+  const uniqueByProvider = finalList.filter(
+    (v, i, a) =>
+      i === a.findIndex((t) => String(t.providerId) === String(v.providerId))
+  );
+
+  return uniqueByProvider;
+}, [conversations, providerConversation, providerId]);
 
   const currentPartnerName = useMemo(() => {
     const currentConversation = [...conversations, providerConversation].find(
@@ -234,7 +277,7 @@ const providerConversation = useMemo<Conversation | null>(() => {
   );
 
   return (
-    <div className="flex h-[calc(100vh_-_100px)] border rounded-lg overflow-hidden shadow-xl bg-white">
+    <div className="flex h-[calc(100vh_-_100px)] border border-[#DBE0E5] rounded-lg overflow-hidden shadow-xl bg-white">
       <ConversationList
         conversations={conversationListProps}
         selectedId={selectedConversationId ?? undefined}
@@ -242,7 +285,7 @@ const providerConversation = useMemo<Conversation | null>(() => {
       />
 
       <div className="flex flex-1 flex-col bg-gray-50">
-        <div className="p-4 border-b bg-white font-semibold text-lg">
+        <div className="p-4 border-b border-[#DBE0E5] bg-white font-semibold text-lg">
           {currentPartnerName}
           {connected ? (
             <span className="ml-2 text-green-500 text-sm">(online)</span>

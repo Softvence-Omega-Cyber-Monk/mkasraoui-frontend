@@ -22,7 +22,7 @@ export default function MessageInput({ onSend, disabled }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-3 border-t flex flex-col bg-white gap-2"
+      className="p-3 border-t border-[#DBE0E5] flex flex-col bg-white gap-2"
     >
       {/* ✅ Show preview before sending */}
       {file && (
@@ -60,12 +60,12 @@ export default function MessageInput({ onSend, disabled }: Props) {
           disabled={disabled}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1 border rounded-full px-4 py-2 outline-none"
+          className="flex-1 border border-[#DBE0E5] rounded-full px-4 py-2 outline-none"
         />
         <button
           type="submit"
           disabled={disabled}
-          className="bg-blue-600 text-white px-4 py-2 rounded-full"
+          className="bg-blue-600 hover:cursor-pointer text-white px-4 py-2 rounded-full"
         >
           Send
         </button>
