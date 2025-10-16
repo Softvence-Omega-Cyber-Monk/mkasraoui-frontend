@@ -1,10 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-
 export interface GenerateTShirtRequest {
   t_shirt_type: string;
   t_shirt_size: string;
-  apparel_type: string
+  apparel_type: string;
   gender: string;
   t_shirt_color: string;
   age: number;
@@ -13,19 +12,17 @@ export interface GenerateTShirtRequest {
   img_file?: File | null;
 }
 
-
 export interface GenerateTShirtResponse {
   success: boolean;
   message: string;
   generated_design_url: string;
-  generated_mockup_url: string
+  generated_mockup_url: string;
 }
-
 
 export const tShirtApi = createApi({
   reducerPath: "tShirtApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://72.60.190.101:8000",
+    baseUrl: "https://ai.mafetefacile.fr",
   }),
   endpoints: (builder) => ({
     generateTShirt: builder.mutation<
@@ -48,7 +45,6 @@ export const tShirtApi = createApi({
           formData.append("img_file", body.img_file);
         }
 
-
         return {
           url: "/t_shirt_generate",
           method: "POST",
@@ -59,19 +55,17 @@ export const tShirtApi = createApi({
   }),
 });
 
-
 export const { useGenerateTShirtMutation } = tShirtApi;
-
 
 // import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // export interface GenerateTShirtRequest {
-//   t_shirt_type: string; 
-//   t_shirt_size: string; 
-//   gender: string; 
-//   t_shirt_color: string; 
+//   t_shirt_type: string;
+//   t_shirt_size: string;
+//   gender: string;
+//   t_shirt_color: string;
 //   age: number;
-//   t_shirt_theme: string; 
+//   t_shirt_theme: string;
 //   optional_description?: string;
 //   img_file?: File | null;
 // }
@@ -79,14 +73,14 @@ export const { useGenerateTShirtMutation } = tShirtApi;
 // export interface GenerateTShirtResponse {
 //   success: boolean;
 //   message: string;
-//   generated_design_url: string; 
+//   generated_design_url: string;
 //   generated_mockup_url: string
 // }
 
 // export const tShirtApi = createApi({
 //   reducerPath: "tShirtApi",
 //   baseQuery: fetchBaseQuery({
-//     baseUrl: "http://72.60.190.101:8000", 
+//     baseUrl: "http://72.60.190.101:8000",
 //   }),
 //   endpoints: (builder) => ({
 //     generateTShirt: builder.mutation<
