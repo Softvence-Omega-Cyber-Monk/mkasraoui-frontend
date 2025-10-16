@@ -476,7 +476,7 @@ const AdminProductTable: React.FC = () => {
               >
                 <option value="">Select Product Type</option>
                 <option value="DIY_BOX">DIY Box</option>
-                <option value="GIFT">Gift</option>
+                {/* <option value="GIFT">Gift</option> */}
               </select>
 
               <input
