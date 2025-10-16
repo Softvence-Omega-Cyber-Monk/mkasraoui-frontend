@@ -105,16 +105,16 @@ function AdminLayout() {
       label: "Add Diy Activity",
       icon: FaJediOrder,
     },
-    {
-      to: "/admin-dashboard/subscription-plan",
-      label: "General Plan",
-      icon: FaMoneyCheckDollar,
-    },
-    {
-      to: "/admin-dashboard/provider-plan",
-      label: "Provider Plan",
-      icon: FaFileInvoiceDollar,
-    },
+    // {
+    //   to: "/admin-dashboard/subscription-plan",
+    //   label: "General Plan",
+    //   icon: FaMoneyCheckDollar,
+    // },
+    // {
+    //   to: "/admin-dashboard/provider-plan",
+    //   label: "Provider Plan",
+    //   icon: FaFileInvoiceDollar,
+    // },
     {
       to: "/admin-dashboard/news-letter",
       label: "News Letter",
