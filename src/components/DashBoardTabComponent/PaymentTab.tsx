@@ -5,6 +5,7 @@ import {
   useGetMyQuotesQuery,
 } from "@/redux/features/quotes/quotesApi";
 import { useState } from "react";
+import { FaCcAmazonPay } from "react-icons/fa";
 
 const statusColors: Record<string, string> = {
   PAID: "bg-green-100 text-green-700",
@@ -146,27 +147,11 @@ export default function PaymentTab() {
                           className={`flex cursor-pointer items-center justify-center space-x-1 rounded-lg px-4 py-1.5 text-sm font-semibold text-white shadow transition duration-200 ${
                             paying
                               ? "cursor-not-allowed bg-blue-300"
-                              : "bg-blue-600 hover:bg-blue-700 hover:shadow-lg"
+                              : "bg-[#223B7D] hover:bg-[#071e5c] hover:shadow-lg"
                           }`}
                         >
-                          <svg
-                            className="h-4 w-4"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M12 8c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2s2-.9 2-2v-4c0-1.1-.9-2-2-2z"
-                            />
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M6 12h12"
-                            />
-                          </svg>
+                          <FaCcAmazonPay />
+
                           <span>{paying ? "Processing..." : "Pay Now"}</span>
                         </button>
                       )}
