@@ -433,7 +433,6 @@ const BecomeProvider = () => {
               <div>
                 <label className="mb-2 flex items-center font-medium text-gray-700">
                   <DollarSign className="text-secondary mr-2 h-5 w-5" /> Price
-                
                 </label>
                 <input
                   type="text"

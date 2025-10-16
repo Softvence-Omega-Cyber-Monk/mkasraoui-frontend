@@ -229,9 +229,9 @@ const DiyActivities: React.FC = () => {
                     {toArray(selectedActivity.materials).map((m, i) => (
                       <li
                         key={i}
-                        className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg text-gray-700 hover:bg-indigo-50 transition"
+                        className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 text-gray-700 transition hover:bg-indigo-50"
                       >
-                        <span className="text-indigo-600 font-bold">✓</span> {m}
+                        <span className="font-bold text-indigo-600">✓</span> {m}
                       </li>
                     ))}
                   </ul>
