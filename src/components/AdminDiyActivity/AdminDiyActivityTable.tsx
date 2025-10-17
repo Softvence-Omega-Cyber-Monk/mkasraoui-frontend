@@ -39,11 +39,11 @@ const stripHtml = (html?: string) => {
   return div.textContent || div.innerText || "";
 };
 
-const RichTextInput: React.FC<{ value: string; onChange: (v: string) => void }> = ({
-  value,
-  onChange,
-}) => (
-  <div className="overflow-hidden rounded-lg border border-gray-300 p-2 h-[250px]">
+const RichTextInput: React.FC<{
+  value: string;
+  onChange: (v: string) => void;
+}> = ({ value, onChange }) => (
+  <div className="h-[250px] overflow-hidden rounded-lg border border-gray-300 p-2">
     <RichTextEditor
       value={value}
       onChange={onChange}
@@ -133,7 +133,10 @@ const AdminActivityTable: React.FC = () => {
 
     try {
       if (editingActivity) {
-        await updateActivity({ id: editingActivity.id, data: payload }).unwrap();
+        await updateActivity({
+          id: editingActivity.id,
+          data: payload,
+        }).unwrap();
         toast.success("Activity updated successfully");
       } else {
         await addActivity(payload).unwrap();
@@ -161,20 +164,21 @@ const AdminActivityTable: React.FC = () => {
   return (
     <div>
       {/* Header */}
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Title title="DIY Activities" />
+
         <button
           onClick={openAddModal}
-          className="mt-auto flex items-center hover:cursor-pointer justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
+          className="bg-secondary-dark hover:bg-secondary-light flex items-center justify-center gap-2 rounded-xl px-5 py-2 font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:cursor-pointer focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:outline-none"
         >
-          <Plus className="w-5 h-5" /> Add Activity
+          <Plus className="h-5 w-5" /> Add Activity
         </button>
       </div>
 
       {/* Table */}
       <div className="overflow-hidden rounded-lg border border-gray-300 bg-white">
         <table className="w-full min-w-[900px]">
-          <thead className="bg-gray-50 border-b border-gray-300">
+          <thead className="border-b border-gray-300 bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left">Title</th>
               <th className="px-6 py-3 text-left">Description</th>
@@ -186,19 +190,19 @@ const AdminActivityTable: React.FC = () => {
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={5} className="text-center p-6">
+                <td colSpan={5} className="p-6 text-center">
                   Loading...
                 </td>
               </tr>
             ) : isError ? (
               <tr>
-                <td colSpan={5} className="text-center p-6">
+                <td colSpan={5} className="p-6 text-center">
                   Error fetching activities
                 </td>
               </tr>
             ) : activities.length === 0 ? (
               <tr>
-                <td colSpan={5} className="text-center p-6 text-gray-500">
+                <td colSpan={5} className="p-6 text-center text-gray-500">
                   No activities found.
                 </td>
               </tr>
@@ -208,14 +212,16 @@ const AdminActivityTable: React.FC = () => {
                   key={a.id}
                   className="border-b border-gray-300 hover:bg-gray-50"
                 >
-                  <td className="px-6 py-4">{a.title}</td>
-                  <td className="px-6 py-4">
-                    {stripHtml(a.description).slice(0, 50)}...
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {stripHtml(a.title).slice(0, 20)}
                   </td>
-                  <td className="px-6 py-4">
-                    {stripHtml(a.instruction_sheet).slice(0, 50)}...
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {stripHtml(a.description).slice(0, 20)}...
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {stripHtml(a.instruction_sheet).slice(0, 20)}...
+                  </td>
+                  {/* <td className="px-6 py-4 whitespace-nowrap">
                     {a.video ? (
                       <a
                         href={a.video}
@@ -228,23 +234,40 @@ const AdminActivityTable: React.FC = () => {
                     ) : (
                       "No video"
                     )}
+                  </td> */}
+
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {a.video ? (
+                      <div className="h-12 w-20 overflow-hidden rounded-md border border-gray-300 bg-gray-100">
+                        <video
+                          src={a.video + "#t=0.5"} // load a frame half a second in to avoid blank
+                          muted
+                          playsInline
+                          preload="metadata"
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-500">No video</span>
+                    )}
                   </td>
+
                   <td className="flex justify-center gap-2 px-6 py-4">
                     <button
                       onClick={() => openEditModal(a)}
-                      className="p-2 hover:cursor-pointer bg-yellow-500 text-white rounded"
+                      className="rounded-lg bg-yellow-500 p-2 text-white hover:cursor-pointer"
                     >
                       <FaRegEdit />
                     </button>
                     <button
                       onClick={() => setConfirmDelete(a)}
-                      className="p-2 hover:cursor-pointer bg-red-600 text-white rounded"
+                      className="rounded-lg bg-red-600 p-2 text-white hover:cursor-pointer"
                     >
                       <MdDelete />
                     </button>
                     <button
                       onClick={() => setViewActivity(a)}
-                      className="p-2 hover:cursor-pointer bg-green-500 text-white rounded"
+                      className="rounded-lg bg-[#0F1F4C] p-2 text-white hover:cursor-pointer"
                     >
                       <GrView />
                     </button>
@@ -258,24 +281,27 @@ const AdminActivityTable: React.FC = () => {
 
       {/* Add/Edit Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 overflow-y-auto">
-          <div className="w-full max-w-3xl rounded-lg bg-white p-6 overflow-y-auto max-h-[90vh]">
-            <div className="flex justify-between items-center mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50">
+          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6">
+            <div className="mb-4 flex items-center justify-between">
               <h3 className="text-xl font-semibold">
                 {editingActivity ? "Edit Activity" : "Add Activity"}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 hover:cursor-pointer bg-gray-200 rounded"
+                className="cursor-pointer rounded-xl bg-gray-200 p-3 hover:cursor-pointer"
               >
                 X
               </button>
             </div>
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col gap-4"
+            >
               <input
                 {...register("title", { required: true })}
                 placeholder="Title"
-                className="border border-gray-300 p-2 rounded"
+                className="rounded border border-gray-300 p-2"
               />
               {errors.title && (
                 <span className="text-red-500">Title required</span>
@@ -284,7 +310,7 @@ const AdminActivityTable: React.FC = () => {
               <textarea
                 {...register("description", { required: true })}
                 placeholder="Description"
-                className="border border-gray-300 p-2 rounded"
+                className="rounded border border-gray-300 p-2"
                 rows={3}
               />
               {errors.description && (
@@ -295,33 +321,98 @@ const AdminActivityTable: React.FC = () => {
                 name="instruction_sheet"
                 control={control}
                 render={({ field }) => (
-                  <RichTextInput value={field.value ?? ""} onChange={field.onChange} />
+                  <RichTextInput
+                    value={field.value ?? ""}
+                    onChange={field.onChange}
+                  />
                 )}
               />
 
-              <input type="file" accept="video/*" onChange={handleFileChange} />
-              {formData.videoPreview && (
-                <video
-                  src={formData.videoPreview}
-                  controls
-                  className="mt-2 w-full max-h-60 rounded"
+              {/* <div>
+                <input
+                  type="file"
+                  accept="video/*"
+                  onChange={handleFileChange}
                 />
-              )}
+                {formData.videoPreview && (
+                  <video
+                    src={formData.videoPreview}
+                    controls
+                    className="mt-2 max-h-60 w-full rounded"
+                  />
+                )}
+              </div> */}
+              <div>
+                <div>
+                  <label
+                    htmlFor="video-upload"
+                    className="mb-2 block text-base font-medium text-gray-700"
+                  >
+                    Upload Video
+                  </label>
+                </div>
 
-              <div className="flex justify-end gap-2 mt-4">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="mt-auto flex items-center hover:cursor-pointer justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="mt-auto flex items-center hover:cursor-pointer justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
-                >
-                  {editingActivity ? "Update" : "Add"}
-                </button>
+                <div className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition hover:border-blue-400">
+                  <input
+                    id="video-upload"
+                    type="file"
+                    accept="video/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="video-upload"
+                    className="flex cursor-pointer flex-col items-center justify-center text-center"
+                  >
+                    <svg
+                      className="mb-2 h-10 w-10 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M7 16V4m0 0L3 8m4-4l4 4M17 8h4m0 0v8m0-8l-4 4m4-4l-4 4M7 20h10"
+                      />
+                    </svg>
+                    <p className="text-sm text-gray-600">
+                      Click to upload or drag and drop
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      MP4, MOV, or AVI (max 100MB)
+                    </p>
+                  </label>
+                </div>
+
+                {formData.videoPreview && (
+                  <div className="mt-4">
+                    <video
+                      src={formData.videoPreview}
+                      controls
+                      className="max-h-64 w-full rounded-xl border border-gray-300 shadow-sm"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-4 flex justify-end gap-2">
+                <div className="mt-2 flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="rounded-xl bg-gray-300 px-5 py-2 hover:cursor-pointer hover:bg-gray-400"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-secondary-dark hover:bg-secondary-light rounded-xl px-5 py-2 text-white hover:cursor-pointer"
+                  >
+                    {editingActivity ? "Update" : "Add Activity"}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
@@ -331,19 +422,19 @@ const AdminActivityTable: React.FC = () => {
       {/* Delete Modal */}
       {confirmDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-6 rounded-lg max-w-sm">
-            <h3 className="text-lg font-bold mb-2">Delete Activity</h3>
+          <div className="max-w-sm rounded-lg bg-white p-6">
+            <h3 className="mb-2 text-lg font-bold">Delete Activity</h3>
             <p>Are you sure you want to delete "{confirmDelete.title}"?</p>
             <div className="mt-4 flex justify-end gap-2">
               <button
                 onClick={() => setConfirmDelete(null)}
-                className="flex w-full items-center hover:cursor-pointer justify-center gap-2 rounded-md bg-gray-400 px-4 py-3 text-sm text-white font-medium hover:bg-gray-500 transition-all"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-400 px-4 py-3 text-base font-medium text-white transition-all hover:cursor-pointer hover:bg-gray-500"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
-                className="flex w-full items-center hover:cursor-pointer justify-center gap-2 rounded-md bg-red-600 px-4 py-3 text-sm text-white font-medium hover:bg-red-700 transition-all"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3 text-base font-medium text-white transition-all hover:cursor-pointer hover:bg-red-700"
               >
                 Delete
               </button>
@@ -354,48 +445,48 @@ const AdminActivityTable: React.FC = () => {
 
       {/* ✅ View Modal (UI aligned with main modal) */}
       {viewActivity && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
             {/* Title */}
-            <h2 className="text-2xl p-6 font-bold text-gray-800 tracking-wide">
+            <h2 className="p-6 text-2xl font-bold tracking-wide text-gray-800">
               {viewActivity.title}
             </h2>
 
             {/* Close Button */}
             <button
               onClick={() => setViewActivity(null)}
-              className="absolute top-4 right-4 hover:cursor-pointer text-white bg-black/30 hover:bg-black/50 rounded-full p-2 transition"
+              className="absolute top-4 right-4 rounded-full bg-black/30 p-2 text-white transition hover:cursor-pointer hover:bg-black/50"
             >
               ✕
             </button>
 
             {/* Media Section */}
-            <div className="relative w-full mt-4 p-3 h-72 md:h-80 rounded-t-2xl overflow-hidden">
+            <div className="relative mt-4 h-72 w-full overflow-hidden rounded-t-2xl p-3 md:h-80">
               {viewActivity.video ? (
                 <video
                   src={viewActivity.video}
                   controls
                   autoPlay
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                 />
               ) : (
                 <img
                   src={viewActivity.images?.[0] || "/placeholder.png"}
                   alt={viewActivity.title}
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                 />
               )}
             </div>
 
             {/* Content */}
-            <div className="p-6 space-y-6">
+            <div className="space-y-6 p-6">
               {viewActivity.description && (
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  <h3 className="mb-2 text-lg font-semibold text-gray-800">
                     About this Activity
                   </h3>
                   <div
-                    className="text-gray-700 prose"
+                    className="prose text-gray-700"
                     dangerouslySetInnerHTML={{
                       __html: viewActivity.description,
                     }}
@@ -405,7 +496,7 @@ const AdminActivityTable: React.FC = () => {
 
               {viewActivity.instruction_sheet && (
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                  <h3 className="mb-3 text-lg font-semibold text-gray-800">
                     🪄 Step-by-Step Instructions
                   </h3>
                   <div
@@ -421,7 +512,7 @@ const AdminActivityTable: React.FC = () => {
               <div className="flex justify-end">
                 <button
                   onClick={() => setViewActivity(null)}
-                  className="flex items-center justify-center gap-2 hover:cursor-pointer rounded-lg bg-[#223B7D] px-5 py-2.5 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
+                  className="flex items-center justify-center gap-2 rounded-lg bg-[#223B7D] px-5 py-2.5 text-sm font-medium text-white transition-all hover:cursor-pointer hover:bg-[#343f5c]"
                 >
                   Close
                 </button>
@@ -435,21 +526,6 @@ const AdminActivityTable: React.FC = () => {
 };
 
 export default AdminActivityTable;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // // With this:
 // import { useState } from "react";
@@ -775,39 +851,11 @@ export default AdminActivityTable;
 //   </div>
 // )}
 
-
-
-
 //     </div>
 //   );
 // };
 
 // export default AdminActivityTable;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // // src/components/AdminActivityTable.tsx
 // import React, { useState, ChangeEvent } from "react";
@@ -1051,28 +1099,6 @@ export default AdminActivityTable;
 // };
 
 // export default AdminActivityTable;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // // src/components/AdminDiyActivityTable.tsx
 // import React, { useState, ChangeEvent } from "react";
@@ -1360,30 +1386,3 @@ export default AdminActivityTable;
 // };
 
 // export default AdminDiyActivityTable;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 

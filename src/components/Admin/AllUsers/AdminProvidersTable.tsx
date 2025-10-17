@@ -218,7 +218,7 @@ const AdminProvidersTable: React.FC = () => {
                         </td>
 
                         {/* Actions */}
-                        <td className="flex justify-center space-x-2 py-3">
+                        <td className="flex items-center justify-center space-x-2 py-3">
                           {!p.isApproved && (
                             <>
                               <button
@@ -241,7 +241,7 @@ const AdminProvidersTable: React.FC = () => {
                           )}
                           <button
                             onClick={() => setViewProviderId(p.id)}
-                            className="flex cursor-pointer items-center justify-center rounded-md bg-emerald-500 p-2 text-white transition hover:bg-emerald-600"
+                            className="flex cursor-pointer items-center justify-center rounded-lg bg-[#0F1F4C] p-2 text-white transition hover:bg-[#02133f]"
                             title="View Provider"
                           >
                             <GrView className="h-4 w-4" />
