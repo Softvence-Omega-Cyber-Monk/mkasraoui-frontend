@@ -196,22 +196,22 @@ const AdminProductTable: React.FC = () => {
           <table className="w-full min-w-[800px]">
             <thead className="border-b-2 border-[#DBE0E5] bg-gray-50">
               <tr>
-                <th className="px-6 py-5 text-left text-sm font-medium text-gray-700">
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">
                   Title
                 </th>
-                <th className="px-6 py-5 text-left text-sm font-medium text-gray-700">
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">
                   Description
                 </th>
-                <th className="px-6 py-5 text-left text-sm font-medium text-gray-700">
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">
                   Type
                 </th>
-                <th className="px-6 py-5 text-left text-sm font-medium text-gray-700">
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">
                   Age Range
                 </th>
-                <th className="px-6 py-5 text-left text-sm font-medium text-gray-700">
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">
                   Price
                 </th>
-                <th className="px-6 py-5 text-center text-sm font-medium text-gray-500">
+                <th className="px-6 py-4 text-center text-sm font-medium text-gray-500">
                   Action
                 </th>
               </tr>
@@ -242,24 +242,25 @@ const AdminProductTable: React.FC = () => {
                     key={product.id}
                     className="border-b border-gray-100 hover:bg-gray-50"
                   >
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-900">
-                      {product.title}
+                    <td className="px-3 pr-3 text-sm font-semibold whitespace-nowrap text-gray-900">
+                      {product.title.split(" ").slice(0, 3).join(" ")}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+
+                    <td className="py-3 text-sm whitespace-nowrap text-gray-600">
                       {product.description.split(" ").slice(0, 5).join(" ")}
                       {product.description.split(" ").length > 5 && " ..."}
                     </td>
 
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="py-3 text-sm text-gray-600">
                       {product.product_type}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="py-3 text-sm text-gray-600">
                       {product.age_range}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="py-3 text-sm text-gray-600">
                       ${product.price}
                     </td>
-                    <td className="flex justify-center space-x-2 px-6 py-4">
+                    <td className="flex justify-center space-x-2 py-3">
                       {/* Edit Button */}
                       <button
                         onClick={() => openEditModal(product)}
