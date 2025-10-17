@@ -54,13 +54,13 @@ const AllUsers: React.FC = () => {
           <table className="w-full min-w-[800px]">
             <thead className="border-b-2 border-[#DBE0E5] bg-gray-50">
               <tr>
-                <th className="px-6 py-5 text-left text-sm font-medium text-gray-700">
+                <th className="px-6 py-5 text-left text-sm font-medium whitespace-nowrap text-gray-700">
                   User Name
                 </th>
                 <th className="px-6 py-5 text-left text-sm font-medium text-gray-700">
                   Email
                 </th>
-                <th className="px-6 py-5 text-left text-sm font-medium text-gray-700">
+                <th className="px-6 py-5 text-left text-sm font-medium whitespace-nowrap text-gray-700">
                   Phone Number
                 </th>
                 <th className="px-6 py-5 text-left text-sm font-medium text-gray-700">
@@ -111,7 +111,7 @@ const AllUsers: React.FC = () => {
                     key={user.id}
                     className="border-b border-gray-100 hover:bg-gray-50"
                   >
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-900">
+                    <td className="px-6 py-4 text-sm font-semibold whitespace-nowrap text-gray-900">
                       {user.name || "—"}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
