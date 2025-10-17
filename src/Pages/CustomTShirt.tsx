@@ -133,7 +133,7 @@ function CustomTShirt() {
     ? ["MALE", "FEMALE"] 
     : ["BOY", "GIRL"];
 
-  const ages = Array.from({ length: 13 }, (_, i) => String(i + 1));
+  const ages = Array.from({ length: 70 }, (_, i) => String(i + 1));
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
