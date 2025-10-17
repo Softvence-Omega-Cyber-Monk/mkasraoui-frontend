@@ -264,7 +264,7 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
       <button
         onClick={handleOrder}
         disabled={isLoading}
-        className="hover:bg-secondary-light mx-auto mt-4 flex w-[70%] items-center justify-center gap-2 rounded-lg bg-[#223B7D] py-2 text-lg text-white transition-colors disabled:opacity-50"
+        className="hover:bg-secondary-light cursor-pointer mx-auto mt-4 flex w-[70%] items-center justify-center gap-2 rounded-lg bg-[#223B7D] py-2 text-lg text-white transition-colors disabled:opacity-50"
       >
         {isLoading
           ? "Processing..."
