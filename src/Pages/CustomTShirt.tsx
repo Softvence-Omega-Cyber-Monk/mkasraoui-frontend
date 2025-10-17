@@ -4,6 +4,7 @@ import TShirtPreviewNew from "@/components/Customize-t-shirt/TShirtPreviewNew";
 import MyHeader from "@/components/MyHeader/MyHeader";
 import { useGenerateTShirtMutation } from "@/redux/features/tShirt/tshirtApi";
 
+
 function CustomTShirt() {
   const [tshirtType, setTshirtType] = useState("CHILD");
   const [tshirtProduct, setTshirtProduct] = useState("");
@@ -33,7 +34,7 @@ function CustomTShirt() {
   const tshirtProducts = [
     { id: "Recycled_Blend_Kids_Sweatshirt", name: "Recycled Blend Kids Sweatshirt", price: 19.6 },
     { id: "Toddler_Cotton_Jersey_TShirt", name: "Toddler Cotton Jersey T-Shirt", price: 15.65 },
-    { id: "Ultra_Cotton_Unisex_TShirt", name: "Ultra Cotton Unisex Crewneck T-shirt", price: 15.65 },
+    { id: "Ultra_Cotton_Unisex_Crewneck_TShirt", name: "Ultra Cotton Unisex Crewneck T-shirt", price: 15.65 },
     { id: "Premium_Kids_Crewneck_TShirt", name: "Premium Kids Crewneck T-shirt", price: 17.17 },
   ];
 
