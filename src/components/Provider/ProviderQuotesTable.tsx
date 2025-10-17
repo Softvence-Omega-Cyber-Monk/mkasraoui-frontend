@@ -98,7 +98,7 @@ const ProviderQuotesTable = () => {
                     key={quote.id}
                     className="border-b border-gray-100 hover:bg-gray-50"
                   >
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-900">
+                    <td className="px-6 py-4 text-sm font-semibold text-gray-900 whitespace-nowrap">
                       {quote.name}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
