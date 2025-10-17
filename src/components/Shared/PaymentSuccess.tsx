@@ -12,7 +12,7 @@ export default function PaymentSuccess() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-xl">
+      <div className="w-full max-w-xl rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-xl">
         <CheckCircleIcon className="mx-auto h-20 w-20 text-[#223B7D]" />
 
         <h1 className="mt-6 text-3xl font-bold text-gray-800">
