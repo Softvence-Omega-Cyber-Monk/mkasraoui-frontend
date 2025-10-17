@@ -27,6 +27,7 @@ export interface TshirtOrderResponse {
   createdAt: string;
   updatedAt: string;
   details: TshirtOrderRequest;
+  data: { checkoutUrl?: string };
 }
 
 // export interface TshirtOrderRequest {
