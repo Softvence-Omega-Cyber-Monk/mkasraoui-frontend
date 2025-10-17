@@ -16,7 +16,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { Fragment, useEffect, useState } from "react";
-import { FaJediOrder, FaUsers } from "react-icons/fa";
+import { FaBlogger, FaJediOrder, FaUsers } from "react-icons/fa";
 import { GoProjectSymlink } from "react-icons/go";
 import { MdHome, MdOutlineAddChart } from "react-icons/md";
 import { RiListOrdered } from "react-icons/ri";
@@ -93,7 +93,7 @@ function AdminLayout() {
     {
       to: "/admin-dashboard/add-blog",
       label: "Add Blog",
-      icon: MdOutlineAddChart,
+      icon: FaBlogger,
     },
     {
       to: "/admin-dashboard/add-diyactivity",

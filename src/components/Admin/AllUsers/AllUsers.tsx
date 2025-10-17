@@ -137,14 +137,14 @@ const AllUsers: React.FC = () => {
                     <td className="flex space-x-2 px-6 py-4">
                       <button
                         onClick={() => setConfirmDelete(user)}
-                        className="flex cursor-pointer items-center justify-center rounded-md bg-red-600 p-2 text-white transition-colors hover:bg-red-700 focus:ring-2 focus:ring-red-400 focus:outline-none"
+                        className="flex cursor-pointer items-center justify-center rounded-lg bg-red-600 p-2 text-white transition-colors hover:bg-red-700 focus:ring-2 focus:ring-red-400 focus:outline-none"
                         title="Delete User"
                       >
                         <MdDelete className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => setViewUser(user)}
-                        className="flex cursor-pointer items-center justify-center rounded-md bg-emerald-500 p-2 text-white transition-colors hover:bg-emerald-600 focus:ring-2 focus:ring-emerald-400 focus:outline-none"
+                        className="flex cursor-pointer items-center justify-center rounded-lg bg-[#0F1F4C] p-2 text-white transition-colors hover:bg-[#02133f] focus:ring-2 focus:ring-[#040c24] focus:outline-none"
                         title="View User"
                       >
                         <GrView className="h-4 w-4" />

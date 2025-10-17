@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCreateCustomOrderMutation } from "@/redux/features/tshirtOrder/tshirtOrderApi";
 import type { TshirtOrderRequest } from "@/redux/types/tshirtOrder.type";
 
@@ -27,7 +27,6 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
   tShirtDesign,
   tShirtMockup,
   selectedColor,
-  // uploadedImage,
   childName,
   age,
   optionalMessage,
@@ -47,11 +46,53 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
   const [state, setState] = useState("");
   const [contactName, setContactName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error" | null>(null);
+  const [showRedirect, setShowRedirect] = useState(false);
+  const [redirectCountdown, setRedirectCountdown] = useState(3);
 
-  const [createCustomOrder, { isLoading, isSuccess, isError }] =
+  const [createCustomOrder, { isLoading, isError }] =
     useCreateCustomOrderMutation();
 
+  // Check for payment status on component mount
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const status = searchParams.get("redirect_status");
+
+    if (status === "succeeded") {
+      setSuccessMessage("✅ Payment successful! Your order has been confirmed.");
+      setMessageType("success");
+      setShowRedirect(true);
+    } else if (status === "canceled") {
+      setSuccessMessage("❌ Payment was cancelled. You can place your order again.");
+      setMessageType("error");
+      setShowRedirect(true);
+    }
+  }, []);
+
+  // Handle redirect countdown
+  useEffect(() => {
+    if (!showRedirect) return;
+
+    if (redirectCountdown === 0) {
+      window.history.back();
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setRedirectCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [showRedirect, redirectCountdown]);
+
   const handleOrder = async () => {
+    // Validate form fields
+    if (!address || !zipCode || !city || !state || !contactName || !contactPhone) {
+      alert("Please fill in all shipping information fields.");
+      return;
+    }
+
     const orderData: TshirtOrderRequest = {
       tShirtType: tshirtType,
       category: tshirtProduct,
@@ -75,8 +116,14 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
     };
 
     try {
-      await createCustomOrder(orderData).unwrap();
-      alert("✅ Order placed successfully!");
+      const response = await createCustomOrder(orderData).unwrap();
+      console.log(response)
+      if (response?.data.checkoutUrl) {
+        // Redirect to Stripe checkout
+        window.location.href = response.data.checkoutUrl;
+      } else {
+        alert("❌ Failed to get checkout URL.");
+      }
     } catch (err) {
       console.error(err);
       alert("❌ Failed to place order.");
@@ -89,6 +136,23 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
         Live Preview
       </h3>
 
+      {/* Success/Error Message */}
+      {successMessage && (
+        <div
+          className={`rounded-lg p-4 text-center ${messageType === "success"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+            }`}
+        >
+          <p className="font-semibold">{successMessage}</p>
+          {showRedirect && (
+            <p className="mt-2 text-sm">
+              Redirecting in {redirectCountdown} seconds...
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Preview Section */}
       <div className="flex flex-col justify-center gap-6 md:flex-row md:gap-4">
         {/* Design Image */}
@@ -99,17 +163,6 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
               alt="T-shirt design"
               className="h-80 w-64 object-contain"
             />
-            {/* <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
-              <div className="flex h-42 w-42 flex-col items-center justify-center rounded-lg bg-transparent p-2">
-                {uploadedImage && (
-                  <img
-                    src={uploadedImage}
-                    alt="Uploaded design"
-                    className="mb-1 h-16 w-16 object-contain"
-                  />
-                )}
-              </div>
-            </div> */}
           </div>
           <div className="mt-2 text-sm text-gray-600">Design Preview</div>
         </div>
@@ -122,17 +175,6 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
               alt="T-shirt mockup"
               className="h-80 w-64 object-contain"
             />
-            {/* <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
-              <div className="flex h-42 w-42 flex-col items-center justify-center rounded-lg bg-transparent p-2">
-                {uploadedImage && (
-                  <img
-                    src={uploadedImage}
-                    alt="Uploaded design"
-                    className="mb-1 h-16 w-16 object-contain"
-                  />
-                )}
-              </div>
-            </div> */}
           </div>
           <div className="mt-2 text-sm text-gray-600">Mockup Preview</div>
         </div>
@@ -218,7 +260,7 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
         />
       </div>
 
-      {/* Add to Cart Button */}
+      {/* Order Button */}
       <button
         onClick={handleOrder}
         disabled={isLoading}
@@ -229,11 +271,6 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
           : `Order Now - €${(unitPrice * quantity).toFixed(2)}`}
       </button>
 
-      {isSuccess && (
-        <p className="mt-2 text-center text-green-600">
-          Order placed successfully!
-        </p>
-      )}
       {isError && (
         <p className="mt-2 text-center text-red-600">Failed to place order.</p>
       )}
