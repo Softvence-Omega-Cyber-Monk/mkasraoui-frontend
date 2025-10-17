@@ -508,7 +508,7 @@ const AdminProductTable: React.FC = () => {
                       multiple
                       accept="image/*"
                       onChange={handleFileChange}
-                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                      className="absolute inset-0 hidden h-full w-full cursor-pointer opacity-0"
                     />
                     <p className="text-gray-500">
                       Drag & drop photos here or click to browse
