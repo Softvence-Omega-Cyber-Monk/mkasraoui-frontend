@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useGetActivePlansQuery } from "@/redux/features/plan/planApi";
 import { useCreateSubscriptionMutation } from "@/redux/features/subscription/subscriptionApi";
 import type { Plan } from "@/redux/types/plan.types";
+import toast from "react-hot-toast";
 
 const PricingPlans: React.FC = () => {
   const [isYearly, setIsYearly] = useState(false);
@@ -35,7 +36,7 @@ const PricingPlans: React.FC = () => {
       }
     } catch (err) {
       console.error("Subscription failed:", err);
-      alert("Subscription failed. Please try again.");
+      toast.error("Subscription failed. Please try again.");
     }
   };
 

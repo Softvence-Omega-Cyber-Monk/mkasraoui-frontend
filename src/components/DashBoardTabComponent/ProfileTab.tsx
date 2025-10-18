@@ -2,6 +2,7 @@ import userPlaceholder from "@/assets/profile-user.png";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { useGetMeQuery, useUpdateUserMutation } from "@/redux/features/user/userApi";
+import toast from "react-hot-toast";
 
 type FormInputs = {
   name: string;
@@ -35,11 +36,9 @@ function ProfileTab() {
       }
 
       const res = await updateUser(formData).unwrap();
-      console.log("✅ User updated:", res);
-      alert("Profile updated successfully!");
+      toast.success("Profile updated successfully!")
     } catch (error: any) {
-      console.error("❌ Update failed:", error);
-      alert("Failed to update profile.");
+      toast.error("Failed to update");
     }
   };
 

@@ -4,6 +4,7 @@ import shopingTrolly from "@/assets/shopping-cart.png";
 import { useUserStore } from "@/store/useUserStore";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 interface CustomizeTshirtModalProps {
   product: {
@@ -423,7 +424,7 @@ function CustomizeTshirtModal({ product, onClose }: CustomizeTshirtModalProps) {
                   return;
                 }
 
-                alert("Please log in to add items to your cart."); // Replace with a toast if using a library
+                toast.error("Please log in to add items to your cart."); // Replace with a toast if using a library
                 return;
               }
 
@@ -442,7 +443,7 @@ function CustomizeTshirtModal({ product, onClose }: CustomizeTshirtModalProps) {
                 totalPrice,
               });
 
-              alert(`Added ${quantity} item(s) to cart for €${totalPrice}`);
+              toast.success(`Added ${quantity} item(s) to cart for €${totalPrice}`);
             }}
             className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#223B7D] py-3 font-medium text-white transition-colors hover:bg-blue-700"
           >
