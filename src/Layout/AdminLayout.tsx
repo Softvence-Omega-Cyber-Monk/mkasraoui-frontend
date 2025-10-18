@@ -1,5 +1,5 @@
 import NavLogo from "@/assets/navlogo-new.png";
-import { DashboardIcon, ReviewsIcon, ServicesIcon } from "@/Dashboard/Icons";
+import { DashboardIcon, ServicesIcon } from "@/Dashboard/Icons";
 import { logOut } from "@/redux/features/auth/authSlice";
 import { useGetMeQuery } from "@/redux/features/user/userApi";
 import { useAppDispatch } from "@/redux/hooks/redux-hook";
@@ -105,11 +105,11 @@ function AdminLayout() {
       label: "News Letter",
       icon: ServicesIcon,
     },
-    {
-      to: "/admin-dashboard/reviews",
-      label: "Reviews",
-      icon: ReviewsIcon,
-    },
+    // {
+    //   to: "/admin-dashboard/reviews",
+    //   label: "Reviews",
+    //   icon: ReviewsIcon,
+    // },
   ];
 
   const NavItem = ({

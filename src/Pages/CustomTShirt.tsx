@@ -3,6 +3,7 @@ import tShirtPlaceholder from "@/assets/t-shirt/white-t-shirt-mockup.png";
 import TShirtPreviewNew from "@/components/Customize-t-shirt/TShirtPreviewNew";
 import MyHeader from "@/components/MyHeader/MyHeader";
 import { useGenerateTShirtMutation } from "@/redux/features/tShirt/tshirtApi";
+import toast from "react-hot-toast";
 
 
 function CustomTShirt() {
@@ -133,7 +134,7 @@ function CustomTShirt() {
     ? ["MALE", "FEMALE"] 
     : ["BOY", "GIRL"];
 
-  const ages = Array.from({ length: 13 }, (_, i) => String(i + 1));
+  const ages = Array.from({ length: 70 }, (_, i) => String(i + 1));
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -149,11 +150,11 @@ function CustomTShirt() {
 
   const handleGenerate = async () => {
     if (!tshirtProduct) {
-      alert("Please select a t-shirt product.");
+      toast.error("Please select a t-shirt product.");
       return;
     }
     if (!size || !gender || !age) {
-      alert("Please select size, gender, and age before generating.");
+      toast.error("Please select size, gender, and age before generating.");
       return;
     }
     
@@ -176,7 +177,7 @@ function CustomTShirt() {
       setTShirtMockup(response.generated_mockup_url);
     } catch (err) {
       console.error("Error generating t-shirt:", err);
-      alert("Failed to generate t-shirt. Please try again.");
+      toast.error("Failed to generate t-shirt. Please try again.");
     }
   };
 

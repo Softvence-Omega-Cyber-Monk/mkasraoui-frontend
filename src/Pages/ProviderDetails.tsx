@@ -15,6 +15,7 @@ import { useState } from "react";
 import { useGetProviderByIdQuery } from "@/redux/features/property/propertyApi";
 import { useCreateProviderReviewMutation } from "@/redux/features/review/providerReviewApi";
 import PageLoader from "@/components/Shared/PageLoader";
+import toast from "react-hot-toast";
 
 export default function ProviderDetails() {
   const { id } = useParams<{ id: string }>();
@@ -51,7 +52,7 @@ export default function ProviderDetails() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!rating || !description.trim()) {
-      alert("Please add rating and description.");
+      toast.error("Please add rating and description.");
       return;
     }
     try {

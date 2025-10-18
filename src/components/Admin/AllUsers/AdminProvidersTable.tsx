@@ -196,7 +196,8 @@ const AdminProvidersTable: React.FC = () => {
 
                         {/* Rating */}
                         <td className="px-3 py-4 text-sm text-gray-600">
-                          {p.avg_ratting ?? 0} ({p.total_review ?? 0})
+                          {(p.avg_ratting ?? 0).toFixed(1)} (
+                          {p.total_review ?? 0})
                         </td>
 
                         {/* Role */}

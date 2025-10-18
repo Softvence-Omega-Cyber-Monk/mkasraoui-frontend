@@ -480,7 +480,7 @@ export default function PartyInvitations() {
                         </div>
                       </div>
 
-                      <div className="flex-1">
+                      {/* <div className="flex-1">
                         <label className="mb-2 block text-sm font-medium text-gray-700">
                           Party Time
                         </label>
@@ -493,7 +493,21 @@ export default function PartyInvitations() {
                             handleInputChange("partyTime", e.target.value)
                           }
                         />
+                      </div> */}
+
+                      <div className="flex-1">
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                          Party Time
+                        </label>
+                        <input
+                          type="time"  // Set the input type to "time"
+                          placeholder="Party Time"
+                          className="w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          value={partyDetails.partyTime}  // The value will be a time string (HH:MM)
+                          onChange={(e) => handleInputChange("partyTime", e.target.value)}  // Handle the raw string directly
+                        />
                       </div>
+
                     </div>
 
                     <div>
