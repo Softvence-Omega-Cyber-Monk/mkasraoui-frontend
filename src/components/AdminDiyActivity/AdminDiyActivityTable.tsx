@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { RichTextEditor } from "@mantine/rte";
 import { FileText, Plus } from "lucide-react";
 import { FaRegEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+// import { MdDelete } from "react-icons/md";
 import { GrView } from "react-icons/gr";
 import toast from "react-hot-toast";
 import Title from "@/components/Shared/Title";
@@ -287,12 +287,12 @@ const AdminActivityTable: React.FC = () => {
                     >
                       <FaRegEdit />
                     </button>
-                    <button
+                    {/* <button
                       onClick={() => setConfirmDelete(a)}
                       className="rounded-lg bg-red-600 p-2 text-white hover:cursor-pointer"
                     >
                       <MdDelete />
-                    </button>
+                    </button> */}
                     <button
                       onClick={() => setViewActivity(a)}
                       className="rounded-lg bg-[#0F1F4C] p-2 text-white hover:cursor-pointer"
@@ -307,100 +307,7 @@ const AdminActivityTable: React.FC = () => {
         </table>
       </div>
 
-      {/* ✅ Add/Edit Modal */}
-      {/* {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 overflow-y-auto">
-          <div className="w-full max-w-3xl rounded-lg bg-white p-6">
-            <h3 className="text-xl font-semibold mb-4">
-              {editingActivity ? "Edit Activity" : "Add Activity"}
-            </h3>
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div>
-                <label className="block font-medium text-gray-700">Title</label>
-                <input
-                  type="text"
-                  {...register("title", { required: "Title is required" })}
-                  className="w-full rounded-lg border border-gray-300 p-2"
-                />
-                {errors.title && (
-                  <p className="text-sm text-red-500">{errors.title.message}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block font-medium text-gray-700">
-                  Description
-                </label>
-                <textarea
-                  {...register("description", { required: true })}
-                  className="w-full rounded-lg border border-gray-300 p-2"
-                  rows={3}
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium text-gray-700">
-                  Instruction Sheet
-                </label>
-                <Controller
-                  name="instruction_sheet"
-                  control={control}
-                  render={({ field }) => (
-                    <RichTextInput value={field.value ?? ""} onChange={field.onChange} />
-                  )}
-                />
-              </div>
-
-               <div>
-                <label className="block font-medium text-gray-700">PDF File</label>
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={handlePdfChange}
-                  className="mt-1 w-full rounded-lg border border-gray-300 p-2"
-                />
-                {formData.pdfPreview && (
-                  <p className="mt-1 text-sm text-gray-600">📄 {formData.pdfPreview}</p>
-                )}
-              </div>
-
-               <div>
-                <label className="block font-medium text-gray-700">Video</label>
-                <input
-                  type="file"
-                  accept="video/*"
-                  onChange={handleFileChange}
-                  className="mt-1 w-full rounded-lg border border-gray-300 p-2"
-                />
-                {formData.videoPreview && (
-                  <video
-                    src={formData.videoPreview}
-                    controls
-                    className="mt-2 h-40 w-full rounded-lg border"
-                  />
-                )}
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="rounded-lg bg-gray-300 px-4 py-2"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="rounded-lg bg-[#0F1F4C] px-4 py-2 text-white"
-                >
-                  {editingActivity ? "Update" : "Add"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )} */}
+       
 
 
       {isModalOpen && (
@@ -489,36 +396,7 @@ const AdminActivityTable: React.FC = () => {
                   </div>
                 )}
 
-                {/* {formData.pdfPreview && (
-    <div className="mt-4 w-full rounded-xl border border-gray-300 p-2 shadow-sm">
-      <p className="mb-2 text-sm font-medium text-gray-700">
-        📄 {formData.pdfPreview}
-      </p>
-      <iframe
-        src={URL.createObjectURL(formData.pdfFile as File)}
-        className="h-64 w-full rounded-lg border"
-        title="PDF Preview"
-      />
-    </div>
-  )} */}
-
-
-                {/* {formData.pdfPreview && (
-  <div className="mt-4 w-full rounded-xl border border-gray-300 p-2 shadow-sm">
-    <p className="mb-2 text-sm font-medium text-gray-700">
-      📄 {formData.pdfPreview}
-    </p>
-    <iframe
-      src={
-        formData.pdfFile instanceof File
-          ? URL.createObjectURL(formData.pdfFile)
-          : formData.pdfFile || ""
-      }
-      className="h-64 w-full rounded-lg border"
-      title="PDF Preview"
-    />
-  </div>
-)} */}
+       
 
               </div>
 
@@ -597,30 +475,7 @@ const AdminActivityTable: React.FC = () => {
 
 
 
-      {/* ✅ Delete Modal */}
-      {/* {confirmDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="rounded-lg bg-white p-6 text-center shadow-lg">
-            <h3 className="mb-4 text-lg font-semibold">
-              Delete this activity?
-            </h3>
-            <div className="flex justify-center gap-3">
-              <button
-                onClick={() => setConfirmDelete(null)}
-                className="rounded-lg bg-gray-300 px-4 py-2"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                className="rounded-lg bg-red-600 px-4 py-2 text-white"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )} */}
+     
 
       {confirmDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -645,79 +500,7 @@ const AdminActivityTable: React.FC = () => {
         </div>
       )}
 
-      {/* ✅ View Modal with PDF and Video */}
-      {/* {viewActivity && (
-        <div className="fixed h-100 mt-36  inset-0 z-50 flex items-center justify-center bg-black/50 overflow-y-auto">
-          <div className=" max-w-3xl  overflow-y-auto rounded-lg bg-white p-6">
-            <h3 className="mb-4 text-xl font-semibold text-[#0F1F4C]">
-              {stripHtml(viewActivity.title)}
-            </h3>
-
-            <p className="mb-3 text-gray-700">
-              <strong>Description:</strong> {stripHtml(viewActivity.description)}
-            </p>
-           
-
-
-            {viewActivity.instruction_sheet && (
-              <div className="mb-6 rounded-lg">
-                <h3 className="text-lg font-semibold mb-2 ">
-                  🪄 Instructions
-                </h3>
-                <div
-                  className="prose"
-                  dangerouslySetInnerHTML={{
-                    __html: viewActivity.instruction_sheet,
-                  }}
-                />
-              </div>
-            )}
-
-
-            {viewActivity.video && (
-              <div className="mb-4 w-40">
-                <video
-                  src={viewActivity.video}
-                  controls
-                  className="w-full rounded-lg border"
-                />
-              </div>
-            )}
-
-             
-
-
-            {viewActivity.pdfFile && (
-              <div
-                className=" "
-              >
-                <h3 className="text-lg font-semibold   flex items-center gap-2 mb-2">
-                  <FileText size={18} /> Instruction PDF
-                </h3>
-                <a
-                  href={viewActivity.pdfFile}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-indigo-600 hover:underline"
-                >
-                  View or download the PDF
-                </a>
-              </div>
-            )}
-
-
-
-            <div className="mt-6 text-right">
-              <button
-                onClick={() => setViewActivity(null)}
-                className="bg-secondary-dark hover:bg-secondary-light rounded-xl px-5 py-2 text-white hover:cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )} */}
+      
 
 
 {viewActivity && (
