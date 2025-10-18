@@ -10,6 +10,7 @@ import {
   useGetOnboardingLinkQuery,
   useLoginDashboardQuery,
 } from "@/redux/features/payment/paymentApi";
+import toast from "react-hot-toast";
 
 function Earnings() {
   type TabType = "This Week" | "This Month" | "Lifetime";
@@ -70,7 +71,7 @@ function Earnings() {
                   if (onboardingLink?.url) {
                     window.open(onboardingLink.url, "_blank");
                   } else {
-                    alert("✅ Your onboarding is already completed.");
+                    toast.success("✅ Your onboarding is already completed.");
                   }
                 }}
                 disabled={false} // ❗ keep clickable even when completed (we handle inside)
