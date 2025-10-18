@@ -2,6 +2,7 @@ import { Check } from "lucide-react";
 import { useGetProviderPlansQuery } from "@/redux/features/provider-plan/providerPlanApi";
 import { useCreateSubscriptionMutation } from "@/redux/features/subscription/subscriptionApi";
 import type { Plan } from "@/redux/types/plan.types";
+import toast from "react-hot-toast";
 
 export default function ServiceProvidersArea() {
   const { data: plans, isLoading } = useGetProviderPlansQuery();
@@ -19,7 +20,7 @@ export default function ServiceProvidersArea() {
       }
     } catch (err) {
       console.error("Subscription failed:", err);
-      alert("Subscription failed. Please try again.");
+      toast.error("Subscription failed. Please try again.");
     }
   };
 
