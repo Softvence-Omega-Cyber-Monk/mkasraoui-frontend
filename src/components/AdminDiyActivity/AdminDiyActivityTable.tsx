@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { RichTextEditor } from "@mantine/rte";
 import { FileText, Plus } from "lucide-react";
 import { FaRegEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+// import { MdDelete } from "react-icons/md";
 import { GrView } from "react-icons/gr";
 import toast from "react-hot-toast";
 import Title from "@/components/Shared/Title";
