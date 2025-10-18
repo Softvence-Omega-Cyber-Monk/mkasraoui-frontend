@@ -1,8 +1,7 @@
-import { useState } from "react";
-import type { ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { RichTextEditor } from "@mantine/rte";
-import { Plus } from "lucide-react";
+import { FileText, Plus } from "lucide-react";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { GrView } from "react-icons/gr";
@@ -15,6 +14,7 @@ import {
   useUpdateActivityMutation,
   useDeleteActivityMutation,
 } from "../../redux/features/AdminDiyActivity/activityApi";
+import PageLoader from "../Shared/PageLoader";
 
 interface ActivityFormType {
   title: string;
@@ -22,14 +22,16 @@ interface ActivityFormType {
   instruction_sheet: string;
   video: File | null;
   videoPreview: string | null;
+  pdfFile: File | null;
+  pdfPreview: string | null;
 }
 
-// ✅ Extend ReduxActivity to include optional client-side fields
 interface Activity extends ReduxActivity {
   video?: string;
   instruction_sheet?: string;
   description?: string;
-  images?: string[]; // ✅ Added to fix the TS error
+  images?: string[];
+  pdfFile?: string;
 }
 
 const stripHtml = (html?: string) => {
@@ -72,26 +74,29 @@ const AdminActivityTable: React.FC = () => {
       instruction_sheet: "",
       video: null,
       videoPreview: null,
+      pdfFile: null,
+      pdfPreview: null,
     },
   });
 
   const formData = watch();
 
-  const { data, isLoading, isError, refetch } = useGetActivitiesQuery();
+  const { data, isLoading, isFetching, isError, refetch } = useGetActivitiesQuery();
   const [addActivity] = useAddActivityMutation();
   const [updateActivity] = useUpdateActivityMutation();
   const [deleteActivity] = useDeleteActivityMutation();
 
   const activities: Activity[] =
-    data?.data.map((a: any) => ({
+    data?.data?.map((a: any) => ({
       ...a,
       description: a.description ?? "",
       instruction_sheet: a.instruction_sheet ?? "",
       video: a.video ?? "",
-      images: a.images ?? [], // ✅ Ensure images always exist as an array
+      pdfFile: a.pdfFile ?? "",
+      images: a.images ?? [],
     })) || [];
 
-  // ----- Modal handlers -----
+  // ✅ Add Modal
   const openAddModal = () => {
     setEditingActivity(null);
     setValue("title", "");
@@ -99,9 +104,12 @@ const AdminActivityTable: React.FC = () => {
     setValue("instruction_sheet", "");
     setValue("video", null);
     setValue("videoPreview", null);
+    setValue("pdfFile", null);
+    setValue("pdfPreview", null);
     setIsModalOpen(true);
   };
 
+  // ✅ Edit Modal
   const openEditModal = (activity: Activity) => {
     setEditingActivity(activity);
     setValue("title", activity.title ?? "");
@@ -109,17 +117,28 @@ const AdminActivityTable: React.FC = () => {
     setValue("instruction_sheet", activity.instruction_sheet ?? "");
     setValue("video", null);
     setValue("videoPreview", activity.video ?? null);
+    setValue("pdfFile", null);
+    setValue("pdfPreview", activity.pdfFile ?? null);
     setIsModalOpen(true);
   };
 
+  // ✅ File Handlers
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
+    if (!e.target.files?.length) return;
     const file = e.target.files[0];
     const previewUrl = URL.createObjectURL(file);
     setValue("video", file);
     setValue("videoPreview", previewUrl);
   };
 
+  const handlePdfChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.length) return;
+    const file = e.target.files[0];
+    setValue("pdfFile", file);
+    setValue("pdfPreview", file.name);
+  };
+
+  // ✅ Submit (Add / Edit)
   const onSubmit = async (data: ActivityFormType) => {
     if (!data.video && !editingActivity) {
       return toast.error("Please upload a video");
@@ -130,6 +149,7 @@ const AdminActivityTable: React.FC = () => {
     payload.append("description", data.description);
     payload.append("instruction_sheet", data.instruction_sheet);
     if (data.video) payload.append("video", data.video);
+    if (data.pdfFile) payload.append("pdfFile", data.pdfFile);
 
     try {
       if (editingActivity) {
@@ -149,6 +169,7 @@ const AdminActivityTable: React.FC = () => {
     }
   };
 
+  // ✅ Delete
   const handleDelete = async () => {
     if (!confirmDelete) return;
     try {
@@ -162,11 +183,10 @@ const AdminActivityTable: React.FC = () => {
   };
 
   return (
-    <div>
+    <div >
       {/* Header */}
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6    flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Title title="DIY Activities" />
-
         <button
           onClick={openAddModal}
           className="bg-secondary-dark hover:bg-secondary-light flex items-center justify-center gap-2 rounded-xl px-5 py-2 font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:cursor-pointer focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:outline-none"
@@ -176,33 +196,40 @@ const AdminActivityTable: React.FC = () => {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-lg border border-gray-300 bg-white">
-        <table className="w-full min-w-[900px]">
+      <div className=" rounded-lg border border-gray-300 bg-white">
+        <table className="w-full min-w-[1000px]">
           <thead className="border-b border-gray-300 bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left">Title</th>
               <th className="px-6 py-3 text-left">Description</th>
               <th className="px-6 py-3 text-left">Instruction Sheet</th>
               <th className="px-6 py-3 text-left">Video</th>
+              <th className="px-6 py-3 text-left">PDF File</th>
               <th className="px-6 py-3 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {isLoading ? (
+          {isLoading || isFetching ? (
+  <tr>
+    <td colSpan={6} className="p-6 text-center">
+      <PageLoader />
+    </td>
+  </tr>
+) : isError ? (
+  <tr>
+    <td colSpan={6} className="p-6 text-center text-red-500">
+      Error fetching activities
+    </td>
+  </tr>
+) : activities.length === 0 ? (
+  <tr>
+    <td colSpan={6} className="p-6 text-center text-gray-500">
+      No activities found.
+    </td>
+  </tr>
+): activities.length === 0 ? (
               <tr>
-                <td colSpan={5} className="p-6 text-center">
-                  Loading...
-                </td>
-              </tr>
-            ) : isError ? (
-              <tr>
-                <td colSpan={5} className="p-6 text-center">
-                  Error fetching activities
-                </td>
-              </tr>
-            ) : activities.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="p-6 text-center text-gray-500">
+                <td colSpan={6} className="p-6 text-center text-gray-500">
                   No activities found.
                 </td>
               </tr>
@@ -221,26 +248,12 @@ const AdminActivityTable: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     {stripHtml(a.instruction_sheet).slice(0, 20)}...
                   </td>
-                  {/* <td className="px-6 py-4 whitespace-nowrap">
-                    {a.video ? (
-                      <a
-                        href={a.video}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-blue-600"
-                      >
-                        View Video
-                      </a>
-                    ) : (
-                      "No video"
-                    )}
-                  </td> */}
 
                   <td className="px-6 py-4 whitespace-nowrap">
                     {a.video ? (
                       <div className="h-12 w-20 overflow-hidden rounded-md border border-gray-300 bg-gray-100">
                         <video
-                          src={a.video + "#t=0.5"} // load a frame half a second in to avoid blank
+                          src={a.video + "#t=0.5"}
                           muted
                           playsInline
                           preload="metadata"
@@ -249,6 +262,21 @@ const AdminActivityTable: React.FC = () => {
                       </div>
                     ) : (
                       <span className="text-sm text-gray-500">No video</span>
+                    )}
+                  </td>
+
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {a.pdfFile ? (
+                      <a
+                        href={a.pdfFile}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-600 underline hover:text-blue-800"
+                      >
+                        View PDF
+                      </a>
+                    ) : (
+                      <span className="text-sm text-gray-500">No PDF</span>
                     )}
                   </td>
 
@@ -279,7 +307,102 @@ const AdminActivityTable: React.FC = () => {
         </table>
       </div>
 
-      {/* Add/Edit Modal */}
+      {/* ✅ Add/Edit Modal */}
+      {/* {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 overflow-y-auto">
+          <div className="w-full max-w-3xl rounded-lg bg-white p-6">
+            <h3 className="text-xl font-semibold mb-4">
+              {editingActivity ? "Edit Activity" : "Add Activity"}
+            </h3>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div>
+                <label className="block font-medium text-gray-700">Title</label>
+                <input
+                  type="text"
+                  {...register("title", { required: "Title is required" })}
+                  className="w-full rounded-lg border border-gray-300 p-2"
+                />
+                {errors.title && (
+                  <p className="text-sm text-red-500">{errors.title.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block font-medium text-gray-700">
+                  Description
+                </label>
+                <textarea
+                  {...register("description", { required: true })}
+                  className="w-full rounded-lg border border-gray-300 p-2"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <label className="block font-medium text-gray-700">
+                  Instruction Sheet
+                </label>
+                <Controller
+                  name="instruction_sheet"
+                  control={control}
+                  render={({ field }) => (
+                    <RichTextInput value={field.value ?? ""} onChange={field.onChange} />
+                  )}
+                />
+              </div>
+
+               <div>
+                <label className="block font-medium text-gray-700">PDF File</label>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handlePdfChange}
+                  className="mt-1 w-full rounded-lg border border-gray-300 p-2"
+                />
+                {formData.pdfPreview && (
+                  <p className="mt-1 text-sm text-gray-600">📄 {formData.pdfPreview}</p>
+                )}
+              </div>
+
+               <div>
+                <label className="block font-medium text-gray-700">Video</label>
+                <input
+                  type="file"
+                  accept="video/*"
+                  onChange={handleFileChange}
+                  className="mt-1 w-full rounded-lg border border-gray-300 p-2"
+                />
+                {formData.videoPreview && (
+                  <video
+                    src={formData.videoPreview}
+                    controls
+                    className="mt-2 h-40 w-full rounded-lg border"
+                  />
+                )}
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="rounded-lg bg-gray-300 px-4 py-2"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="rounded-lg bg-[#0F1F4C] px-4 py-2 text-white"
+                >
+                  {editingActivity ? "Update" : "Add"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )} */}
+
+
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50">
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6">
@@ -294,64 +417,119 @@ const AdminActivityTable: React.FC = () => {
                 X
               </button>
             </div>
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-col gap-4"
-            >
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+              <label>Title</label>
               <input
                 {...register("title", { required: true })}
                 placeholder="Title"
                 className="rounded border border-gray-300 p-2"
               />
-              {errors.title && (
-                <span className="text-red-500">Title required</span>
-              )}
+              {errors.title && <span className="text-red-500">Title required</span>}
 
+              <label>Description</label>
               <textarea
                 {...register("description", { required: true })}
                 placeholder="Description"
                 className="rounded border border-gray-300 p-2"
                 rows={3}
               />
-              {errors.description && (
-                <span className="text-red-500">Description required</span>
-              )}
+              {errors.description && <span className="text-red-500">Description required</span>}
 
+              <label>RichText</label>
               <Controller
                 name="instruction_sheet"
                 control={control}
                 render={({ field }) => (
-                  <RichTextInput
-                    value={field.value ?? ""}
-                    onChange={field.onChange}
-                  />
+                  <RichTextInput value={field.value ?? ""} onChange={field.onChange} />
                 )}
               />
 
-              {/* <div>
-                <input
-                  type="file"
-                  accept="video/*"
-                  onChange={handleFileChange}
-                />
-                {formData.videoPreview && (
-                  <video
-                    src={formData.videoPreview}
-                    controls
-                    className="mt-2 max-h-60 w-full rounded"
-                  />
-                )}
-              </div> */}
+              {/* PDF Upload */}
               <div>
-                <div>
+                <label
+                  htmlFor="pdf-upload"
+                  className="mb-2 block text-base font-medium text-gray-700"
+                >
+                  Upload PDF
+                </label>
+                <div className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition hover:border-blue-400">
+                  <input
+                    id="pdf-upload"
+                    type="file"
+                    accept="application/pdf"
+                    onChange={handlePdfChange}
+                    className="hidden"
+                  />
                   <label
-                    htmlFor="video-upload"
-                    className="mb-2 block text-base font-medium text-gray-700"
+                    htmlFor="pdf-upload"
+                    className="flex cursor-pointer flex-col items-center justify-center text-center"
                   >
-                    Upload Video
+                    <svg
+                      className="mb-2 h-10 w-10 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M7 16V4m0 0L3 8m4-4l4 4M17 8h4m0 0v8m0-8l-4 4m4-4l-4 4M7 20h10"
+                      />
+                    </svg>
+                    <p className="text-sm text-gray-600">
+                      Click to upload or drag and drop PDF
+                    </p>
+                    <p className="text-xs text-gray-400">PDF only (max 10MB)</p>
                   </label>
                 </div>
+                {formData.pdfPreview && (
+                  <div className="mt-3 text-sm text-gray-700">
+                    📄 {formData.pdfPreview}
+                  </div>
+                )}
 
+                {/* {formData.pdfPreview && (
+    <div className="mt-4 w-full rounded-xl border border-gray-300 p-2 shadow-sm">
+      <p className="mb-2 text-sm font-medium text-gray-700">
+        📄 {formData.pdfPreview}
+      </p>
+      <iframe
+        src={URL.createObjectURL(formData.pdfFile as File)}
+        className="h-64 w-full rounded-lg border"
+        title="PDF Preview"
+      />
+    </div>
+  )} */}
+
+
+                {/* {formData.pdfPreview && (
+  <div className="mt-4 w-full rounded-xl border border-gray-300 p-2 shadow-sm">
+    <p className="mb-2 text-sm font-medium text-gray-700">
+      📄 {formData.pdfPreview}
+    </p>
+    <iframe
+      src={
+        formData.pdfFile instanceof File
+          ? URL.createObjectURL(formData.pdfFile)
+          : formData.pdfFile || ""
+      }
+      className="h-64 w-full rounded-lg border"
+      title="PDF Preview"
+    />
+  </div>
+)} */}
+
+              </div>
+
+              {/* Video Upload */}
+              <div>
+                <label
+                  htmlFor="video-upload"
+                  className="mb-2 block text-base font-medium text-gray-700"
+                >
+                  Upload Video
+                </label>
                 <div className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition hover:border-blue-400">
                   <input
                     id="video-upload"
@@ -378,11 +556,9 @@ const AdminActivityTable: React.FC = () => {
                       />
                     </svg>
                     <p className="text-sm text-gray-600">
-                      Click to upload or drag and drop
+                      Click to upload or drag and drop video
                     </p>
-                    <p className="text-xs text-gray-400">
-                      MP4, MOV, or AVI (max 100MB)
-                    </p>
+                    <p className="text-xs text-gray-400">MP4, MOV, or AVI (max 100MB)</p>
                   </label>
                 </div>
 
@@ -398,28 +574,54 @@ const AdminActivityTable: React.FC = () => {
               </div>
 
               <div className="mt-4 flex justify-end gap-2">
-                <div className="mt-2 flex justify-end gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setIsModalOpen(false)}
-                    className="rounded-xl bg-gray-300 px-5 py-2 hover:cursor-pointer hover:bg-gray-400"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-secondary-dark hover:bg-secondary-light rounded-xl px-5 py-2 text-white hover:cursor-pointer"
-                  >
-                    {editingActivity ? "Update" : "Add Activity"}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="rounded-xl bg-gray-300 px-5 py-2 hover:cursor-pointer hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-secondary-dark hover:bg-secondary-light rounded-xl px-5 py-2 text-white hover:cursor-pointer"
+                >
+                  {editingActivity ? "Update" : "Add Activity"}
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* Delete Modal */}
+
+
+
+
+      {/* ✅ Delete Modal */}
+      {/* {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="rounded-lg bg-white p-6 text-center shadow-lg">
+            <h3 className="mb-4 text-lg font-semibold">
+              Delete this activity?
+            </h3>
+            <div className="flex justify-center gap-3">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="rounded-lg bg-gray-300 px-4 py-2"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="rounded-lg bg-red-600 px-4 py-2 text-white"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )} */}
+
       {confirmDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="max-w-sm rounded-lg bg-white p-6">
@@ -443,89 +645,701 @@ const AdminActivityTable: React.FC = () => {
         </div>
       )}
 
-      {/* ✅ View Modal (UI aligned with main modal) */}
-      {viewActivity && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-          <div className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
-            {/* Title */}
-            <h2 className="p-6 text-2xl font-bold tracking-wide text-gray-800">
-              {viewActivity.title}
-            </h2>
+      {/* ✅ View Modal with PDF and Video */}
+      {/* {viewActivity && (
+        <div className="fixed h-100 mt-36  inset-0 z-50 flex items-center justify-center bg-black/50 overflow-y-auto">
+          <div className=" max-w-3xl  overflow-y-auto rounded-lg bg-white p-6">
+            <h3 className="mb-4 text-xl font-semibold text-[#0F1F4C]">
+              {stripHtml(viewActivity.title)}
+            </h3>
 
-            {/* Close Button */}
-            <button
-              onClick={() => setViewActivity(null)}
-              className="absolute top-4 right-4 rounded-full bg-black/30 p-2 text-white transition hover:cursor-pointer hover:bg-black/50"
-            >
-              ✕
-            </button>
+            <p className="mb-3 text-gray-700">
+              <strong>Description:</strong> {stripHtml(viewActivity.description)}
+            </p>
+           
 
-            {/* Media Section */}
-            <div className="relative mt-4 h-72 w-full overflow-hidden rounded-t-2xl p-3 md:h-80">
-              {viewActivity.video ? (
+
+            {viewActivity.instruction_sheet && (
+              <div className="mb-6 rounded-lg">
+                <h3 className="text-lg font-semibold mb-2 ">
+                  🪄 Instructions
+                </h3>
+                <div
+                  className="prose"
+                  dangerouslySetInnerHTML={{
+                    __html: viewActivity.instruction_sheet,
+                  }}
+                />
+              </div>
+            )}
+
+
+            {viewActivity.video && (
+              <div className="mb-4 w-40">
                 <video
                   src={viewActivity.video}
                   controls
-                  autoPlay
-                  className="h-full w-full object-cover"
+                  className="w-full rounded-lg border"
                 />
-              ) : (
-                <img
-                  src={viewActivity.images?.[0] || "/placeholder.png"}
-                  alt={viewActivity.title}
-                  className="h-full w-full object-cover"
-                />
-              )}
-            </div>
-
-            {/* Content */}
-            <div className="space-y-6 p-6">
-              {viewActivity.description && (
-                <div>
-                  <h3 className="mb-2 text-lg font-semibold text-gray-800">
-                    About this Activity
-                  </h3>
-                  <div
-                    className="prose text-gray-700"
-                    dangerouslySetInnerHTML={{
-                      __html: viewActivity.description,
-                    }}
-                  />
-                </div>
-              )}
-
-              {viewActivity.instruction_sheet && (
-                <div>
-                  <h3 className="mb-3 text-lg font-semibold text-gray-800">
-                    🪄 Step-by-Step Instructions
-                  </h3>
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: viewActivity.instruction_sheet,
-                    }}
-                    className="prose mt-4"
-                  />
-                </div>
-              )}
-
-              {/* Close Button */}
-              <div className="flex justify-end">
-                <button
-                  onClick={() => setViewActivity(null)}
-                  className="flex items-center justify-center gap-2 rounded-lg bg-[#223B7D] px-5 py-2.5 text-sm font-medium text-white transition-all hover:cursor-pointer hover:bg-[#343f5c]"
-                >
-                  Close
-                </button>
               </div>
+            )}
+
+             
+
+
+            {viewActivity.pdfFile && (
+              <div
+                className=" "
+              >
+                <h3 className="text-lg font-semibold   flex items-center gap-2 mb-2">
+                  <FileText size={18} /> Instruction PDF
+                </h3>
+                <a
+                  href={viewActivity.pdfFile}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:underline"
+                >
+                  View or download the PDF
+                </a>
+              </div>
+            )}
+
+
+
+            <div className="mt-6 text-right">
+              <button
+                onClick={() => setViewActivity(null)}
+                className="bg-secondary-dark hover:bg-secondary-light rounded-xl px-5 py-2 text-white hover:cursor-pointer"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
+      )} */}
+
+
+{viewActivity && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="max-w-4xl max-h-[80vh] overflow-y-auto rounded-lg bg-white p-6">
+      <h3 className="mb-4 text-xl font-semibold text-[#0F1F4C]">
+        {stripHtml(viewActivity.title)}
+      </h3>
+
+      <p className="mb-3 text-gray-700">
+        <strong>Description:</strong> {stripHtml(viewActivity.description)}
+      </p>
+
+      {viewActivity.instruction_sheet && (
+        <div className="mb-6 rounded-lg">
+          <h3 className="text-lg font-semibold mb-2">🪄 Instructions</h3>
+          <div
+            className="prose"
+            dangerouslySetInnerHTML={{ __html: viewActivity.instruction_sheet }}
+          />
+        </div>
       )}
+
+      {viewActivity.video && (
+        <div className="mb-4 w-full max-w-xs">
+          <video
+            src={viewActivity.video}
+            controls
+            className="w-full rounded-lg border"
+          />
+        </div>
+      )}
+
+      {viewActivity.pdfFile && (
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2 mb-2">
+            <FileText size={18} /> Instruction PDF
+          </h3>
+          <a
+            href={viewActivity.pdfFile}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-indigo-600 hover:underline"
+          >
+            View or download the PDF
+          </a>
+        </div>
+      )}
+
+      <div className="mt-6 text-right">
+        <button
+          onClick={() => setViewActivity(null)}
+          className="bg-secondary-dark hover:bg-secondary-light rounded-xl px-5 py-2 text-white"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 };
 
 export default AdminActivityTable;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { useState } from "react";
+// import type { ChangeEvent } from "react";
+// import { useForm, Controller } from "react-hook-form";
+// import { RichTextEditor } from "@mantine/rte";
+// import { Plus } from "lucide-react";
+// import { FaRegEdit } from "react-icons/fa";
+// import { MdDelete } from "react-icons/md";
+// import { GrView } from "react-icons/gr";
+// import toast from "react-hot-toast";
+// import Title from "@/components/Shared/Title";
+// import type { Activity as ReduxActivity } from "../../redux/types/activity.type";
+// import {
+//   useGetActivitiesQuery,
+//   useAddActivityMutation,
+//   useUpdateActivityMutation,
+//   useDeleteActivityMutation,
+// } from "../../redux/features/AdminDiyActivity/activityApi";
+
+// interface ActivityFormType {
+//   title: string;
+//   description: string;
+//   instruction_sheet: string;
+//   video: File | null;
+//   videoPreview: string | null;
+// }
+
+// // ✅ Extend ReduxActivity to include optional client-side fields
+// interface Activity extends ReduxActivity {
+//   video?: string;
+//   instruction_sheet?: string;
+//   description?: string;
+//   images?: string[]; // ✅ Added to fix the TS error
+// }
+
+// const stripHtml = (html?: string) => {
+//   if (!html) return "";
+//   const div = document.createElement("div");
+//   div.innerHTML = html;
+//   return div.textContent || div.innerText || "";
+// };
+
+// const RichTextInput: React.FC<{
+//   value: string;
+//   onChange: (v: string) => void;
+// }> = ({ value, onChange }) => (
+//   <div className="h-[250px] overflow-hidden rounded-lg border border-gray-300 p-2">
+//     <RichTextEditor
+//       value={value}
+//       onChange={onChange}
+//       className="h-[230px] overflow-y-auto"
+//     />
+//   </div>
+// );
+
+// const AdminActivityTable: React.FC = () => {
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+//   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+//   const [viewActivity, setViewActivity] = useState<Activity | null>(null);
+//   const [confirmDelete, setConfirmDelete] = useState<Activity | null>(null);
+
+//   const {
+//     control,
+//     handleSubmit,
+//     setValue,
+//     watch,
+//     register,
+//     formState: { errors },
+//   } = useForm<ActivityFormType>({
+//     defaultValues: {
+//       title: "",
+//       description: "",
+//       instruction_sheet: "",
+//       video: null,
+//       videoPreview: null,
+//     },
+//   });
+
+//   const formData = watch();
+
+//   const { data, isLoading, isError, refetch } = useGetActivitiesQuery();
+//   const [addActivity] = useAddActivityMutation();
+//   const [updateActivity] = useUpdateActivityMutation();
+//   const [deleteActivity] = useDeleteActivityMutation();
+
+//   const activities: Activity[] =
+//     data?.data.map((a: any) => ({
+//       ...a,
+//       description: a.description ?? "",
+//       instruction_sheet: a.instruction_sheet ?? "",
+//       video: a.video ?? "",
+//       images: a.images ?? [], // ✅ Ensure images always exist as an array
+//     })) || [];
+
+//   // ----- Modal handlers -----
+//   const openAddModal = () => {
+//     setEditingActivity(null);
+//     setValue("title", "");
+//     setValue("description", "");
+//     setValue("instruction_sheet", "");
+//     setValue("video", null);
+//     setValue("videoPreview", null);
+//     setIsModalOpen(true);
+//   };
+
+//   const openEditModal = (activity: Activity) => {
+//     setEditingActivity(activity);
+//     setValue("title", activity.title ?? "");
+//     setValue("description", activity.description ?? "");
+//     setValue("instruction_sheet", activity.instruction_sheet ?? "");
+//     setValue("video", null);
+//     setValue("videoPreview", activity.video ?? null);
+//     setIsModalOpen(true);
+//   };
+
+//   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+//     if (!e.target.files || e.target.files.length === 0) return;
+//     const file = e.target.files[0];
+//     const previewUrl = URL.createObjectURL(file);
+//     setValue("video", file);
+//     setValue("videoPreview", previewUrl);
+//   };
+
+//   const onSubmit = async (data: ActivityFormType) => {
+//     if (!data.video && !editingActivity) {
+//       return toast.error("Please upload a video");
+//     }
+
+//     const payload = new FormData();
+//     payload.append("title", data.title);
+//     payload.append("description", data.description);
+//     payload.append("instruction_sheet", data.instruction_sheet);
+//     if (data.video) payload.append("video", data.video);
+
+//     try {
+//       if (editingActivity) {
+//         await updateActivity({
+//           id: editingActivity.id,
+//           data: payload,
+//         }).unwrap();
+//         toast.success("Activity updated successfully");
+//       } else {
+//         await addActivity(payload).unwrap();
+//         toast.success("Activity added successfully");
+//       }
+//       setIsModalOpen(false);
+//       refetch();
+//     } catch (err: any) {
+//       toast.error(err?.data?.message || "Something went wrong");
+//     }
+//   };
+
+//   const handleDelete = async () => {
+//     if (!confirmDelete) return;
+//     try {
+//       await deleteActivity(confirmDelete.id).unwrap();
+//       toast.success("Activity deleted successfully");
+//       setConfirmDelete(null);
+//       refetch();
+//     } catch (err: any) {
+//       toast.error(err?.data?.message || "Delete failed");
+//     }
+//   };
+
+//   return (
+//     <div>
+//       {/* Header */}
+//       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+//         <Title title="DIY Activities" />
+
+//         <button
+//           onClick={openAddModal}
+//           className="bg-secondary-dark hover:bg-secondary-light flex items-center justify-center gap-2 rounded-xl px-5 py-2 font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:cursor-pointer focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:outline-none"
+//         >
+//           <Plus className="h-5 w-5" /> Add Activity
+//         </button>
+//       </div>
+
+//       {/* Table */}
+//       <div className="overflow-hidden rounded-lg border border-gray-300 bg-white">
+//         <table className="w-full min-w-[900px]">
+//           <thead className="border-b border-gray-300 bg-gray-50">
+//             <tr>
+//               <th className="px-6 py-3 text-left">Title</th>
+//               <th className="px-6 py-3 text-left">Description</th>
+//               <th className="px-6 py-3 text-left">Instruction Sheet</th>
+//               <th className="px-6 py-3 text-left">Video</th>
+//               <th className="px-6 py-3 text-center">Actions</th>
+//             </tr>
+//           </thead>
+//           <tbody>
+//             {isLoading ? (
+//               <tr>
+//                 <td colSpan={5} className="p-6 text-center">
+//                   Loading...
+//                 </td>
+//               </tr>
+//             ) : isError ? (
+//               <tr>
+//                 <td colSpan={5} className="p-6 text-center">
+//                   Error fetching activities
+//                 </td>
+//               </tr>
+//             ) : activities.length === 0 ? (
+//               <tr>
+//                 <td colSpan={5} className="p-6 text-center text-gray-500">
+//                   No activities found.
+//                 </td>
+//               </tr>
+//             ) : (
+//               activities.map((a) => (
+//                 <tr
+//                   key={a.id}
+//                   className="border-b border-gray-300 hover:bg-gray-50"
+//                 >
+//                   <td className="px-6 py-4 whitespace-nowrap">
+//                     {stripHtml(a.title).slice(0, 20)}
+//                   </td>
+//                   <td className="px-6 py-4 whitespace-nowrap">
+//                     {stripHtml(a.description).slice(0, 20)}...
+//                   </td>
+//                   <td className="px-6 py-4 whitespace-nowrap">
+//                     {stripHtml(a.instruction_sheet).slice(0, 20)}...
+//                   </td>
+//                   {/* <td className="px-6 py-4 whitespace-nowrap">
+//                     {a.video ? (
+//                       <a
+//                         href={a.video}
+//                         target="_blank"
+//                         rel="noreferrer"
+//                         className="text-blue-600"
+//                       >
+//                         View Video
+//                       </a>
+//                     ) : (
+//                       "No video"
+//                     )}
+//                   </td> */}
+
+//                   <td className="px-6 py-4 whitespace-nowrap">
+//                     {a.video ? (
+//                       <div className="h-12 w-20 overflow-hidden rounded-md border border-gray-300 bg-gray-100">
+//                         <video
+//                           src={a.video + "#t=0.5"} // load a frame half a second in to avoid blank
+//                           muted
+//                           playsInline
+//                           preload="metadata"
+//                           className="h-full w-full object-cover"
+//                         />
+//                       </div>
+//                     ) : (
+//                       <span className="text-sm text-gray-500">No video</span>
+//                     )}
+//                   </td>
+
+//                   <td className="flex justify-center gap-2 px-6 py-4">
+//                     <button
+//                       onClick={() => openEditModal(a)}
+//                       className="rounded-lg bg-yellow-500 p-2 text-white hover:cursor-pointer"
+//                     >
+//                       <FaRegEdit />
+//                     </button>
+//                     <button
+//                       onClick={() => setConfirmDelete(a)}
+//                       className="rounded-lg bg-red-600 p-2 text-white hover:cursor-pointer"
+//                     >
+//                       <MdDelete />
+//                     </button>
+//                     <button
+//                       onClick={() => setViewActivity(a)}
+//                       className="rounded-lg bg-[#0F1F4C] p-2 text-white hover:cursor-pointer"
+//                     >
+//                       <GrView />
+//                     </button>
+//                   </td>
+//                 </tr>
+//               ))
+//             )}
+//           </tbody>
+//         </table>
+//       </div>
+
+//       {/* Add/Edit Modal */}
+//       {isModalOpen && (
+//         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50">
+//           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6">
+//             <div className="mb-4 flex items-center justify-between">
+//               <h3 className="text-xl font-semibold">
+//                 {editingActivity ? "Edit Activity" : "Add Activity"}
+//               </h3>
+//               <button
+//                 onClick={() => setIsModalOpen(false)}
+//                 className="cursor-pointer rounded-xl bg-gray-200 p-3 hover:cursor-pointer"
+//               >
+//                 X
+//               </button>
+//             </div>
+//             <form
+//               onSubmit={handleSubmit(onSubmit)}
+//               className="flex flex-col gap-4"
+//             >
+//               <label htmlFor="">Title</label>
+//               <input
+//                 {...register("title", { required: true })}
+//                 placeholder="Title"
+//                 className="rounded border border-gray-300 p-2"
+//               />
+//               {errors.title && (
+//                 <span className="text-red-500">Title required</span>
+//               )}
+// <label htmlFor="">Description</label>
+//               <textarea
+//                 {...register("description", { required: true })}
+//                 placeholder="Description"
+//                 className="rounded border border-gray-300 p-2"
+//                 rows={3}
+//               />
+//               {errors.description && (
+//                 <span className="text-red-500">Description required</span>
+//               )}
+// <label htmlFor=""></label>
+//               <Controller
+//                 name="instruction_sheet"
+//                 control={control}
+//                 render={({ field }) => (
+//                   <RichTextInput
+//                     value={field.value ?? ""}
+//                     onChange={field.onChange}
+//                   />
+//                 )}
+//               />
+
+//               {/* <div>
+//                 <input
+//                   type="file"
+//                   accept="video/*"
+//                   onChange={handleFileChange}
+//                 />
+//                 {formData.videoPreview && (
+//                   <video
+//                     src={formData.videoPreview}
+//                     controls
+//                     className="mt-2 max-h-60 w-full rounded"
+//                   />
+//                 )}
+//               </div> */}
+//               <div>
+//                 <div>
+//                   <label
+//                     htmlFor="video-upload"
+//                     className="mb-2 block text-base font-medium text-gray-700"
+//                   >
+//                     Upload Video
+//                   </label>
+//                 </div>
+
+//                 <div className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition hover:border-blue-400">
+//                   <input
+//                     id="video-upload"
+//                     type="file"
+//                     accept="video/*"
+//                     onChange={handleFileChange}
+//                     className="hidden"
+//                   />
+//                   <label
+//                     htmlFor="video-upload"
+//                     className="flex cursor-pointer flex-col items-center justify-center text-center"
+//                   >
+//                     <svg
+//                       className="mb-2 h-10 w-10 text-gray-400"
+//                       fill="none"
+//                       stroke="currentColor"
+//                       strokeWidth="2"
+//                       viewBox="0 0 24 24"
+//                     >
+//                       <path
+//                         strokeLinecap="round"
+//                         strokeLinejoin="round"
+//                         d="M7 16V4m0 0L3 8m4-4l4 4M17 8h4m0 0v8m0-8l-4 4m4-4l-4 4M7 20h10"
+//                       />
+//                     </svg>
+//                     <p className="text-sm text-gray-600">
+//                       Click to upload or drag and drop
+//                     </p>
+//                     <p className="text-xs text-gray-400">
+//                       MP4, MOV, or AVI (max 100MB)
+//                     </p>
+//                   </label>
+//                 </div>
+
+//                 {formData.videoPreview && (
+//                   <div className="mt-4">
+//                     <video
+//                       src={formData.videoPreview}
+//                       controls
+//                       className="max-h-64 w-full rounded-xl border border-gray-300 shadow-sm"
+//                     />
+//                   </div>
+//                 )}
+//               </div>
+
+//               <div className="mt-4 flex justify-end gap-2">
+//                 <div className="mt-2 flex justify-end gap-3">
+//                   <button
+//                     type="button"
+//                     onClick={() => setIsModalOpen(false)}
+//                     className="rounded-xl bg-gray-300 px-5 py-2 hover:cursor-pointer hover:bg-gray-400"
+//                   >
+//                     Cancel
+//                   </button>
+//                   <button
+//                     type="submit"
+//                     className="bg-secondary-dark hover:bg-secondary-light rounded-xl px-5 py-2 text-white hover:cursor-pointer"
+//                   >
+//                     {editingActivity ? "Update" : "Add Activity"}
+//                   </button>
+//                 </div>
+//               </div>
+//             </form>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Delete Modal */}
+//       {confirmDelete && (
+//         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+//           <div className="max-w-sm rounded-lg bg-white p-6">
+//             <h3 className="mb-2 text-lg font-bold">Delete Activity</h3>
+//             <p>Are you sure you want to delete "{confirmDelete.title}"?</p>
+//             <div className="mt-4 flex justify-end gap-2">
+//               <button
+//                 onClick={() => setConfirmDelete(null)}
+//                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-400 px-4 py-3 text-base font-medium text-white transition-all hover:cursor-pointer hover:bg-gray-500"
+//               >
+//                 Cancel
+//               </button>
+//               <button
+//                 onClick={handleDelete}
+//                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3 text-base font-medium text-white transition-all hover:cursor-pointer hover:bg-red-700"
+//               >
+//                 Delete
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* ✅ View Modal (UI aligned with main modal) */}
+//       {viewActivity && (
+//         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+//           <div className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
+//             {/* Title */}
+//             <h2 className="p-6 text-2xl font-bold tracking-wide text-gray-800">
+//               {viewActivity.title}
+//             </h2>
+
+//             {/* Close Button */}
+//             <button
+//               onClick={() => setViewActivity(null)}
+//               className="absolute top-4 right-4 rounded-full bg-black/30 p-2 text-white transition hover:cursor-pointer hover:bg-black/50"
+//             >
+//               ✕
+//             </button>
+
+//             {/* Media Section */}
+//             <div className="relative mt-4 h-72 w-full overflow-hidden rounded-t-2xl p-3 md:h-80">
+//               {viewActivity.video ? (
+//                 <video
+//                   src={viewActivity.video}
+//                   controls
+//                   autoPlay
+//                   className="h-full w-full object-cover"
+//                 />
+//               ) : (
+//                 <img
+//                   src={viewActivity.images?.[0] || "/placeholder.png"}
+//                   alt={viewActivity.title}
+//                   className="h-full w-full object-cover"
+//                 />
+//               )}
+//             </div>
+
+//             {/* Content */}
+//             <div className="space-y-6 p-6">
+//               {viewActivity.description && (
+//                 <div>
+//                   <h3 className="mb-2 text-lg font-semibold text-gray-800">
+//                     About this Activity
+//                   </h3>
+//                   <div
+//                     className="prose text-gray-700"
+//                     dangerouslySetInnerHTML={{
+//                       __html: viewActivity.description,
+//                     }}
+//                   />
+//                 </div>
+//               )}
+
+//               {viewActivity.instruction_sheet && (
+//                 <div>
+//                   <h3 className="mb-3 text-lg font-semibold text-gray-800">
+//                     🪄 Step-by-Step Instructions
+//                   </h3>
+//                   <div
+//                     dangerouslySetInnerHTML={{
+//                       __html: viewActivity.instruction_sheet,
+//                     }}
+//                     className="prose mt-4"
+//                   />
+//                 </div>
+//               )}
+
+//               {/* Close Button */}
+//               <div className="flex justify-end">
+//                 <button
+//                   onClick={() => setViewActivity(null)}
+//                   className="flex items-center justify-center gap-2 rounded-lg bg-[#223B7D] px-5 py-2.5 text-sm font-medium text-white transition-all hover:cursor-pointer hover:bg-[#343f5c]"
+//                 >
+//                   Close
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default AdminActivityTable;
+
+
+
+
+
+
 
 // // With this:
 // import { useState } from "react";
