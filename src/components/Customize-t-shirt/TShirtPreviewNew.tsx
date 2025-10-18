@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useCreateCustomOrderMutation } from "@/redux/features/tshirtOrder/tshirtOrderApi";
 import type { TshirtOrderRequest } from "@/redux/types/tshirtOrder.type";
+import toast from "react-hot-toast";
 
 interface TShirtPreviewProps {
   tShirtDesign: string;
@@ -89,7 +90,7 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
   const handleOrder = async () => {
     // Validate form fields
     if (!address || !zipCode || !city || !state || !contactName || !contactPhone) {
-      alert("Please fill in all shipping information fields.");
+      toast.error("Please fill in all shipping information fields.");
       return;
     }
 
@@ -122,11 +123,11 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
         // Redirect to Stripe checkout
         window.location.href = response.data.checkoutUrl;
       } else {
-        alert("❌ Failed to get checkout URL.");
+        toast.error("❌ Failed to get checkout URL.");
       }
     } catch (err) {
       console.error(err);
-      alert("❌ Failed to place order.");
+      toast.error("❌ Failed to place order.");
     }
   };
 
@@ -264,7 +265,7 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
       <button
         onClick={handleOrder}
         disabled={isLoading}
-        className="hover:bg-secondary-light mx-auto mt-4 flex w-[70%] items-center justify-center gap-2 rounded-lg bg-[#223B7D] py-2 text-lg text-white transition-colors disabled:opacity-50"
+        className="hover:bg-secondary-light cursor-pointer mx-auto mt-4 flex w-[70%] items-center justify-center gap-2 rounded-lg bg-[#223B7D] py-2 text-lg text-white transition-colors disabled:opacity-50"
       >
         {isLoading
           ? "Processing..."

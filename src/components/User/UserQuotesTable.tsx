@@ -6,6 +6,7 @@ import {
 } from "@/redux/features/quotes/quotesApi";
 import type { QuoteResponse } from "@/redux/types/quotes.type";
 import PageLoader from "../Shared/PageLoader";
+import toast from "react-hot-toast";
 
 const statusColors: Record<string, string> = {
   BOOKED: "bg-green-100 text-green-700",
@@ -25,10 +26,10 @@ const UserQuotesTable = () => {
   const handleCancel = async (id: string) => {
     try {
       await cancelQuote({ id }).unwrap();
-      alert("Quote cancelled successfully ✅");
+      toast.success("Quote cancelled successfully ✅");
     } catch (error) {
       console.error("Cancel failed:", error);
-      alert("Failed to cancel quote ❌");
+      toast.error("Failed to cancel quote ❌");
     }
   };
 

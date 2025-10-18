@@ -122,6 +122,7 @@ const AdminProductTable: React.FC = () => {
   // };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
     if (!e.target.files) return;
 
     const selectedFiles = Array.from(e.target.files);
@@ -508,7 +509,7 @@ const AdminProductTable: React.FC = () => {
                       multiple
                       accept="image/*"
                       onChange={handleFileChange}
-                      className="absolute inset-0 hidden h-full w-full cursor-pointer opacity-0"
+                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0 hidden"
                     />
                     <p className="text-gray-500">
                       Drag & drop photos here or click to browse
