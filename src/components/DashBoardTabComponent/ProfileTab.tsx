@@ -35,7 +35,7 @@ function ProfileTab() {
         formData.append("files", data.file[0]);
       }
 
-      const res = await updateUser(formData).unwrap();
+      await updateUser(formData).unwrap();
       toast.success("Profile updated successfully!")
     } catch (error: any) {
       toast.error("Failed to update");
