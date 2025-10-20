@@ -1,44 +1,36 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChevronDown, Search } from "lucide-react";
-import { useEffect, useState, type JSX } from "react";
-import { useNavigate } from "react-router-dom";
-import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { useState, type JSX } from "react";
 import MyHeader from "@/components/MyHeader/MyHeader";
-import img1 from "../assets/shop-1.jpg"
-import img2 from "../assets/shop-2.jpg"
-import img3 from "../assets/shop-3.jpg"
-import shopIcon from "../assets/icon4.png"  
-export default function Shop(): JSX.Element {
-  // UI controls
-  const [searchTerm, setSearchTerm] = useState("");
-  const [ageRange, setAgeRange] = useState("");
-  const [theme, setTheme] = useState("");
-  const [productType, setProductType] = useState<"" | "DIY_BOX" | "GIFT">("");
-  const navigate = useNavigate();
+import { useGetAffiliateProductsQuery } from "@/redux/features/affiliatedProduct/affiliateProductApi";
+import type { IAffiliatedProduct } from "@/redux/types/IAffiliatedProduct.type";
+import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
 
-  useEffect(() => {
-    console.log("Search params:", { searchTerm, ageRange, theme, productType });
-  }, [searchTerm, ageRange, theme, productType]);
+export default function Shop(): JSX.Element {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [company, setCompany] = useState("");
+
+  // Fetch products with optional query params
+  const { data, isLoading, isError } = useGetAffiliateProductsQuery({
+    search: searchTerm,
+    company,
+  });
+
+  // Map data safely
+  const products: IAffiliatedProduct[] = data?.items ?? [];
+
+  // Render star ratings
   const renderStars = (rating: number) => {
     const stars = [];
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.25 && rating % 1 < 0.75;
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<FaStar key={`full-${i}`} className="text-yellow-400" />);
-    }
-
-    if (hasHalfStar) {
-      stars.push(<FaStarHalfAlt key="half" className="text-yellow-400" />);
-    }
-
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(<FaRegStar key={`empty-${i}`} className="text-gray-300" />);
-    }
-
+    for (let i = 0; i < fullStars; i++) stars.push(<FaStar key={`full-${i}`} className="text-yellow-400" />);
+    if (hasHalfStar) stars.push(<FaStarHalfAlt key="half" className="text-yellow-400" />);
+    for (let i = 0; i < emptyStars; i++) stars.push(<FaRegStar key={`empty-${i}`} className="text-gray-300" />);
     return stars;
   };
+
   return (
     <div className="px-4">
       <MyHeader
@@ -46,85 +38,10 @@ export default function Shop(): JSX.Element {
         subtitle="Discover the perfect gifts with AI-powered recommendations"
       />
 
-      <section className="mt-6">
-        <div className="mx-auto max-w-7xl rounded-xl bg-[#BBDEFB] p-4 md:p-6">
-          <div className="mb-6 flex items-center gap-2 text-[#223B7D]">
-            <img src={shopIcon} alt="shop-icon" className="h-7 w-7" />
-            <h2 className="text-2xl font-bold">Recommended for You</h2>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="overflow-hidden rounded-xl bg-white p-4 shadow-md">
-              <div className="rounded-lg bg-[#FFF7ED]">
-                <img
-                  src={img1}
-                  alt="Personalized Birthday T-Shirt"
-                  className="h-48 w-full rounded-lg object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="text-xl font-medium text-gray-800">
-                    Personalized Birthday T-Shirt
-                  </h3>
-                  <div className="mt-6 mb-2 flex items-center justify-between">
-                    <span className="text-lg font-bold text-[#223B7D]">
-                      $12.90
-                    </span>
-                    <button className="rounded-full bg-[#223B7D] px-4 py-2 text-sm text-white hover:bg-blue-700">
-                      Pick
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="overflow-hidden rounded-xl bg-white p-4 shadow-md">
-              <div className="rounded-lg bg-[#FFF7ED]">
-                <img
-                  src={img2}
-                  alt="LEGO Creator"
-                  className="h-48 w-full rounded-lg object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="text-xl font-medium text-gray-800">
-                    LEGO Creator 3-in-1 Deep Sea
-                  </h3>
-                  <div className="mt-6 mb-2 flex items-center justify-between">
-                    <span className="text-lg font-bold text-[#223B7D]">
-                      $49.99
-                    </span>
-                    <button className="rounded-full bg-[#223B7D] px-4 py-2 text-sm text-white hover:bg-blue-700">
-                      Pick
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="overflow-hidden rounded-xl bg-white p-4 shadow-md">
-              <div className="rounded-lg bg-[#FFF7ED]">
-                <img
-                  src={img3}
-                  alt="Superhero Cape"
-                  className="h-48 w-full rounded-lg object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="text-xl font-medium text-gray-800">
-                    Superhero Cape & Mask Set
-                  </h3>
-                  <div className="mt-6 mb-2 flex items-center justify-between">
-                    <span className="text-lg font-bold text-[#223B7D]">
-                      $49.99
-                    </span>
-                    <button className="rounded-full bg-[#223B7D] px-4 py-2 text-sm text-white hover:bg-blue-700">
-                      Pick
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Filters */}
       <section className="mt-10">
         <div className="mx-auto flex max-w-7xl flex-col items-center space-y-4 rounded-xl bg-white p-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+          {/* Search */}
           <div className="relative w-full flex-1">
             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-500" />
             <input
@@ -133,399 +50,845 @@ export default function Shop(): JSX.Element {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full rounded-lg border border-gray-200 py-2 pr-4 pl-9 text-gray-700 placeholder-gray-400 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
-              aria-label="Search themes, activities, or keywords"
             />
           </div>
 
-          {/* Product Type Filter */}
-          <div className="relative w-full sm:w-[140px]">
+          {/* Company Filter */}
+          <div className="relative w-full sm:w-[160px]">
             <select
-              value={productType}
-              onChange={(e) => setProductType(e.target.value as "" | "DIY_BOX" | "GIFT")}
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
               className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
-              aria-label="Select product type"
             >
-              <option value="">All Products</option>
-              <option value="DIY_BOX">DIY Boxes</option>
-              <option value="GIFT">Gifts</option>
+              <option value="">All Companies</option>
+              <option value="Amazon">Amazon</option>
+              <option value="eBay">eBay</option>
+              <option value="ArtifyBox">ArtifyBox</option>
+              <option value="GiftGuru">GiftGuru</option>
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-              <ChevronDown className="h-4 w-4" />
-            </div>
-          </div>
-
-          <div className="relative w-full sm:w-[140px]">
-            <select
-              value={ageRange}
-              onChange={(e) => setAgeRange(e.target.value)}
-              className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
-              aria-label="Select age range"
-            >
-              <option value="">Age Range</option>
-              <option value="all">All Ages</option>
-              <option value="3-6">3-6 years</option>
-              <option value="5+">5+ years</option>
-              <option value="6-10">6-10 years</option>
-              <option value="8-12">8-12 years</option>
-              <option value="9-12">9-12 years</option>
-              <option value="10+">10+ years</option>
-              <option value="13+">13+ years</option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-              <ChevronDown className="h-4 w-4" />
-            </div>
-          </div>
-
-          <div className="relative w-full sm:w-[120px]">
-            <select
-              value={theme}
-              onChange={(e) => setTheme(e.target.value)}
-              className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
-              aria-label="Select theme"
-            >
-              <option value="">Theme</option>
-              <option value="all">All Themes</option>
-              <option value="SUPERHERO">Superhero</option>
-              <option value="adventure">Adventure</option>
-              <option value="education">Education</option>
-              <option value="creative">Creative</option>
-              <option value="sports">Sports</option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-              <ChevronDown className="h-4 w-4" />
-            </div>
+            <ChevronDown className="absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 text-gray-700 pointer-events-none" />
           </div>
         </div>
       </section>
 
-      {/* ---------- Products Grid ---------- */}
-      <section className="mx-auto max-w-7xl">
-        <div className="mt-20 grid grid-cols-1 gap-6 pb-14 md:grid-cols-2 lg:grid-cols-3">
-          <article
-            role="button"
-            tabIndex={0}
-            onClick={() => window.location.href = "https://amzn.to/3KHm6Ye"}
-            className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
-          >
-            <div className="relative h-64 w-auto">
-              <img
-                src="https://i.ibb.co.com/1JG8MQMH/81v-YYe-K13-L-AC-SY550.jpg"
-                alt="Image"
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute top-3 left-3">
-                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800`}>
-                  GIFT
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-grow flex-col p-6">
-              <h3 className="mb-2 text-2xl font-semibold text-[#191919]">
-                Shuffle – Gabby et la Maison Magique
-              </h3>
-              <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
-                À propos de cet article
-                Découvrez Gabby et tous ses amis dans ce jeu de familles inédit ! 4 jeux disponibles dans une seule et même boîte !
-                Découvrez 4 règles de jeux différentes pour seulement 1 jeu de cartes : jeu de 7 familles, jeu de paires, jeu d'action et jeu de batailles !
-                Des vidéos explicatives sont disponibles en ligne, et ce dans 14 langues différentes.
-                Contient 33 cartes et les règles des jeux
-                À partir de 4 ans, de 2 à 10 joueurs : idéal pour jouer en famille ou entre amis
-              </p>
-              <div className="mb-4 flex items-center gap-2">
-                <div className="flex items-center">{renderStars(4.6)}</div>
-                <span className="text-sm font-medium text-gray-900">4.6</span>
-                <span className="text-sm text-gray-500">(148 reviews)</span>
-              </div>
-              <div className="mt-auto flex gap-3">
-                <button
-                  onClick={() => window.location.href = "https://amzn.to/3KHm6Ye"}
-                  className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
-                >
-                  Buy Now
-                </button>
-              </div>
-            </div>
-          </article>
-          <article
-            role="button"
-            tabIndex={0}
-            onClick={() => window.location.href = "https://amzn.to/48pBouy"}
-            className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
-          >
-            <div className="relative h-64 w-auto">
-              <img
-                src="https://i.ibb.co.com/Dg44V4Ht/61h-CBp-QZji-L-SX522.jpg"
-                alt="Image"
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute top-3 left-3">
-                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800`}>
-                  GIFT
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-grow flex-col p-6">
-              <h3 className="mb-2 text-2xl font-semibold text-[#191919]">
-                Kzouenzu Happy Birthday Banner (Gold)
-              </h3>
-              <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
-                [Elegant Design] - The happy birthday garland banner is hollowed out and gold design, which adds sparkle to celebrations. Simple and elegant banner for birthday party decorations, happy birthday decorations.
-                [High quality] - Our banners are made of high quality paper, strong, durable.
-                [Quality] - Reusable, this beautiful gold glitter garland will easily fit into any home. With its high-quality lettering, you can decorate your room in a blink of an eye. Perfect for a party and for taking beautiful pictures!
-                [Occasion] - You can hang them from the ceiling, above the table, under the veranda or on the branches of trees. Enjoy the party..... these birthday party decorations are perfect for all ages!
-                [Wide range of uses] - The handmade glitter banner with letters "Happy Birthday" is in a fashionable style and very beautiful. The garland can be perfectly combined with other decorations and beautiful decorative accents in your rooms. You can hang it anywhere, wall, branch, etc. This adds a cheerful atmosphere.
-              </p>
-              <div className="mb-4 flex items-center gap-2">
-                <div className="flex items-center">{renderStars(4.9)}</div>
-                <span className="text-sm font-medium text-gray-900">4.9</span>
-                <span className="text-sm text-gray-500">(33 reviews)</span>
-              </div>
-              <div className="mt-auto flex gap-3">
-                <button
-                  onClick={() => window.location.href = "https://amzn.to/48pBouy"}
-                  className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
-                >
-                  Buy Now
-                </button>
-              </div>
-            </div>
-          </article>
-          <article
-            role="button"
-            tabIndex={0}
-            onClick={() => window.location.href = "https://amzn.to/3VVLJa7"}
-            className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
-          >
-            <div className="relative h-64 w-auto">
-              <img
-                src="https://i.ibb.co.com/Bxhqqvr/71-VKby-QOdq-L-AC-SX425.jpg"
-                alt="Image"
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute top-3 left-3">
-                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800`}>
-                  GIFT
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-grow flex-col p-6">
-              <h3 className="mb-2 text-xl font-semibold text-[#191919]">
-                JOIYHY 26 x Birthday Cake Decoration (Gold)
-              </h3>
-              <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
-                Package includes: You will receive 24 butterflies cake toppers and 2 happy birthday toppers. They can be combined with different styles of cakes to make their cakes more attractive.
-                【Safety material】 The butterfly cake topper is made of high quality paper, high strength, without deformation, comfortable to use. Cake topper is made of acrylic material, not easy to break and reusable.
-                【DIY creation】 Decoración para tartas de cumpleaños can make your cake DIY, stimulate imagination and creativity in the process of making your own cake, make your cake more meaningful, Decoracion para tartas de cumpleaños can add a little fantasy to the cake for this special occasion.
-                【Easy to use】The butterfly cake topper is very easy to use, you can put the butterfly directly on the cake, or you can use a stick to put the butterfly on the cake, all the pieces are cut precisely. You can even stick the butterfly to the wall as a wall decoration or staging.
-                【Versatile Use】 It can be used as a delicate accessory for cakes, cupcakes, ice cream, cheese, fruit or any other dish you want to decorate, perfect for birthday parties, baby showers, parties or other events.
-              </p>
-              <div className="mb-4 flex items-center gap-2">
-                <div className="flex items-center">{renderStars(4.4)}</div>
-                <span className="text-sm font-medium text-gray-900">4.4</span>
-                <span className="text-sm text-gray-500">(4 reviews)</span>
-              </div>
-              <div className="mt-auto flex gap-3">
-                <button
-                  onClick={() => window.location.href = "https://amzn.to/3VVLJa7"}
-                  className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
-                >
-                  Buy Now
-                </button>
-              </div>
-            </div>
-          </article>
-          <article
-            role="button"
-            tabIndex={0}
-            onClick={() => window.location.href = "https://amzn.to/47i2xOO"}
-            className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
-          >
-            <div className="relative h-64 w-auto">
-              <img
-                src="https://i.ibb.co.com/KRKPhR0/61vv-Zqc-Mu-XL-AC-SX679.jpg"
-                alt="Image"
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute top-3 left-3">
-                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800`}>
-                  GIFT
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-grow flex-col p-6">
-              <h3 className="mb-2 text-2xl font-semibold text-[#191919]">
-                Unicorn Girl Birthday Decoration
-              </h3>
-              <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
-                Our unicorn birthday decoration kit includes a unicorn garland "Happy Birthday" and 10 spiral hangers, for effortless fairy girl birthday decoration.
-                Unicorn Fairy Design for Girls: The brightly colored unicorn, stars and rainbow patterns create a magical atmosphere, perfect for a girl's unicorn birthday or children's party.
-                ❃【Safe & Reusable Materials】Made of quality paper and plastic, our unicorn girl birthday decoration is non-toxic, lightweight and reusable - ideal for long-lasting parties.
-                Easy installation without tools: the unicorn garland and spiral hanging lights can be easily attached without tools, glue or tape - perfect for walls, windows, ceilings or trees.
-                【Versatile Use for Any Occasion】Suitable for unicorn birthday, baby shower, carnival, children's party decoration, christening or unicorn theme - a magical decoration for any moment.
-              </p>
-              <div className="mb-4 flex items-center gap-2">
-                <span className="text-sm text-gray-500">(0 reviews)</span>
-              </div>
-              <div className="mt-auto flex gap-3">
-                <button
-                  onClick={() => window.location.href = "https://amzn.to/47i2xOO"}
-                  className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
-                >
-                  Buy Now
-                </button>
-              </div>
-            </div>
-          </article>
-          <article
-            role="button"
-            tabIndex={0}
-            onClick={() => window.location.href = "https://amzn.to/3Wy6xEK"}
-            className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
-          >
-            <div className="relative h-64 w-auto">
-              <img
-                src="https://i.ibb.co.com/95Fzybb/41-M-M3hf-Fo-L-AC.jpg"
-                alt="Image"
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute top-3 left-3">
-                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800`}>
-                  GIFT
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-grow flex-col p-6">
-              <h3 className="mb-2 text-2xl font-semibold text-[#191919]">
-                Unicorn Cake Decoration
-              </h3>
-              <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
-                The unicorn cupcake topper set is made of card paper, which is strong and does not fade on food.We provide wooden sticks, paper straws and glue dots for you to decorate the birthday cakes as you like.
-                You will get 1 cute unicorn cake topper set, including 1 unicorn horn, 1 happy birthday banner, 2 ears, 2 eyes, 2 blushers and 3 flowers and 3 paper straws and A little glue is very suitable for decorating children's birthday cakes.
-                These party hats and accessories are designed with unicorn elements.Cute shapes and beautiful colors are children's favorites, and they are very suitable for unicorn theme party decorations. Add unique colors to your big parties.
-                The unicorn cake top hat is the perfect size. It is very suitable for 8 to 9 inch cakes and you can adjust the insertion depth of the pins to make the height of the cake lid different.
-                Very suitable for children's birthday party, wedding party, unicorn theme party decoration, will attract the interest of children and adults.
-              </p>
-              <div className="mb-4 flex items-center gap-2">
-                <div className="flex items-center">{renderStars(4.1)}</div>
-                <span className="text-sm font-medium text-gray-900">4.1</span>
-                <span className="text-sm text-gray-500">(44 reviews)</span>
-              </div>
-              <div className="mt-auto flex gap-3">
-                <button
-                  onClick={() => window.location.href = "https://amzn.to/3Wy6xEK"}
-                  className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
-                >
-                  Buy Now
-                </button>
-              </div>
-            </div>
-          </article>
-          <article
-            role="button"
-            tabIndex={0}
-            onClick={() => window.location.href = "https://amzn.to/4mXtXyg"}
-            className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
-          >
-            <div className="relative h-64 w-auto">
-              <img
-                src="https://i.ibb.co.com/6JPtWtC2/71-Z0dn-Rjtq-L-AC-SX425.jpg"
-                alt="Image"
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute top-3 left-3">
-                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800`}>
-                  GIFT
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-grow flex-col p-6">
-              <h3 className="mb-2 text-2xl font-semibold text-[#191919]">
-                Baby Teething Ball
-              </h3>
-              <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
-                [Baby Teether]: It is made of food grade silicone & ABS with 12 soft chewing points and 2 different textured surfaces, intended to relieve the pain of teething babies in oral step. It also promotes chewing and biting movements of the baby.
-                [ Sensory baby toy 6 months: More than just a teether, it is also a sensory baby game 0-3 months babies. It makes a rattle sound when twisted or shaken, thus attracting the attention of newborns, in addition to the bright colors that help with visual stimulation and color learning.
-                [ For small hands]: Our Montessori baby toy 0-6 months is lightweight and perfect size to encourage little hands to reach and grasp. The baby can play with it in the crib, stroller, car, plane, etc.
-                [ Newborn baby girl boy gift 6-12 months]: No small detachable parts, babies can play with this toy freely and safely without parental supervision. Suitable for newborns 0 months and up.
-                [Easy to clean]: It must be fully cleaned before first use. Made of heat-resistant materials, it can be cleaned by ultraviolet light, steam
-                [Product Size]: 10.5*10.5*7cm, Product weight: 110g
-              </p>
-              <div className="mb-4 flex items-center gap-2">
-                <div className="flex items-center">{renderStars(4.6)}</div>
-                <span className="text-sm font-medium text-gray-900">4.6</span>
-                <span className="text-sm text-gray-500">(1735 reviews)</span>
-              </div>
-              <div className="mt-auto flex gap-3">
-                <button
-                  onClick={() => window.location.href = "https://amzn.to/4mXtXyg"}
-                  className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
-                >
-                  Buy Now
-                </button>
-              </div>
-            </div>
-          </article>
-          <article
-            role="button"
-            tabIndex={0}
-            onClick={() => window.location.href = "https://amzn.to/3IYedx1"}
-            className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
-          >
-            <div className="relative h-64 w-auto">
-              <img
-                src="https://i.ibb.co.com/d0dZKJR9/71v6e-Al-Jus-S-AC-SX679-PIbundle-28-Top-Right-0-0-SH20.jpg"
-                alt="Image"
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute top-3 left-3">
-                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800`}>
-                  GIFT
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-grow flex-col p-6">
-              <h3 className="mb-2 text-xl font-semibold text-[#191919]">
-                Ravensburger - Educational Game
-              </h3>
-              <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
-                The domino is a classic for ages 3 and up. The principle of image association allows the child to develop his ability to observe and think. This game with simple rules unites generations and allows you to enjoy the pleasure of being together: the happiness of playing far from the screens!
-                Who will put the most dominoes in a row? Will you be able to assemble all the characters of the Paw Patrol? In this little "paw patrol" domino you will find beautiful illustrations that delight young and old. Each card hides an iconic PAW Patrol character: Chase, Ruben, Marcus, Stella, Rocky and Zuma.
-                Simple rules. Mix the dominoes face down. The first player puts one of his dominoes. The next player looks at his dominoes, if he has one of the two images that matches the first player's card, he puts it in a row. The goal of the game is to get rid of all of your dominoes to win!
-                Contents: 28 dominoes on the Paw Patrol universe. This product consists of materials from well-managed FSC-certified forests, recycled materials and materials from other controlled sources (FSC-C111262). This product was made in Europe."
-                All our small domino memory lotto are present to accompany your child in educational entertainment. Your child can challenge their memory with themes such as: pets and baby animals. And can find these favorite heroes with the characters of Frozen Little Brown Bear, Peppa Pig and T'choupi.
-              </p>
-              <div className="mb-4 flex items-center gap-2">
-                <div className="flex items-center">{renderStars(4.7)}</div>
-                <span className="text-sm font-medium text-gray-900">4.7</span>
-                <span className="text-sm text-gray-500">(1076 reviews)</span>
-              </div>
-              <div className="mt-auto flex gap-3">
-                <button
-                  onClick={() => window.location.href = "https://amzn.to/3IYedx1"}
-                  className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
-                >
-                  Buy Now
-                </button>
-              </div>
-            </div>
-          </article>
-        </div>
+      {/* Product Grid */}
+      <section className="mx-auto max-w-7xl mt-10">
+        {isLoading && <p className="text-center text-gray-500">Loading products...</p>}
+        {isError && <p className="text-center text-red-500">Failed to load products.</p>}
+
+        {!isLoading && !isError && products.length === 0 && (
+          <p className="text-center text-gray-500">No products found.</p>
+        )}
+
+        {!isLoading && !isError && products.length > 0 && (
+          <div className="grid grid-cols-1 gap-6 pb-14 md:grid-cols-2 lg:grid-cols-3">
+            {products.map((product) => (
+              <article
+                key={product.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => window.open(product.link, "_blank")}
+                className="flex h-full flex-col overflow-hidden rounded-lg shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+              >
+                {/* Image & Company Badge */}
+                <div className="relative h-64 overflow-hidden w-auto">
+                  <img
+                    src={product.image_url}
+                    alt={product.title}
+                    className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
+                  />
+                  <div className="absolute top-3 left-3">
+                    <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800">
+                      {product.affiliated_company || "GIFT"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Details */}
+                <div className="flex flex-grow flex-col p-6">
+                  <h3 className="mb-2 text-xl font-semibold text-[#191919]">
+                    {product.title.slice(0, 60)}...
+                  </h3>
 
 
-        <div className="mb-20 flex justify-center md:justify-end">
-          <button
-            onClick={() => navigate("/shop")}
-            className="rounded-lg border border-[#223B7D] px-6 py-3 text-[#223B7D] hover:bg-gray-50 transition-colors"
-          >
-            View all
-          </button>
-        </div>
+                  <div className="mb-2 font-semibold text-lg">€{product.price}</div>
+
+                  <div className="mb-4 flex items-center gap-2">
+                    <div className="flex items-center">{renderStars(product.avg_rating || 0)}</div>
+                    <span className="text-sm font-medium text-gray-900">{product.avg_rating?.toFixed(1) ?? "0.0"}</span>
+                    <span className="text-sm text-gray-500">({product.total_review ?? 0} reviews)</span>
+                  </div>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(product.link, "_blank");
+                    }}
+                    className="mt-auto cursor-pointer w-full rounded-lg border bg-[#223B7D] px-4 py-3 text-gray-50 transition-colors hover:bg-blue-900"
+                  >
+                    Buy Now
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
-
-
     </div>
   );
 }
+
+
+
+// import { ChevronDown, Search } from "lucide-react";
+// import { useState, type JSX } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
+// import MyHeader from "@/components/MyHeader/MyHeader";
+// import { useGetAffiliateProductsQuery } from "@/redux/features/affiliatedProduct/affiliateProductApi";
+// import type { IAffiliatedProduct } from "@/redux/types/IAffiliatedProduct.type";
+// export default function Shop(): JSX.Element {
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [productType, setProductType] = useState<"" | "DIY_BOX" | "GIFT">("");
+//   const [company, setCompany] = useState("");
+//   const navigate = useNavigate();
+
+//   // ✅ Fetch products with query filters
+//   const { data, isLoading, isError } = useGetAffiliateProductsQuery({
+//     search: searchTerm,
+//     company,
+//   });
+//   console.log(data, "data")
+//   // ✅ Safe fallback if API response isn't an array
+//   // const products: IAffiliatedProduct[] = Array.isArray(data) ? data : [];
+//   const products: IAffiliatedProduct[] = data?.items ?? [];
+//   console.log(products, "productsfhghfghfghfghfg")
+//   // ⭐ Rating renderer
+//   const renderStars = (rating: number) => {
+//     const stars = [];
+//     const fullStars = Math.floor(rating);
+//     const hasHalfStar = rating % 1 >= 0.25 && rating % 1 < 0.75;
+//     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+//     for (let i = 0; i < fullStars; i++)
+//       stars.push(<FaStar key={`full-${i}`} className="text-yellow-400" />);
+//     if (hasHalfStar)
+//       stars.push(<FaStarHalfAlt key="half" className="text-yellow-400" />);
+//     for (let i = 0; i < emptyStars; i++)
+//       stars.push(<FaRegStar key={`empty-${i}`} className="text-gray-300" />);
+//     return stars;
+//   };
+
+//   return (
+//     <div className="px-4">
+//       <MyHeader
+//         title="Gift Shop"
+//         subtitle="Discover the perfect gifts with AI-powered recommendations"
+//       />
+
+//       {/* 🔹 Filters Section */}
+//       <section className="mt-10">
+//         <div className="mx-auto flex max-w-7xl flex-col items-center space-y-4 rounded-xl bg-white p-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+//           {/* Search */}
+//           <div className="relative w-full flex-1">
+//             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-500" />
+//             <input
+//               type="text"
+//               placeholder="Search themes, activities, or keywords..."
+//               value={searchTerm}
+//               onChange={(e) => setSearchTerm(e.target.value)}
+//               className="w-full rounded-lg border border-gray-200 py-2 pr-4 pl-9 text-gray-700 placeholder-gray-400 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+//             />
+//           </div>
+
+
+
+//           {/* Company Filter */}
+//           <div className="relative w-full sm:w-[160px]">
+//             <select
+//               value={company}
+//               onChange={(e) => setCompany(e.target.value)}
+//               className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+//             >
+//               <option value="">All Companies</option>
+//               <option value="MakeMyMini">MakeMyMini</option>
+//               <option value="HappyCrafts">HappyCrafts</option>
+//               <option value="ArtifyBox">ArtifyBox</option>
+//               <option value="GiftGuru">GiftGuru</option>
+//             </select>
+//             <ChevronDown className="absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 text-gray-700 pointer-events-none" />
+//           </div>
+//         </div>
+//       </section>
+
+//       {/* 🔹 Product Grid */}
+//       <section className="mx-auto max-w-7xl mt-10">
+//         {isLoading && (
+//           <p className="text-center text-gray-500">Loading products...</p>
+//         )}
+//         {isError && (
+//           <p className="text-center text-red-500">Failed to load products.</p>
+//         )}
+
+//         {!isLoading && !isError && (
+//           <div className="grid grid-cols-1 gap-6 pb-14 md:grid-cols-2 lg:grid-cols-3">
+//             {products.map((product) => (
+//               <article
+//                 key={product.id}
+//                 role="button"
+//                 tabIndex={0}
+//                 onClick={() => window.open(product.link, "_blank")}
+//                 className="flex h-full flex-col overflow-hidden rounded-lg   shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+//               >
+//                 <div className="relative h-64 overflow-hidden w-auto">
+//                   <img
+//                     src={product.image_url}
+//                     alt={product.title}
+//                     className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
+//                   />
+//                   <div className="absolute top-3 left-3">
+//                     <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800">
+//                       {product.affiliated_company || "GIFT"}
+//                     </span>
+//                   </div>
+//                 </div>
+//                 <div className="flex flex-grow flex-col p-6">
+//                   <h3 className="mb-2 text-xl font-semibold text-[#191919]">
+//                     {product.title.slice(0, 60)}.......
+//                   </h3>
+//                   <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
+//                     {product.items}
+//                   </p>
+
+
+//                   <div>
+//                     €{product.price}
+//                   </div>
+
+//                   <div className="mb-4 flex items-center gap-2">
+//                     <div className="flex items-center">
+//                       {renderStars(product.avg_rating || 0)}
+//                     </div>
+//                     <span className="text-sm font-medium text-gray-900">
+//                       {product.avg_rating?.toFixed(1) ?? "0.0"}
+//                     </span>
+//                     <span className="text-sm text-gray-500">
+//                       ({product.total_review ?? 0} reviews)
+//                     </span>
+//                   </div>
+//                   <div className="mt-auto flex gap-3">
+//                     <button
+//                       onClick={(e) => {
+//                         e.stopPropagation();
+//                         window.open(product.link, "_blank");
+//                       }}
+//                       className="cursor-pointer hover:bg-blue-900  w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
+//                     >
+//                       Buy Now
+//                     </button>
+//                   </div>
+//                 </div>
+//               </article>
+//             ))}
+//           </div>
+//         )}
+
+
+//       </section>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// /* eslint-disable @typescript-eslint/no-explicit-any */
+// import { ChevronDown, Search } from "lucide-react";
+// import { useEffect, useState, type JSX } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
+// import MyHeader from "@/components/MyHeader/MyHeader";
+// import img1 from "../assets/shop-1.jpg"
+// import img2 from "../assets/shop-2.jpg"
+// import img3 from "../assets/shop-3.jpg"
+// import shopIcon from "../assets/icon4.png"
+// export default function Shop(): JSX.Element {
+//   // UI controls
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [ageRange, setAgeRange] = useState("");
+//   const [theme, setTheme] = useState("");
+//   const [productType, setProductType] = useState<"" | "DIY_BOX" | "GIFT">("");
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     console.log("Search params:", { searchTerm, ageRange, theme, productType });
+//   }, [searchTerm, ageRange, theme, productType]);
+//   const renderStars = (rating: number) => {
+//     const stars = [];
+//     const fullStars = Math.floor(rating);
+//     const hasHalfStar = rating % 1 >= 0.25 && rating % 1 < 0.75;
+//     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+//     for (let i = 0; i < fullStars; i++) {
+//       stars.push(<FaStar key={`full-${i}`} className="text-yellow-400" />);
+//     }
+
+//     if (hasHalfStar) {
+//       stars.push(<FaStarHalfAlt key="half" className="text-yellow-400" />);
+//     }
+
+//     for (let i = 0; i < emptyStars; i++) {
+//       stars.push(<FaRegStar key={`empty-${i}`} className="text-gray-300" />);
+//     }
+
+//     return stars;
+//   };
+//   return (
+//     <div className="px-4">
+//       <MyHeader
+//         title="Gift Shop"
+//         subtitle="Discover the perfect gifts with AI-powered recommendations"
+//       />
+
+//       <section className="mt-6">
+//         <div className="mx-auto max-w-7xl rounded-xl bg-[#BBDEFB] p-4 md:p-6">
+//           <div className="mb-6 flex items-center gap-2 text-[#223B7D]">
+//             <img src={shopIcon} alt="shop-icon" className="h-7 w-7" />
+//             <h2 className="text-2xl font-bold">Recommended for You</h2>
+//           </div>
+
+//           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+//             <div className="overflow-hidden rounded-xl bg-white p-4 shadow-md">
+//               <div className="rounded-lg bg-[#FFF7ED]">
+//                 <img
+//                   src={img1}
+//                   alt="Personalized Birthday T-Shirt"
+//                   className="h-48 w-full rounded-lg object-cover"
+//                 />
+//                 <div className="p-4">
+//                   <h3 className="text-xl font-medium text-gray-800">
+//                     Personalized Birthday T-Shirt
+//                   </h3>
+//                   <div className="mt-6 mb-2 flex items-center justify-between">
+//                     <span className="text-lg font-bold text-[#223B7D]">
+//                       $12.90
+//                     </span>
+//                     <button className="rounded-full bg-[#223B7D] px-4 py-2 text-sm text-white hover:bg-blue-700">
+//                       Pick
+//                     </button>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//             <div className="overflow-hidden rounded-xl bg-white p-4 shadow-md">
+//               <div className="rounded-lg bg-[#FFF7ED]">
+//                 <img
+//                   src={img2}
+//                   alt="LEGO Creator"
+//                   className="h-48 w-full rounded-lg object-cover"
+//                 />
+//                 <div className="p-4">
+//                   <h3 className="text-xl font-medium text-gray-800">
+//                     LEGO Creator 3-in-1 Deep Sea
+//                   </h3>
+//                   <div className="mt-6 mb-2 flex items-center justify-between">
+//                     <span className="text-lg font-bold text-[#223B7D]">
+//                       $49.99
+//                     </span>
+//                     <button className="rounded-full bg-[#223B7D] px-4 py-2 text-sm text-white hover:bg-blue-700">
+//                       Pick
+//                     </button>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//             <div className="overflow-hidden rounded-xl bg-white p-4 shadow-md">
+//               <div className="rounded-lg bg-[#FFF7ED]">
+//                 <img
+//                   src={img3}
+//                   alt="Superhero Cape"
+//                   className="h-48 w-full rounded-lg object-cover"
+//                 />
+//                 <div className="p-4">
+//                   <h3 className="text-xl font-medium text-gray-800">
+//                     Superhero Cape & Mask Set
+//                   </h3>
+//                   <div className="mt-6 mb-2 flex items-center justify-between">
+//                     <span className="text-lg font-bold text-[#223B7D]">
+//                       $49.99
+//                     </span>
+//                     <button className="rounded-full bg-[#223B7D] px-4 py-2 text-sm text-white hover:bg-blue-700">
+//                       Pick
+//                     </button>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </section>
+//       <section className="mt-10">
+//         <div className="mx-auto flex max-w-7xl flex-col items-center space-y-4 rounded-xl bg-white p-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+//           <div className="relative w-full flex-1">
+//             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-500" />
+//             <input
+//               type="text"
+//               placeholder="Search themes, activities, or keywords..."
+//               value={searchTerm}
+//               onChange={(e) => setSearchTerm(e.target.value)}
+//               className="w-full rounded-lg border border-gray-200 py-2 pr-4 pl-9 text-gray-700 placeholder-gray-400 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+//               aria-label="Search themes, activities, or keywords"
+//             />
+//           </div>
+
+//           {/* Product Type Filter */}
+//           <div className="relative w-full sm:w-[140px]">
+//             <select
+//               value={productType}
+//               onChange={(e) => setProductType(e.target.value as "" | "DIY_BOX" | "GIFT")}
+//               className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+//               aria-label="Select product type"
+//             >
+//               <option value="">All Products</option>
+//               <option value="DIY_BOX">DIY Boxes</option>
+//               <option value="GIFT">Gifts</option>
+//             </select>
+//             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+//               <ChevronDown className="h-4 w-4" />
+//             </div>
+//           </div>
+
+//           <div className="relative w-full sm:w-[140px]">
+//             <select
+//               value={ageRange}
+//               onChange={(e) => setAgeRange(e.target.value)}
+//               className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+//               aria-label="Select age range"
+//             >
+//               <option value="">Age Range</option>
+//               <option value="all">All Ages</option>
+//               <option value="3-6">3-6 years</option>
+//               <option value="5+">5+ years</option>
+//               <option value="6-10">6-10 years</option>
+//               <option value="8-12">8-12 years</option>
+//               <option value="9-12">9-12 years</option>
+//               <option value="10+">10+ years</option>
+//               <option value="13+">13+ years</option>
+//             </select>
+//             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+//               <ChevronDown className="h-4 w-4" />
+//             </div>
+//           </div>
+
+//           <div className="relative w-full sm:w-[120px]">
+//             <select
+//               value={theme}
+//               onChange={(e) => setTheme(e.target.value)}
+//               className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+//               aria-label="Select theme"
+//             >
+//               <option value="">Theme</option>
+//               <option value="all">All Themes</option>
+//               <option value="SUPERHERO">Superhero</option>
+//               <option value="adventure">Adventure</option>
+//               <option value="education">Education</option>
+//               <option value="creative">Creative</option>
+//               <option value="sports">Sports</option>
+//             </select>
+//             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+//               <ChevronDown className="h-4 w-4" />
+//             </div>
+//           </div>
+//         </div>
+//       </section>
+
+//       {/* ---------- Products Grid ---------- */}
+//       <section className="mx-auto max-w-7xl">
+//         <div className="mt-20 grid grid-cols-1 gap-6 pb-14 md:grid-cols-2 lg:grid-cols-3">
+//           <article
+//             role="button"
+//             tabIndex={0}
+//             onClick={() => window.location.href = "https://amzn.to/3KHm6Ye"}
+//             className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+//           >
+//             <div className="relative h-64 w-auto">
+//               <img
+//                 src="https://i.ibb.co.com/1JG8MQMH/81v-YYe-K13-L-AC-SY550.jpg"
+//                 alt="Image"
+//                 className="h-full w-full object-cover"
+//               />
+//               <div className="absolute top-3 left-3">
+//                 <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800`}>
+//                   GIFT
+//                 </span>
+//               </div>
+//             </div>
+//             <div className="flex flex-grow flex-col p-6">
+//               <h3 className="mb-2 text-2xl font-semibold text-[#191919]">
+//                 Shuffle – Gabby et la Maison Magique
+//               </h3>
+//               <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
+//                 À propos de cet article
+//                 Découvrez Gabby et tous ses amis dans ce jeu de familles inédit ! 4 jeux disponibles dans une seule et même boîte !
+//                 Découvrez 4 règles de jeux différentes pour seulement 1 jeu de cartes : jeu de 7 familles, jeu de paires, jeu d'action et jeu de batailles !
+//                 Des vidéos explicatives sont disponibles en ligne, et ce dans 14 langues différentes.
+//                 Contient 33 cartes et les règles des jeux
+//                 À partir de 4 ans, de 2 à 10 joueurs : idéal pour jouer en famille ou entre amis
+//               </p>
+//               <div className="mb-4 flex items-center gap-2">
+//                 <div className="flex items-center">{renderStars(4.6)}</div>
+//                 <span className="text-sm font-medium text-gray-900">4.6</span>
+//                 <span className="text-sm text-gray-500">(148 reviews)</span>
+//               </div>
+//               <div className="mt-auto flex gap-3">
+//                 <button
+//                   onClick={() => window.location.href = "https://amzn.to/3KHm6Ye"}
+//                   className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
+//                 >
+//                   Buy Now
+//                 </button>
+//               </div>
+//             </div>
+//           </article>
+//           <article
+//             role="button"
+//             tabIndex={0}
+//             onClick={() => window.location.href = "https://amzn.to/48pBouy"}
+//             className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+//           >
+//             <div className="relative h-64 w-auto">
+//               <img
+//                 src="https://i.ibb.co.com/Dg44V4Ht/61h-CBp-QZji-L-SX522.jpg"
+//                 alt="Image"
+//                 className="h-full w-full object-cover"
+//               />
+//               <div className="absolute top-3 left-3">
+//                 <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800`}>
+//                   GIFT
+//                 </span>
+//               </div>
+//             </div>
+//             <div className="flex flex-grow flex-col p-6">
+//               <h3 className="mb-2 text-2xl font-semibold text-[#191919]">
+//                 Kzouenzu Happy Birthday Banner (Gold)
+//               </h3>
+//               <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
+//                 [Elegant Design] - The happy birthday garland banner is hollowed out and gold design, which adds sparkle to celebrations. Simple and elegant banner for birthday party decorations, happy birthday decorations.
+//                 [High quality] - Our banners are made of high quality paper, strong, durable.
+//                 [Quality] - Reusable, this beautiful gold glitter garland will easily fit into any home. With its high-quality lettering, you can decorate your room in a blink of an eye. Perfect for a party and for taking beautiful pictures!
+//                 [Occasion] - You can hang them from the ceiling, above the table, under the veranda or on the branches of trees. Enjoy the party..... these birthday party decorations are perfect for all ages!
+//                 [Wide range of uses] - The handmade glitter banner with letters "Happy Birthday" is in a fashionable style and very beautiful. The garland can be perfectly combined with other decorations and beautiful decorative accents in your rooms. You can hang it anywhere, wall, branch, etc. This adds a cheerful atmosphere.
+//               </p>
+//               <div className="mb-4 flex items-center gap-2">
+//                 <div className="flex items-center">{renderStars(4.9)}</div>
+//                 <span className="text-sm font-medium text-gray-900">4.9</span>
+//                 <span className="text-sm text-gray-500">(33 reviews)</span>
+//               </div>
+//               <div className="mt-auto flex gap-3">
+//                 <button
+//                   onClick={() => window.location.href = "https://amzn.to/48pBouy"}
+//                   className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
+//                 >
+//                   Buy Now
+//                 </button>
+//               </div>
+//             </div>
+//           </article>
+//           <article
+//             role="button"
+//             tabIndex={0}
+//             onClick={() => window.location.href = "https://amzn.to/3VVLJa7"}
+//             className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+//           >
+//             <div className="relative h-64 w-auto">
+//               <img
+//                 src="https://i.ibb.co.com/Bxhqqvr/71-VKby-QOdq-L-AC-SX425.jpg"
+//                 alt="Image"
+//                 className="h-full w-full object-cover"
+//               />
+//               <div className="absolute top-3 left-3">
+//                 <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800`}>
+//                   GIFT
+//                 </span>
+//               </div>
+//             </div>
+//             <div className="flex flex-grow flex-col p-6">
+//               <h3 className="mb-2 text-xl font-semibold text-[#191919]">
+//                 JOIYHY 26 x Birthday Cake Decoration (Gold)
+//               </h3>
+//               <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
+//                 Package includes: You will receive 24 butterflies cake toppers and 2 happy birthday toppers. They can be combined with different styles of cakes to make their cakes more attractive.
+//                 【Safety material】 The butterfly cake topper is made of high quality paper, high strength, without deformation, comfortable to use. Cake topper is made of acrylic material, not easy to break and reusable.
+//                 【DIY creation】 Decoración para tartas de cumpleaños can make your cake DIY, stimulate imagination and creativity in the process of making your own cake, make your cake more meaningful, Decoracion para tartas de cumpleaños can add a little fantasy to the cake for this special occasion.
+//                 【Easy to use】The butterfly cake topper is very easy to use, you can put the butterfly directly on the cake, or you can use a stick to put the butterfly on the cake, all the pieces are cut precisely. You can even stick the butterfly to the wall as a wall decoration or staging.
+//                 【Versatile Use】 It can be used as a delicate accessory for cakes, cupcakes, ice cream, cheese, fruit or any other dish you want to decorate, perfect for birthday parties, baby showers, parties or other events.
+//               </p>
+//               <div className="mb-4 flex items-center gap-2">
+//                 <div className="flex items-center">{renderStars(4.4)}</div>
+//                 <span className="text-sm font-medium text-gray-900">4.4</span>
+//                 <span className="text-sm text-gray-500">(4 reviews)</span>
+//               </div>
+//               <div className="mt-auto flex gap-3">
+//                 <button
+//                   onClick={() => window.location.href = "https://amzn.to/3VVLJa7"}
+//                   className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
+//                 >
+//                   Buy Now
+//                 </button>
+//               </div>
+//             </div>
+//           </article>
+//           <article
+//             role="button"
+//             tabIndex={0}
+//             onClick={() => window.location.href = "https://amzn.to/47i2xOO"}
+//             className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+//           >
+//             <div className="relative h-64 w-auto">
+//               <img
+//                 src="https://i.ibb.co.com/KRKPhR0/61vv-Zqc-Mu-XL-AC-SX679.jpg"
+//                 alt="Image"
+//                 className="h-full w-full object-cover"
+//               />
+//               <div className="absolute top-3 left-3">
+//                 <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800`}>
+//                   GIFT
+//                 </span>
+//               </div>
+//             </div>
+//             <div className="flex flex-grow flex-col p-6">
+//               <h3 className="mb-2 text-2xl font-semibold text-[#191919]">
+//                 Unicorn Girl Birthday Decoration
+//               </h3>
+//               <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
+//                 Our unicorn birthday decoration kit includes a unicorn garland "Happy Birthday" and 10 spiral hangers, for effortless fairy girl birthday decoration.
+//                 Unicorn Fairy Design for Girls: The brightly colored unicorn, stars and rainbow patterns create a magical atmosphere, perfect for a girl's unicorn birthday or children's party.
+//                 ❃【Safe & Reusable Materials】Made of quality paper and plastic, our unicorn girl birthday decoration is non-toxic, lightweight and reusable - ideal for long-lasting parties.
+//                 Easy installation without tools: the unicorn garland and spiral hanging lights can be easily attached without tools, glue or tape - perfect for walls, windows, ceilings or trees.
+//                 【Versatile Use for Any Occasion】Suitable for unicorn birthday, baby shower, carnival, children's party decoration, christening or unicorn theme - a magical decoration for any moment.
+//               </p>
+//               <div className="mb-4 flex items-center gap-2">
+//                 <span className="text-sm text-gray-500">(0 reviews)</span>
+//               </div>
+//               <div className="mt-auto flex gap-3">
+//                 <button
+//                   onClick={() => window.location.href = "https://amzn.to/47i2xOO"}
+//                   className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
+//                 >
+//                   Buy Now
+//                 </button>
+//               </div>
+//             </div>
+//           </article>
+//           <article
+//             role="button"
+//             tabIndex={0}
+//             onClick={() => window.location.href = "https://amzn.to/3Wy6xEK"}
+//             className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+//           >
+//             <div className="relative h-64 w-auto">
+//               <img
+//                 src="https://i.ibb.co.com/95Fzybb/41-M-M3hf-Fo-L-AC.jpg"
+//                 alt="Image"
+//                 className="h-full w-full object-cover"
+//               />
+//               <div className="absolute top-3 left-3">
+//                 <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800`}>
+//                   GIFT
+//                 </span>
+//               </div>
+//             </div>
+//             <div className="flex flex-grow flex-col p-6">
+//               <h3 className="mb-2 text-2xl font-semibold text-[#191919]">
+//                 Unicorn Cake Decoration
+//               </h3>
+//               <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
+//                 The unicorn cupcake topper set is made of card paper, which is strong and does not fade on food.We provide wooden sticks, paper straws and glue dots for you to decorate the birthday cakes as you like.
+//                 You will get 1 cute unicorn cake topper set, including 1 unicorn horn, 1 happy birthday banner, 2 ears, 2 eyes, 2 blushers and 3 flowers and 3 paper straws and A little glue is very suitable for decorating children's birthday cakes.
+//                 These party hats and accessories are designed with unicorn elements.Cute shapes and beautiful colors are children's favorites, and they are very suitable for unicorn theme party decorations. Add unique colors to your big parties.
+//                 The unicorn cake top hat is the perfect size. It is very suitable for 8 to 9 inch cakes and you can adjust the insertion depth of the pins to make the height of the cake lid different.
+//                 Very suitable for children's birthday party, wedding party, unicorn theme party decoration, will attract the interest of children and adults.
+//               </p>
+//               <div className="mb-4 flex items-center gap-2">
+//                 <div className="flex items-center">{renderStars(4.1)}</div>
+//                 <span className="text-sm font-medium text-gray-900">4.1</span>
+//                 <span className="text-sm text-gray-500">(44 reviews)</span>
+//               </div>
+//               <div className="mt-auto flex gap-3">
+//                 <button
+//                   onClick={() => window.location.href = "https://amzn.to/3Wy6xEK"}
+//                   className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
+//                 >
+//                   Buy Now
+//                 </button>
+//               </div>
+//             </div>
+//           </article>
+//           <article
+//             role="button"
+//             tabIndex={0}
+//             onClick={() => window.location.href = "https://amzn.to/4mXtXyg"}
+//             className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+//           >
+//             <div className="relative h-64 w-auto">
+//               <img
+//                 src="https://i.ibb.co.com/6JPtWtC2/71-Z0dn-Rjtq-L-AC-SX425.jpg"
+//                 alt="Image"
+//                 className="h-full w-full object-cover"
+//               />
+//               <div className="absolute top-3 left-3">
+//                 <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800`}>
+//                   GIFT
+//                 </span>
+//               </div>
+//             </div>
+//             <div className="flex flex-grow flex-col p-6">
+//               <h3 className="mb-2 text-2xl font-semibold text-[#191919]">
+//                 Baby Teething Ball
+//               </h3>
+//               <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
+//                 [Baby Teether]: It is made of food grade silicone & ABS with 12 soft chewing points and 2 different textured surfaces, intended to relieve the pain of teething babies in oral step. It also promotes chewing and biting movements of the baby.
+//                 [ Sensory baby toy 6 months: More than just a teether, it is also a sensory baby game 0-3 months babies. It makes a rattle sound when twisted or shaken, thus attracting the attention of newborns, in addition to the bright colors that help with visual stimulation and color learning.
+//                 [ For small hands]: Our Montessori baby toy 0-6 months is lightweight and perfect size to encourage little hands to reach and grasp. The baby can play with it in the crib, stroller, car, plane, etc.
+//                 [ Newborn baby girl boy gift 6-12 months]: No small detachable parts, babies can play with this toy freely and safely without parental supervision. Suitable for newborns 0 months and up.
+//                 [Easy to clean]: It must be fully cleaned before first use. Made of heat-resistant materials, it can be cleaned by ultraviolet light, steam
+//                 [Product Size]: 10.5*10.5*7cm, Product weight: 110g
+//               </p>
+//               <div className="mb-4 flex items-center gap-2">
+//                 <div className="flex items-center">{renderStars(4.6)}</div>
+//                 <span className="text-sm font-medium text-gray-900">4.6</span>
+//                 <span className="text-sm text-gray-500">(1735 reviews)</span>
+//               </div>
+//               <div className="mt-auto flex gap-3">
+//                 <button
+//                   onClick={() => window.location.href = "https://amzn.to/4mXtXyg"}
+//                   className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
+//                 >
+//                   Buy Now
+//                 </button>
+//               </div>
+//             </div>
+//           </article>
+//           <article
+//             role="button"
+//             tabIndex={0}
+//             onClick={() => window.location.href = "https://amzn.to/3IYedx1"}
+//             className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+//           >
+//             <div className="relative h-64 w-auto">
+//               <img
+//                 src="https://i.ibb.co.com/d0dZKJR9/71v6e-Al-Jus-S-AC-SX679-PIbundle-28-Top-Right-0-0-SH20.jpg"
+//                 alt="Image"
+//                 className="h-full w-full object-cover"
+//               />
+//               <div className="absolute top-3 left-3">
+//                 <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800`}>
+//                   GIFT
+//                 </span>
+//               </div>
+//             </div>
+//             <div className="flex flex-grow flex-col p-6">
+//               <h3 className="mb-2 text-xl font-semibold text-[#191919]">
+//                 Ravensburger - Educational Game
+//               </h3>
+//               <p className="mb-4 line-clamp-2 text-sm text-[#5A5C5F]">
+//                 The domino is a classic for ages 3 and up. The principle of image association allows the child to develop his ability to observe and think. This game with simple rules unites generations and allows you to enjoy the pleasure of being together: the happiness of playing far from the screens!
+//                 Who will put the most dominoes in a row? Will you be able to assemble all the characters of the Paw Patrol? In this little "paw patrol" domino you will find beautiful illustrations that delight young and old. Each card hides an iconic PAW Patrol character: Chase, Ruben, Marcus, Stella, Rocky and Zuma.
+//                 Simple rules. Mix the dominoes face down. The first player puts one of his dominoes. The next player looks at his dominoes, if he has one of the two images that matches the first player's card, he puts it in a row. The goal of the game is to get rid of all of your dominoes to win!
+//                 Contents: 28 dominoes on the Paw Patrol universe. This product consists of materials from well-managed FSC-certified forests, recycled materials and materials from other controlled sources (FSC-C111262). This product was made in Europe."
+//                 All our small domino memory lotto are present to accompany your child in educational entertainment. Your child can challenge their memory with themes such as: pets and baby animals. And can find these favorite heroes with the characters of Frozen Little Brown Bear, Peppa Pig and T'choupi.
+//               </p>
+//               <div className="mb-4 flex items-center gap-2">
+//                 <div className="flex items-center">{renderStars(4.7)}</div>
+//                 <span className="text-sm font-medium text-gray-900">4.7</span>
+//                 <span className="text-sm text-gray-500">(1076 reviews)</span>
+//               </div>
+//               <div className="mt-auto flex gap-3">
+//                 <button
+//                   onClick={() => window.location.href = "https://amzn.to/3IYedx1"}
+//                   className="cursor-pointer hover:bg-blue-900 w-full rounded-lg border bg-[#223B7D] border-[#223B7D] px-4 py-3 text-gray-50 transition-colors"
+//                 >
+//                   Buy Now
+//                 </button>
+//               </div>
+//             </div>
+//           </article>
+//         </div>
+
+
+//         <div className="mb-20 flex justify-center md:justify-end">
+//           <button
+//             onClick={() => navigate("/shop")}
+//             className="rounded-lg border border-[#223B7D] px-6 py-3 text-[#223B7D] hover:bg-gray-50 transition-colors"
+//           >
+//             View all
+//           </button>
+//         </div>
+//       </section>
+
+
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 // import { ChevronDown, Search, Heart as HeartIcon } from "lucide-react";
