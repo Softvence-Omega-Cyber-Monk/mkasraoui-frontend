@@ -135,7 +135,7 @@ const AdminOrdersTable: React.FC = () => {
 
                     {/* Total */}
                     <td className="px-6 py-4 text-sm text-gray-600">
-                      ${order.total.toFixed(2)}
+                      €{order.total.toFixed(2)}
                     </td>
 
                     {/* Items */}

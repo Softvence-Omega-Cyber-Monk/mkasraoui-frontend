@@ -290,10 +290,10 @@ function MyCart() {
                       {isSubscribed ? (
                         <div className="flex items-center gap-2">
                           <h3 className="text-sm line-through text-gray-400">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            €{(item.price * item.quantity).toFixed(2)}
                           </h3>
                           <h3 className="text-sm font-semibold text-green-600">
-                            ${((item.discounted_price ?? item.price) * item.quantity).toFixed(2)}
+                            €{((item.discounted_price ?? item.price) * item.quantity).toFixed(2)}
                           </h3>
                           {item.discounted_price && (
                             <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
@@ -303,7 +303,7 @@ function MyCart() {
                         </div>
                       ) : (
                         <h3 className="text-sm font-semibold text-slate-900">
-                          ${(item.price * item.quantity).toFixed(2)}
+                          €{(item.price * item.quantity).toFixed(2)}
                         </h3>
                       )}
                     </div>
@@ -350,11 +350,11 @@ function MyCart() {
                 <span className="font-semibold">
                   {isSubscribed ? (
                     <div className="flex items-center gap-2">
-                      <span className="line-through text-gray-400">${originalSubtotal.toFixed(2)}</span>
-                      <span className="text-green-600">${discountedSubtotal.toFixed(2)}</span>
+                      <span className="line-through text-gray-400">€{originalSubtotal.toFixed(2)}</span>
+                      <span className="text-green-600">€{discountedSubtotal.toFixed(2)}</span>
                     </div>
                   ) : (
-                    <span className="text-slate-900">${originalSubtotal.toFixed(2)}</span>
+                    <span className="text-slate-900">€{originalSubtotal.toFixed(2)}</span>
                   )}
                 </span>
               </li>
@@ -363,16 +363,16 @@ function MyCart() {
                 <span className="font-semibold">
                   {isSubscribed ? (
                     <div className="flex items-center gap-2">
-                      <span className="line-through text-gray-400">$2.00</span>
+                      <span className="line-through text-gray-400">€2.00</span>
                       <span className="text-green-600">FREE</span>
                     </div>
                   ) : (
-                    <span className="text-slate-900">$2.00</span>
+                    <span className="text-slate-900">€2.00</span>
                   )}
                 </span>
               </li>
               <li className="flex justify-between text-sm">
-                Tax <span className="font-semibold text-slate-900">$4.00</span>
+                Tax <span className="font-semibold text-slate-900">€4.00</span>
               </li>
               <hr className="border-slate-300" />
               <li className="flex justify-between text-sm font-semibold text-slate-900">
@@ -380,17 +380,17 @@ function MyCart() {
                 <span>
                   {isSubscribed ? (
                     <div className="flex items-center gap-2">
-                      <span className="line-through text-gray-400">${(originalSubtotal + 2 + 4).toFixed(2)}</span>
-                      <span className="text-green-600">${total.toFixed(2)}</span>
+                      <span className="line-through text-gray-400">€{(originalSubtotal + 2 + 4).toFixed(2)}</span>
+                      <span className="text-green-600">€{total.toFixed(2)}</span>
                     </div>
                   ) : (
-                    <span>${total.toFixed(2)}</span>
+                    <span>€{total.toFixed(2)}</span>
                   )}
                 </span>
               </li>
               {isSubscribed && (
                 <li className="text-xs text-green-600 text-center">
-                  You saved ${((originalSubtotal - discountedSubtotal) + 2).toFixed(2)} with your subscription!
+                  You saved €{((originalSubtotal - discountedSubtotal) + 2).toFixed(2)} with your subscription!
                 </li>
               )}
             </ul>

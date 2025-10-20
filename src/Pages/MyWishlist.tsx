@@ -83,7 +83,7 @@ function MyWishlist() {
                 {/* Price and Action Buttons */}
                 <div className="mt-auto pt-4 border-t border-gray-100">
                   <span className="block mb-3 text-2xl font-extrabold text-secondary">
-                    ${item.prodcut.price}
+                    €{item.prodcut.price}
                   </span>
 
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
