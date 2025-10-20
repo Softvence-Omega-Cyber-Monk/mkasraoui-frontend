@@ -76,6 +76,8 @@ import AdminDiyActivity from "./components/AdminDiyActivity/AdminDiyActivity";
 import Earning from "./Dashboard/dashboardpages/Earning";
 import DiyActivities from "./components/DiyActivityes/DiyActivities";
 import DiyBoxActivityDetails from "./components/DiyActivityes/DiyBoxActivityDetails";
+import IAffiliatedProductTable from "./components/AdminAffiliateProducts/IAffiliatedProductTable";
+// import IAffiliatedProductTable from "./components/AdminAffiliateProducts/IAffiliatedProductTable";
 // import { SocketProvider } from "./services/SocketContext";
 // import ChatMessagePage from "./components/mychat/ChatMessagePage";
 
@@ -351,6 +353,10 @@ const router = createBrowserRouter([
       {
         path: "add-diyactivity",
         element: <AdminDiyActivity />,
+      },
+      {
+        path: "add-IAffiliatedProduct",
+        element: <IAffiliatedProductTable/>,
       },
       {
         path: "subscription-plan",

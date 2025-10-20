@@ -20,6 +20,9 @@ import { FaBlogger, FaJediOrder, FaUsers } from "react-icons/fa";
 import { GoProjectSymlink } from "react-icons/go";
 import { MdHome, MdOutlineAddChart } from "react-icons/md";
 import { RiListOrdered } from "react-icons/ri";
+import { TbActivity } from "react-icons/tb";
+import { FaAffiliatetheme } from "react-icons/fa";
+
 import {
   Link,
   NavLink,
@@ -98,7 +101,14 @@ function AdminLayout() {
     {
       to: "/admin-dashboard/add-diyactivity",
       label: "Add Diy Activity",
-      icon: FaJediOrder,
+      icon: TbActivity 
+,
+    },
+    {
+      to: "/admin-dashboard/add-IAffiliatedProduct",
+      label: "Add IAffiliatedProduct",
+      icon: FaAffiliatetheme 
+,
     },
     {
       to: "/admin-dashboard/news-letter",
