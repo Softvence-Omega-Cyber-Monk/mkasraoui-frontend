@@ -617,6 +617,8 @@ const [selectedImage, setSelectedImage] = useState<string | null>(null);
         </div>
       </div>
 
+      {/* <div></div> */}
+
       {/* Tabs */}
       <div className="mx-auto mt-10 max-w-7xl px-4">
         <div className="overflow-hidden rounded-lg p-4">
