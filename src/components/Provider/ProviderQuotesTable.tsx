@@ -28,7 +28,7 @@ const ProviderQuotesTable = () => {
 
   const handleStatusUpdate = async (
     id: string,
-    status: "BOOKED" | "CANCELLED"
+    status: "BOOKED" | "CANCELLED",
   ) => {
     try {
       await updateStatus({ id, status }).unwrap();
@@ -98,7 +98,7 @@ const ProviderQuotesTable = () => {
                     key={quote.id}
                     className="border-b border-gray-100 hover:bg-gray-50"
                   >
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-900 whitespace-nowrap">
+                    <td className="px-6 py-4 text-sm font-semibold whitespace-nowrap text-gray-900">
                       {quote.name}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
@@ -130,10 +130,8 @@ const ProviderQuotesTable = () => {
                       {/* ✅ Only show Accept if not already BOOKED */}
                       {quote.status !== "BOOKED" && (
                         <button
-                          onClick={() =>
-                            handleStatusUpdate(quote.id, "BOOKED")
-                          }
-                          className="flex cursor-pointer items-center justify-center space-x-1 rounded-lg bg-green-600 px-3 py-1.5 text-sm font-semibold text-white shadow transition duration-200 hover:bg-green-700 hover:shadow-lg"
+                          onClick={() => handleStatusUpdate(quote.id, "BOOKED")}
+                          className="flex cursor-pointer items-center justify-center space-x-1 rounded-lg bg-[#223B7D] px-3 py-1.5 text-sm font-semibold text-white shadow transition duration-200 hover:bg-[#0F1F4C] hover:shadow-lg"
                         >
                           <svg
                             className="h-4 w-4"
@@ -187,8 +185,6 @@ const ProviderQuotesTable = () => {
 };
 
 export default ProviderQuotesTable;
-
-
 
 // "use client";
 

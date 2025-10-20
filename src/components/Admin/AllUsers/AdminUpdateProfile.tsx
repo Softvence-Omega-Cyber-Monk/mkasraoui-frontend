@@ -175,7 +175,7 @@ const AdminUpdateProfile: React.FC = () => {
         <button
           type="submit"
           disabled={isUpdating}
-          className="mt-4 w-full cursor-pointer rounded-xl bg-gradient-to-r from-blue-600 to-indigo-500 px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-indigo-600 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-4 w-full cursor-pointer rounded-xl bg-[#223B7D] px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:bg-[#0F1F4C] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isUpdating ? "Updating..." : "Update Profile"}
         </button>
