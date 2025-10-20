@@ -3,10 +3,13 @@ import { useForm, Controller } from "react-hook-form";
 import { RichTextEditor } from "@mantine/rte";
 import { FileText, Plus } from "lucide-react";
 import { FaRegEdit } from "react-icons/fa";
-// import { MdDelete } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 import { GrView } from "react-icons/gr";
 import toast from "react-hot-toast";
 import Title from "@/components/Shared/Title";
+// import { FaFilePdf } from "react-icons/fa6";
+// import { MdOutlineOndemandVideo } from "react-icons/md";
+
 import type { Activity as ReduxActivity } from "../../redux/types/activity.type";
 import {
   useGetActivitiesQuery,
@@ -209,25 +212,25 @@ const AdminActivityTable: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-          {isLoading || isFetching ? (
-  <tr>
-    <td colSpan={6} className="p-6 text-center">
-      <PageLoader />
-    </td>
-  </tr>
-) : isError ? (
-  <tr>
-    <td colSpan={6} className="p-6 text-center text-red-500">
-      Error fetching activities
-    </td>
-  </tr>
-) : activities.length === 0 ? (
-  <tr>
-    <td colSpan={6} className="p-6 text-center text-gray-500">
-      No activities found.
-    </td>
-  </tr>
-): activities.length === 0 ? (
+            {isLoading || isFetching ? (
+              <tr>
+                <td colSpan={6} className="p-6 text-center">
+                  <PageLoader />
+                </td>
+              </tr>
+            ) : isError ? (
+              <tr>
+                <td colSpan={6} className="p-6 text-center text-red-500">
+                  Error fetching activities
+                </td>
+              </tr>
+            ) : activities.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="p-6 text-center text-gray-500">
+                  No activities found.
+                </td>
+              </tr>
+            ) : activities.length === 0 ? (
               <tr>
                 <td colSpan={6} className="p-6 text-center text-gray-500">
                   No activities found.
@@ -287,12 +290,12 @@ const AdminActivityTable: React.FC = () => {
                     >
                       <FaRegEdit />
                     </button>
-                    {/* <button
+                    <button
                       onClick={() => setConfirmDelete(a)}
                       className="rounded-lg bg-red-600 p-2 text-white hover:cursor-pointer"
                     >
                       <MdDelete />
-                    </button> */}
+                    </button>
                     <button
                       onClick={() => setViewActivity(a)}
                       className="rounded-lg bg-[#0F1F4C] p-2 text-white hover:cursor-pointer"
@@ -307,7 +310,7 @@ const AdminActivityTable: React.FC = () => {
         </table>
       </div>
 
-       
+
 
 
       {isModalOpen && (
@@ -342,14 +345,6 @@ const AdminActivityTable: React.FC = () => {
               />
               {errors.description && <span className="text-red-500">Description required</span>}
 
-              <label>RichText</label>
-              <Controller
-                name="instruction_sheet"
-                control={control}
-                render={({ field }) => (
-                  <RichTextInput value={field.value ?? ""} onChange={field.onChange} />
-                )}
-              />
 
               {/* PDF Upload */}
               <div>
@@ -359,7 +354,7 @@ const AdminActivityTable: React.FC = () => {
                 >
                   Upload PDF
                 </label>
-                <div className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition hover:border-blue-400">
+                <div className="flex cursor-pointer  w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-2 transition hover:border-blue-400">
                   <input
                     id="pdf-upload"
                     type="file"
@@ -371,23 +366,13 @@ const AdminActivityTable: React.FC = () => {
                     htmlFor="pdf-upload"
                     className="flex cursor-pointer flex-col items-center justify-center text-center"
                   >
-                    <svg
-                      className="mb-2 h-10 w-10 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M7 16V4m0 0L3 8m4-4l4 4M17 8h4m0 0v8m0-8l-4 4m4-4l-4 4M7 20h10"
-                      />
-                    </svg>
+                      Upload PDF
+                    {/* <FaFilePdf className="text-4xl text-gray-700" /> */}
+
                     <p className="text-sm text-gray-600">
                       Click to upload or drag and drop PDF
                     </p>
-                    <p className="text-xs text-gray-400">PDF only (max 10MB)</p>
+                    {/* <p className="text-xs text-gray-400">PDF only (max 10MB)</p> */}
                   </label>
                 </div>
                 {formData.pdfPreview && (
@@ -396,9 +381,21 @@ const AdminActivityTable: React.FC = () => {
                   </div>
                 )}
 
-       
+
 
               </div>
+
+
+              <label>Rich Text</label>
+              <Controller
+                name="instruction_sheet"
+                control={control}
+                render={({ field }) => (
+                  <RichTextInput value={field.value ?? ""} onChange={field.onChange} />
+                )}
+              />
+
+
 
               {/* Video Upload */}
               <div>
@@ -408,7 +405,7 @@ const AdminActivityTable: React.FC = () => {
                 >
                   Upload Video
                 </label>
-                <div className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition hover:border-blue-400">
+                <div className="flex cursor-pointer w-full h-25 flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition hover:border-blue-400">
                   <input
                     id="video-upload"
                     type="file"
@@ -434,9 +431,9 @@ const AdminActivityTable: React.FC = () => {
                       />
                     </svg>
                     <p className="text-sm text-gray-600">
-                      Click to upload or drag and drop video
+                      Click to upload video
                     </p>
-                    <p className="text-xs text-gray-400">MP4, MOV, or AVI (max 100MB)</p>
+                    {/* <p className="text-xs text-gray-400">MP4, MOV, or AVI (max 100MB)</p> */}
                   </label>
                 </div>
 
@@ -445,7 +442,7 @@ const AdminActivityTable: React.FC = () => {
                     <video
                       src={formData.videoPreview}
                       controls
-                      className="max-h-64 w-full rounded-xl border border-gray-300 shadow-sm"
+                      className="max-h-60  w-60 rounded-xl border border-gray-300 shadow-sm"
                     />
                   </div>
                 )}
@@ -475,7 +472,7 @@ const AdminActivityTable: React.FC = () => {
 
 
 
-     
+
 
       {confirmDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -500,67 +497,67 @@ const AdminActivityTable: React.FC = () => {
         </div>
       )}
 
-      
 
 
-{viewActivity && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-    <div className="max-w-4xl max-h-[80vh] overflow-y-auto rounded-lg bg-white p-6">
-      <h3 className="mb-4 text-xl font-semibold text-[#0F1F4C]">
-        {stripHtml(viewActivity.title)}
-      </h3>
 
-      <p className="mb-3 text-gray-700">
-        <strong>Description:</strong> {stripHtml(viewActivity.description)}
-      </p>
+      {viewActivity && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="max-w-4xl max-h-[80vh] overflow-y-auto rounded-lg bg-white p-6">
+            <h3 className="mb-4 text-xl font-semibold text-[#0F1F4C]">
+              {stripHtml(viewActivity.title)}
+            </h3>
 
-      {viewActivity.instruction_sheet && (
-        <div className="mb-6 rounded-lg">
-          <h3 className="text-lg font-semibold mb-2">🪄 Instructions</h3>
-          <div
-            className="prose"
-            dangerouslySetInnerHTML={{ __html: viewActivity.instruction_sheet }}
-          />
+            <p className="mb-3 text-gray-700">
+              <strong>Description:</strong> {stripHtml(viewActivity.description)}
+            </p>
+
+            {viewActivity.instruction_sheet && (
+              <div className="mb-6 rounded-lg">
+                <h3 className="text-lg font-semibold mb-2">🪄 Instructions</h3>
+                <div
+                  className="prose"
+                  dangerouslySetInnerHTML={{ __html: viewActivity.instruction_sheet }}
+                />
+              </div>
+            )}
+
+            {viewActivity.video && (
+              <div className="mb-4 w-full max-w-xs">
+                <video
+                  src={viewActivity.video}
+                  controls
+                  className="w-full rounded-lg border"
+                />
+              </div>
+            )}
+
+            {viewActivity.pdfFile && (
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold flex items-center gap-2 mb-2">
+                  <FileText size={18} /> Instruction PDF
+                </h3>
+                <a
+                  href={viewActivity.pdfFile}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:underline"
+                >
+                  View or download the PDF
+                </a>
+              </div>
+            )}
+
+            <div className="mt-6 text-right">
+              <button
+                onClick={() => setViewActivity(null)}
+                className="bg-secondary-dark hover:bg-secondary-light rounded-xl px-5 py-2 text-white"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
-
-      {viewActivity.video && (
-        <div className="mb-4 w-full max-w-xs">
-          <video
-            src={viewActivity.video}
-            controls
-            className="w-full rounded-lg border"
-          />
-        </div>
-      )}
-
-      {viewActivity.pdfFile && (
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold flex items-center gap-2 mb-2">
-            <FileText size={18} /> Instruction PDF
-          </h3>
-          <a
-            href={viewActivity.pdfFile}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-indigo-600 hover:underline"
-          >
-            View or download the PDF
-          </a>
-        </div>
-      )}
-
-      <div className="mt-6 text-right">
-        <button
-          onClick={() => setViewActivity(null)}
-          className="bg-secondary-dark hover:bg-secondary-light rounded-xl px-5 py-2 text-white"
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
 
 
     </div>
