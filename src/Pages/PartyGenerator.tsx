@@ -409,11 +409,11 @@ export default function PartyGenerator() {
                       className="w-full cursor-pointer appearance-none rounded-xl border border-[#C9C9C9] bg-white px-4 py-3 text-gray-700"
                     >
                       <option value="">Select budget</option>
-                      <option value="300">Under $500</option>
-                      <option value="700">$500 - $1,000</option>
-                      <option value="1500">$1,000 - $2,500</option>
-                      <option value="4000">$2,500 - $5,000</option>
-                      <option value="7000">$5,000+</option>
+                      <option value="300">Under €500</option>
+                      <option value="700">€500 - €1,000</option>
+                      <option value="1500">€1,000 - €2,500</option>
+                      <option value="4000">€2,500 - €5,000</option>
+                      <option value="7000">€5,000+</option>
                     </select>
                     <FiChevronDown className="pointer-events-none absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
                   </div>

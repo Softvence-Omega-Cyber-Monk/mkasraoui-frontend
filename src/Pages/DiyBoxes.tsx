@@ -333,12 +333,12 @@ export default function DiyBoxes() {
                           <div className="mb-4 flex justify-between">
                             <div className="flex items-baseline gap-2">
                               <span className="text-2xl font-bold text-[#223B7D]">
-                                ${activity.discounted_price || activity.price}
+                                €{activity.discounted_price || activity.price}
                               </span>
                               {activity.discounted_price &&
                                 activity.discounted_price < activity.price && (
                                   <span className="text-lg text-gray-500 line-through">
-                                    ${activity.price}
+                                    €{activity.price}
                                   </span>
                                 )}
                             </div>

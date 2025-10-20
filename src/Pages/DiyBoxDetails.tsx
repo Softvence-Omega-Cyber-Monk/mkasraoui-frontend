@@ -601,7 +601,7 @@ const [selectedImage, setSelectedImage] = useState<string | null>(null);
                 {/* <span className="text-3xl font-bold text-[#223B7D] md:text-5xl">${ product.discounted_price}</span> */}
                 
 <span className="text-3xl font-bold text-[#223B7D] md:text-5xl">
-  ${!isPremium ? product.discounted_price : product.price}
+  €{!isPremium ? product.discounted_price : product.price}
 </span>
                </div>
 

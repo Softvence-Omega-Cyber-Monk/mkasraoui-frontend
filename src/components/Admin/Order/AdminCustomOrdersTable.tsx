@@ -110,7 +110,7 @@ const AdminCustomOrdersTable = () => {
                     {order.quantity}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
-                    ${order.total}
+                    €{order.total}
                   </td>
                   <td
                     className={`px-6 py-4 text-sm font-medium ${statusColors[order.status]}`}
