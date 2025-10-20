@@ -486,19 +486,19 @@ const AdminProductTable: React.FC = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, description: e.target.value })
                     }
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 transition outline-none focus:border-blue-500 focus:ring focus:ring-blue-100"
+                    className="h-22 w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 transition outline-none focus:border-blue-500 focus:ring focus:ring-blue-100"
                     rows={4}
                   />
                 </div>
 
                 {/* Upload Photos */}
-                <div className="space-y-2">
+                <div className="mb-2 space-y-2">
                   <label className="font-sans text-base font-medium">
                     Upload Photos
                   </label>
 
                   <div
-                    className="relative flex h-40 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-4 text-center transition hover:border-blue-400 hover:bg-blue-50"
+                    className="relative flex h-25 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-4 text-center transition hover:border-blue-400 hover:bg-blue-50"
                     onClick={() =>
                       document.getElementById("fileInput")?.click()
                     }
@@ -509,7 +509,7 @@ const AdminProductTable: React.FC = () => {
                       multiple
                       accept="image/*"
                       onChange={handleFileChange}
-                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0 hidden"
+                      className="absolute inset-0 hidden h-full w-full cursor-pointer opacity-0"
                     />
                     <p className="text-gray-500">
                       Drag & drop photos here or click to browse
@@ -549,21 +549,6 @@ const AdminProductTable: React.FC = () => {
                     </div>
                   )}
                 </div>
-
-                {/* Upload photo */}
-                {/* <div className="space-y-1">
-                  <div>
-                    <label className="font-sans text-base font-medium">
-                      Upload Photo
-                    </label>
-                  </div>
-                  <input
-                    type="file"
-                    multiple
-                    onChange={handleFileChange}
-                    className="w-full cursor-pointer rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 transition focus:ring focus:ring-blue-100 focus:outline-none"
-                  />
-                </div> */}
               </div>
             </div>
 
@@ -577,7 +562,7 @@ const AdminProductTable: React.FC = () => {
               </button>
               <button
                 onClick={handleSubmit}
-                className="bg-secondary-dark hover:bg-secondary-light cursor-pointer rounded-lg px-6 py-2 text-base font-medium text-white transition focus:outline-none"
+                className="bg-secondary-dark hover:bg-secondary-light cursor-pointer rounded-xl px-6 py-2 text-base font-medium text-white transition focus:outline-none"
               >
                 {editingProduct ? "Update" : "Add Product"}
               </button>
