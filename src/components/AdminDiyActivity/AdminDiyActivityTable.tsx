@@ -203,12 +203,12 @@ const AdminActivityTable: React.FC = () => {
         <table className="w-full min-w-[1000px]">
           <thead className="border-b border-gray-300 bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left">Title</th>
-              <th className="px-6 py-3 text-left">Description</th>
-              <th className="px-6 py-3 text-left">Instruction Sheet</th>
-              <th className="px-6 py-3 text-left">Video</th>
-              <th className="px-6 py-3 text-left">PDF File</th>
-              <th className="px-6 py-3 text-center">Actions</th>
+              <th className="px-6 py-3 font-normal text-left">Title</th>
+              <th className="px-6 py-3 font-normal text-left">Description</th>
+              <th className="px-6 py-3 font-normal text-left">Instruction Sheet</th>
+              <th className="px-6 py-3 font-normal text-left">Video</th>
+              <th className="px-6 py-3 font-normal text-left">PDF File</th>
+              <th className="px-6 py-3 font-normal text-center">Actions</th>
             </tr>
           </thead>
           <tbody>

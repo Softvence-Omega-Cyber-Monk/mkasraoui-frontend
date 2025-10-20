@@ -123,7 +123,7 @@ const IAffiliatedProductTable: React.FC = () => {
         <Title title="Affiliated Products" />
         <button
           onClick={openAddModal}
-          className="bg-secondary-dark hover:bg-secondary-light cursor-pointer flex items-center justify-center gap-2 rounded-xl px-5 py-2 font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105"
+          className="bg-secondary-dark cursor-pointer  hover:bg-secondary-light   flex items-center justify-center gap-2 rounded-xl px-5 py-2 font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105"
         >
           Add Product
         </button>
@@ -149,7 +149,7 @@ const IAffiliatedProductTable: React.FC = () => {
             ) : (
               products.map((p) => (
                 <tr key={p.id} className="border-b border-gray-300 hover:bg-gray-50 transition duration-200">
-                  <td className="px-6 py-4 whitespace-nowrap max-w-xs truncate" title={p.title}>{p.title}</td>
+                  <td className="px-6 py-4 whitespace-nowrap max-w-xs truncate" title={p.title}>{p.title.slice(0,30)}....</td>
                   <td className="px-6 py-4 whitespace-nowrap max-w-xs truncate" title={p.affiliated_company}>{p.affiliated_company}</td>
                   <td className="px-6 py-4 whitespace-nowrap">${p.price}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -159,9 +159,9 @@ const IAffiliatedProductTable: React.FC = () => {
                     {p.link ? <a href={p.link} target="_blank" rel="noreferrer" className="text-blue-600 underline truncate block max-w-[150px]">Visit</a> : <span className="text-sm text-gray-500">No Link</span>}
                   </td>
                   <td className="flex justify-center gap-2 px-6 py-4">
-                    <button className="rounded-lg bg-yellow-500 p-2 text-white hover:scale-105 transition" onClick={() => openEditModal(p)}><FaRegEdit /></button>
-                    <button className="rounded-lg bg-red-600 p-2 text-white hover:scale-105 transition" onClick={() => setConfirmDelete(p)}><MdDelete /></button>
-                    <button className="rounded-lg bg-[#0F1F4C] p-2 text-white hover:scale-105 transition" onClick={() => setViewProduct(p)}><GrView /></button>
+                    <button className="rounded-lg   cursor-pointer   bg-yellow-500 p-2 text-white hover:scale-105 transition" onClick={() => openEditModal(p)}><FaRegEdit /></button>
+                    <button className="rounded-lg   cursor-pointer  bg-red-600 p-2 text-white hover:scale-105 transition" onClick={() => setConfirmDelete(p)}><MdDelete /></button>
+                    <button className="rounded-lg   cursor-pointer  bg-[#0F1F4C] p-2 text-white hover:scale-105 transition" onClick={() => setViewProduct(p)}><GrView /></button>
                   </td>
                 </tr>
               ))
@@ -176,7 +176,7 @@ const IAffiliatedProductTable: React.FC = () => {
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-xl font-semibold">{editingProduct ? "Edit Product" : "Add Product"}</h3>
-              <button onClick={() => setIsModalOpen(false)} className="rounded-xl bg-gray-200 p-3">X</button>
+              <button onClick={() => setIsModalOpen(false)} className="rounded-xl cursor-pointer  bg-gray-200 p-3">X</button>
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
               {["title","price","avgRating","totalRatings","image_url","affiliated_company","link"].map((field) => (
@@ -192,8 +192,8 @@ const IAffiliatedProductTable: React.FC = () => {
                 </div>
               ))}
               <div className="mt-4 flex justify-end gap-2">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="rounded-xl bg-gray-300 px-5 py-2 hover:bg-gray-400">Cancel</button>
-                <button type="submit" className="bg-secondary-dark rounded-xl px-5 py-2 text-white">{editingProduct ? "Update" : "Add"}</button>
+                <button type="button" onClick={() => setIsModalOpen(false)} className="rounded-x cursor-pointer l bg-gray-300 px-5 py-2 hover:bg-gray-400">Cancel</button>
+                <button type="submit" className="bg-secondary-dark rounded-xl px-5 py-2 cursor-pointer  text-white">{editingProduct ? "Update" : "Add"}</button>
               </div>
             </form>
           </div>
@@ -206,8 +206,8 @@ const IAffiliatedProductTable: React.FC = () => {
             <h3 className="mb-2 text-lg font-bold">Delete Product</h3>
             <p>Are you sure you want to delete "{confirmDelete.title}"?</p>
             <div className="mt-4 flex justify-end gap-2">
-              <button onClick={() => setConfirmDelete(null)} className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-400 px-4 py-3 text-white hover:bg-gray-500">Cancel</button>
-              <button onClick={handleDelete} className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3 text-white hover:bg-red-700">Delete</button>
+              <button onClick={() => setConfirmDelete(null)} className="flex w-full  cursor-pointer  items-center justify-center gap-2 rounded-xl bg-gray-400 px-4 py-3 text-white hover:bg-gray-500">Cancel</button>
+              <button onClick={handleDelete} className="flex w-full items-center justify-center cursor-pointer  gap-2 rounded-xl bg-red-600 px-4 py-3 text-white hover:bg-red-700">Delete</button>
             </div>
           </div>
         </div>
@@ -224,7 +224,7 @@ const IAffiliatedProductTable: React.FC = () => {
             <p><strong>Company:</strong> {viewProduct.affiliated_company}</p>
             <p><strong>Link:</strong> <a href={viewProduct.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Visit Product</a></p>
             <div className="mt-4 text-right">
-              <button onClick={() => setViewProduct(null)} className="bg-secondary-dark rounded-xl px-5 py-2 text-white">Close</button>
+              <button onClick={() => setViewProduct(null)} className="bg-secondary-dark cursor-pointer  rounded-xl px-5 py-2 text-white">Close</button>
             </div>
           </div>
         </div>
