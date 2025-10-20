@@ -5,7 +5,7 @@ import { ArrowLeft, Truck, Shield, MapPin, User, Mail, Phone, AlertCircle, Packa
 import toast from "react-hot-toast"
 import { useGetMeQuery } from "@/redux/features/user/userApi"
 import { useAppSelector } from "@/redux/hooks/redux-hook"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useCreateOrderMutation } from "@/redux/features/checkout/checkoutApi"
 
 // 2. Define the structure for the form data state
@@ -215,7 +215,7 @@ function CheckoutPage() {
             className="flex items-center gap-2 text-[#223B7D] hover:text-blue-700"
           >
             <ArrowLeft className="h-5 w-5" />
-            <span>Back to Cart</span>
+            <Link to="/home/my-cart"><span>Back to Cart</span></Link>
           </button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Checkout</h1>
