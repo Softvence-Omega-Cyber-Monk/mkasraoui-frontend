@@ -345,6 +345,7 @@ import PremiumBanner from "@/components/Home/PremiumBanner";
 import MyHeader from "@/components/MyHeader/MyHeader";
 import { useGetDIYProductByIdQuery, useCreateReviewMutation,    } from "@/redux/features/diyProducts/diyProductsApi";
 import { useGetMeQuery   } from "../redux/features/user/userApi";
+import PageLoader from "@/components/Shared/PageLoader";
 
 export default function DiyBoxDetails() {
   const { id } = useParams();
@@ -383,7 +384,7 @@ const [selectedImage, setSelectedImage] = useState<string | null>(null);
     { id: "reviews", label: "Reviews" },
   ];
 
-  if (isLoading) return <div className="text-center py-10">Loading...</div>;
+  if (isLoading) return <div className="text-center py-10"><PageLoader /></div>;
   if (error || !data) return <div className="text-center py-10">Something went wrong.</div>;
 
   const product = data;
@@ -600,7 +601,7 @@ const [selectedImage, setSelectedImage] = useState<string | null>(null);
                 {/* <span className="text-3xl font-bold text-[#223B7D] md:text-5xl">${ product.discounted_price}</span> */}
                 
 <span className="text-3xl font-bold text-[#223B7D] md:text-5xl">
-  ${!isPremium ? product.discounted_price : product.price}
+  €{!isPremium ? product.discounted_price : product.price}
 </span>
                </div>
 

@@ -33,9 +33,9 @@ function Earnings() {
   ];
 
   const earningsData = {
-    "This Week": "$2,450",
-    "This Month": "$8,750",
-    Lifetime: "$45,320",
+    "This Week": "€2,450",
+    "This Month": "€8,750",
+    Lifetime: "€45,320",
   };
 
   // ✅ hooks for Stripe onboarding & dashboard links

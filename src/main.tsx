@@ -74,6 +74,10 @@ import ProviderPaymentPage from "./Pages/Provider/ProviderPaymentPage";
 import PaymentSuccess from "./components/Shared/PaymentSuccess";
 import AdminDiyActivity from "./components/AdminDiyActivity/AdminDiyActivity";
 import Earning from "./Dashboard/dashboardpages/Earning";
+import DiyActivities from "./components/DiyActivityes/DiyActivities";
+import DiyBoxActivityDetails from "./components/DiyActivityes/DiyBoxActivityDetails";
+import IAffiliatedProductTable from "./components/AdminAffiliateProducts/IAffiliatedProductTable";
+// import IAffiliatedProductTable from "./components/AdminAffiliateProducts/IAffiliatedProductTable";
 // import { SocketProvider } from "./services/SocketContext";
 // import ChatMessagePage from "./components/mychat/ChatMessagePage";
 
@@ -95,6 +99,15 @@ const router = createBrowserRouter([
       {
         path: "userChat",
         element: <ChatContainer />,
+      },
+        {
+        path: "/diyboxeactivity",
+        element: <DiyActivities />
+      },
+
+      {
+        path: "/diyboxeactivity/activity/:id",
+        element: <DiyBoxActivityDetails />
       },
     ],
   },
@@ -144,10 +157,12 @@ const router = createBrowserRouter([
         path: "diyboxes",
         element: <DiyBoxes />,
       },
+
       {
         path: "diyboxe/details/:id",
         element: <DiyBoxDetails />,
       },
+    
       {
         path: "party-invitations",
         element: <PartyInvitations />,
@@ -184,6 +199,7 @@ const router = createBrowserRouter([
         path: "blog/:id",
         element: <BlogDetails />,
       },
+
       {
         path: "my-account",
         element: <MyAccount />,
@@ -337,6 +353,10 @@ const router = createBrowserRouter([
       {
         path: "add-diyactivity",
         element: <AdminDiyActivity />,
+      },
+      {
+        path: "add-IAffiliatedProduct",
+        element: <IAffiliatedProductTable/>,
       },
       {
         path: "subscription-plan",

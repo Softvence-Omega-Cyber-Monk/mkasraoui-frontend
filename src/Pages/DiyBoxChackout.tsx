@@ -412,14 +412,14 @@ console.log(calculateOriginalSubtotal())
                       {isSubscribed ? (
                         <div className="text-right">
                           <div className="line-through text-gray-400 text-xs">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            €{(item.price * item.quantity).toFixed(2)}
                           </div>
                           <div className="text-green-600">
-                            ${((item.discounted_price || item.price) * item.quantity).toFixed(2)}
+                            €{((item.discounted_price || item.price) * item.quantity).toFixed(2)}
                           </div>
                         </div>
                       ) : (
-                        <div className="text-gray-900">${(item.price * item.quantity).toFixed(2)}</div>
+                        <div className="text-gray-900">€{(item.price * item.quantity).toFixed(2)}</div>
                       )}
                     </div>
                   </div>
@@ -433,11 +433,11 @@ console.log(calculateOriginalSubtotal())
                   <span className="font-semibold">
                     {isSubscribed ? (
                       <div className="flex items-center gap-2">
-                        <span className="line-through text-gray-400">${originalSubtotal.toFixed(2)}</span>
-                        <span className="text-green-600">${discountedSubtotal.toFixed(2)}</span>
+                        <span className="line-through text-gray-400">€{originalSubtotal.toFixed(2)}</span>
+                        <span className="text-green-600">€{discountedSubtotal.toFixed(2)}</span>
                       </div>
                     ) : (
-                      <span className="text-gray-900">${originalSubtotal.toFixed(2)}</span>
+                      <span className="text-gray-900">€{originalSubtotal.toFixed(2)}</span>
                     )}
                   </span>
                 </div>
@@ -450,13 +450,13 @@ console.log(calculateOriginalSubtotal())
                         <span className="text-green-600">FREE</span>
                       </div>
                     ) : (
-                      <span className="text-gray-900">{shippingFee === 0 ? "Free" : `$${shippingFee.toFixed(2)}`}</span>
+                      <span className="text-gray-900">{shippingFee === 0 ? "Free" : `€${shippingFee.toFixed(2)}`}</span>
                     )}
                   </span>
                 </div>
                 {!isSubscribed && shippingFee > 0 && (
                   <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
-                    Add ${(50 - subtotal).toFixed(2)} more for free shipping!
+                    Add €{(50 - subtotal).toFixed(2)} more for free shipping!
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
@@ -470,7 +470,7 @@ console.log(calculateOriginalSubtotal())
                     {isSubscribed ? (
                       <div className="flex items-center gap-2">
                         <span className="line-through text-gray-400 text-base">
-                          ${(originalSubtotal + (originalSubtotal < 50 ? 5.99 : 0) + originalSubtotal * 0.08).toFixed(2)}
+                          €{(originalSubtotal + (originalSubtotal < 50 ? 5.99 : 0) + originalSubtotal * 0.08).toFixed(2)}
                         </span>
                         <span className="text-[#223B7D]">${total.toFixed(2)}</span>
                       </div>
@@ -481,7 +481,7 @@ console.log(calculateOriginalSubtotal())
                 </div>
                 {isSubscribed && (
                   <div className="text-xs text-green-600 text-center bg-green-50 p-2 rounded">
-                    You saved ${((originalSubtotal - discountedSubtotal) + (originalSubtotal < 50 ? 5.99 : 0)).toFixed(2)} with your subscription!
+                    You saved €{((originalSubtotal - discountedSubtotal) + (originalSubtotal < 50 ? 5.99 : 0)).toFixed(2)} with your subscription!
                   </div>
                 )}
               </div>

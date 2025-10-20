@@ -33,7 +33,7 @@ const DashboardCard = () => {
         },
         {
           title: "Total Revenue",
-          amount: `$${Number(data.totalRevenue).toLocaleString("en-GB", {
+          amount: `€${Number(data.totalRevenue).toLocaleString("en-GB", {
             maximumFractionDigits: 0,
           })}`,
           icon: <FaPoundSign />,

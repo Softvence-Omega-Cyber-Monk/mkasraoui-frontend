@@ -1,5 +1,5 @@
 import NavLogo from "@/assets/navlogo-new.png";
-import { DashboardIcon, ReviewsIcon, ServicesIcon } from "@/Dashboard/Icons";
+import { DashboardIcon, ServicesIcon } from "@/Dashboard/Icons";
 import { logOut } from "@/redux/features/auth/authSlice";
 import { useGetMeQuery } from "@/redux/features/user/userApi";
 import { useAppDispatch } from "@/redux/hooks/redux-hook";
@@ -20,6 +20,9 @@ import { FaBlogger, FaJediOrder, FaUsers } from "react-icons/fa";
 import { GoProjectSymlink } from "react-icons/go";
 import { MdHome, MdOutlineAddChart } from "react-icons/md";
 import { RiListOrdered } from "react-icons/ri";
+import { TbActivity } from "react-icons/tb";
+import { FaAffiliatetheme } from "react-icons/fa";
+
 import {
   Link,
   NavLink,
@@ -98,18 +101,25 @@ function AdminLayout() {
     {
       to: "/admin-dashboard/add-diyactivity",
       label: "Add Diy Activity",
-      icon: FaJediOrder,
+      icon: TbActivity 
+,
+    },
+    {
+      to: "/admin-dashboard/add-IAffiliatedProduct",
+      label: "Add IAffiliatedProduct",
+      icon: FaAffiliatetheme 
+,
     },
     {
       to: "/admin-dashboard/news-letter",
       label: "News Letter",
       icon: ServicesIcon,
     },
-    {
-      to: "/admin-dashboard/reviews",
-      label: "Reviews",
-      icon: ReviewsIcon,
-    },
+    // {
+    //   to: "/admin-dashboard/reviews",
+    //   label: "Reviews",
+    //   icon: ReviewsIcon,
+    // },
   ];
 
   const NavItem = ({

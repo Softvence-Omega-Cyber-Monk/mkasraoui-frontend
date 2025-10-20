@@ -497,7 +497,7 @@ export default function SubscriptionPlan() {
                       {plan.plan_duration}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
-                      ${plan.price.toFixed(2)}
+                      €{plan.price.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
                       <button

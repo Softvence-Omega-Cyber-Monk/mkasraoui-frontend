@@ -11,7 +11,7 @@ const LandingLayout = () => {
   return (
     <div>
       <Navbar />
-      <div className="min-h-screen">
+      <div className="">
         <Outlet />
       </div>
       {!hideFooter && <Footer />}

@@ -1,3 +1,4 @@
+ 
 
 
 import { baseApi } from "@/redux/hooks/baseApi";
@@ -15,9 +16,9 @@ export const activityApi = baseApi.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              ...result.data.map(({ id }) => ({ type: "Activities" as const, id })),
-              { type: "Activities", id: "LIST" },
-            ]
+            ...result.data.map(({ id }) => ({ type: "Activities" as const, id })),
+            { type: "Activities", id: "LIST" },
+          ]
           : [{ type: "Activities", id: "LIST" }],
     }),
 
@@ -47,10 +48,11 @@ export const activityApi = baseApi.injectEndpoints({
       ],
     }),
 
-    // Delete activity
+
     deleteActivity: builder.mutation<{ id: string }, string>({
       query: (id) => ({
-        url: `/products/delet-activity/${id}`,
+        // url: `/products/delet-activity/${id}`,
+        url: `/products/delete-activity/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (_result, _error, id) => [
@@ -58,6 +60,29 @@ export const activityApi = baseApi.injectEndpoints({
         { type: "Activities", id: "LIST" },
       ],
     }),
+
+ 
+    //     DeleteActivity: builder.mutation<{ id: string }, string>({
+    //   query: (id) => ({
+    //     url: `/products/delete-activity/${id}`, // ✅ corrected
+    //     method: "DELETE",
+    //   }),
+    //   invalidatesTags: (_result, _error, id) => [
+    //     { type: "Activities", id },
+    //     { type: "Activities", id: "LIST" },
+    //   ],
+    // }),
+
+
+    getProductActivity: builder.query<ApiResponse<Activity>, string>({
+      query: (id) => `/products/${id}/activity`,
+      providesTags: (_result, _error, id) => [
+        { type: "Activities", id },
+        { type: "Activities", id: "LIST" },
+      ],
+    }),
+
+
   }),
 });
 
@@ -66,6 +91,7 @@ export const {
   useAddActivityMutation,
   useUpdateActivityMutation,
   useDeleteActivityMutation,
+  useGetProductActivityQuery
 } = activityApi;
 
 
