@@ -279,7 +279,7 @@
 
 //               {/* Shop Now */}
 
-               
+
 //               <Link to={`/home/diyboxChackout`}>
 //                 <button className="hover:bg-secondary-light w-full cursor-pointer rounded-lg bg-[#223B7D] px-8 py-4 font-semibold text-white transition-colors duration-200">
 //                   Shop Now
@@ -336,28 +336,28 @@
 
 
 
-import {  useParams, useNavigate } from "react-router-dom";
-import { CircleCheckBig,  Play } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { CircleCheckBig, Play } from "lucide-react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { useEffect, useState } from "react";
 
 import PremiumBanner from "@/components/Home/PremiumBanner";
 import MyHeader from "@/components/MyHeader/MyHeader";
-import { useGetDIYProductByIdQuery, useCreateReviewMutation,    } from "@/redux/features/diyProducts/diyProductsApi";
-import { useGetMeQuery   } from "../redux/features/user/userApi";
+import { useGetDIYProductByIdQuery, useCreateReviewMutation, } from "@/redux/features/diyProducts/diyProductsApi";
+import { useGetMeQuery } from "../redux/features/user/userApi";
 import PageLoader from "@/components/Shared/PageLoader";
 
 export default function DiyBoxDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data, isLoading, error, refetch } = useGetDIYProductByIdQuery(id!);
-const { data: userData   } = useGetMeQuery();
-const [selectedImage, setSelectedImage] = useState<string | null>(null);
-// console.log({ firstUser: userData?.email });
+  const { data: userData } = useGetMeQuery();
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  // console.log({ firstUser: userData?.email });
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [createReview, { isLoading: isSubmitting }] = useCreateReviewMutation();
- 
+
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
@@ -391,7 +391,7 @@ const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const firstUser = userData
   const isPremium = firstUser?.subscription?.[0]?.plan_name === "Premium Subscriber";
 
- console.log(firstUser)
+  console.log(firstUser)
   const handleSubmitReview = async () => {
     if (!comment.trim()) return;
     try {
@@ -508,7 +508,7 @@ const [selectedImage, setSelectedImage] = useState<string | null>(null);
               <button
                 onClick={handleSubmitReview}
                 disabled={isSubmitting}
-                className="mt-2 w-full rounded bg-[#223B7D] px-4 py-2 font-semibold text-white hover:bg-blue-800 disabled:opacity-50"
+                className="mt-2 w-full rounded bg-[#223B7D] px-4 py-2 font-semibold text-white hover:bg-blue-900 disabled:opacity-50 cursor-pointer"
               >
                 {isSubmitting ? "Submitting..." : "Submit Review"}
               </button>
@@ -527,10 +527,10 @@ const [selectedImage, setSelectedImage] = useState<string | null>(null);
         <div className="overflow-hidden rounded-2xl p-4">
           <div className="flex flex-col lg:flex-row">
             {/* Left side - Product Images */}
-           
- 
-<div className="lg:w-1/2">
-  {/* <div className="mb-4 h-[70vh] w-auto">
+
+
+            <div className="lg:w-1/2">
+              {/* <div className="mb-4 h-[70vh] w-auto">
     <img
       src={selectedImage || product.imges?.[0]} // Show selected image or default first image
       alt={product.title}
@@ -540,47 +540,46 @@ const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
 
 
-<div
-  className="mb-4 h-[70vh] w-auto overflow-hidden rounded-xl relative cursor-zoom-in"
-  onMouseMove={(e) => {
-    const img = e.currentTarget.querySelector("img") as HTMLImageElement;
-    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
-    img.style.transformOrigin = `${x}% ${y}%`;
-    img.style.transform = "scale(2)";
-  }}
-  onMouseLeave={(e) => {
-    const img = e.currentTarget.querySelector("img") as HTMLImageElement;
-    img.style.transformOrigin = "center center";
-    img.style.transform = "scale(1)";
-  }}
->
-  <img
-    src={selectedImage || product.imges?.[0]}
-    alt={product.title}
-    className="h-full w-full object-cover transition-transform duration-300 ease-in-out"
-  />
-</div>
+              <div
+                className="mb-4 h-[70vh] w-auto overflow-hidden rounded-xl relative cursor-zoom-in"
+                onMouseMove={(e) => {
+                  const img = e.currentTarget.querySelector("img") as HTMLImageElement;
+                  const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+                  const x = ((e.clientX - left) / width) * 100;
+                  const y = ((e.clientY - top) / height) * 100;
+                  img.style.transformOrigin = `${x}% ${y}%`;
+                  img.style.transform = "scale(2)";
+                }}
+                onMouseLeave={(e) => {
+                  const img = e.currentTarget.querySelector("img") as HTMLImageElement;
+                  img.style.transformOrigin = "center center";
+                  img.style.transform = "scale(1)";
+                }}
+              >
+                <img
+                  src={selectedImage || product.imges?.[0]}
+                  alt={product.title}
+                  className="h-full w-full object-cover transition-transform duration-300 ease-in-out"
+                />
+              </div>
 
 
 
 
 
-  <div className="flex gap-3">
-    {product.imges?.map((img: string, idx: number) => (
-      <div
-        key={idx}
-        className={`h-20 w-20 overflow-hidden rounded-xl border-2 cursor-pointer ${
-          selectedImage === img ? "border-[#223B7D]" : "border-transparent"
-        }`}
-        onClick={() => setSelectedImage(img)} // Set the clicked image as main image
-      >
-        <img src={img} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" />
-      </div>
-    ))}
-  </div>
-</div>
+              <div className="flex gap-3">
+                {product.imges?.map((img: string, idx: number) => (
+                  <div
+                    key={idx}
+                    className={`h-20 w-20 overflow-hidden rounded-xl border-2 cursor-pointer ${selectedImage === img ? "border-[#223B7D]" : "border-transparent"
+                      }`}
+                    onClick={() => setSelectedImage(img)} // Set the clicked image as main image
+                  >
+                    <img src={img} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            </div>
 
 
 
@@ -599,11 +598,11 @@ const [selectedImage, setSelectedImage] = useState<string | null>(null);
               </div>
               <div className="mt-8 mb-6 md:mb-12">
                 {/* <span className="text-3xl font-bold text-[#223B7D] md:text-5xl">${ product.discounted_price}</span> */}
-                
-<span className="text-3xl font-bold text-[#223B7D] md:text-5xl">
-  €{!isPremium ? product.discounted_price : product.price}
-</span>
-               </div>
+
+                <span className="text-3xl font-bold text-[#223B7D] md:text-5xl">
+                  €{!isPremium ? product.discounted_price : product.price}
+                </span>
+              </div>
 
               {/* Shop Now - Navigate to Checkout with directBuy */}
               <button
@@ -627,9 +626,8 @@ const [selectedImage, setSelectedImage] = useState<string | null>(null);
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 cursor-pointer px-6 py-3 text-center font-medium transition-colors duration-200 ${
-                  activeTab === tab.id ? "rounded-md bg-[#223B7D] text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
+                className={`flex-1 cursor-pointer px-6 py-3 text-center font-medium transition-colors duration-200 ${activeTab === tab.id ? "rounded-md bg-[#223B7D] text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
               >
                 {tab.label}
               </button>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Search, Clock, Users, ShoppingCart, Heart, ListIcon, MapIcon, } from "lucide-react";
 import { Link } from "react-router-dom";
 import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
@@ -104,7 +104,7 @@ export default function DiyBoxes() {
 
   // Helper functions - now using API data only
   const checkIsInWishlist = (itemId: string): boolean => {
-    return wishlistItems.some((item) => String(item.id) === String(itemId));
+    return wishlistItems.some((item) => String(item.prodcut.id) === String(itemId));
   };
 
   const isInCart = (itemId: string): boolean => {
@@ -115,24 +115,50 @@ export default function DiyBoxes() {
     return wishlistLoadingStates[itemId] || false;
   };
 
+  // Get unique age ranges and themes from actual data
+  const availableAgeRanges = useMemo(() => {
+    const ranges = new Set<string>();
+    activities.forEach((activity) => {
+      if (activity.age_range) {
+        ranges.add(activity.age_range);
+      }
+    });
+    return Array.from(ranges).sort();
+  }, [activities]);
+
+  const availableThemes = useMemo(() => {
+    const themes = new Set<string>();
+    activities.forEach((activity) => {
+      if (activity.theme) {
+        themes.add(activity.theme);
+      }
+      if (activity.product_type) {
+        themes.add(activity.product_type);
+      }
+    });
+    return Array.from(themes).sort();
+  }, [activities]);
+
   // Enhanced filtering
-  const filteredActivities = activities.filter((activity) => {
-    const matchesSearch =
-      activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      activity.description.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredActivities = useMemo(() => {
+    return activities.filter((activity) => {
+      const matchesSearch =
+        activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        activity.description.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesAge =
-      !ageRange ||
-      activity.age_range.toLowerCase().includes(ageRange.toLowerCase());
+      const matchesAge =
+        !ageRange ||
+        (activity.age_range && activity.age_range.toLowerCase() === ageRange.toLowerCase());
 
-    const matchesTheme =
-      !theme ||
-      (activity.theme &&
-        activity.theme.toLowerCase().includes(theme.toLowerCase())) ||
-      activity.product_type.toLowerCase().includes(theme.toLowerCase());
+      const matchesTheme =
+        !theme ||
+        (activity.theme &&
+          activity.theme.toLowerCase() === theme.toLowerCase()) ||
+        (activity.product_type && activity.product_type.toLowerCase() === theme.toLowerCase());
 
-    return matchesSearch && matchesAge && matchesTheme;
-  });
+      return matchesSearch && matchesAge && matchesTheme;
+    });
+  }, [activities, searchTerm, ageRange, theme]);
 
   if (isLoading)
     return <p className="mt-20 text-center">Loading DIY boxes...</p>;
@@ -148,9 +174,6 @@ export default function DiyBoxes() {
         subtitle="Everything you need for an amazing party, curated by experts and delivered to your door"
         className="text-3xl sm:text-5xl md:text-6xl"
       />
-
-
-
 
       <div className="container mx-auto mt-10 ">
         <div className="mb-6 flex justify-between">
@@ -181,9 +204,6 @@ export default function DiyBoxes() {
         </div>
       </div>
 
-
-
-
       {/* Conditional View */}
       {activeTab === "diy box" ? (
         <>
@@ -204,38 +224,35 @@ export default function DiyBoxes() {
                   />
                 </div>
 
-                {/* Age Range */}
+                {/* Age Range - Dynamic options */}
                 <div className="relative">
                   <select
                     value={ageRange}
                     onChange={(e) => setAgeRange(e.target.value)}
                     className="cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-3 pr-8 outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">Age Range</option>
-                    <option value="3-6">3-6 years</option>
-                    <option value="5+">5+ years</option>
-                    <option value="6-10">6-10 years</option>
-                    <option value="8-12">8-12 years</option>
-                    <option value="9-12">9-12 years</option>
-                    <option value="10+">10+ years</option>
-                    <option value="13+">13+ years</option>
+                    <option value="">All Ages</option>
+                    {availableAgeRanges.map((range) => (
+                      <option key={range} value={range}>
+                        {range}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
-                {/* Theme */}
+                {/* Theme - Dynamic options */}
                 <div className="relative">
                   <select
                     value={theme}
                     onChange={(e) => setTheme(e.target.value)}
                     className="cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-3 pr-8 outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">Theme</option>
-                    <option value="superhero">Superhero</option>
-                    <option value="princess">Princess</option>
-                    <option value="dinosaur">Dinosaur</option>
-                    <option value="adventure">Adventure</option>
-                    <option value="creative">Creative</option>
-                    <option value="educational">Educational</option>
+                    <option value="">All Themes</option>
+                    {availableThemes.map((themeOption) => (
+                      <option key={themeOption} value={themeOption}>
+                        {themeOption.charAt(0).toUpperCase() + themeOption.slice(1)}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -276,20 +293,20 @@ export default function DiyBoxes() {
 
                           {/* Wishlist button */}
                           <button
-                            className="absolute top-3 left-3 rounded-full bg-white p-2 shadow-sm transition-colors hover:bg-gray-50"
+                            className="absolute top-3 left-3 rounded-full bg-white p-2 shadow-sm transition-colors hover:bg-gray-50 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                             onClick={() => toggleLike(activity)}
-                            disabled={wishlistLoading}
+                            disabled={wishlistLoading || liked}
                             aria-label={
-                              liked ? "Remove from wishlist" : "Add to wishlist"
+                              liked ? "In wishlist" : "Add to wishlist"
                             }
                           >
                             {wishlistLoading ? (
                               <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-red-500" />
                             ) : (
                               <Heart
-                                color={liked ? "red" : "currentColor"}
-                                fill={liked ? "red" : "none"}
                                 className="h-5 w-5"
+                                fill={liked ? "red" : "none"}
+                                stroke={liked ? "red" : "currentColor"}
                               />
                             )}
                           </button>
