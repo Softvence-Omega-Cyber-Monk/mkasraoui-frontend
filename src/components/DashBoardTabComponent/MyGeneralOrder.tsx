@@ -92,7 +92,7 @@ export default function MyGeneralOrder() {
                       {order.items?.[0]?.product?.title || "N/A"}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
-                      ${order.total?.toFixed(2) || "0.00"}
+                      €{order.total?.toFixed(2) || "0.00"}
                     </td>
                     <td className="px-6 py-4 text-sm">
                       <span

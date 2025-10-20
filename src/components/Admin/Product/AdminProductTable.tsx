@@ -273,7 +273,7 @@ const AdminProductTable: React.FC = () => {
                       {product.age_range}
                     </td>
                     <td className="py-3 text-sm text-gray-600">
-                      ${product.price}
+                      €{product.price}
                     </td>
                     <td className="flex justify-center space-x-2 py-3">
                       {/* Edit Button */}
