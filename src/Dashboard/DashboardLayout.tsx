@@ -304,7 +304,7 @@ function DashboardLayout() {
               <MenuButton className="focus:ring-secondary-light/60 flex cursor-pointer items-center gap-3 rounded-lg bg-white p-1.5 text-sm hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:outline-none">
                 <img
                   className="h-8 w-8 rounded-full object-cover ring-2 ring-gray-200"
-                  src="https://i.pravatar.cc/40"
+                  src={me?.profile_image || "https://via.placeholder.com/150"}
                   alt="Sarah Miller"
                 />
                 <div className="hidden text-left lg:block">
