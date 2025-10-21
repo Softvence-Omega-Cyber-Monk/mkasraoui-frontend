@@ -561,7 +561,7 @@ const AdminProductTable: React.FC = () => {
                   <p className="text-xs text-red-500">{errors.files}</p>
                 )}
 
-                <div className="mt-3 grid grid-cols-4 gap-2">
+                <div className="mt-3 grid grid-cols-1 gap-2">
                   {/* Existing Images */}
                   {formData.existingFiles.map((url, idx) => (
                     <div
