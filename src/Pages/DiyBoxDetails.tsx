@@ -351,6 +351,7 @@ export default function DiyBoxDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data, isLoading, error, refetch } = useGetDIYProductByIdQuery(id!);
+  console.log(data)
   const { data: userData } = useGetMeQuery();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   // console.log({ firstUser: userData?.email });

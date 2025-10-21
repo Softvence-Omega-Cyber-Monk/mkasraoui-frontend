@@ -42,7 +42,7 @@ export interface PartyGenerationResponse {
 export const partyGenerationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Create new Party Plan
-    createPartyPlan: builder.mutation<
+    savePartyPlan: builder.mutation<
       PartyGenerationResponse,
       PartyGenerationRequest
     >({
@@ -72,7 +72,7 @@ export const partyGenerationApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useCreatePartyPlanMutation,
+  useSavePartyPlanMutation,
   useGetPartyPlanQuery,
   useGetPartyPlansQuery,
 } = partyGenerationApi;
