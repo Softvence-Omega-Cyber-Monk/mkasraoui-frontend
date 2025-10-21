@@ -61,9 +61,7 @@ export default function PaymentTab() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">
-          My Quotes & Payments
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900">My Quotes</h1>
       </div>
 
       {message && (
