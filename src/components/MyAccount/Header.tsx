@@ -15,7 +15,6 @@ const Header = () => {
         <h1 className="font-fredoka max-w-3xl text-2xl leading-snug font-semibold sm:text-5xl md:text-6xl">
           Welcome back,
           <br />
-          Sarah!
         </h1>
 
         <p className="mt-4 max-w-xl text-sm text-[#595959] sm:text-base">

@@ -563,7 +563,7 @@ const AdminProductTable: React.FC = () => {
 
                 <div className="mt-3 grid grid-cols-1 gap-2">
                   {/* Existing Images */}
-                  {formData.existingFiles.map((url, idx) => (
+                  {/* {formData.existingFiles.map((url, idx) => (
                     <div
                       key={`exist-${idx}`}
                       className="relative h-20 w-20 overflow-hidden rounded-lg border border-gray-200"
@@ -588,7 +588,7 @@ const AdminProductTable: React.FC = () => {
                         &times;
                       </button>
                     </div>
-                  ))}
+                  ))} */}
 
                   {/* Newly Uploaded Files */}
 
