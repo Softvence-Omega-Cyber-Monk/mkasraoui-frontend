@@ -17,12 +17,24 @@ export interface Invitation {
   guest_phone: string | null;
 }
 
+export interface ShippingAddress {
+  firstName: string;
+  lastName: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  postcode: string;
+  country: string;
+}
+
 export interface SendInvitationRequest {
   email: string;
-  guest_name: string,
-  quest_phone: string,
-  party_id: string,
-  imageUrl: string
+  guest_name: string;
+  guest_phone: string;
+  party_id: string;
+  imageUrl: string;
+  shippingAddress: ShippingAddress;
 }
 
 export interface ApiResponse<T> {
@@ -62,10 +74,10 @@ export const invitationsApi = baseApi.injectEndpoints({
     }),
 
     // Get All Invitations
-    getInvitations: builder.query<ApiResponse<Invitation[]>, void>({
+    getInvitations: builder.query<Invitation[], void>({
       query: () => "/invitations",
       providesTags: ["Invitations"],
-      transformResponse: (response:any) => response.data
+      transformResponse: (response: any) => response.data,
     }),
 
     // Get Invitations by User
@@ -75,7 +87,7 @@ export const invitationsApi = baseApi.injectEndpoints({
     }),
 
     // Delete Invitation
-    deleteInvitation: builder.mutation<ApiResponse<null>, string>({
+    deleteInvitation: builder.mutation<ApiResponse<void>, string>({
       query: (id) => ({
         url: `/invitations/${id}`,
         method: "DELETE",

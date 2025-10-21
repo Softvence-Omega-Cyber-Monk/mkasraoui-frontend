@@ -239,22 +239,6 @@ export default function DiyBoxes() {
                     ))}
                   </select>
                 </div>
-
-                {/* Theme - Dynamic options */}
-                <div className="relative">
-                  <select
-                    value={theme}
-                    onChange={(e) => setTheme(e.target.value)}
-                    className="cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-3 pr-8 outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">All Themes</option>
-                    {availableThemes.map((themeOption) => (
-                      <option key={themeOption} value={themeOption}>
-                        {themeOption.charAt(0).toUpperCase() + themeOption.slice(1)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
               </div>
             </div>
 
@@ -382,11 +366,11 @@ export default function DiyBoxes() {
                                       id: String(activity.id),
                                       title: activity.title,
                                       price: activity.price,
-                                      discounted_price:
-                                        activity.discounted_price ?? activity.price,
+                                      discounted_price: activity.discounted_price ?? activity.price,
                                       quantity: 1,
                                       image: activity.imges?.[0] || "",
                                       rating: activity.avg_rating,
+                                      imges: activity.imges
                                     }),
                                   );
                                   toast.success(`${activity.title} added to cart!`);

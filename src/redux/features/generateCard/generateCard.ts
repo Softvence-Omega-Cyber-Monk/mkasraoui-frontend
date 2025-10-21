@@ -5,7 +5,7 @@ import type { GenerateCardRequest, GenerateCardResponse } from '@/redux/types/ge
 export const generateCardApi = createApi({
     reducerPath: 'generateCardApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: "http://72.60.190.101:8000",
+        baseUrl: "https://ai.mafetefacile.fr",
         prepareHeaders: (headers) => {
             headers.set('Content-Type', 'application/json');
             return headers;
