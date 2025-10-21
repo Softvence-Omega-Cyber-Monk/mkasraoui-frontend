@@ -1,11 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { PartyRequest, PartyResponse } from "@/redux/types/partyplan.type";
+import type { PartyResponse } from "@/redux/types/partyplan.type";
 
 export const partyPlanApi = createApi({
   reducerPath: "partyPlanApi",
   baseQuery: fetchBaseQuery({ baseUrl: "https://ai.mafetefacile.fr" }),
   endpoints: (builder) => ({
-    createPartyPlan: builder.mutation<PartyResponse, PartyRequest>({
+    createPartyPlan: builder.mutation<PartyResponse, any>({
       query: (body) => ({
         url: "/party_generate",
         method: "POST",

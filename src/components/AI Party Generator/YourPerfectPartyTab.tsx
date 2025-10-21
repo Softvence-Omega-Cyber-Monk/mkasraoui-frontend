@@ -54,7 +54,7 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
   partyPlanData,
   preferencesData
 }) => {
-  const [createPartyPlan, { isLoading: isSaving }] = useCreatePartyPlanMutation();
+  const [_createPartyPlan, { isLoading: isSaving }] = useCreatePartyPlanMutation();
   const [savePartyPlan] = useSavePartyPlanMutation()
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
 

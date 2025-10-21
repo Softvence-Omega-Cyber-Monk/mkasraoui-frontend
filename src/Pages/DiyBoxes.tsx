@@ -25,7 +25,7 @@ export default function DiyBoxes() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [ageRange, setAgeRange] = useState("");
-  const [theme, setTheme] = useState("");
+  const [theme, _setTheme] = useState("");
 
   const dispatch = useAppDispatch();
   const cart = useAppSelector((state) => state.cart.items);
@@ -126,18 +126,18 @@ export default function DiyBoxes() {
     return Array.from(ranges).sort();
   }, [activities]);
 
-  const availableThemes = useMemo(() => {
-    const themes = new Set<string>();
-    activities.forEach((activity) => {
-      if (activity.theme) {
-        themes.add(activity.theme);
-      }
-      if (activity.product_type) {
-        themes.add(activity.product_type);
-      }
-    });
-    return Array.from(themes).sort();
-  }, [activities]);
+  // const availableThemes = useMemo(() => {
+  //   const themes = new Set<string>();
+  //   activities.forEach((activity) => {
+  //     if (activity.theme) {
+  //       themes.add(activity.theme);
+  //     }
+  //     if (activity.product_type) {
+  //       themes.add(activity.product_type);
+  //     }
+  //   });
+  //   return Array.from(themes).sort();
+  // }, [activities]);
 
   // Enhanced filtering
   const filteredActivities = useMemo(() => {

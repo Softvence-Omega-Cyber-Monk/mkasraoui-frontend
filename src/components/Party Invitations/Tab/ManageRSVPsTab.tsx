@@ -7,14 +7,14 @@ import {
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 
-interface Invitation {
-  id: string;
-  guest_name: string;
-  email: string;
-  guest_phone: string;
-  status: string;
-  image?: string | undefined;
-}
+// interface Invitation {
+//   id: string;
+//   guest_name: string;
+//   email: string;
+//   guest_phone: string;
+//   status: string;
+//   image?: string | undefined;
+// }
 
 interface ManageRSVPsProps {
   handleBack: () => void;
@@ -78,7 +78,7 @@ export default function ManageRSVPsTab({ handleBack }: ManageRSVPsProps) {
           {guestList?.length === 0 ? (
             <p className="text-gray-600">No guests found.</p>
           ) : (
-            guestList?.map((guest: Invitation) => (
+            guestList?.map((guest: any) => (
               <div
                 key={guest.id}
                 className="rounded-xl border border-[#DFDFDF] bg-white"
