@@ -6,7 +6,7 @@ import {
   Search,
   Star,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useGetProvidersQuery } from "@/redux/features/property/propertyApi";
 import PageLoader from "../Shared/PageLoader";
@@ -18,6 +18,8 @@ export default function ProviderDirectory() {
   const [category, setCategory] = useState("");
   const [price] = useState("");
 
+  const [categories, setCategories] = useState<string[]>([]);
+
   // ✅ Fetch providers with filters
   const { data, isLoading, error } = useGetProvidersQuery({
     limit: 10,
@@ -26,6 +28,20 @@ export default function ProviderDirectory() {
     serviceCategory: category || undefined,
     price: price || undefined,
   });
+
+  // Extract unique categories dynamically
+  useEffect(() => {
+    if (data?.data?.data) {
+      const uniqueCategories = Array.from(
+        new Set(
+          data.data.data
+            .map((provider: any) => provider.serviceCategory)
+            .flat(),
+        ),
+      );
+      setCategories(uniqueCategories);
+    }
+  }, [data]);
 
   // const providers = data?.data?.data ?? [];
   const providers = (data?.data?.data ?? []).filter(
@@ -69,30 +85,19 @@ export default function ProviderDirectory() {
             </div>
 
             {/* Service Category */}
+
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className="w-full rounded-lg border border-gray-200 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:outline-none md:w-auto"
             >
               <option value="">All Categories</option>
-              <option value="PHOTOGRAPHY">Photography</option>
-              <option value="FOOD_CATERING">Food Catering</option>
-              <option value="DECORATION">Decoration</option>
-              <option value="MUSIC">Music</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat.replace("_", " ")}
+                </option>
+              ))}
             </select>
-
-            {/* Price Range */}
-            {/* <select
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:outline-none md:w-auto"
-            >
-              <option value="">All Price Ranges</option>
-              <option value="$0-$100">$0 - $100</option>
-              <option value="$100-$500">$100 - $500</option>
-              <option value="$500-$1000">$500 - $1000</option>
-              <option value="$1000+">$1000+</option>
-            </select> */}
           </div>
         </div>
 
@@ -203,17 +208,3 @@ export default function ProviderDirectory() {
     </div>
   );
 }
-
-// <div className="overflow-hidden rounded-lg bg-white shadow-sm">
-//   <div id="map" className="relative h-96 w-full">
-//     <iframe
-//       src="https://www.openstreetmap.org/export/embed.html?bbox=90.3000%2C23.7000%2C90.5000%2C23.8500&layer=mapnik&marker=23.7800%2C90.4000"
-//       width="100%"
-//       height="100%"
-//       frameBorder="0"
-//       style={{ border: 0 }}
-//       allowFullScreen
-//       title="Dhaka Map"
-//     ></iframe>
-//   </div>
-// </div>

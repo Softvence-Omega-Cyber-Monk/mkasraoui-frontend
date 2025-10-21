@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -50,6 +50,21 @@ const IAffiliatedProductTable: React.FC = () => {
 
   const products: IAffiliatedProduct[] = data?.items || [];
 
+
+
+ // Pagination
+  const [page, setPage] = useState(1);
+  const productsPerPage = 10;
+  const total = products.length;
+  const totalPages = Math.ceil(total / productsPerPage);
+
+  useEffect(() => setPage(1), [total]);
+
+  const paginatedproducts = products.slice(
+    (page - 1) * productsPerPage,
+    page * productsPerPage,
+  );
+  
   const openAddModal = () => {
     setEditingProduct(null);
     setValue("title", "");
@@ -86,7 +101,8 @@ const IAffiliatedProductTable: React.FC = () => {
     };
 
     if (payload.price < 0) return toast.error("Price must be >= 0");
-    if (payload.avgRating < 0 || payload.avgRating > 5) return toast.error("Avg Rating must be 0-5");
+   if (payload.avgRating < 0 || payload.avgRating > 5)
+  return toast.error("Avg Rating must be 0-5");
     if (payload.totalRatings < 0) return toast.error("Total Ratings must be >= 0");
 
     try {
@@ -123,14 +139,16 @@ const IAffiliatedProductTable: React.FC = () => {
         <Title title="Affiliated Products" />
         <button
           onClick={openAddModal}
-          className="bg-secondary-dark hover:bg-secondary-light cursor-pointer flex items-center justify-center gap-2 rounded-xl px-5 py-2 font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105"
+          className="bg-secondary-dark cursor-pointer  hover:bg-secondary-light   flex items-center justify-center gap-2 rounded-xl px-5 py-2 font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105"
         >
-          Add Product
+          Add Affi Product
         </button>
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border border-gray-300 bg-white">
+      <div className="overflow-hidden rounded-xl border border-[#DBE0E5] bg-white">
+        <div className="w-full overflow-x-auto">
+
         <table className="w-full min-w-[1000px] table-auto">
           <thead className="bg-gray-50 border-b border-gray-300">
             <tr>
@@ -149,7 +167,7 @@ const IAffiliatedProductTable: React.FC = () => {
             ) : (
               products.map((p) => (
                 <tr key={p.id} className="border-b border-gray-300 hover:bg-gray-50 transition duration-200">
-                  <td className="px-6 py-4 whitespace-nowrap max-w-xs truncate" title={p.title}>{p.title}</td>
+                  <td className="px-6 py-4 whitespace-nowrap max-w-xs truncate" title={p.title}>{p.title.slice(0,30)}....</td>
                   <td className="px-6 py-4 whitespace-nowrap max-w-xs truncate" title={p.affiliated_company}>{p.affiliated_company}</td>
                   <td className="px-6 py-4 whitespace-nowrap">${p.price}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -159,9 +177,9 @@ const IAffiliatedProductTable: React.FC = () => {
                     {p.link ? <a href={p.link} target="_blank" rel="noreferrer" className="text-blue-600 underline truncate block max-w-[150px]">Visit</a> : <span className="text-sm text-gray-500">No Link</span>}
                   </td>
                   <td className="flex justify-center gap-2 px-6 py-4">
-                    <button className="rounded-lg bg-yellow-500 p-2 text-white hover:scale-105 transition" onClick={() => openEditModal(p)}><FaRegEdit /></button>
-                    <button className="rounded-lg bg-red-600 p-2 text-white hover:scale-105 transition" onClick={() => setConfirmDelete(p)}><MdDelete /></button>
-                    <button className="rounded-lg bg-[#0F1F4C] p-2 text-white hover:scale-105 transition" onClick={() => setViewProduct(p)}><GrView /></button>
+                    <button className="rounded-lg   cursor-pointer   bg-yellow-500 p-2 text-white hover:scale-105 transition" onClick={() => openEditModal(p)}><FaRegEdit /></button>
+                    <button className="rounded-lg   cursor-pointer  bg-red-600 p-2 text-white hover:scale-105 transition" onClick={() => setConfirmDelete(p)}><MdDelete /></button>
+                    <button className="rounded-lg   cursor-pointer  bg-[#0F1F4C] p-2 text-white hover:scale-105 transition" onClick={() => setViewProduct(p)}><GrView /></button>
                   </td>
                 </tr>
               ))
@@ -169,33 +187,212 @@ const IAffiliatedProductTable: React.FC = () => {
           </tbody>
         </table>
       </div>
+      </div>
+
+{/* Pagination */}
+      {products.length > 0 && (
+        <div className="mt-6 flex items-center justify-between px-4 py-3">
+          <div className="text-sm text-gray-600">
+            Showing <span className="font-medium">{paginatedproducts.length}</span>{" "}
+            of <span className="font-medium">{total}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="rounded-lg border px-3 py-1.5 text-sm text-gray-600 hover:cursor-pointer hover:bg-gray-100 disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <div className="min-w-[50px] rounded-md border bg-gray-50 px-3 py-1.5 text-center text-sm font-medium text-gray-700">
+              {page} / {totalPages}
+            </div>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+              className="rounded-lg border px-3 py-1.5 text-sm text-gray-600 hover:cursor-pointer hover:bg-gray-100 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+
 
       {/* Modals */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-xl font-semibold">{editingProduct ? "Edit Product" : "Add Product"}</h3>
-              <button onClick={() => setIsModalOpen(false)} className="rounded-xl bg-gray-200 p-3">X</button>
+              <h3 className="text-xl font-semibold">{editingProduct ? "Edit Product" : "Add Affiliated Product"}</h3>
+              <button onClick={() => setIsModalOpen(false)} className="rounded-xl cursor-pointer  bg-gray-200 p-3">X</button>
             </div>
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-              {["title","price","avgRating","totalRatings","image_url","affiliated_company","link"].map((field) => (
-                <div key={field} className="flex flex-col">
-                  <label className="capitalize">{field.replace("_"," ")}</label>
-                  <input
-                    {...register(field as keyof AffiliatedProductFormType, { required: true })}
-                    type={field.includes("price") || field.includes("Rating") || field.includes("total") ? "number":"text"}
-                    step={field.includes("Rating")||field.includes("price") ? "0.1":"undefined"}
-                    className="rounded border border-gray-300 p-2"
-                  />
-                  {errors[field as keyof AffiliatedProductFormType] && <span className="text-red-500">{field} required</span>}
-                </div>
-              ))}
-              <div className="mt-4 flex justify-end gap-2">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="rounded-xl bg-gray-300 px-5 py-2 hover:bg-gray-400">Cancel</button>
-                <button type="submit" className="bg-secondary-dark rounded-xl px-5 py-2 text-white">{editingProduct ? "Update" : "Add"}</button>
+            {/* <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+              
+
+{["title","price","avgRating","totalRatings","image_url","affiliated_company","link"].map((field) => (
+  <div key={field} className="flex flex-col">
+    <label className="capitalize">{field.replace("_", " ")}</label>
+    <input
+      {...register(field as keyof AffiliatedProductFormType, {
+        required: `${field} is required`,
+        ...(field === "price" && { min: { value: 0, message: "Price must be >= 0" } }),
+        ...(field === "avgRating" && {
+          min: { value: 0, message: "Rating must be >= 0" },
+          max: { value: 5, message: "Rating must be <= 5" },
+        }),
+        ...(field === "totalRatings" && { min: { value: 0, message: "Total ratings must be >= 0" } }),
+      })}
+      type={field.includes("price") || field.includes("Rating") || field.includes("total") ? "number" : "text"}
+      step={field.includes("Rating") || field.includes("price") ? "0.1" : undefined}
+      className="rounded border border-gray-300 p-2"
+    />
+    {errors[field as keyof AffiliatedProductFormType] && (
+      <span className="text-red-500">
+        {errors[field as keyof AffiliatedProductFormType]?.message || `${field} required`}
+      </span>
+    )}
+  </div>
+))}
+
+
+
+
+              <div
+               className="mt-4 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="rounded-xl bg-gray-300 px-5 py-2 hover:cursor-pointer hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                 <button type="submit" className="bg-secondary-dark rounded-xl px-5 py-2 cursor-pointer  text-white">{editingProduct ? "Update" : "Add"}</button>
               </div>
-            </form>
+            </form> */}
+
+
+<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+
+  {/* Title */}
+  <div className="flex flex-col">
+    <label>Title</label>
+    <input
+      type="text"
+      placeholder="Title"
+      {...register("title", { required: "Title is required" })}
+      className="rounded border border-gray-300 p-2"
+    />
+    {errors.title && <span className="text-red-500">{errors.title.message}</span>}
+  </div>
+
+  {/* Price */}
+  <div className="flex flex-col">
+    <label>Price</label>
+    <input
+      type="number"
+      step="0.1"
+       placeholder="Price"
+      {...register("price", {
+        required: "Price is required",
+        min: { value: 0, message: "Price must be >= 0" },
+      })}
+      className="rounded border border-gray-300 p-2"
+    />
+    {errors.price && <span className="text-red-500">{errors.price.message}</span>}
+  </div>
+
+  {/* Average Rating */}
+  <div className="flex flex-col">
+    <label>Average Rating</label>
+    <input
+     placeholder="Average Rating"
+      type="number"
+      step="0.1"
+      {...register("avgRating", {
+        required: "Average rating is required",
+        min: { value: 0, message: "Rating must be >= 0" },
+        max: { value: 5, message: "Rating must be <= 5" },
+      })}
+      className="rounded border border-gray-300 p-2"
+    />
+    {errors.avgRating && <span className="text-red-500">{errors.avgRating.message}</span>}
+  </div>
+
+  {/* Total Ratings */}
+  <div className="flex flex-col">
+    <label>Total Ratings</label>
+    <input
+     placeholder="Total Ratings"
+      type="number"
+      {...register("totalRatings", {
+        required: "Total ratings are required",
+        min: { value: 0, message: "Total ratings must be >= 0" },
+      })}
+      className="rounded border border-gray-300 p-2"
+    />
+    {errors.totalRatings && <span className="text-red-500">{errors.totalRatings.message}</span>}
+  </div>
+
+  {/* Image URL */}
+  <div className="flex flex-col">
+    <label>Image URL</label>
+    <input
+     placeholder="Image URL"
+      type="text"
+      {...register("image_url", { required: "Image URL is required" })}
+      className="rounded border border-gray-300 p-2"
+    />
+    {errors.image_url && <span className="text-red-500">{errors.image_url.message}</span>}
+  </div>
+
+  {/* Affiliated Company */}
+  <div className="flex flex-col">
+    <label>Affiliated Company</label>
+    <input
+     placeholder="Affiliated Company"
+      type="text"
+      {...register("affiliated_company", { required: "Affiliated company is required" })}
+      className="rounded border border-gray-300 p-2"
+    />
+    {errors.affiliated_company && <span className="text-red-500">{errors.affiliated_company.message}</span>}
+  </div>
+
+  {/* Link */}
+  <div className="flex flex-col">
+    <label>Link</label>
+    <input
+     placeholder="Link"
+      type="text"
+      {...register("link", { required: "Link is required" })}
+      className="rounded border border-gray-300 p-2"
+    />
+    {errors.link && <span className="text-red-500">{errors.link.message}</span>}
+  </div>
+
+  {/* Buttons */}
+  <div className="mt-4 flex justify-end gap-2">
+    <button
+      type="button"
+      onClick={() => setIsModalOpen(false)}
+      className="rounded-xl bg-gray-300 px-5 cursor-pointer py-2   hover:bg-gray-400"
+    >
+      Cancel
+    </button>
+
+    <button
+      type="submit"
+      className="bg-secondary-dark rounded-xl px-5 py-2 cursor-pointer text-white"
+    >
+      {editingProduct ? "Update" : "Add"}
+    </button>
+  </div>
+</form>
+
+
+
+
           </div>
         </div>
       )}
@@ -206,8 +403,8 @@ const IAffiliatedProductTable: React.FC = () => {
             <h3 className="mb-2 text-lg font-bold">Delete Product</h3>
             <p>Are you sure you want to delete "{confirmDelete.title}"?</p>
             <div className="mt-4 flex justify-end gap-2">
-              <button onClick={() => setConfirmDelete(null)} className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-400 px-4 py-3 text-white hover:bg-gray-500">Cancel</button>
-              <button onClick={handleDelete} className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3 text-white hover:bg-red-700">Delete</button>
+              <button onClick={() => setConfirmDelete(null)} className="flex w-full  cursor-pointer  items-center justify-center gap-2 rounded-xl bg-gray-400 px-4 py-3 text-white hover:bg-gray-500">Cancel</button>
+              <button onClick={handleDelete} className="flex w-full items-center justify-center cursor-pointer  gap-2 rounded-xl bg-red-600 px-4 py-3 text-white hover:bg-red-700">Delete</button>
             </div>
           </div>
         </div>
@@ -224,7 +421,7 @@ const IAffiliatedProductTable: React.FC = () => {
             <p><strong>Company:</strong> {viewProduct.affiliated_company}</p>
             <p><strong>Link:</strong> <a href={viewProduct.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Visit Product</a></p>
             <div className="mt-4 text-right">
-              <button onClick={() => setViewProduct(null)} className="bg-secondary-dark rounded-xl px-5 py-2 text-white">Close</button>
+              <button onClick={() => setViewProduct(null)} className="bg-secondary-dark cursor-pointer  rounded-xl px-5 py-2 text-white">Close</button>
             </div>
           </div>
         </div>

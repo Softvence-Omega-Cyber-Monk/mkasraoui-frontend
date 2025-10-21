@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { RichTextEditor } from "@mantine/rte";
 import { FileText, Plus } from "lucide-react";
@@ -98,6 +98,20 @@ const AdminActivityTable: React.FC = () => {
       pdfFile: a.pdfFile ?? "",
       images: a.images ?? [],
     })) || [];
+
+
+     // Pagination
+  const [page, setPage] = useState(1);
+  const activitiesPerPage = 10;
+  const total = activities.length;
+  const totalPages = Math.ceil(total / activitiesPerPage);
+
+  useEffect(() => setPage(1), [total]);
+
+  const paginatedactivities = activities.slice(
+    (page - 1) * activitiesPerPage,
+    page * activitiesPerPage,
+  );
 
   // ✅ Add Modal
   const openAddModal = () => {
@@ -199,16 +213,18 @@ const AdminActivityTable: React.FC = () => {
       </div>
 
       {/* Table */}
-      <div className=" rounded-lg border border-gray-300 bg-white">
+              <div className="overflow-hidden rounded-xl border border-[#DBE0E5] bg-white">
+    <div className="w-full overflow-x-auto">
+
         <table className="w-full min-w-[1000px]">
           <thead className="border-b border-gray-300 bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left">Title</th>
-              <th className="px-6 py-3 text-left">Description</th>
-              <th className="px-6 py-3 text-left">Instruction Sheet</th>
-              <th className="px-6 py-3 text-left">Video</th>
-              <th className="px-6 py-3 text-left">PDF File</th>
-              <th className="px-6 py-3 text-center">Actions</th>
+              <th className="px-6 py-3 font-normal text-left">Title</th>
+              <th className="px-6 py-3 font-normal text-left">Description</th>
+              <th className="px-6 py-3 font-normal text-left">Instruction Sheet</th>
+              <th className="px-6 py-3 font-normal text-left">Video</th>
+              <th className="px-6 py-3 font-normal text-left">PDF File</th>
+              <th className="px-6 py-3 font-normal text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -309,7 +325,36 @@ const AdminActivityTable: React.FC = () => {
           </tbody>
         </table>
       </div>
+      </div>
 
+{/* Pagination */}
+      {activities.length > 0 && (
+        <div className="mt-6 flex items-center justify-between px-4 py-3">
+          <div className="text-sm text-gray-600">
+            Showing <span className="font-medium">{paginatedactivities.length}</span>{" "}
+            of <span className="font-medium">{total}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="rounded-lg border px-3 py-1.5 text-sm text-gray-600 hover:cursor-pointer hover:bg-gray-100 disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <div className="min-w-[50px] rounded-md border bg-gray-50 px-3 py-1.5 text-center text-sm font-medium text-gray-700">
+              {page} / {totalPages}
+            </div>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+              className="rounded-lg border px-3 py-1.5 text-sm text-gray-600 hover:cursor-pointer hover:bg-gray-100 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
 
 
@@ -334,7 +379,7 @@ const AdminActivityTable: React.FC = () => {
                 placeholder="Title"
                 className="rounded border border-gray-300 p-2"
               />
-              {errors.title && <span className="text-red-500">Title required</span>}
+              {errors.title && <p className="mt-1 text-sm text-red-500">Title required</p>}
 
               <label>Description</label>
               <textarea
@@ -343,7 +388,7 @@ const AdminActivityTable: React.FC = () => {
                 className="rounded border border-gray-300 p-2"
                 rows={3}
               />
-              {errors.description && <span className="text-red-500">Description required</span>}
+              {errors.description && <p className="mt-1 text-sm text-red-500">Description required</p>}
 
 
               {/* PDF Upload */}
@@ -381,7 +426,11 @@ const AdminActivityTable: React.FC = () => {
                   </div>
                 )}
 
-
+ {!formData.pdfPreview && (
+    <p className="mt-1 text-sm text-red-500">
+      PDF file is required
+    </p>
+  )}
 
               </div>
 
@@ -394,9 +443,7 @@ const AdminActivityTable: React.FC = () => {
                   <RichTextInput value={field.value ?? ""} onChange={field.onChange} />
                 )}
               />
-
-
-
+  
               {/* Video Upload */}
               <div>
                 <label
@@ -446,6 +493,13 @@ const AdminActivityTable: React.FC = () => {
                     />
                   </div>
                 )}
+
+
+                 {!formData.videoPreview && (
+    <p className="mt-1 text-sm text-red-500">
+      video file is required
+    </p>
+  )}
               </div>
 
               <div className="mt-4 flex justify-end gap-2">
@@ -550,7 +604,7 @@ const AdminActivityTable: React.FC = () => {
             <div className="mt-6 text-right">
               <button
                 onClick={() => setViewActivity(null)}
-                className="bg-secondary-dark hover:bg-secondary-light rounded-xl px-5 py-2 text-white"
+                className="bg-secondary-dark cursor-pointer hover:bg-secondary-light rounded-xl px-5 py-2 text-white"
               >
                 Close
               </button>
