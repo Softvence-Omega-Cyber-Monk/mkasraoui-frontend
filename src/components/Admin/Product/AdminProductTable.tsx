@@ -591,31 +591,8 @@ const AdminProductTable: React.FC = () => {
                   ))}
 
                   {/* Newly Uploaded Files */}
-                  {/* {formData.files.map((file, idx) => (
-                    <div
-                      key={`new-${idx}`}
-                      className="relative h-20 w-20 overflow-hidden rounded-lg border border-gray-200"
-                    >
-                      <img
-                        src={URL.createObjectURL(file)}
-                        alt={file.name}
-                        className="h-full w-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            files: prev.files.filter((_, i) => i !== idx),
-                          }))
-                        }
-                        className="absolute top-1 right-1 rounded-full bg-red-600 p-1 text-white hover:bg-red-700"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  ))} */}
-                  {formData.existingFiles.map((url, idx) => (
+
+                  {/* {formData.existingFiles.map((url, idx) => (
                     <div
                       key={`exist-${idx}`}
                       className="relative h-20 w-20 overflow-hidden rounded-lg border border-gray-200"
@@ -640,7 +617,69 @@ const AdminProductTable: React.FC = () => {
                         &times;
                       </button>
                     </div>
-                  ))}
+                  ))} */}
+
+                  {/* Existing uploaded images */}
+                  {formData.existingFiles.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-3">
+                      {formData.existingFiles.map((url, idx) => (
+                        <div
+                          key={`exist-${idx}`}
+                          className="relative h-20 w-20 overflow-hidden rounded-lg border border-gray-200"
+                        >
+                          <img
+                            src={url}
+                            alt={`existing-img-${idx}`}
+                            className="h-full w-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                existingFiles: prev.existingFiles.filter(
+                                  (_, i) => i !== idx,
+                                ),
+                              }))
+                            }
+                            className="absolute top-1 right-1 rounded-full bg-red-600 p-1 text-white hover:bg-red-700"
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Newly selected images (before upload) */}
+                  {formData.files.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-3">
+                      {Array.from(formData.files).map((file, idx) => (
+                        <div
+                          key={`new-${idx}`}
+                          className="relative h-20 w-20 overflow-hidden rounded-lg border border-gray-200"
+                        >
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`new-img-${idx}`}
+                            className="h-full w-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                files: prev.files.filter((_, i) => i !== idx),
+                              }))
+                            }
+                            className="absolute top-1 right-1 rounded-full bg-red-600 p-1 text-white hover:bg-red-700"
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -823,8 +862,137 @@ export default AdminProductTable;
 //     page * productsPerPage,
 //   );
 
-//   const openAddModal = () => {
-//     setEditingProduct(null);
+// const openAddModal = () => {
+//   setEditingProduct(null);
+//   setFormData({
+//     title: "",
+//     description: "",
+//     product_type: "",
+//     age_range: "",
+//     price: "",
+//     included: "",
+//     tutorial: "",
+//     activities: "",
+//     files: [],
+//   });
+//   setErrors({});
+//   setIsModalOpen(true);
+// };
+
+// const openEditModal = (product: Product) => {
+//   setEditingProduct(product);
+//   setFormData({
+//     title: product.title,
+//     description: product.description,
+//     product_type: product.product_type,
+//     age_range: product.age_range,
+//     price: product.price.toString(),
+//     included: product.included.join(", "),
+//     tutorial: product.tutorial || "",
+//     activities:
+//       product.activities
+//         ?.map((a) => `${a.title}::${a.description}`)
+//         .join("|") || "",
+//     files: [],
+//   });
+//   setErrors({});
+//   setIsModalOpen(true);
+// };
+
+// const handleDelete = async () => {
+//   if (!confirmDelete) return;
+//   try {
+//     await deleteProduct(confirmDelete.id).unwrap();
+//     toast.success("Product deleted successfully");
+//     setConfirmDelete(null);
+//   } catch (err) {
+//     console.error(err);
+//     toast.error("Failed to delete product");
+//   }
+// };
+
+// const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+//   e.preventDefault();
+//   if (!e.target.files) return;
+
+//   const selectedFiles = Array.from(e.target.files);
+
+//   setFormData((prev) => ({
+//     ...prev,
+//     files: [...prev.files, ...selectedFiles].slice(0, 5),
+//   }));
+
+//   e.target.value = "";
+// };
+
+// const validateForm = () => {
+//   const newErrors: FormErrorType = {};
+
+//   if (!formData.title.trim()) newErrors.title = "Title is required";
+//   if (!formData.description.trim())
+//     newErrors.description = "Description is required";
+//   if (!formData.product_type.trim())
+//     newErrors.product_type = "Product type is required";
+//   if (!formData.age_range.trim())
+//     newErrors.age_range = "Age range is required";
+//   if (!formData.price.trim()) newErrors.price = "Price is required";
+//   if (!formData.included.trim())
+//     newErrors.included = "Included items are required";
+//   // Tutorial link: required only when adding a new product
+//   if (!editingProduct && !formData.tutorial.trim()) {
+//     newErrors.tutorial = "Tutorial link is required";
+//   }
+//   // Only require activities if adding a new product
+//   if (!editingProduct && !formData.activities.trim())
+//     newErrors.activities = "Activity field is required";
+//   // Require at least one file when adding a new product
+//   if (!editingProduct && formData.files.length === 0) {
+//     newErrors.files = "Please upload at least one photo";
+//   }
+
+//   setErrors(newErrors);
+//   return Object.keys(newErrors).length === 0;
+// };
+
+// const handleSubmit = async () => {
+//   if (!validateForm()) {
+//     toast.error("Please fill all required fields");
+//     return;
+//   }
+
+//   try {
+//     const dataToSend = new FormData();
+//     const payload = {
+//       title: formData.title,
+//       description: formData.description,
+//       product_type: formData.product_type,
+//       age_range: formData.age_range,
+//       price: parseFloat(formData.price),
+//       included: formData.included.split(",").map((i) => i.trim()),
+//       tutorial: formData.tutorial || null,
+//       activities: formData.activities
+//         ? formData.activities.split("|").map((a) => {
+//             const [title, description] = a.split("::");
+//             return { title: title.trim(), description: description.trim() };
+//           })
+//         : [],
+//     };
+
+//     dataToSend.append("data", JSON.stringify(payload));
+//     formData.files.forEach((file) => dataToSend.append("files", file));
+
+//     if (editingProduct) {
+//       await updateProduct({
+//         id: editingProduct.id,
+//         data: dataToSend,
+//       }).unwrap();
+//       toast.success("Product updated successfully");
+//     } else {
+//       await addProduct(dataToSend).unwrap();
+//       toast.success("Product added successfully");
+//     }
+
+//     setIsModalOpen(false);
 //     setFormData({
 //       title: "",
 //       description: "",
@@ -836,140 +1004,11 @@ export default AdminProductTable;
 //       activities: "",
 //       files: [],
 //     });
-//     setErrors({});
-//     setIsModalOpen(true);
-//   };
-
-//   const openEditModal = (product: Product) => {
-//     setEditingProduct(product);
-//     setFormData({
-//       title: product.title,
-//       description: product.description,
-//       product_type: product.product_type,
-//       age_range: product.age_range,
-//       price: product.price.toString(),
-//       included: product.included.join(", "),
-//       tutorial: product.tutorial || "",
-//       activities:
-//         product.activities
-//           ?.map((a) => `${a.title}::${a.description}`)
-//           .join("|") || "",
-//       files: [],
-//     });
-//     setErrors({});
-//     setIsModalOpen(true);
-//   };
-
-//   const handleDelete = async () => {
-//     if (!confirmDelete) return;
-//     try {
-//       await deleteProduct(confirmDelete.id).unwrap();
-//       toast.success("Product deleted successfully");
-//       setConfirmDelete(null);
-//     } catch (err) {
-//       console.error(err);
-//       toast.error("Failed to delete product");
-//     }
-//   };
-
-//   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-//     e.preventDefault();
-//     if (!e.target.files) return;
-
-//     const selectedFiles = Array.from(e.target.files);
-
-//     setFormData((prev) => ({
-//       ...prev,
-//       files: [...prev.files, ...selectedFiles].slice(0, 5),
-//     }));
-
-//     e.target.value = "";
-//   };
-
-//   const validateForm = () => {
-//     const newErrors: FormErrorType = {};
-
-//     if (!formData.title.trim()) newErrors.title = "Title is required";
-//     if (!formData.description.trim())
-//       newErrors.description = "Description is required";
-//     if (!formData.product_type.trim())
-//       newErrors.product_type = "Product type is required";
-//     if (!formData.age_range.trim())
-//       newErrors.age_range = "Age range is required";
-//     if (!formData.price.trim()) newErrors.price = "Price is required";
-//     if (!formData.included.trim())
-//       newErrors.included = "Included items are required";
-//     // Tutorial link: required only when adding a new product
-//     if (!editingProduct && !formData.tutorial.trim()) {
-//       newErrors.tutorial = "Tutorial link is required";
-//     }
-//     // Only require activities if adding a new product
-//     if (!editingProduct && !formData.activities.trim())
-//       newErrors.activities = "Activity field is required";
-//     // Require at least one file when adding a new product
-//     if (!editingProduct && formData.files.length === 0) {
-//       newErrors.files = "Please upload at least one photo";
-//     }
-
-//     setErrors(newErrors);
-//     return Object.keys(newErrors).length === 0;
-//   };
-
-//   const handleSubmit = async () => {
-//     if (!validateForm()) {
-//       toast.error("Please fill all required fields");
-//       return;
-//     }
-
-//     try {
-//       const dataToSend = new FormData();
-//       const payload = {
-//         title: formData.title,
-//         description: formData.description,
-//         product_type: formData.product_type,
-//         age_range: formData.age_range,
-//         price: parseFloat(formData.price),
-//         included: formData.included.split(",").map((i) => i.trim()),
-//         tutorial: formData.tutorial || null,
-//         activities: formData.activities
-//           ? formData.activities.split("|").map((a) => {
-//               const [title, description] = a.split("::");
-//               return { title: title.trim(), description: description.trim() };
-//             })
-//           : [],
-//       };
-
-//       dataToSend.append("data", JSON.stringify(payload));
-//       formData.files.forEach((file) => dataToSend.append("files", file));
-
-//       if (editingProduct) {
-//         await updateProduct({
-//           id: editingProduct.id,
-//           data: dataToSend,
-//         }).unwrap();
-//         toast.success("Product updated successfully");
-//       } else {
-//         await addProduct(dataToSend).unwrap();
-//         toast.success("Product added successfully");
-//       }
-
-//       setIsModalOpen(false);
-//       setFormData({
-//         title: "",
-//         description: "",
-//         product_type: "",
-//         age_range: "",
-//         price: "",
-//         included: "",
-//         tutorial: "",
-//         activities: "",
-//         files: [],
-//       });
-//     } catch (err) {
-//       console.error(err);
-//       toast.error("Error submitting product");
-//     }
-//   };
+//   } catch (err) {
+//     console.error(err);
+//     toast.error("Error submitting product");
+//   }
+// };
 
 //   return (
 //     <div className="">
