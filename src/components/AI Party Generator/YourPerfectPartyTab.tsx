@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useCreatePartyPlanMutation } from "@/redux/features/partyPlan/partyPlanApi";
+import { useSavePartyPlanMutation } from "@/redux/features/partyGeneration/partyGenerationApi";
+import { ShoppingCart } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface PartyPlan {
@@ -14,9 +16,19 @@ interface AdventureSongMovie {
   views: string;
 }
 
+interface PartyProducts {
+  id: string;
+  title: string;
+  link: string;
+  image_url: string
+}
+
 interface PartyPlanResponse {
   party_plan: PartyPlan;
   adventure_song_movie_links?: AdventureSongMovie[];
+  suggested_gifts?: {
+    products: PartyProducts[];
+  };
 }
 
 interface YourPerfectPartyTabProps {
@@ -42,7 +54,8 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
   partyPlanData,
   preferencesData
 }) => {
-  const [createPartyPlan, { isLoading: isSaving }] = useCreatePartyPlanMutation();
+  const [_createPartyPlan, { isLoading: isSaving }] = useCreatePartyPlanMutation();
+  const [savePartyPlan] = useSavePartyPlanMutation()
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   if (!partyPlanData) {
@@ -56,7 +69,9 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
     );
   }
 
-  const { party_plan, adventure_song_movie_links } = partyPlanData;
+  const { party_plan, adventure_song_movie_links, suggested_gifts } = partyPlanData;
+  const amazonProducts = suggested_gifts?.products || [];
+
 
   // Check if party_plan exists and is valid
   if (!party_plan || typeof party_plan !== 'object') {
@@ -81,31 +96,68 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
 
   const handleSaveParty = async () => {
     try {
+      // Transform party_plan into sections format
+      const sections = Object.entries(party_plan).map(([sectionName, items], _index) => ({
+        name: sectionName,
+        items: items.map((item, itemIndex) => ({
+          description: item,
+          sortOrder: itemIndex
+        }))
+      }));
+
+      // Extract timeline events if they exist in party_plan
+      const timelineEvents = party_plan["Timeline"] || party_plan["Schedule"] || party_plan["Party Schedule"]
+        ? (party_plan["Timeline"] || party_plan["Schedule"] || party_plan["Party Schedule"]).map((event, index) => {
+          // Try to extract time from the event string (e.g., "3:00 PM - Guest arrival")
+          const timeMatch = event.match(/(\d{1,2}:\d{2}\s?(?:AM|PM|am|pm)?)/);
+          return {
+            time: timeMatch ? timeMatch[0] : `Event ${index + 1}`,
+            description: event,
+            sortOrder: index
+          };
+        })
+        : [];
+
+      // Transform Amazon products into suggestedGifts format
+      const suggestedGifts = amazonProducts.map(product => ({
+        productId: product.id
+      }));
+
+      // Generate party title
+      const partyTitle = `${preferencesData?.theme || 'Party'} for ${preferencesData?.person_name || 'Guest'}`;
+
+      // Ensure scheduledDate is in ISO 8601 format
+      let scheduledDate: string;
+      if (preferencesData?.party_date) {
+        // If party_date is already a valid date string, convert it to ISO format
+        const date = new Date(preferencesData.party_date);
+        scheduledDate = isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
+      } else {
+        scheduledDate = new Date().toISOString();
+      }
+
       const requestBody = {
-        person_name: preferencesData?.person_name || "Guest",
-        person_age: preferencesData?.person_age || 0,
-        budget: preferencesData?.budget || 0,
-        num_guests: preferencesData?.num_guests || 0,
-        party_date: preferencesData?.party_date || new Date().toISOString(),
-        location: preferencesData?.location || "",
-        party_details: {
-          theme: preferencesData?.theme || "",
-          favorite_activities: preferencesData?.favorite_activities || []
-        },
-        num_product: 0
+        title: partyTitle,
+        scheduledDate: scheduledDate,
+        sections: sections,
+        timelineEvents: timelineEvents,
+        suggestedGifts: suggestedGifts
       };
 
-      const response = await createPartyPlan(requestBody).unwrap();
+      console.log("Sending request:", requestBody);
+
+      const response = await savePartyPlan(requestBody).unwrap();
+
+      console.log("Response:", response);
 
       setSaveStatus('success');
       setTimeout(() => setSaveStatus('idle'), 3000);
       toast.success("Party saved successfully");
-
-      console.log("Party saved successfully:", response);
     } catch (error) {
       console.error("Failed to save party:", error);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
+      toast.error("Failed to save party");
     }
   };
 
@@ -166,62 +218,115 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
 
       <hr className="my-16 border-gray-200" />
 
-      {adventure_song_movie_links && adventure_song_movie_links.length > 0 && (
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-800 border-b pb-3 mb-8">
-            🎵 Party Music & Entertainment
-          </h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
-            {adventure_song_movie_links.map((video, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-xl overflow-hidden shadow-2xl hover:shadow-primary transition-all duration-300 transform hover:-translate-y-1"
-              >
-                <div className="aspect-video w-full bg-gray-200">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    src={`https://www.youtube.com/embed/${video.url.split('v=')[1]}`}
-                    title={video.title}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="w-full h-full"
-                  ></iframe>
-                </div>
-
-                <div className="p-5">
-                  <h3 className="font-extrabold text-lg text-gray-900 mb-2 line-clamp-2">
-                    {video.title}
-                  </h3>
-
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs bg-red-100 text-red-800 px-2.5 py-1 rounded-full font-medium">
-                      {video.channel}
-                    </span>
-                    <span className="text-xs text-gray-500 font-medium">
-                      👁️ {parseInt(video.views).toLocaleString()} views
-                    </span>
+      {/* Amazon Products Section */}
+      {amazonProducts.length > 0 && (
+        <>
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold text-gray-800 border-b border-b-gray-300 pb-3 mb-8">
+              🛍️ Recommended Party Supplies
+            </h2>
+            <p className="text-lg text-gray-600 mb-8 text-center">
+              Enhance your party with these curated products
+            </p>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {amazonProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
+                >
+                  {/* Product Image */}
+                  <div className="aspect-square w-full h-[300px] bg-gray-100 overflow-hidden">
+                    <img
+                      src={product?.image_url}
+                      alt={product?.title || "Product image"}
+                      className="w-full h-[300px] object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder-image.png';
+                      }}
+                    />
                   </div>
 
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                    {video.description}
-                  </p>
-
-                  <a
-                    href={video.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block w-full text-center bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-700 transition-colors shadow-md"
-                  >
-                    Watch on YouTube
-                  </a>
+                  {/* Product Content */}
+                  <div className="p-6">
+                    <h3 className="font-bold text-lg text-gray-900 mb-4 line-clamp-3 leading-snug min-h-[84px]">
+                      {product.title?.split(" ").slice(0, 10).join(" ") + (product.title?.split(" ").length > 10 ? "..." : "")}
+                    </h3>
+                    <a href={product.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#FF9900] px-6 py-3 font-semibold text-white hover:bg-[#E88B00] transition-colors shadow-md">
+                      <ShoppingCart className="h-5 w-5" />
+                      Buy Now
+                    </a>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+
+          <hr className="my-16 border-gray-200" />
+        </>
+      )
+      }
+
+      {
+        adventure_song_movie_links && adventure_song_movie_links.length > 0 && (
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold text-gray-800 border-b pb-3 mb-8">
+              🎵 Party Music & Entertainment
+            </h2>
+            <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-3">
+              {adventure_song_movie_links.map((video, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-xl overflow-hidden shadow-2xl hover:shadow-primary transition-all duration-300 transform hover:-translate-y-1"
+                >
+                  <div className="aspect-video w-full bg-gray-200">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={`https://www.youtube.com/embed/${video.url.split('v=')[1]}`}
+                      title={video.title}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                    ></iframe>
+                  </div>
+
+                  <div className="p-5">
+                    <h3 className="font-extrabold text-lg text-gray-900 mb-2 line-clamp-2">
+                      {video.title}
+                    </h3>
+
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xs bg-red-100 text-red-800 px-2.5 py-1 rounded-full font-medium">
+                        {video.channel}
+                      </span>
+                      <span className="text-xs text-gray-500 font-medium">
+                        👁️ {parseInt(video.views).toLocaleString()} views
+                      </span>
+                    </div>
+
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                      {video.description}
+                    </p>
+
+                    <a
+                      href={video.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block w-full text-center bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-700 transition-colors shadow-md"
+                    >
+                      Watch on YouTube
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      }
 
       <hr className="my-16 border-gray-200" />
 
@@ -257,7 +362,7 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
         <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
           Party Plan Summary
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 text-center">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
           <div className="p-4 bg-white rounded-lg shadow-md">
             <div className="text-3xl font-extrabold text-[#223B7D]">
               {Object.keys(party_plan).length}
@@ -276,9 +381,15 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
             </div>
             <div className="text-sm text-gray-600 font-medium mt-1">Music Videos</div>
           </div>
+          <div className="p-4 bg-white rounded-lg shadow-md">
+            <div className="text-3xl font-extrabold text-[#223B7D]">
+              {amazonProducts.length}
+            </div>
+            <div className="text-sm text-gray-600 font-medium mt-1">Products</div>
+          </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

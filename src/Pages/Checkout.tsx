@@ -46,7 +46,8 @@ interface FormErrors {
 
 function CheckoutPage() {
   const cartItems = useAppSelector((state) => state.cart.items);
-  const cart = cartItems;
+  const cart = cartItems
+  console.log(cartItems)
   const { data } = useGetMeQuery();
   const isSubscribed = data?.subscription?.length ? true : false;
   const navigate = useNavigate();
@@ -467,21 +468,16 @@ function CheckoutPage() {
               {/* Cart Items */}
               <div className="mb-6 max-h-60 space-y-3 overflow-y-auto">
                 {cart.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center gap-3 rounded-lg bg-gray-50 p-3"
-                  >
-                    <div className="h-12 w-12 flex-shrink-0">
+                  <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    {/* <div className="w-12 h-12 flex-shrink-0">
                       <img
                         src={item.image || "/placeholder.png"}
                         alt={item.title}
                         className="h-full w-full rounded object-cover"
                       />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-gray-900">
-                        {item.title}
-                      </p>
+                    </div> */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">{item.title}</p>
                       <div className="text-sm text-gray-600">
                         <div>Qty: {item.quantity}</div>
                       </div>

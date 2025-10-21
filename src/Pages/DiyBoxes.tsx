@@ -25,7 +25,7 @@ export default function DiyBoxes() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [ageRange, setAgeRange] = useState("");
-  const [theme, setTheme] = useState("");
+  const [theme, _setTheme] = useState("");
 
   const dispatch = useAppDispatch();
   const cart = useAppSelector((state) => state.cart.items);
@@ -126,18 +126,18 @@ export default function DiyBoxes() {
     return Array.from(ranges).sort();
   }, [activities]);
 
-  const availableThemes = useMemo(() => {
-    const themes = new Set<string>();
-    activities.forEach((activity) => {
-      if (activity.theme) {
-        themes.add(activity.theme);
-      }
-      if (activity.product_type) {
-        themes.add(activity.product_type);
-      }
-    });
-    return Array.from(themes).sort();
-  }, [activities]);
+  // const availableThemes = useMemo(() => {
+  //   const themes = new Set<string>();
+  //   activities.forEach((activity) => {
+  //     if (activity.theme) {
+  //       themes.add(activity.theme);
+  //     }
+  //     if (activity.product_type) {
+  //       themes.add(activity.product_type);
+  //     }
+  //   });
+  //   return Array.from(themes).sort();
+  // }, [activities]);
 
   // Enhanced filtering
   const filteredActivities = useMemo(() => {
@@ -235,22 +235,6 @@ export default function DiyBoxes() {
                     {availableAgeRanges.map((range) => (
                       <option key={range} value={range}>
                         {range}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Theme - Dynamic options */}
-                <div className="relative">
-                  <select
-                    value={theme}
-                    onChange={(e) => setTheme(e.target.value)}
-                    className="cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-3 pr-8 outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">All Themes</option>
-                    {availableThemes.map((themeOption) => (
-                      <option key={themeOption} value={themeOption}>
-                        {themeOption.charAt(0).toUpperCase() + themeOption.slice(1)}
                       </option>
                     ))}
                   </select>
@@ -382,11 +366,11 @@ export default function DiyBoxes() {
                                       id: String(activity.id),
                                       title: activity.title,
                                       price: activity.price,
-                                      discounted_price:
-                                        activity.discounted_price ?? activity.price,
+                                      discounted_price: activity.discounted_price ?? activity.price,
                                       quantity: 1,
                                       image: activity.imges?.[0] || "",
                                       rating: activity.avg_rating,
+                                      imges: activity.imges
                                     }),
                                   );
                                   toast.success(`${activity.title} added to cart!`);
