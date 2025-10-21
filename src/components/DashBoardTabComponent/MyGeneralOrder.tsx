@@ -13,6 +13,8 @@ export default function MyGeneralOrder() {
     limit: 10,
   });
 
+  console.log("My Orders Data:", data);
+
   if (isLoading || isFetching) {
     return (
       <div className="flex items-center justify-center py-10">
@@ -88,8 +90,11 @@ export default function MyGeneralOrder() {
                     <td className="px-6 py-4 text-sm text-gray-700">
                       {index + 1}
                     </td>
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-700">
+                    {/* <td className="px-6 py-4 text-sm font-semibold text-gray-700">
                       {order.items?.[0]?.product?.title || "N/A"}
+                    </td> */}
+                    <td className="px-6 py-4 text-sm font-semibold text-gray-700">
+                      {order.contactName || "N/A"}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
                       €{order.total?.toFixed(2) || "0.00"}
