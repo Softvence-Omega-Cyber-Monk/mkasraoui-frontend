@@ -37,6 +37,7 @@ interface FormErrors {
 function CheckoutPage() {
   const cartItems = useAppSelector((state) => state.cart.items);
   const cart = cartItems
+  console.log(cartItems)
   const { data } = useGetMeQuery();
   const isSubscribed = data?.subscription?.length ? true : false
   const navigate = useNavigate()
@@ -400,13 +401,13 @@ function CheckoutPage() {
               <div className="space-y-3 mb-6 max-h-60 overflow-y-auto">
                 {cart.map((item) => (
                   <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <div className="w-12 h-12 flex-shrink-0">
+                    {/* <div className="w-12 h-12 flex-shrink-0">
                       <img
                         src={item.image || "/placeholder.png"}
                         alt={item.title}
                         className="w-full h-full object-cover rounded"
                       />
-                    </div>
+                    </div> */}
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{item.title}</p>
                       <div className="text-sm text-gray-600">

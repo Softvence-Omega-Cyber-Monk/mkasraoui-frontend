@@ -33,8 +33,6 @@ export default function PartyInvitations() {
   // Redux mutation hook
   const [generateCard, { isLoading: isGenerating, error: generateError }] = useGenerateCardMutation();
   const [sendInvitation, { isLoading }] = useSendInvitationMutation();
-  // const [deleteInvitation] = useDeleteInvitationMutation();
-  // const { getInvitations } = useGetInvitationsQuery();
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
 
   const [showPopup, setShowPopup] = useState(false);
@@ -63,18 +61,17 @@ export default function PartyInvitations() {
     }
     const pdf = new jsPDF("p", "mm", "a4");
     const img = new Image();
-    img.crossOrigin = "anonymous"; // to avoid CORS issue
+    img.crossOrigin = "anonymous";
     img.src = generatedImageUrl!;
 
     img.onload = () => {
-      const imgWidth = 190; // fit image to page width
+      const imgWidth = 190;
       const imgHeight = (img.height * imgWidth) / img.width;
       pdf.addImage(img, "PNG", 10, 10, imgWidth, imgHeight);
       pdf.save("invitation.pdf");
     };
   };
 
-  // Copy link to clipboard
   const handleCopyLink = () => {
     if (!generatedImageUrl) {
       toast.error("Please Generate Image First");
@@ -88,10 +85,31 @@ export default function PartyInvitations() {
   const [formData, setFormData] = useState({
     email: "",
     guest_name: "",
-    quest_phone: "",
+    guest_phone: "",
+    shippingAddress: {
+      firstName: "",
+      lastName: "",
+      addressLine1: "",
+      addressLine2: "",
+      city: "",
+      state: "",
+      postcode: "",
+      country: "",
+    },
   });
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleShippingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      shippingAddress: {
+        ...formData.shippingAddress,
+        [e.target.name]: e.target.value,
+      },
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -100,12 +118,29 @@ export default function PartyInvitations() {
       await sendInvitation({
         email: formData.email,
         guest_name: formData.guest_name,
-        quest_phone: formData.quest_phone,
+        guest_phone: formData.guest_phone,
         imageUrl: generatedImageUrl!,
         party_id: partyDetails.selectedPartyId!,
+        shippingAddress: formData.shippingAddress,
       }).unwrap();
       setShowPopup(false);
       toast.success("Invitation sent successfully!");
+      // Reset form
+      setFormData({
+        email: "",
+        guest_name: "",
+        guest_phone: "",
+        shippingAddress: {
+          firstName: "",
+          lastName: "",
+          addressLine1: "",
+          addressLine2: "",
+          city: "",
+          state: "",
+          postcode: "",
+          country: "",
+        },
+      });
     } catch (err) {
       console.error(err);
       toast.error("Failed to send invitation");
@@ -119,9 +154,6 @@ export default function PartyInvitations() {
   ];
 
   const [isAgeDropdownOpen, setIsAgeDropdownOpen] = useState(false);
-
-
-
 
   const ages = Array.from({ length: 80 }, (_, i) => i + 1);
 
@@ -182,7 +214,6 @@ export default function PartyInvitations() {
     }
   };
 
-  // Handle AI generation
   const handleGenerateCard = async () => {
     if (!partyDetails.description.trim()) {
       Swal.fire({
@@ -480,34 +511,18 @@ export default function PartyInvitations() {
                         </div>
                       </div>
 
-                      {/* <div className="flex-1">
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
-                          Party Time
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="Party Time"
-                          className="w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                          value={partyDetails.partyTime}
-                          onChange={(e) =>
-                            handleInputChange("partyTime", e.target.value)
-                          }
-                        />
-                      </div> */}
-
                       <div className="flex-1">
                         <label className="mb-2 block text-sm font-medium text-gray-700">
                           Party Time
                         </label>
                         <input
-                          type="time"  // Set the input type to "time"
+                          type="time"
                           placeholder="Party Time"
                           className="w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                          value={partyDetails.partyTime}  // The value will be a time string (HH:MM)
-                          onChange={(e) => handleInputChange("partyTime", e.target.value)}  // Handle the raw string directly
+                          value={partyDetails.partyTime}
+                          onChange={(e) => handleInputChange("partyTime", e.target.value)}
                         />
                       </div>
-
                     </div>
 
                     <div>
@@ -651,31 +666,6 @@ export default function PartyInvitations() {
                     </button>
                   </div>
                 </div>
-
-                {/* Quick Stats */}
-                {/* <div className="rounded-3xl border border-gray-200 bg-white shadow-sm">
-                  <div className="p-6">
-                    <h2 className="text-2xl font-semibold text-gray-900">
-                      Quick Stats
-                    </h2>
-                  </div>
-                  <div className="px-6 pb-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="rounded-lg bg-[#FAF5FF] p-4 text-center">
-                        <div className="mb-1 text-2xl font-bold text-[#FD8EFF]">
-                          {guests.length}
-                        </div>
-                        <div className="text-sm text-gray-700">Total Guests</div>
-                      </div>
-                      <div className="rounded-lg bg-[#AEF4B85C] p-4 text-center">
-                        <div className="mb-1 text-2xl font-bold text-[#36B37E]">
-                          {guests.filter((g) => g.status === "confirmed").length}
-                        </div>
-                        <div className="text-sm text-gray-700">Confirmed</div>
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
               </div>
             </div>
 
@@ -700,46 +690,133 @@ export default function PartyInvitations() {
             {/* Popup Form */}
             {showPopup && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                <div className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
+                <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl bg-white p-6 shadow-lg">
                   <button
                     className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
                     onClick={() => setShowPopup(false)}
                   >
                     <X />
                   </button>
-                  <h3 className="mb-4 text-xl font-semibold">Send Invitation</h3>
+                  <h3 className="mb-6 text-2xl font-semibold">Send Invitation</h3>
                   <form onSubmit={handleSubmit} className="space-y-4">
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Your Email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="w-full rounded-md border border-gray-300 p-2"
-                    />
-                    <input
-                      type="text"
-                      name="guest_name"
-                      placeholder="Guest Name"
-                      value={formData.guest_name}
-                      onChange={handleChange}
-                      required
-                      className="w-full rounded-md border border-gray-300 p-2"
-                    />
-                    <input
-                      type="text"
-                      name="quest_phone"
-                      placeholder="Guest Phone"
-                      value={formData.quest_phone}
-                      onChange={handleChange}
-                      required
-                      className="w-full rounded-md border border-gray-300 p-2"
-                    />
+                    {/* Guest Information */}
+                    <div className="space-y-4">
+                      <h4 className="text-lg font-medium text-gray-700">Guest Information</h4>
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="Guest Email *"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                      />
+                      <input
+                        type="text"
+                        name="guest_name"
+                        placeholder="Guest Name *"
+                        value={formData.guest_name}
+                        onChange={handleChange}
+                        required
+                        className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                      />
+                      <input
+                        type="text"
+                        name="guest_phone"
+                        placeholder="Guest Phone *"
+                        value={formData.guest_phone}
+                        onChange={handleChange}
+                        required
+                        className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                      />
+                    </div>
+
+                    {/* Shipping Address */}
+                    <div className="space-y-4 pt-4 border-t border-gray-200">
+                      <h4 className="text-lg font-medium text-gray-700">Shipping Address</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                          type="text"
+                          name="firstName"
+                          placeholder="First Name *"
+                          value={formData.shippingAddress.firstName}
+                          onChange={handleShippingChange}
+                          required
+                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        />
+                        <input
+                          type="text"
+                          name="lastName"
+                          placeholder="Last Name *"
+                          value={formData.shippingAddress.lastName}
+                          onChange={handleShippingChange}
+                          required
+                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        />
+                      </div>
+                      <input
+                        type="text"
+                        name="addressLine1"
+                        placeholder="Address Line 1 *"
+                        value={formData.shippingAddress.addressLine1}
+                        onChange={handleShippingChange}
+                        required
+                        className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                      />
+                      <input
+                        type="text"
+                        name="addressLine2"
+                        placeholder="Address Line 2 (Optional)"
+                        value={formData.shippingAddress.addressLine2}
+                        onChange={handleShippingChange}
+                        className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                      />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                          type="text"
+                          name="city"
+                          placeholder="City *"
+                          value={formData.shippingAddress.city}
+                          onChange={handleShippingChange}
+                          required
+                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        />
+                        <input
+                          type="text"
+                          name="state"
+                          placeholder="State *"
+                          value={formData.shippingAddress.state}
+                          onChange={handleShippingChange}
+                          required
+                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                          type="text"
+                          name="postcode"
+                          placeholder="Postcode *"
+                          value={formData.shippingAddress.postcode}
+                          onChange={handleShippingChange}
+                          required
+                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        />
+                        <input
+                          type="text"
+                          name="country"
+                          placeholder="Country *"
+                          value={formData.shippingAddress.country}
+                          onChange={handleShippingChange}
+                          required
+                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        />
+                      </div>
+                    </div>
+
                     <button
                       type="submit"
                       disabled={isLoading}
-                      className="w-full rounded-md bg-[#223B7D] p-2 text-white hover:bg-blue-900 transition-colors cursor-pointer"
+                      className="w-full rounded-lg bg-[#223B7D] p-3 text-white hover:bg-blue-900 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-6"
                     >
                       {isLoading ? "Sending..." : "Send Invitation"}
                     </button>

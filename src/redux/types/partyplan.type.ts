@@ -1,17 +1,31 @@
 // @/redux/types/partyplan.type.ts
 
+export interface PartyPlanItem {
+  description: string;
+  sortOrder: number;
+}
+
+export interface PartyPlanSection {
+  name: string;
+  items: PartyPlanItem[];
+}
+
+export interface TimelineEvent {
+  time: string;
+  description: string;
+  sortOrder: number;
+}
+
+export interface SuggestedGift {
+  productId: string;
+}
+
 export interface PartyRequest {
-  person_name: string;
-  person_age: number;
-  budget: number;
-  num_guests: number;
-  party_date: string;
-  location: string;
-  party_details: {
-    theme: string;
-    favorite_activities: string[];
-  };
-  num_product: number;
+  title: string;
+  scheduledDate: string;
+  sections: PartyPlanSection[];
+  timelineEvents: TimelineEvent[];
+  suggestedGifts: SuggestedGift[];
 }
 
 export interface Product {
