@@ -438,13 +438,13 @@ export default function DiyBoxChackout() {
                     key={item.id}
                     className="flex items-center gap-3 rounded-lg bg-gray-50 p-3"
                   >
-                    <div className="h-12 w-12 flex-shrink-0">
+                    {/* <div className="h-12 w-12 flex-shrink-0">
                       <img
                         src={item.image || "/placeholder.png"}
                         alt={item.title}
                         className="h-full w-full rounded object-cover"
                       />
-                    </div>
+                    </div> */}
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-gray-900">
                         {item.title}
