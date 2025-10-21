@@ -495,6 +495,7 @@ const Navbar: React.FC = () => {
               className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-300 p-1 px-2 transition hover:bg-gray-50"
             >
               <User />
+              
               {userName?.split(" ")[0]}
               <FiChevronDown
                 size={16}

@@ -359,7 +359,7 @@ const AdminBlogTable: React.FC = () => {
                       className="w-full rounded-lg border border-[#DBE0E5] p-3 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                     />
                     {errors.title && (
-                      <p className="mt-1 text-red-500">
+                      <p className="mt-1 text-sm text-red-500">
                         {errors.title.message}
                       </p>
                     )}
@@ -407,7 +407,7 @@ const AdminBlogTable: React.FC = () => {
                       </div>
                     </div>
                     {errors.badge && (
-                      <p className="mt-1 text-red-500">
+                      <p className="mt-1 text-sm text-red-500">
                         {errors.badge.message}
                       </p>
                     )}
@@ -437,9 +437,14 @@ const AdminBlogTable: React.FC = () => {
                         </div>
                       )}
                     </div>
+                    {formData.files.length === 0 && (
+  <p className="mt-1 text-sm text-red-500"> Photo File required</p>
+)}
                   </div>
 
-                  {/* Tags on same line if needed */}
+
+
+                   {/* Tags on same line if needed */}
                   <div className="flex-1 space-y-1">
                     <div>
                       <label className="">Tag</label>
@@ -494,8 +499,8 @@ const AdminBlogTable: React.FC = () => {
                           )}
 
                           {errors.tag && (
-                            <p className="mt-1 text-red-500">
-                              {errors.tag.message}
+                            <p className="mt-1 text-sm text-red-500">
+                           tag required
                             </p>
                           )}
                         </div>
@@ -518,7 +523,7 @@ const AdminBlogTable: React.FC = () => {
                     rows={4}
                   />
                   {errors.description && (
-                    <p className="mt-1 text-red-500">
+                    <p className="mt-1 text-sm text-red-500">
                       {errors.description.message}
                     </p>
                   )}
@@ -540,10 +545,11 @@ const AdminBlogTable: React.FC = () => {
                     )}
                   />
                   {errors.conclusion && (
-                    <p className="mt-1 text-red-500">
+                    <p className="mt-1 text-sm text-red-500">
                       {errors.conclusion.message}
                     </p>
                   )}
+                  
                 </div>
               </div>
 
@@ -653,9 +659,10 @@ const AdminBlogTable: React.FC = () => {
             </div>
 
             <div className="border-t border-[#DBE0E5] px-6 py-4 text-right">
+              
               <button
-                onClick={() => setViewBlog(null)}
-                className="cursor-pointer rounded-lg bg-gray-600 px-5 py-2 text-sm font-medium text-white transition-all hover:bg-gray-700"
+                  onClick={() => setViewBlog(null)}
+                className="bg-secondary-dark cursor-pointer hover:bg-secondary-light rounded-xl px-5 py-2 text-white"
               >
                 Close
               </button>

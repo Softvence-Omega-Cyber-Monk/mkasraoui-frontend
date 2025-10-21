@@ -30,7 +30,9 @@ export default function Shop(): JSX.Element {
     for (let i = 0; i < emptyStars; i++) stars.push(<FaRegStar key={`empty-${i}`} className="text-gray-300" />);
     return stars;
   };
-
+const companies = Array.from(
+  new Set(products.map((product) => product.affiliated_company).filter(Boolean))
+);
   return (
     <div className="px-4">
       <MyHeader
@@ -55,17 +57,21 @@ export default function Shop(): JSX.Element {
 
           {/* Company Filter */}
           <div className="relative w-full sm:w-[160px]">
-            <select
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-              className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
-            >
-              <option value="">All Companies</option>
-              <option value="Amazon">Amazon</option>
-              <option value="eBay">eBay</option>
-              <option value="ArtifyBox">ArtifyBox</option>
-              <option value="GiftGuru">GiftGuru</option>
-            </select>
+            
+<select
+  value={company}
+  onChange={(e) => setCompany(e.target.value)}
+  className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+>
+  <option value="">All Companies</option>
+  {companies.map((comp) => (
+    <option key={comp} value={comp}>
+      {comp}
+    </option>
+  ))}
+</select>
+
+
             <ChevronDown className="absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 text-gray-700 pointer-events-none" />
           </div>
         </div>

@@ -28,7 +28,7 @@ export default function PartyInvitations() {
 
   const tabs = [
     { id: "Overview", label: "Overview" },
-    { id: "My Parties", label: "My Parties" },
+    { id: "My Quotes", label: "My Quotes" },
     { id: "Favorite", label: "Favorite" },
     { id: "Profile", label: "Profile" },
     { id: "Pay", label: "Payment" },
@@ -39,7 +39,7 @@ export default function PartyInvitations() {
     switch (activeTab) {
       case "Overview":
         return <OverviewTab />;
-      case "My Parties":
+      case "My Quotes":
         return <MyParties />;
       case "Favorite":
         return <FavositesTab />;
