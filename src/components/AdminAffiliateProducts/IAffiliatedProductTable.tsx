@@ -58,7 +58,7 @@ const IAffiliatedProductTable: React.FC = () => {
   });
 
   const { data, isLoading, isFetching, isError, refetch } =
-    useGetAffiliateProductsQuery({ limit: 100000 });
+    useGetAffiliateProductsQuery({ limit: 1000000 });
 
   const [createProduct] = useCreateAffiliateProductMutation();
   const [updateProduct] = useUpdateAffiliateProductMutation();
