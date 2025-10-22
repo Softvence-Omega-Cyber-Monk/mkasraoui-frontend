@@ -94,7 +94,7 @@ const AdminBlogTable: React.FC = () => {
 
   // Pagination
   const [page, setPage] = useState(1);
-  const blogsPerPage = 10;
+  const blogsPerPage = 8;
   const total = blogs.length;
   const totalPages = Math.ceil(total / blogsPerPage);
 
@@ -438,13 +438,14 @@ const AdminBlogTable: React.FC = () => {
                       )}
                     </div>
                     {formData.files.length === 0 && (
-  <p className="mt-1 text-sm text-red-500"> Photo File required</p>
-)}
+                      <p className="mt-1 text-sm text-red-500">
+                        {" "}
+                        Photo File required
+                      </p>
+                    )}
                   </div>
 
-
-
-                   {/* Tags on same line if needed */}
+                  {/* Tags on same line if needed */}
                   <div className="flex-1 space-y-1">
                     <div>
                       <label className="">Tag</label>
@@ -500,7 +501,7 @@ const AdminBlogTable: React.FC = () => {
 
                           {errors.tag && (
                             <p className="mt-1 text-sm text-red-500">
-                           tag required
+                              tag required
                             </p>
                           )}
                         </div>
@@ -549,7 +550,6 @@ const AdminBlogTable: React.FC = () => {
                       {errors.conclusion.message}
                     </p>
                   )}
-                  
                 </div>
               </div>
 
@@ -659,10 +659,9 @@ const AdminBlogTable: React.FC = () => {
             </div>
 
             <div className="border-t border-[#DBE0E5] px-6 py-4 text-right">
-              
               <button
-                  onClick={() => setViewBlog(null)}
-                className="bg-secondary-dark cursor-pointer hover:bg-secondary-light rounded-xl px-5 py-2 text-white"
+                onClick={() => setViewBlog(null)}
+                className="bg-secondary-dark hover:bg-secondary-light cursor-pointer rounded-xl px-5 py-2 text-white"
               >
                 Close
               </button>

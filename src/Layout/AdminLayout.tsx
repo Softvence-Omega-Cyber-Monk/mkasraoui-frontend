@@ -106,7 +106,7 @@ function AdminLayout() {
     },
     {
       to: "/admin-dashboard/add-IAffiliatedProduct",
-      label: "Add IAffiliatedProduct",
+      label: "Add Affiliated Product",
       icon: FaAffiliatetheme 
 ,
     },
