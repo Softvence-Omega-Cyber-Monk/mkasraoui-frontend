@@ -8,15 +8,27 @@ import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
 export default function Shop(): JSX.Element {
   const [searchTerm, setSearchTerm] = useState("");
   const [company, setCompany] = useState("");
+  const [visibleCount, setVisibleCount] = useState(9); // Initial 9 products
+  const loadMoreCount = 6; // Load 6 more products per click
 
-  // Fetch products with optional query params
+  // Fetch products
   const { data, isLoading, isError } = useGetAffiliateProductsQuery({
     search: searchTerm,
     company,
+    limit: 1000000,
   });
 
-  // Map data safely
   const products: IAffiliatedProduct[] = data?.items ?? [];
+
+  // Reset visible count if filters change
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setVisibleCount(9);
+  };
+  const handleCompanyChange = (value: string) => {
+    setCompany(value);
+    setVisibleCount(9);
+  };
 
   // Render star ratings
   const renderStars = (rating: number) => {
@@ -25,112 +37,122 @@ export default function Shop(): JSX.Element {
     const hasHalfStar = rating % 1 >= 0.25 && rating % 1 < 0.75;
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
-    for (let i = 0; i < fullStars; i++) stars.push(<FaStar key={`full-${i}`} className="text-yellow-400" />);
-    if (hasHalfStar) stars.push(<FaStarHalfAlt key="half" className="text-yellow-400" />);
-    for (let i = 0; i < emptyStars; i++) stars.push(<FaRegStar key={`empty-${i}`} className="text-gray-300" />);
+    for (let i = 0; i < fullStars; i++)
+      stars.push(<FaStar key={`full-${i}`} className="text-yellow-400" />);
+    if (hasHalfStar)
+      stars.push(<FaStarHalfAlt key="half" className="text-yellow-400" />);
+    for (let i = 0; i < emptyStars; i++)
+      stars.push(<FaRegStar key={`empty-${i}`} className="text-gray-300" />);
     return stars;
   };
-const companies = Array.from(
-  new Set(products.map((product) => product.affiliated_company).filter(Boolean))
-);
+
+  const companies = Array.from(
+    new Set(
+      products.map((product) => product.affiliated_company).filter(Boolean),
+    ),
+  );
+
+  // Products to display
+  const displayedProducts = products.slice(0, visibleCount);
+
   return (
     <div className="px-4">
       <MyHeader
-        title="Gift Shop"
+        title="Affiliated Shop"
         subtitle="Discover the perfect gifts with AI-powered recommendations"
       />
 
       {/* Filters */}
       <section className="mt-10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center space-y-4 rounded-xl bg-white p-4 sm:flex-row sm:space-y-0 sm:space-x-4">
-          {/* Search */}
+        <div className="mx-auto flex max-w-7xl flex-col items-center space-y-4 rounded-xl bg-white sm:flex-row sm:space-y-0 sm:space-x-4">
           <div className="relative w-full flex-1">
             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-500" />
             <input
               type="text"
               placeholder="Search themes, activities, or keywords..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full rounded-lg border border-gray-200 py-2 pr-4 pl-9 text-gray-700 placeholder-gray-400 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
             />
           </div>
 
-          {/* Company Filter */}
           <div className="relative w-full sm:w-[160px]">
-            
-<select
-  value={company}
-  onChange={(e) => setCompany(e.target.value)}
-  className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
->
-  <option value="">All Companies</option>
-  {companies.map((comp) => (
-    <option key={comp} value={comp}>
-      {comp}
-    </option>
-  ))}
-</select>
-
-
-            <ChevronDown className="absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 text-gray-700 pointer-events-none" />
+            <select
+              value={company}
+              onChange={(e) => handleCompanyChange(e.target.value)}
+              className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+            >
+              <option value="">All Companies</option>
+              {companies.map((comp) => (
+                <option key={comp} value={comp}>
+                  {comp}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 text-gray-700" />
           </div>
         </div>
       </section>
 
       {/* Product Grid */}
-      <section className="mx-auto max-w-7xl mt-10">
-        {isLoading && <p className="text-center text-gray-500">Loading products...</p>}
-        {isError && <p className="text-center text-red-500">Failed to load products.</p>}
-
-        {!isLoading && !isError && products.length === 0 && (
+      <section className="mx-auto mt-10 max-w-7xl">
+        {isLoading && (
+          <p className="text-center text-gray-500">Loading products...</p>
+        )}
+        {isError && (
+          <p className="text-center text-red-500">Failed to load products.</p>
+        )}
+        {!isLoading && !isError && displayedProducts.length === 0 && (
           <p className="text-center text-gray-500">No products found.</p>
         )}
 
-        {!isLoading && !isError && products.length > 0 && (
+        {!isLoading && !isError && displayedProducts.length > 0 && (
           <div className="grid grid-cols-1 gap-6 pb-14 md:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => (
+            {displayedProducts.map((product) => (
               <article
                 key={product.id}
                 role="button"
                 tabIndex={0}
                 onClick={() => window.open(product.link, "_blank")}
-                className="flex h-full flex-col overflow-hidden rounded-lg shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+                className="flex h-full cursor-pointer flex-col overflow-hidden rounded-lg shadow-sm transition-shadow hover:shadow-md"
               >
-                {/* Image & Company Badge */}
-                <div className="relative h-64 overflow-hidden w-auto">
+                <div className="relative h-64 w-auto overflow-hidden">
                   <img
                     src={product.image_url}
                     alt={product.title}
                     className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
                   />
                   <div className="absolute top-3 left-3">
-                    <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800">
+                    <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
                       {product.affiliated_company || "GIFT"}
                     </span>
                   </div>
                 </div>
 
-                {/* Details */}
                 <div className="flex flex-grow flex-col p-6">
                   <h3 className="mb-2 text-xl font-semibold text-[#191919]">
                     {product.title.slice(0, 60)}...
                   </h3>
-
-
-                  <div className="mb-2 font-semibold text-lg">€{product.price}</div>
-
-                  <div className="mb-4 flex items-center gap-2">
-                    <div className="flex items-center">{renderStars(product.avg_rating || 0)}</div>
-                    <span className="text-sm font-medium text-gray-900">{product.avg_rating?.toFixed(1) ?? "0.0"}</span>
-                    <span className="text-sm text-gray-500">({product.total_review ?? 0} reviews)</span>
+                  <div className="mb-2 text-lg font-semibold">
+                    €{product.price}
                   </div>
-
+                  <div className="mb-4 flex items-center gap-2">
+                    <div className="flex items-center">
+                      {renderStars(product.avg_rating || 0)}
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">
+                      {product.avg_rating?.toFixed(1) ?? "0.0"}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      ({product.total_review ?? 0} reviews)
+                    </span>
+                  </div>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       window.open(product.link, "_blank");
                     }}
-                    className="mt-auto cursor-pointer w-full rounded-lg border bg-[#223B7D] px-4 py-3 text-gray-50 transition-colors hover:bg-blue-900"
+                    className="mt-auto w-full cursor-pointer rounded-lg border bg-[#223B7D] px-4 py-3 text-gray-50 transition-colors hover:bg-blue-900"
                   >
                     Buy Now
                   </button>
@@ -139,12 +161,389 @@ const companies = Array.from(
             ))}
           </div>
         )}
+
+        {/* Load More Button */}
+        {visibleCount < products.length && (
+          <div className="flex justify-end">
+            <button
+              onClick={() =>
+                setVisibleCount((prev) =>
+                  Math.min(prev + loadMoreCount, products.length),
+                )
+              }
+              className="rounded-lg cursor-pointer bg-[#223B7D] px-6 py-3 text-white transition-colors hover:bg-[#07194b] "
+            >
+              View More
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );
 }
 
+// import { ChevronDown, Search } from "lucide-react";
+// import { useState, type JSX } from "react";
+// import MyHeader from "@/components/MyHeader/MyHeader";
+// import { useGetAffiliateProductsQuery } from "@/redux/features/affiliatedProduct/affiliateProductApi";
+// import type { IAffiliatedProduct } from "@/redux/types/IAffiliatedProduct.type";
+// import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
 
+// export default function Shop(): JSX.Element {
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [company, setCompany] = useState("");
+//   const [page, setPage] = useState(1);
+//   const productsPerPage = 9; // Show 9 products per page (3 per row on large screens)
+
+//   // Fetch products
+//   const { data, isLoading, isError } = useGetAffiliateProductsQuery({
+//     search: searchTerm,
+//     company,
+//     limit: 1000000,
+//   });
+
+//   const products: IAffiliatedProduct[] = data?.items ?? [];
+
+//   // Pagination calculation
+//   const total = products.length;
+//   const totalPages = Math.ceil(total / productsPerPage);
+//   const paginatedProducts = products.slice(
+//     (page - 1) * productsPerPage,
+//     page * productsPerPage
+//   );
+
+//   // Reset page if filters change
+//   const handleSearchChange = (value: string) => {
+//     setSearchTerm(value);
+//     setPage(1);
+//   };
+//   const handleCompanyChange = (value: string) => {
+//     setCompany(value);
+//     setPage(1);
+//   };
+
+//   // Render star ratings
+//   const renderStars = (rating: number) => {
+//     const stars = [];
+//     const fullStars = Math.floor(rating);
+//     const hasHalfStar = rating % 1 >= 0.25 && rating % 1 < 0.75;
+//     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+//     for (let i = 0; i < fullStars; i++)
+//       stars.push(<FaStar key={`full-${i}`} className="text-yellow-400" />);
+//     if (hasHalfStar)
+//       stars.push(<FaStarHalfAlt key="half" className="text-yellow-400" />);
+//     for (let i = 0; i < emptyStars; i++)
+//       stars.push(<FaRegStar key={`empty-${i}`} className="text-gray-300" />);
+//     return stars;
+//   };
+
+//   const companies = Array.from(
+//     new Set(
+//       products.map((product) => product.affiliated_company).filter(Boolean)
+//     )
+//   );
+
+//   return (
+//     <div className="px-4">
+//       <MyHeader
+//         title="Affiliated Shop"
+//         subtitle="Discover the perfect gifts with AI-powered recommendations"
+//       />
+
+//       {/* Filters */}
+//       <section className="mt-10">
+//         <div className="mx-auto flex max-w-7xl flex-col items-center space-y-4 rounded-xl bg-white p-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+//           <div className="relative w-full flex-1">
+//             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-500" />
+//             <input
+//               type="text"
+//               placeholder="Search themes, activities, or keywords..."
+//               value={searchTerm}
+//               onChange={(e) => handleSearchChange(e.target.value)}
+//               className="w-full rounded-lg border border-gray-200 py-2 pr-4 pl-9 text-gray-700 placeholder-gray-400 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+//             />
+//           </div>
+
+//           <div className="relative w-full sm:w-[160px]">
+//             <select
+//               value={company}
+//               onChange={(e) => handleCompanyChange(e.target.value)}
+//               className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+//             >
+//               <option value="">All Companies</option>
+//               {companies.map((comp) => (
+//                 <option key={comp} value={comp}>
+//                   {comp}
+//                 </option>
+//               ))}
+//             </select>
+//             <ChevronDown className="pointer-events-none absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 text-gray-700" />
+//           </div>
+//         </div>
+//       </section>
+
+//       {/* Product Grid */}
+//       <section className="mx-auto mt-10 max-w-7xl">
+//         {isLoading && (
+//           <p className="text-center text-gray-500">Loading products...</p>
+//         )}
+//         {isError && (
+//           <p className="text-center text-red-500">Failed to load products.</p>
+//         )}
+//         {!isLoading && !isError && paginatedProducts.length === 0 && (
+//           <p className="text-center text-gray-500">No products found.</p>
+//         )}
+
+//         {!isLoading && !isError && paginatedProducts.length > 0 && (
+//           <div className="grid grid-cols-1 gap-6 pb-14 md:grid-cols-2 lg:grid-cols-3">
+//             {paginatedProducts.map((product) => (
+//               <article
+//                 key={product.id}
+//                 role="button"
+//                 tabIndex={0}
+//                 onClick={() => window.open(product.link, "_blank")}
+//                 className="flex h-full cursor-pointer flex-col overflow-hidden rounded-lg shadow-sm transition-shadow hover:shadow-md"
+//               >
+//                 <div className="relative h-64 w-auto overflow-hidden">
+//                   <img
+//                     src={product.image_url}
+//                     alt={product.title}
+//                     className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
+//                   />
+//                   <div className="absolute top-3 left-3">
+//                     <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
+//                       {product.affiliated_company || "GIFT"}
+//                     </span>
+//                   </div>
+//                 </div>
+
+//                 <div className="flex flex-grow flex-col p-6">
+//                   <h3 className="mb-2 text-xl font-semibold text-[#191919]">
+//                     {product.title.slice(0, 60)}...
+//                   </h3>
+//                   <div className="mb-2 text-lg font-semibold">€{product.price}</div>
+//                   <div className="mb-4 flex items-center gap-2">
+//                     <div className="flex items-center">{renderStars(product.avg_rating || 0)}</div>
+//                     <span className="text-sm font-medium text-gray-900">
+//                       {product.avg_rating?.toFixed(1) ?? "0.0"}
+//                     </span>
+//                     <span className="text-sm text-gray-500">
+//                       ({product.total_review ?? 0} reviews)
+//                     </span>
+//                   </div>
+//                   <button
+//                     onClick={(e) => {
+//                       e.stopPropagation();
+//                       window.open(product.link, "_blank");
+//                     }}
+//                     className="mt-auto w-full cursor-pointer rounded-lg border bg-[#223B7D] px-4 py-3 text-gray-50 transition-colors hover:bg-blue-900"
+//                   >
+//                     Buy Now
+//                   </button>
+//                 </div>
+//               </article>
+//             ))}
+//           </div>
+//         )}
+
+//         {/* Pagination */}
+//         {total > productsPerPage && (
+//           <div className="mt-8 flex items-center justify-end gap-2">
+//             <button
+//               onClick={() => setPage((p) => Math.max(1, p - 1))}
+//               disabled={page <= 1}
+//               className="rounded-md border px-3 py-1 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+//             >
+//               Prev
+//             </button>
+//             {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+//               <button
+//                 key={num}
+//                 onClick={() => setPage(num)}
+//                 className={`rounded-md border px-3 py-1 text-sm ${
+//                   num === page
+//                     ? "bg-secondary-dark text-white"
+//                     : "text-gray-700 hover:bg-gray-100"
+//                 }`}
+//               >
+//                 {num}
+//               </button>
+//             ))}
+//             <button
+//               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+//               disabled={page >= totalPages}
+//               className="rounded-md border px-3 py-1 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+//             >
+//               Next
+//             </button>
+//           </div>
+//         )}
+//       </section>
+//     </div>
+//   );
+// }
+
+// import { ChevronDown, Search } from "lucide-react";
+// import { useState, type JSX } from "react";
+// import MyHeader from "@/components/MyHeader/MyHeader";
+// import { useGetAffiliateProductsQuery } from "@/redux/features/affiliatedProduct/affiliateProductApi";
+// import type { IAffiliatedProduct } from "@/redux/types/IAffiliatedProduct.type";
+// import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
+
+// export default function Shop(): JSX.Element {
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [company, setCompany] = useState("");
+
+//   // Fetch products with optional query params
+//   const { data, isLoading, isError } = useGetAffiliateProductsQuery({
+//     search: searchTerm,
+//     company,
+//     limit: 1000000,
+//   });
+
+//   // Map data safely
+//   const products: IAffiliatedProduct[] = data?.items ?? [];
+
+//   // Render star ratings
+//   const renderStars = (rating: number) => {
+//     const stars = [];
+//     const fullStars = Math.floor(rating);
+//     const hasHalfStar = rating % 1 >= 0.25 && rating % 1 < 0.75;
+//     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+//     for (let i = 0; i < fullStars; i++)
+//       stars.push(<FaStar key={`full-${i}`} className="text-yellow-400" />);
+//     if (hasHalfStar)
+//       stars.push(<FaStarHalfAlt key="half" className="text-yellow-400" />);
+//     for (let i = 0; i < emptyStars; i++)
+//       stars.push(<FaRegStar key={`empty-${i}`} className="text-gray-300" />);
+//     return stars;
+//   };
+//   const companies = Array.from(
+//     new Set(
+//       products.map((product) => product.affiliated_company).filter(Boolean),
+//     ),
+//   );
+//   return (
+//     <div className="px-4">
+//       <MyHeader
+//         title="Affiliated Shop"
+//         subtitle="Discover the perfect gifts with AI-powered recommendations"
+//       />
+
+//       {/* Filters */}
+//       <section className="mt-10">
+//         <div className="mx-auto flex max-w-7xl flex-col items-center space-y-4 rounded-xl bg-white p-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+//           {/* Search */}
+//           <div className="relative w-full flex-1">
+//             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-500" />
+//             <input
+//               type="text"
+//               placeholder="Search themes, activities, or keywords..."
+//               value={searchTerm}
+//               onChange={(e) => setSearchTerm(e.target.value)}
+//               className="w-full rounded-lg border border-gray-200 py-2 pr-4 pl-9 text-gray-700 placeholder-gray-400 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+//             />
+//           </div>
+
+//           {/* Company Filter */}
+//           <div className="relative w-full sm:w-[160px]">
+//             <select
+//               value={company}
+//               onChange={(e) => setCompany(e.target.value)}
+//               className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+//             >
+//               <option value="">All Companies</option>
+//               {companies.map((comp) => (
+//                 <option key={comp} value={comp}>
+//                   {comp}
+//                 </option>
+//               ))}
+//             </select>
+
+//             <ChevronDown className="pointer-events-none absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 text-gray-700" />
+//           </div>
+//         </div>
+//       </section>
+
+//       {/* Product Grid */}
+//       <section className="mx-auto mt-10 max-w-7xl">
+//         {isLoading && (
+//           <p className="text-center text-gray-500">Loading products...</p>
+//         )}
+//         {isError && (
+//           <p className="text-center text-red-500">Failed to load products.</p>
+//         )}
+
+//         {!isLoading && !isError && products.length === 0 && (
+//           <p className="text-center text-gray-500">No products found.</p>
+//         )}
+
+//         {!isLoading && !isError && products.length > 0 && (
+//           <div className="grid grid-cols-1 gap-6 pb-14 md:grid-cols-2 lg:grid-cols-3">
+//             {products.map((product) => (
+//               <article
+//                 key={product.id}
+//                 role="button"
+//                 tabIndex={0}
+//                 onClick={() => window.open(product.link, "_blank")}
+//                 className="flex h-full cursor-pointer flex-col overflow-hidden rounded-lg shadow-sm transition-shadow hover:shadow-md"
+//               >
+//                 {/* Image & Company Badge */}
+//                 <div className="relative h-64 w-auto overflow-hidden">
+//                   <img
+//                     src={product.image_url}
+//                     alt={product.title}
+//                     className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
+//                   />
+//                   <div className="absolute top-3 left-3">
+//                     <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
+//                       {product.affiliated_company || "GIFT"}
+//                     </span>
+//                   </div>
+//                 </div>
+
+//                 {/* Details */}
+//                 <div className="flex flex-grow flex-col p-6">
+//                   <h3 className="mb-2 text-xl font-semibold text-[#191919]">
+//                     {product.title.slice(0, 60)}...
+//                   </h3>
+
+//                   <div className="mb-2 text-lg font-semibold">
+//                     €{product.price}
+//                   </div>
+
+//                   <div className="mb-4 flex items-center gap-2">
+//                     <div className="flex items-center">
+//                       {renderStars(product.avg_rating || 0)}
+//                     </div>
+//                     <span className="text-sm font-medium text-gray-900">
+//                       {product.avg_rating?.toFixed(1) ?? "0.0"}
+//                     </span>
+//                     <span className="text-sm text-gray-500">
+//                       ({product.total_review ?? 0} reviews)
+//                     </span>
+//                   </div>
+
+//                   <button
+//                     onClick={(e) => {
+//                       e.stopPropagation();
+//                       window.open(product.link, "_blank");
+//                     }}
+//                     className="mt-auto w-full cursor-pointer rounded-lg border bg-[#223B7D] px-4 py-3 text-gray-50 transition-colors hover:bg-blue-900"
+//                   >
+//                     Buy Now
+//                   </button>
+//                 </div>
+//               </article>
+//             ))}
+//           </div>
+//         )}
+//       </section>
+//     </div>
+//   );
+// }
 
 // import { ChevronDown, Search } from "lucide-react";
 // import { useState, type JSX } from "react";
@@ -207,8 +606,6 @@ const companies = Array.from(
 //             />
 //           </div>
 
-
-
 //           {/* Company Filter */}
 //           <div className="relative w-full sm:w-[160px]">
 //             <select
@@ -266,7 +663,6 @@ const companies = Array.from(
 //                     {product.items}
 //                   </p>
 
-
 //                   <div>
 //                     €{product.price}
 //                   </div>
@@ -299,33 +695,10 @@ const companies = Array.from(
 //           </div>
 //         )}
 
-
 //       </section>
 //     </div>
 //   );
 // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 // import { ChevronDown, Search } from "lucide-react";
@@ -840,7 +1213,6 @@ const companies = Array.from(
 //           </article>
 //         </div>
 
-
 //         <div className="mb-20 flex justify-center md:justify-end">
 //           <button
 //             onClick={() => navigate("/shop")}
@@ -851,50 +1223,9 @@ const companies = Array.from(
 //         </div>
 //       </section>
 
-
 //     </div>
 //   );
 // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 // import { ChevronDown, Search, Heart as HeartIcon } from "lucide-react";
