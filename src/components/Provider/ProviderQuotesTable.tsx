@@ -1,5 +1,4 @@
-"use client";
-
+import { useEffect, useState } from "react";
 import {
   useGetProviderQuotesQuery,
   useUpdateQuoteStatusMutation,
@@ -18,13 +17,28 @@ const statusColors: Record<string, string> = {
 };
 
 const ProviderQuotesTable = () => {
-  const { data, isLoading, isFetching } = useGetProviderQuotesQuery({
-    page: 1,
-    limit: 1000,
-  });
+  const { data, isLoading, isFetching, refetch } = useGetProviderQuotesQuery(
+    {},
+  );
 
   const [updateStatus] = useUpdateQuoteStatusMutation();
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const quotesPerPage = 9;
+
   const quotes: QuoteResponse[] = data?.data?.data ?? [];
+  const total = quotes.length;
+  const totalPages = Math.ceil(total / quotesPerPage);
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages || 1);
+  }, [totalPages, page]);
+
+  const paginatedQuotes = quotes.slice(
+    (page - 1) * quotesPerPage,
+    page * quotesPerPage,
+  );
 
   const handleStatusUpdate = async (
     id: string,
@@ -33,6 +47,7 @@ const ProviderQuotesTable = () => {
     try {
       await updateStatus({ id, status }).unwrap();
       toast.success(`Quote marked as ${status}`);
+      refetch();
     } catch {
       toast.error("Failed to update status");
     }
@@ -49,8 +64,10 @@ const ProviderQuotesTable = () => {
   return (
     <div>
       <div className="mb-6">
-        <Title title="Provider Quotes " />
+        <Title title="Provider Quotes" />
       </div>
+
+      {/* Table */}
       <div className="overflow-hidden rounded-xl border border-[#DBE0E5] bg-white">
         <div className="w-full overflow-x-auto">
           <table className="w-full min-w-[800px]">
@@ -83,7 +100,7 @@ const ProviderQuotesTable = () => {
               </tr>
             </thead>
             <tbody>
-              {quotes.length === 0 ? (
+              {paginatedQuotes.length === 0 ? (
                 <tr>
                   <td
                     colSpan={8}
@@ -93,12 +110,12 @@ const ProviderQuotesTable = () => {
                   </td>
                 </tr>
               ) : (
-                quotes.map((quote) => (
+                paginatedQuotes.map((quote) => (
                   <tr
                     key={quote.id}
                     className="border-b border-gray-100 hover:bg-gray-50"
                   >
-                    <td className="px-6 py-4 text-sm font-semibold whitespace-nowrap text-gray-900">
+                    <td className="px-6 py-4 text-sm font-semibold text-gray-900">
                       {quote.name}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
@@ -127,11 +144,10 @@ const ProviderQuotesTable = () => {
                       </span>
                     </td>
                     <td className="flex justify-center space-x-3 px-6 py-5">
-                      {/* ✅ Only show Accept if not already BOOKED */}
                       {quote.status !== "BOOKED" && (
                         <button
                           onClick={() => handleStatusUpdate(quote.id, "BOOKED")}
-                          className="flex cursor-pointer items-center justify-center space-x-1 rounded-lg bg-[#223B7D] px-3 py-1.5 text-sm font-semibold text-white shadow transition duration-200 hover:bg-[#0F1F4C] hover:shadow-lg"
+                          className="flex cursor-pointer items-center justify-center space-x-1 rounded-lg bg-[#223B7D] px-3 py-1.5 text-sm font-semibold text-white shadow hover:bg-[#0F1F4C]"
                         >
                           <svg
                             className="h-4 w-4"
@@ -150,12 +166,11 @@ const ProviderQuotesTable = () => {
                         </button>
                       )}
 
-                      {/* ❌ Cancel button always shown */}
                       <button
                         onClick={() =>
                           handleStatusUpdate(quote.id, "CANCELLED")
                         }
-                        className="flex cursor-pointer items-center justify-center space-x-1 rounded-lg bg-red-600 px-4 py-1 text-sm font-semibold text-white shadow transition duration-200 hover:bg-red-700 hover:shadow-lg"
+                        className="flex cursor-pointer items-center justify-center space-x-1 rounded-lg bg-red-600 px-4 py-1 text-sm font-semibold text-white shadow hover:bg-red-700"
                       >
                         <svg
                           className="h-4 w-4"
@@ -180,13 +195,54 @@ const ProviderQuotesTable = () => {
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {total > 0 && (
+        <div className="mt-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
+          <div className="text-sm text-gray-600">
+            Showing{" "}
+            <span className="font-medium">{paginatedQuotes.length}</span> of{" "}
+            <span className="font-medium">{total}</span> quotes
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-1">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="cursor-pointer rounded-md border px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+              <button
+                key={num}
+                onClick={() => setPage(num)}
+                className={`rounded-md border px-3 py-1 text-sm ${
+                  num === page
+                    ? "bg-secondary-dark text-white"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {num}
+              </button>
+            ))}
+
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+              className="cursor-pointer rounded-md border px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default ProviderQuotesTable;
-
-// "use client";
 
 // import {
 //   useGetProviderQuotesQuery,
@@ -211,9 +267,7 @@ export default ProviderQuotesTable;
 //     limit: 1000,
 //   });
 
-//   console.log("prodsfdsfdsfd", data);
 //   const [updateStatus] = useUpdateQuoteStatusMutation();
-
 //   const quotes: QuoteResponse[] = data?.data?.data ?? [];
 
 //   const handleStatusUpdate = async (
@@ -288,7 +342,7 @@ export default ProviderQuotesTable;
 //                     key={quote.id}
 //                     className="border-b border-gray-100 hover:bg-gray-50"
 //                   >
-//                     <td className="px-6 py-4 text-sm font-semibold text-gray-900">
+//                     <td className="px-6 py-4 text-sm font-semibold whitespace-nowrap text-gray-900">
 //                       {quote.name}
 //                     </td>
 //                     <td className="px-6 py-4 text-sm text-gray-600">
@@ -317,26 +371,30 @@ export default ProviderQuotesTable;
 //                       </span>
 //                     </td>
 //                     <td className="flex justify-center space-x-3 px-6 py-5">
-//                       <button
-//                         onClick={() => handleStatusUpdate(quote.id, "BOOKED")}
-//                         className="flex cursor-pointer items-center justify-center space-x-1 rounded-lg bg-green-600 px-3 py-1.5 text-sm font-semibold text-white shadow transition duration-200 hover:bg-green-700 hover:shadow-lg"
-//                       >
-//                         <svg
-//                           className="h-4 w-4"
-//                           fill="none"
-//                           stroke="currentColor"
-//                           strokeWidth={2}
-//                           viewBox="0 0 24 24"
+//                       {/* ✅ Only show Accept if not already BOOKED */}
+//                       {quote.status !== "BOOKED" && (
+//                         <button
+//                           onClick={() => handleStatusUpdate(quote.id, "BOOKED")}
+//                           className="flex cursor-pointer items-center justify-center space-x-1 rounded-lg bg-[#223B7D] px-3 py-1.5 text-sm font-semibold text-white shadow transition duration-200 hover:bg-[#0F1F4C] hover:shadow-lg"
 //                         >
-//                           <path
-//                             strokeLinecap="round"
-//                             strokeLinejoin="round"
-//                             d="M5 13l4 4L19 7"
-//                           />
-//                         </svg>
-//                         <span>Accept</span>
-//                       </button>
+//                           <svg
+//                             className="h-4 w-4"
+//                             fill="none"
+//                             stroke="currentColor"
+//                             strokeWidth={2}
+//                             viewBox="0 0 24 24"
+//                           >
+//                             <path
+//                               strokeLinecap="round"
+//                               strokeLinejoin="round"
+//                               d="M5 13l4 4L19 7"
+//                             />
+//                           </svg>
+//                           <span>Accept</span>
+//                         </button>
+//                       )}
 
+//                       {/* ❌ Cancel button always shown */}
 //                       <button
 //                         onClick={() =>
 //                           handleStatusUpdate(quote.id, "CANCELLED")
