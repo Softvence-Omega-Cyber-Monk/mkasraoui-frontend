@@ -58,7 +58,7 @@ export default function Shop(): JSX.Element {
 
   // ✅ Get unique companies
   const companies = Array.from(
-    new Set(products.map((p) => p.affiliated_company).filter(Boolean))
+    new Set(products.map((p) => p.affiliated_company).filter(Boolean)),
   );
 
   // ✅ Filtering logic
@@ -69,7 +69,8 @@ export default function Shop(): JSX.Element {
 
     let matchesPrice = true;
     if (priceRange === "low") matchesPrice = p.price < 20;
-    else if (priceRange === "mid") matchesPrice = p.price >= 20 && p.price <= 50;
+    else if (priceRange === "mid")
+      matchesPrice = p.price >= 20 && p.price <= 50;
     else if (priceRange === "high") matchesPrice = p.price > 50;
 
     return matchesCompany && matchesSearch && matchesPrice;
@@ -99,7 +100,7 @@ export default function Shop(): JSX.Element {
 
       {/* ✅ Filter Section */}
       <section className="mt-10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center space-y-4 rounded-xl bg-white sm:flex-row sm:space-y-0 sm:space-x-4 p-4 shadow-sm">
+        <div className="mx-auto flex max-w-7xl flex-col items-center space-y-4 rounded-xl bg-white p-4 shadow-sm sm:flex-row sm:space-y-0 sm:space-x-4">
           {/* Search */}
           <div className="relative w-full flex-1">
             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-500" />
@@ -164,8 +165,12 @@ export default function Shop(): JSX.Element {
 
       {/* ✅ Product Grid */}
       <section className="mx-auto mt-10 max-w-7xl">
-        {isLoading && <p className="text-center text-gray-500">Loading products...</p>}
-        {isError && <p className="text-center text-red-500">Failed to load products.</p>}
+        {isLoading && (
+          <p className="text-center text-gray-500">Loading products...</p>
+        )}
+        {isError && (
+          <p className="text-center text-red-500">Failed to load products.</p>
+        )}
         {!isLoading && !isError && displayedProducts.length === 0 && (
           <p className="text-center text-gray-500">No products found.</p>
         )}
@@ -199,7 +204,10 @@ export default function Shop(): JSX.Element {
                       ? `${product.title.slice(0, 60)}...`
                       : product.title}
                   </h3>
-                  <div className="mb-2 text-lg font-semibold">€{product.price}</div>
+                  {/* <div className="mb-2 text-lg font-semibold">€{product.price}</div> */}
+                  <div className="mb-2 text-lg font-semibold">
+                    €{product.price.toLocaleString()}
+                  </div>
                   <div className="mb-4 flex items-center gap-2">
                     <div className="flex items-center">
                       {renderStars(product.avg_rating || 0)}
@@ -232,10 +240,10 @@ export default function Shop(): JSX.Element {
             <button
               onClick={() =>
                 setVisibleCount((prev) =>
-                  Math.min(prev + loadMoreCount, sortedProducts.length)
+                  Math.min(prev + loadMoreCount, sortedProducts.length),
                 )
               }
-              className="rounded-lg cursor-pointer bg-[#223B7D] px-6 py-3 text-white transition-colors hover:bg-[#07194b]"
+              className="cursor-pointer rounded-lg bg-[#223B7D] px-6 py-3 text-white transition-colors hover:bg-[#07194b]"
             >
               View More
             </button>
@@ -245,9 +253,6 @@ export default function Shop(): JSX.Element {
     </div>
   );
 }
-
-
-
 
 // import { ChevronDown, Search } from "lucide-react";
 // import { useState, type JSX } from "react";
