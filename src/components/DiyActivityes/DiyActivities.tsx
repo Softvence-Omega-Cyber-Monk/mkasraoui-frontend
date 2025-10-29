@@ -1,121 +1,212 @@
 
+
 import { useMemo, useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useGetActivitiesQuery } from "@/redux/features/AdminDiyActivity/activityApi";
+import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
 
 interface Activity {
-  id: number;
+  id: string;
   title: string;
-  theme: string;
-  images?: string[];
+  theme?: string;
   video?: string;
-  pdfFile?: string;
-  time?: string;
-  difficulty?: string;
-  materials?: string[] | string;
-  instruction_sheet?: string[] | string;
   description?: string;
+  difficulty?: string;
+  avg_rating?: number;
+  total_review?: number;
 }
 
 const DiyActivities: React.FC = () => {
   const [page, setPage] = useState<number>(1);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+   
+  const [ratingFilter, setRatingFilter] = useState<number | "">("");
+
   const activitiesPerPage = 9;
   const { data: activitiesData, isLoading, isError } = useGetActivitiesQuery();
-console.log(activitiesData)
-  const activities: Activity[] = activitiesData?.data.map((a: any) => ({
-    ...a,
-    theme: a.theme || "General",
-  })) || [];
 
-  const filtered = useMemo(() => activities, [activities]);
-  const totalPages = Math.ceil(filtered.length / activitiesPerPage);
+  const activities: Activity[] =
+    activitiesData?.data.map((a: any) => ({
+      ...a,
+      theme: a.theme || "General",
+      difficulty: a.difficulty || "Medium",
+      avg_rating: a.avg_rating ?? 0,
+      total_review: a.total_review ?? 0,
+    })) || [];
 
+  // 🔍 Filtering logic
+  const filtered = useMemo(() => {
+    return activities.filter((activity) => {
+      const matchesSearch =
+        activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        activity.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
+      
+      
+      const matchesRating = ratingFilter === "" || activity.avg_rating === ratingFilter;
+
+      return matchesSearch && matchesRating;
+    });
+  }, [activities, searchTerm,  ratingFilter]);
+
+  // 🎨 Dynamic filter options
+  // const availableRatings = useMemo(
+  //   () =>
+  //     Array.from(new Set(activities.map((a) => a.avg_rating ?? 0))).sort((a, b) => a - b),
+  //   [activities]
+  // );
+
+  // 📄 Pagination
+  const total = filtered.length;
+  const totalPages = Math.ceil(total / activitiesPerPage);
   const paginated = useMemo(() => {
     const start = (page - 1) * activitiesPerPage;
     return filtered.slice(start, start + activitiesPerPage);
   }, [page, filtered]);
 
+  const pageFromServer = page; // keeping naming consistent with provided code
+
   if (isLoading) return <p>Loading activities...</p>;
   if (isError) return <p>Error fetching activities.</p>;
 
+  const renderStars = (rating: number) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.25 && rating % 1 < 0.75;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+    for (let i = 0; i < fullStars; i++)
+      stars.push(<FaStar key={`full-${i}`} className="text-yellow-400" />);
+    if (hasHalfStar)
+      stars.push(<FaStarHalfAlt key="half" className="text-yellow-400" />);
+    for (let i = 0; i < emptyStars; i++)
+      stars.push(<FaRegStar key={`empty-${i}`} className="text-gray-300" />);
+
+    return stars;
+  };
+
   return (
-    <div className="container mx-auto mt-10">
-      <div className="mb-12">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="text-4xl">🎨</div>
-          <h1 className="text-4xl font-bold text-gray-800">DIY Activities</h1>
-        </div>
-        <p className="text-lg text-gray-600">
-          Explore amazing themed decorations and celebrations for your perfect party
+    <div className="container mx-auto mt-1">
+      {/* Filters */}
+     <div className=" rounded-lg   px-3  ">
+       <div className="flex flex-col md:flex-row gap-4 mb-5   rounded-lg bg-white p-6 shadow-sm">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-4 text-gray-400" size={20} />
+          <input
+            type="text"
+            placeholder="Search themes, activities, or keywords..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 py-3 pr-4 pl-10 outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div> 
+        <select
+  value={ratingFilter ?? ""}
+  onChange={(e) => {
+    const val = e.target.value;
+    setRatingFilter(val === "" ? "" : Number(val));
+  }}
+  className="cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-3 pr-8 outline-none focus:ring-2 focus:ring-blue-500"
+>
+  <option value="">All Ratings</option>
+  {[1, 2, 3, 4, 5].map((r) => (
+    <option key={r} value={r}>
+      {r}
+    </option>
+  ))}
+        </select> 
+      </div>
+     </div>
+
+      {/* Activities Grid */}
+      {filtered.length === 0 ? (
+        <p className="text-center text-gray-500 py-10">
+          No activities found matching your criteria.
         </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-        {paginated.map((activity) => (
-          <div
-            key={activity.id}
-            className="flex flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-md hover:shadow-lg transition-all"
-          >
-            <div className="relative h-56 w-full overflow-hidden rounded-t-lg">
-              {activity.video ? (
-                <video
-                  src={activity.video}
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                />
-              ) : (
-                <img
-                  src={activity.images?.[0] || "/placeholder.png"}
-                  alt={activity.title}
-                  className="w-full h-full object-cover"
-                />
-              )}
-            </div>
-            <div className="flex-1 p-4 flex flex-col">
-              <h3 className="mb-2 line-clamp-2 text-lg font-medium">{activity.title}</h3>
-              <p className="mb-4 line-clamp-3 text-sm text-[#5A5C5F]">{activity.description}</p>
-              <Link
-                to={`/diyboxeactivity/activity/${activity.id}`}
-                className="mt-auto flex w-full items-center justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
-              >
-                View Details <ChevronRight size={16} />
-              </Link>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mb-10">
-          <button
-            onClick={() => setPage(page - 1)}
-            disabled={page === 1}
-            className="px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-50"
-          >
-            Prev
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i + 1}
-              onClick={() => setPage(i + 1)}
-              className={`px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 ${
-                page === i + 1 ? "bg-gray-200 font-bold" : ""
-              }`}
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-3 gap-6 mb-6">
+          {paginated.map((activity) => (
+            <div
+              key={activity.id}
+              className="flex flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-md hover:shadow-lg transition-all"
             >
-              {i + 1}
-            </button>
+              <div className="relative h-56 w-full overflow-hidden rounded-t-lg">
+                {activity.video ? (
+                  <video
+                    src={activity.video}
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                  />
+                ) : (
+                  <img
+                    src="/placeholder.png"
+                    alt={activity.title}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+              <div className="flex-1 p-4 flex flex-col">
+                <h3 className="mb-2 line-clamp-2 text-lg font-medium">
+                  {activity.title}
+                </h3>
+                <div className="mb-4 flex items-center gap-2">
+                  <div className="flex">{renderStars(activity.avg_rating || 0)}</div>
+        <span className="text-sm font-medium text-gray-900">
+  {activity?.avg_rating != null
+    ? (activity.avg_rating % 1 === 0
+        ? Number(activity.avg_rating)
+        : Number(activity.avg_rating).toFixed(1))
+    : '0'}
+</span>
+                  <span className="text-sm text-gray-500">
+                    ({activity.total_review} reviews)
+                  </span>
+                </div>
+                <p className="mb-4 line-clamp-3 text-sm text-[#5A5C5F]">
+                  {activity.description}
+                </p>
+                <Link
+                  to={`/diyboxeactivity/activity/${activity.id}`}
+                  className="mt-auto flex w-full items-center justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
+                >
+                  View Details <ChevronRight size={16} />
+                </Link>
+              </div>
+            </div>
           ))}
-          <button
-            onClick={() => setPage(page + 1)}
-            disabled={page === totalPages}
-            className="px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-50"
-          >
-            Next
-          </button>
+        </div>
+      )}
+
+      {/* ✅ Integrated Pagination System */}
+      {filtered.length > 0 && (
+        <div className="mt-6 flex items-center justify-between px-4 py-3">
+          <div className="text-sm text-gray-600">
+            Showing <span className="font-medium">{paginated.length}</span> of{" "}
+            <span className="font-medium">{total}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium text-gray-600 transition hover:bg-gray-100 disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <div className="min-w-[50px] rounded-md border border-[#E3E3E4] bg-gray-50 px-3 py-1.5 text-center text-sm font-medium text-gray-700 shadow-sm">
+              {pageFromServer} / {totalPages || 1}
+            </div>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+              className="cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium text-gray-600 transition hover:bg-gray-100 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -135,11 +226,854 @@ export default DiyActivities;
 
 
 
+// import { useMemo, useState } from "react";
+// import { ChevronRight, Search } from "lucide-react";
+// import { Link } from "react-router-dom";
+// import { useGetActivitiesQuery } from "@/redux/features/AdminDiyActivity/activityApi";
+// import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
+
+// interface Activity {
+//   id: string;
+//   title: string;
+//   theme?: string;
+//   video?: string;
+//   description?: string;
+//   difficulty?: string;
+//   avg_rating?: number;
+//   total_review?: number;
+// }
+
+// const DiyActivities: React.FC = () => {
+//   const [page, setPage] = useState<number>(1);
+//   const [searchTerm, setSearchTerm] = useState<string>("");
+//   const [theme, setTheme] = useState<string>("");
+//   const [difficulty, setDifficulty] = useState<string>("");
+//   const [ratingFilter, setRatingFilter] = useState<number | "">("");
+
+//   const activitiesPerPage = 9;
+//   const { data: activitiesData, isLoading, isError } = useGetActivitiesQuery();
+
+//   const activities: Activity[] =
+//     activitiesData?.data.map((a: any) => ({
+//       ...a,
+//       theme: a.theme || "General",
+//       difficulty: a.difficulty || "Medium",
+//       avg_rating: a.avg_rating ?? 0,
+//       total_review: a.total_review ?? 0,
+//     })) || [];
+
+//   // 🔍 Filtering logic
+//   const filtered = useMemo(() => {
+//     return activities.filter((activity) => {
+//       const matchesSearch =
+//         activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//         activity.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
+//       const matchesTheme =
+//         !theme || (activity.theme && activity.theme.toLowerCase() === theme.toLowerCase());
+
+//       const matchesDifficulty =
+//         !difficulty ||
+//         (activity.difficulty && activity.difficulty.toLowerCase() === difficulty.toLowerCase());
+
+//       const matchesRating = ratingFilter === "" || activity.avg_rating === ratingFilter;
+
+//       return matchesSearch && matchesTheme && matchesDifficulty && matchesRating;
+//     });
+//   }, [activities, searchTerm, theme, difficulty, ratingFilter]);
+
+//   // 🎨 Dynamic filter options
+//     const availableRatings = useMemo(() => Array.from(new Set(activities.map(a => a.avg_rating ?? 0))).sort((a, b) => a - b), [activities]);
+
+//   // Pagination
+//   const totalPages = Math.ceil(filtered.length / activitiesPerPage);
+//   const paginated = useMemo(() => {
+//     const start = (page - 1) * activitiesPerPage;
+//     return filtered.slice(start, start + activitiesPerPage);
+//   }, [page, filtered]);
+
+//   if (isLoading) return <p>Loading activities...</p>;
+//   if (isError) return <p>Error fetching activities.</p>;
+
+//   const renderStars = (rating: number) => {
+//     const stars = [];
+//     const fullStars = Math.floor(rating);
+//     const hasHalfStar = rating % 1 >= 0.25 && rating % 1 < 0.75;
+//     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+//     for (let i = 0; i < fullStars; i++) stars.push(<FaStar key={`full-${i}`} className="text-yellow-400" />);
+//     if (hasHalfStar) stars.push(<FaStarHalfAlt key="half" className="text-yellow-400" />);
+//     for (let i = 0; i < emptyStars; i++) stars.push(<FaRegStar key={`empty-${i}`} className="text-gray-300" />);
+
+//     return stars;
+//   };
+
+//   return (
+//     <div className="container mx-auto mt-1">
+//       {/* Header */}
+//       {/* <div className="mb-8">
+//         <div className="flex items-center gap-3 mb-4">
+//           <div className="text-4xl">🎨</div>
+//           <h1 className="text-4xl font-bold text-gray-800">DIY Activities</h1>
+//         </div>
+//         <p className="text-lg text-gray-600">Explore creative activities and filter by theme, difficulty, or rating ⭐</p>
+//       </div> */}
+
+//       {/* Filters */}
+//       <div className=" flex flex-col md:flex-row gap-4 mb-20 rounded-lg bg-white p-6 shadow-sm">
+//         <div className="relative flex-1">
+//           <Search className="absolute left-3 top-4 text-gray-400" size={20} />
+//           <input
+//             type="text"
+//             placeholder="Search themes, activities, or keywords..."
+//             value={searchTerm}
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//             className="w-full rounded-lg border border-gray-300 py-3 pr-4 pl-10 outline-none focus:ring-2 focus:ring-blue-500"
+//           />
+//         </div>
+
+        
+
+        
+
+//         <select
+//           value={ratingFilter}
+//           onChange={(e) => setRatingFilter(e.target.value === "" ? "" : Number(e.target.value))}
+//           className="cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-3 pr-8 outline-none focus:ring-2 focus:ring-blue-500"
+//         >
+//           <option value="">All Ratings</option>
+//           {availableRatings.map((r) => <option key={r} value={r}>{r === 0 ? "Unrated" : r}</option>)}
+//         </select>
+//       </div>
+
+//       {/* Activities Grid */}
+//       {filtered.length === 0 ? (
+//         <p className="text-center text-gray-500 py-10">No activities found matching your criteria.</p>
+//       ) : (
+//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+//           {paginated.map((activity) => (
+//             <div key={activity.id} className="flex flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-md hover:shadow-lg transition-all">
+//               <div className="relative h-56 w-full overflow-hidden rounded-t-lg">
+//                 {activity.video ? (
+//                   <video src={activity.video} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+//                 ) : (
+//                   <img src="/placeholder.png" alt={activity.title} className="w-full h-full object-cover" />
+//                 )}
+//               </div>
+//               <div className="flex-1 p-4 flex flex-col">
+//                 <h3 className="mb-2 line-clamp-2 text-lg font-medium">{activity.title}</h3>
+//                 <div className="mb-4 flex items-center gap-2">
+//                   <div className="flex">{renderStars(activity.avg_rating || 0)}</div>
+//                   <span className="text-sm font-medium text-gray-900">{activity.avg_rating}</span>
+//                   <span className="text-sm text-gray-500">({activity.total_review} reviews)</span>
+//                 </div>
+//                 <p className="mb-4 line-clamp-3 text-sm text-[#5A5C5F]">{activity.description}</p>
+//                 <Link
+//                   to={`/diyboxeactivity/activity/${activity.id}`}
+//                   className="mt-auto flex w-full items-center justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
+//                 >
+//                   View Details <ChevronRight size={16} />
+//                 </Link>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       )}
+
+//       {/* Pagination */}
+//       {totalPages > 1 && (
+//         <div className="flex justify-center items-center gap-2 mb-10">
+//           <button onClick={() => setPage(page - 1)} disabled={page === 1} className="px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-50">Prev</button>
+//           {Array.from({ length: totalPages }, (_, i) => (
+//             <button key={i + 1} onClick={() => setPage(i + 1)} className={`px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 ${page === i + 1 ? "bg-gray-200 font-bold" : ""}`}>
+//               {i + 1}
+//             </button>
+//           ))}
+//           <button onClick={() => setPage(page + 1)} disabled={page === totalPages} className="px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-50">Next</button>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default DiyActivities;
 
 
 
-// import { useState, useMemo } from "react";
-// import { ChevronRight, Play } from "lucide-react";
+
+
+
+
+
+
+
+
+
+// import { useMemo, useState } from "react";
+// import { ChevronRight, Search, Star } from "lucide-react";
+// import { Link } from "react-router-dom";
+// import { useGetActivitiesQuery } from "@/redux/features/AdminDiyActivity/activityApi";
+
+// interface Activity {
+//   id: string;
+//   title: string;
+//   theme?: string;
+//   video?: string;
+//   description?: string;
+//   difficulty?: string;
+//   avg_rating?: number;
+//   total_review?: number;
+//   createdAt?: string;
+// }
+
+// const DiyActivities: React.FC = () => {
+//   const [page, setPage] = useState<number>(1);
+//   const [searchTerm, setSearchTerm] = useState<string>("");
+//   const [theme, setTheme] = useState<string>("");
+//   const [difficulty, setDifficulty] = useState<string>("");
+//   const [ratingFilter, setRatingFilter] = useState<number | "">(""); // Rating filter
+
+//   const activitiesPerPage = 9;
+//   const { data: activitiesData, isLoading, isError } = useGetActivitiesQuery();
+
+//   const activities: Activity[] =
+//     activitiesData?.data.map((a: any) => ({
+//       ...a,
+//       theme: a.theme || "General",
+//       difficulty: a.difficulty || "Medium",
+//       avg_rating: a.avg_rating ?? 0,
+//       total_review: a.total_review ?? 0,
+//     })) || [];
+
+//   // 🔍 Filtering logic
+//   const filtered = useMemo(() => {
+//     return activities.filter((activity) => {
+//       const matchesSearch =
+//         activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//         activity.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
+//       const matchesTheme =
+//         !theme ||
+//         (activity.theme && activity.theme.toLowerCase() === theme.toLowerCase());
+
+//       const matchesDifficulty =
+//         !difficulty ||
+//         (activity.difficulty &&
+//           activity.difficulty.toLowerCase() === difficulty.toLowerCase());
+
+//       const matchesRating =
+//         ratingFilter === "" || activity.avg_rating === ratingFilter;
+
+//       return matchesSearch && matchesTheme && matchesDifficulty && matchesRating;
+//     });
+//   }, [activities, searchTerm, theme, difficulty, ratingFilter]);
+
+//   // 🎨 Dynamic options for filters
+//   const availableThemes = useMemo(() => {
+//     const themes = new Set<string>();
+//     activities.forEach((a) => a.theme && themes.add(a.theme));
+//     return Array.from(themes);
+//   }, [activities]);
+
+//   const availableDifficulties = useMemo(() => {
+//     const diffs = new Set<string>();
+//     activities.forEach((a) => a.difficulty && diffs.add(a.difficulty));
+//     return Array.from(diffs);
+//   }, [activities]);
+
+//   const availableRatings = useMemo(() => {
+//     const setRatings = new Set<number>();
+//     activities.forEach((a) => setRatings.add(a.avg_rating || 0));
+//     return Array.from(setRatings).sort((a, b) => a - b);
+//   }, [activities]);
+
+//   // Pagination
+//   const totalPages = Math.ceil(filtered.length / activitiesPerPage);
+//   const paginated = useMemo(() => {
+//     const start = (page - 1) * activitiesPerPage;
+//     return filtered.slice(start, start + activitiesPerPage);
+//   }, [page, filtered]);
+
+//   if (isLoading) return <p>Loading activities...</p>;
+//   if (isError) return <p>Error fetching activities.</p>;
+
+//   return (
+//     <div className="container mx-auto mt-10">
+//       {/* ===== Header ===== */}
+//       <div className="mb-8">
+//         <div className="flex items-center gap-3 mb-4">
+//           <div className="text-4xl">🎨</div>
+//           <h1 className="text-4xl font-bold text-gray-800">DIY Activities</h1>
+//         </div>
+//         <p className="text-lg text-gray-600">
+//           Explore creative activities and filter by theme, difficulty, or rating ⭐
+//         </p>
+//       </div>
+
+//       {/* ===== Filters ===== */}
+//       <div className="mb-8 bg-white rounded-lg shadow-sm p-4 flex flex-col md:flex-row gap-4">
+//         {/* Search */}
+//         <div className="relative flex-1">
+//           <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+//           <input
+//             type="text"
+//             placeholder="Search activities..."
+//             value={searchTerm}
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//             className="w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:ring-2 focus:ring-[#223B7D] outline-none"
+//           />
+//         </div>
+
+        
+
+     
+
+//         {/* Rating filter */}
+//         <select
+//           value={ratingFilter}
+//           onChange={(e) =>
+//             setRatingFilter(e.target.value === "" ? "" : Number(e.target.value))
+//           }
+//           className="border border-gray-300 cursor-pointer rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#223B7D] outline-none flex items-center"
+//         >
+//           <option value="">All Ratings</option>
+//           {availableRatings.map((r) => (
+//             <option key={r} value={r}>
+//               {r === 0 ? "Unrated" : `${r}`}
+//             </option>
+//           ))}
+//         </select>
+//       </div>
+
+//       {/* ===== Activities Grid ===== */}
+//       {filtered.length === 0 ? (
+//         <p className="text-center text-gray-500 py-10">
+//           No activities found matching your criteria.
+//         </p>
+//       ) : (
+//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+//           {paginated.map((activity) => (
+//             <div
+//               key={activity.id}
+//               className="flex flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-md hover:shadow-lg transition-all"
+//             >
+//               <div className="relative h-56 w-full overflow-hidden rounded-t-lg">
+//                 {activity.video ? (
+//                   <video
+//                     src={activity.video}
+//                     className="w-full h-full object-cover"
+//                     autoPlay
+//                     muted
+//                     loop
+//                     playsInline
+//                   />
+//                 ) : (
+//                   <img
+//                     src="/placeholder.png"
+//                     alt={activity.title}
+//                     className="w-full h-full object-cover"
+//                   />
+//                 )}
+//               </div>
+//               <div className="flex-1 p-4 flex flex-col">
+//                 <h3 className="mb-2 line-clamp-2 text-lg font-medium">
+//                   {activity.title}
+//                 </h3>
+
+//                 {/* Rating display */}
+//                 <p className="mb-2 text-sm text-[#5A5C5F] flex items-center gap-2">
+//                   {/* <Star size={14} className="text-yellow-500" /> */}
+//                   <strong>Rating:</strong>{" "}
+//                   {activity.avg_rating === 0
+//                     ? "Unrated"
+//                     : activity.avg_rating + "⭐"}{" "}
+//                    <span>(Total: {activity.total_review})</span>
+//                 </p>
+
+//                 <p className="mb-4 line-clamp-3 text-sm text-[#5A5C5F]">
+//                   {activity.description}
+//                 </p>
+
+
+
+
+
+//                 <Link
+//                   to={`/diyboxeactivity/activity/${activity.id}`}
+//                   className="mt-auto flex w-full items-center justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
+//                 >
+//                   View Details <ChevronRight size={16} />
+//                 </Link>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       )}
+
+//       {/* ===== Pagination ===== */}
+//       {totalPages > 1 && (
+//         <div className="flex justify-center items-center gap-2 mb-10">
+//           <button
+//             onClick={() => setPage(page - 1)}
+//             disabled={page === 1}
+//             className="px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+//           >
+//             Prev
+//           </button>
+//           {Array.from({ length: totalPages }, (_, i) => (
+//             <button
+//               key={i + 1}
+//               onClick={() => setPage(i + 1)}
+//               className={`px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 ${
+//                 page === i + 1 ? "bg-gray-200 font-bold" : ""
+//               }`}
+//             >
+//               {i + 1}
+//             </button>
+//           ))}
+//           <button
+//             onClick={() => setPage(page + 1)}
+//             disabled={page === totalPages}
+//             className="px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+//           >
+//             Next
+//           </button>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default DiyActivities;
+
+
+
+
+
+
+
+
+// import { useMemo, useState } from "react";
+// import { ChevronRight, Search } from "lucide-react";
+// import { Link } from "react-router-dom";
+// import { useGetActivitiesQuery } from "@/redux/features/AdminDiyActivity/activityApi";
+
+// interface Activity {
+//   id: string;
+//   title: string;
+//   video?: string;
+//   description?: string;
+//   rating?: number; // avg_rating
+//   createdAt?: string;
+// }
+
+// const DiyActivities: React.FC = () => {
+//   const [page, setPage] = useState<number>(1);
+//   const [searchTerm, setSearchTerm] = useState<string>("");
+//   const [ratingFilter, setRatingFilter] = useState<number | "">(""); // Rating filter
+
+//   const activitiesPerPage = 9;
+//   const { data: activitiesData, isLoading, isError } = useGetActivitiesQuery();
+
+//   // Map API data to include rating
+//   const activities: Activity[] =
+//     activitiesData?.data.map((a: any) => ({
+//       ...a,
+//       rating: a.avg_rating ?? 0,
+//     })) || [];
+
+//   // Filtering logic (search + rating)
+//   const filtered = useMemo(() => {
+//     return activities.filter((activity) => {
+//       const matchesSearch =
+//         activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//         activity.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
+//       const matchesRating =
+//         ratingFilter === "" || activity.rating === ratingFilter;
+
+//       return matchesSearch && matchesRating;
+//     });
+//   }, [activities, searchTerm, ratingFilter]);
+
+//   // Dynamic rating options (0–5)
+//   const availableRatings = useMemo(() => {
+//     const revs = new Set<number>();
+//     activities.forEach((a) => revs.add(a.rating || 0));
+//     return Array.from(revs).sort((a, b) => a - b);
+//   }, [activities]);
+
+//   // Pagination
+//   const totalPages = Math.ceil(filtered.length / activitiesPerPage);
+//   const paginated = useMemo(() => {
+//     const start = (page - 1) * activitiesPerPage;
+//     return filtered.slice(start, start + activitiesPerPage);
+//   }, [page, filtered]);
+
+//   if (isLoading) return <p>Loading activities...</p>;
+//   if (isError) return <p>Error fetching activities.</p>;
+
+//   return (
+//     <div className="container mx-auto mt-10">
+//       {/* ===== Header ===== */}
+//       <div className="mb-8">
+//         <div className="flex items-center gap-3 mb-4">
+//           <div className="text-4xl">🎨</div>
+//           <h1 className="text-4xl font-bold text-gray-800">DIY Activities</h1>
+//         </div>
+//         <p className="text-lg text-gray-600">Explore amazing activities by rating.</p>
+//       </div>
+
+//       {/* ===== Filters ===== */}
+//       <div className="mb-8 bg-white rounded-lg shadow-sm p-4 flex flex-col md:flex-row gap-4">
+//         {/* Search */}
+//         <div className="relative flex-1">
+//           <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+//           <input
+//             type="text"
+//             placeholder="Search activities..."
+//             value={searchTerm}
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//             className="w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:ring-2 focus:ring-[#223B7D] outline-none"
+//           />
+//         </div>
+
+//         {/* Rating filter */}
+//         <select
+//           value={ratingFilter}
+//           onChange={(e) =>
+//             setRatingFilter(e.target.value === "" ? "" : Number(e.target.value))
+//           }
+//           className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#223B7D] outline-none"
+//         >
+//           <option value="">All Ratings</option>
+//           {availableRatings.map((r) => (
+//             <option key={r} value={r}>
+//               {r === 0 ? "Unrated" : r + "⭐"}
+//             </option>
+//           ))}
+//         </select>
+//       </div>
+
+//       {/* ===== Activities Grid ===== */}
+//       {filtered.length === 0 ? (
+//         <p className="text-center text-gray-500 py-10">
+//           No activities found matching your criteria.
+//         </p>
+//       ) : (
+//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+//           {paginated.map((activity) => (
+//             <div
+//               key={activity.id}
+//               className="flex flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-md hover:shadow-lg transition-all"
+//             >
+//               <div className="relative h-56 w-full overflow-hidden rounded-t-lg">
+//                 {activity.video ? (
+//                   <video
+//                     src={activity.video}
+//                     className="w-full h-full object-cover"
+//                     autoPlay
+//                     muted
+//                     loop
+//                     playsInline
+//                   />
+//                 ) : (
+//                   <img
+//                     src="/placeholder.png"
+//                     alt={activity.title}
+//                     className="w-full h-full object-cover"
+//                   />
+//                 )}
+//               </div>
+//               <div className="flex-1 p-4 flex flex-col">
+//                 <h3 className="mb-2 line-clamp-2 text-lg font-medium">
+//                   {activity.title}
+//                 </h3>
+//                 <p className="mb-2 text-sm text-[#5A5C5F]">
+//                   <strong>Rating:</strong>{" "}
+//                   {activity.rating === 0 ? "Unrated" : activity.rating + "⭐"}
+//                 </p>
+//                 <p className="mb-4 line-clamp-3 text-sm text-[#5A5C5F]">
+//                   {activity.description}
+//                 </p>
+//                 <Link
+//                   to={`/diyboxeactivity/activity/${activity.id}`}
+//                   className="mt-auto flex w-full items-center justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
+//                 >
+//                   View Details <ChevronRight size={16} />
+//                 </Link>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       )}
+
+//       {/* ===== Pagination ===== */}
+//       {totalPages > 1 && (
+//         <div className="flex justify-center items-center gap-2 mb-10">
+//           <button
+//             onClick={() => setPage(page - 1)}
+//             disabled={page === 1}
+//             className="px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+//           >
+//             Prev
+//           </button>
+//           {Array.from({ length: totalPages }, (_, i) => (
+//             <button
+//               key={i + 1}
+//               onClick={() => setPage(i + 1)}
+//               className={`px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 ${
+//                 page === i + 1 ? "bg-gray-200 font-bold" : ""
+//               }`}
+//             >
+//               {i + 1}
+//             </button>
+//           ))}
+//           <button
+//             onClick={() => setPage(page + 1)}
+//             disabled={page === totalPages}
+//             className="px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+//           >
+//             Next
+//           </button>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default DiyActivities;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { useMemo, useState } from "react";
+// import { ChevronRight, Search } from "lucide-react";
+// import { Link } from "react-router-dom";
+// import { useGetActivitiesQuery } from "@/redux/features/AdminDiyActivity/activityApi";
+
+// interface Activity {
+//   id: string;
+//   title: string;
+//   theme?: string;
+//   video?: string;
+//   pdfFile?: string;
+//   description?: string;
+//   difficulty?: string;
+//   createdAt?: string;
+// }
+
+// const DiyActivities: React.FC = () => {
+//   const [page, setPage] = useState<number>(1);
+//   const [searchTerm, setSearchTerm] = useState<string>("");
+//   const [theme, setTheme] = useState<string>("");
+//   const [difficulty, setDifficulty] = useState<string>("");
+
+//   const activitiesPerPage = 9;
+//   const { data: activitiesData, isLoading, isError } = useGetActivitiesQuery();
+//   console.log(activitiesData);
+
+//   const activities: Activity[] =
+//     activitiesData?.data.map((a: any) => ({
+//       ...a,
+//       theme: a.theme || "General",
+//       difficulty: a.difficulty || "Medium",
+//     })) || [];
+
+//   // 🔍 Filtering logic
+//   const filtered = useMemo(() => {
+//     return activities.filter((activity) => {
+//       const matchesSearch =
+//         activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//         activity.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
+//       const matchesTheme =
+//         !theme ||
+//         (activity.theme &&
+//           activity.theme.toLowerCase() === theme.toLowerCase());
+
+//       const matchesDifficulty =
+//         !difficulty ||
+//         (activity.difficulty &&
+//           activity.difficulty.toLowerCase() === difficulty.toLowerCase());
+
+//       return matchesSearch && matchesTheme && matchesDifficulty;
+//     });
+//   }, [activities, searchTerm, theme, difficulty]);
+
+//   // 🎨 Dynamic options for filters
+//   const availableThemes = useMemo(() => {
+//     const themes = new Set<string>();
+//     activities.forEach((a) => a.theme && themes.add(a.theme));
+//     return Array.from(themes);
+//   }, [activities]);
+
+//   const availableDifficulties = useMemo(() => {
+//     const diffs = new Set<string>();
+//     activities.forEach((a) => a.difficulty && diffs.add(a.difficulty));
+//     return Array.from(diffs);
+//   }, [activities]);
+
+//   // Pagination
+//   const totalPages = Math.ceil(filtered.length / activitiesPerPage);
+//   const paginated = useMemo(() => {
+//     const start = (page - 1) * activitiesPerPage;
+//     return filtered.slice(start, start + activitiesPerPage);
+//   }, [page, filtered]);
+
+//   if (isLoading) return <p>Loading activities...</p>;
+//   if (isError) return <p>Error fetching activities.</p>;
+
+//   return (
+//     <div className="container mx-auto mt-10">
+//       {/* ===== Header ===== */}
+//       <div className="mb-8">
+//         <div className="flex items-center gap-3 mb-4">
+//           <div className="text-4xl">🎨</div>
+//           <h1 className="text-4xl font-bold text-gray-800">DIY Activities</h1>
+//         </div>
+//         <p className="text-lg text-gray-600">
+//           Explore amazing themed activities and projects for creative learners.
+//         </p>
+//       </div>
+
+//       {/* ===== Filters ===== */}
+//       <div className="mb-8 bg-white rounded-lg shadow-sm p-4 flex flex-col md:flex-row gap-4">
+//         {/* Search */}
+//         <div className="relative flex-1">
+//           <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+//           <input
+//             type="text"
+//             placeholder="Search activities..."
+//             value={searchTerm}
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//             className="w-full border border-gray-300 rounded-lg py-2 pl-9 pr-3 focus:ring-2 focus:ring-[#223B7D] outline-none"
+//           />
+//         </div>
+
+//         {/* Theme */}
+        
+
+//         {/* Difficulty */}
+//         <select
+//           value={difficulty}
+//           onChange={(e) => setDifficulty(e.target.value)}
+//           className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#223B7D] outline-none"
+//         >
+//           <option value="">All Difficulties</option>
+//           {availableDifficulties.map((diff) => (
+//             <option key={diff} value={diff}>
+//               {diff}
+//             </option>
+//           ))}
+//         </select>
+//       </div>
+
+//       {/* ===== Activities Grid ===== */}
+//       {filtered.length === 0 ? (
+//         <p className="text-center text-gray-500 py-10">
+//           No activities found matching your criteria.
+//         </p>
+//       ) : (
+//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+//           {paginated.map((activity) => (
+//             <div
+//               key={activity.id}
+//               className="flex flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-md hover:shadow-lg transition-all"
+//             >
+//               <div className="relative h-56 w-full overflow-hidden rounded-t-lg">
+//                 {activity.video ? (
+//                   <video
+//                     src={activity.video}
+//                     className="w-full h-full object-cover"
+//                     autoPlay
+//                     muted
+//                     loop
+//                     playsInline
+//                   />
+//                 ) : (
+//                   <img
+//                     src="/placeholder.png"
+//                     alt={activity.title}
+//                     className="w-full h-full object-cover"
+//                   />
+//                 )}
+//               </div>
+//               <div className="flex-1 p-4 flex flex-col">
+//                 <h3 className="mb-2 line-clamp-2 text-lg font-medium">
+//                   {activity.title}
+//                 </h3>
+//                 <p className="mb-4 line-clamp-3 text-sm text-[#5A5C5F]">
+//                   {activity.description}
+//                 </p>
+//                 <Link
+//                   to={`/diyboxeactivity/activity/${activity.id}`}
+//                   className="mt-auto flex w-full items-center justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
+//                 >
+//                   View Details <ChevronRight size={16} />
+//                 </Link>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       )}
+
+//       {/* ===== Pagination ===== */}
+//       {totalPages > 1 && (
+//         <div className="flex justify-center items-center gap-2 mb-10">
+//           <button
+//             onClick={() => setPage(page - 1)}
+//             disabled={page === 1}
+//             className="px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+//           >
+//             Prev
+//           </button>
+//           {Array.from({ length: totalPages }, (_, i) => (
+//             <button
+//               key={i + 1}
+//               onClick={() => setPage(i + 1)}
+//               className={`px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 ${
+//                 page === i + 1 ? "bg-gray-200 font-bold" : ""
+//               }`}
+//             >
+//               {i + 1}
+//             </button>
+//           ))}
+//           <button
+//             onClick={() => setPage(page + 1)}
+//             disabled={page === totalPages}
+//             className="px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+//           >
+//             Next
+//           </button>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default DiyActivities;
+
+
+
+
+
+
+
+// import { useMemo, useState } from "react";
+// import { ChevronRight } from "lucide-react";
+// import { Link } from "react-router-dom";
 // import { useGetActivitiesQuery } from "@/redux/features/AdminDiyActivity/activityApi";
 
 // interface Activity {
@@ -157,21 +1091,16 @@ export default DiyActivities;
 // }
 
 // const DiyActivities: React.FC = () => {
-//   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-//   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
 //   const [page, setPage] = useState<number>(1);
 //   const activitiesPerPage = 9;
-
 //   const { data: activitiesData, isLoading, isError } = useGetActivitiesQuery();
-
-//   // Ensure all activities have 'theme'
+// console.log(activitiesData)
 //   const activities: Activity[] = activitiesData?.data.map((a: any) => ({
 //     ...a,
 //     theme: a.theme || "General",
 //   })) || [];
 
 //   const filtered = useMemo(() => activities, [activities]);
-
 //   const totalPages = Math.ceil(filtered.length / activitiesPerPage);
 
 //   const paginated = useMemo(() => {
@@ -179,25 +1108,11 @@ export default DiyActivities;
 //     return filtered.slice(start, start + activitiesPerPage);
 //   }, [page, filtered]);
 
-//   const handlePageChange = (newPage: number) => {
-//     if (newPage >= 1 && newPage <= totalPages) setPage(newPage);
-//   };
-
-//   const handleCloseModal = () => setSelectedActivity(null);
-
-//   const toArray = (data?: string[] | string): string[] => {
-//     if (!data) return [];
-//     return Array.isArray(data)
-//       ? data
-//       : data.split(";").map((s) => s.trim()).filter(Boolean);
-//   };
-
 //   if (isLoading) return <p>Loading activities...</p>;
 //   if (isError) return <p>Error fetching activities.</p>;
 
 //   return (
 //     <div className="container mx-auto mt-10">
-//       {/* Header */}
 //       <div className="mb-12">
 //         <div className="flex items-center gap-3 mb-4">
 //           <div className="text-4xl">🎨</div>
@@ -208,7 +1123,6 @@ export default DiyActivities;
 //         </p>
 //       </div>
 
-//       {/* Activities Grid */}
 //       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
 //         {paginated.map((activity) => (
 //           <div
@@ -232,1141 +1146,50 @@ export default DiyActivities;
 //                   className="w-full h-full object-cover"
 //                 />
 //               )}
-//               {activity.video && (
-//                 <button
-//                   onClick={() => setSelectedVideo(activity.video!)}
-//                   className="absolute inset-0 flex items-center justify-center hover:cursor-pointer bg-black/30 hover:bg-black/40 transition"
-//                 >
-//                   <div className="bg-red-500 text-white rounded-full p-4 shadow-lg hover:bg-red-600 transition">
-//                     <Play size={22} fill="white" />
-//                   </div>
-//                 </button>
-//               )}
 //             </div>
 //             <div className="flex-1 p-4 flex flex-col">
 //               <h3 className="mb-2 line-clamp-2 text-lg font-medium">{activity.title}</h3>
 //               <p className="mb-4 line-clamp-3 text-sm text-[#5A5C5F]">{activity.description}</p>
-//               <button
-//                 onClick={() => setSelectedActivity(activity)}
-//                 className="mt-auto flex w-full items-center justify-center hover:cursor-pointer gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
-//               >
-//                 View Details <ChevronRight size={16} />
-//               </button>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-
-//       {/* Pagination */}
-//       {totalPages > 1 && (
-//         <div className="flex z-99999 justify-center items-center gap-2 mb-10">
-//           <button
-//             onClick={() => handlePageChange(page - 1)}
-//             disabled={page === 1}
-//             className="px-3 py-1.5 border rounded-lg hover:cursor-pointer text-gray-600 hover:bg-gray-100 disabled:opacity-50"
-//           >
-//             Prev
-//           </button>
-//           {Array.from({ length: totalPages }, (_, i) => (
-//             <button
-//               key={i + 1}
-//               onClick={() => handlePageChange(i + 1)}
-//               className={`px-3 py-1.5 border rounded-lg hover:cursor-pointer text-gray-600 hover:bg-gray-100 ${
-//                 page === i + 1 ? "bg-gray-200 font-bold" : ""
-//               }`}
-//             >
-//               {i + 1}
-//             </button>
-//           ))}
-//           <button
-//             onClick={() => handlePageChange(page + 1)}
-//             disabled={page === totalPages}
-//             className="px-3 py-1.5 border rounded-lg hover:cursor-pointer text-gray-600 hover:bg-gray-100 disabled:opacity-50"
-//           >
-//             Next
-//           </button>
-//         </div>
-//       )}
-
-//       {/* Video Modal */}
-//       {selectedVideo && (
-//         <div
-//           className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
-//           onClick={() => setSelectedVideo(null)}
-//         >
-//           <div
-//             className="relative bg-black rounded-lg overflow-hidden max-w-3xl w-full"
-//             onClick={(e) => e.stopPropagation()}
-//           >
-//             <video src={selectedVideo} controls autoPlay className="w-full h-auto rounded-lg" />
-//             <button
-//               onClick={() => setSelectedVideo(null)}
-//               className="absolute top-2 right-2 text-white hover:cursor-pointer bg-black/60 hover:bg-black/80 rounded-full p-2 transition"
-//             >
-//               ✕
-//             </button>
-//           </div>
-//         </div>
-//       )}
-
-//       {/* Activity Details Modal */}
-//       {selectedActivity && (
-//         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-//           <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative">
-//             <h2 className="text-2xl p-6 font-bold text-gray-800 tracking-wide">
-//               {selectedActivity.title}
-//             </h2>
-//             <button
-//               onClick={handleCloseModal}
-//               className="absolute top-4 right-4 hover:cursor-pointer text-white bg-black/30 hover:bg-black/50 rounded-full p-2 transition"
-//             >
-//               ✕
-//             </button>
-
-//             <div className="relative w-full mt-4 p-3 h-72 md:h-80 rounded-t-2xl overflow-hidden">
-//               {selectedActivity.video ? (
-//                 <video
-//                   src={selectedActivity.video}
-//                   controls
-//                   autoPlay
-//                   className="w-full h-full rounded-2xl object-cover"
-//                 />
-//               ) : (
-//                 <img
-//                   src={selectedActivity.images?.[0] || "/placeholder.png"}
-//                   alt={selectedActivity.title}
-//                   className="w-full h-full rounded-2xl object-cover"
-//                 />
-//               )}
-//             </div>
-
-//             <div className="p-6 space-y-6">
-//               <div className="flex gap-2 flex-wrap text-sm">
-//                 {selectedActivity.difficulty && (
-//                   <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">
-//                     {selectedActivity.difficulty}
-//                   </span>
-//                 )}
-//                 {selectedActivity.time && (
-//                   <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">
-//                     ⏱ {selectedActivity.time}
-//                   </span>
-//                 )}
-//               </div>
-
-//               {selectedActivity.description && (
-//                 <div>
-//                   <h3 className="text-lg font-semibold text-gray-800 mb-2">About this Activity</h3>
-//                   <div
-//                     className="text-gray-700 prose"
-//                     dangerouslySetInnerHTML={{ __html: selectedActivity.description }}
-//                   />
-//                 </div>
-//               )}
-
-//               {toArray(selectedActivity.materials).length > 0 && (
-//                 <div>
-//                   <h3 className="text-lg font-semibold text-gray-800 mb-3">🧺 Materials Needed</h3>
-//                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-//                     {toArray(selectedActivity.materials).map((m, i) => (
-//                       <li
-//                         key={i}
-//                         className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 text-gray-700 transition hover:bg-indigo-50"
-//                       >
-//                         <span className="font-bold text-indigo-600">✓</span> {m}
-//                       </li>
-//                     ))}
-//                   </ul>
-//                 </div>
-//               )}
-
-//               {selectedActivity.instruction_sheet &&
-//                 typeof selectedActivity.instruction_sheet === "string" && (
-//                   <div>
-//                     <h3 className="text-lg font-semibold text-gray-800 mb-3">
-//                       🪄 Step-by-Step Instructions
-//                     </h3>
-//                     <div
-//                       dangerouslySetInnerHTML={{ __html: selectedActivity.instruction_sheet }}
-//                       className="prose mt-4"
-//                     />
-//                   </div>
-//                 )}
-
-//               {/* ✅ PDF Viewer */}
-//               {selectedActivity.pdfFile && (
-//                 <div className="mt-6">
-//                   <h3 className="text-lg font-semibold text-gray-800 mb-3">📄 Instruction PDF</h3>
-//                   <iframe
-//                     src={selectedActivity.pdfFile}
-//                     className="w-full h-[500px] rounded-2xl border"
-//                     title="PDF Viewer"
-//                   />
-//                 </div>
-//               )}
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default DiyActivities;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import { useState, useMemo } from "react";
-// import { ChevronRight, Play } from "lucide-react";
-// import { useGetActivitiesQuery } from "@/redux/features/AdminDiyActivity/activityApi";
-
-// interface Activity {
-//   id: number;
-//   title: string;
-//   theme: string;
-//   images?: string[];
-//   video?: string;
-//   time?: string;
-//   difficulty?: string;
-//   materials?: string[] | string;
-//   instruction_sheet?: string[] | string;
-//   description?: string;
-// }
-
-// const DiyActivities: React.FC = () => {
-//   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-//   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-//   const [page, setPage] = useState<number>(1);
-//   const activitiesPerPage = 9;
-
-//   const { data: activitiesData, isLoading, isError } = useGetActivitiesQuery();
-
-//   // Ensure all activities have 'theme'
-//   const activities: Activity[] = activitiesData?.data.map((a: any) => ({
-//     ...a,
-//     theme: a.theme || "General",
-//   })) || [];
-
-//   const filtered = useMemo(() => activities, [activities]);
-
-//   const totalPages = Math.ceil(filtered.length / activitiesPerPage);
-
-//   const paginated = useMemo(() => {
-//     const start = (page - 1) * activitiesPerPage;
-//     return filtered.slice(start, start + activitiesPerPage);
-//   }, [page, filtered]);
-
-//   const handlePageChange = (newPage: number) => {
-//     if (newPage >= 1 && newPage <= totalPages) setPage(newPage);
-//   };
-
-//   const handleCloseModal = () => setSelectedActivity(null);
-
-//   const toArray = (data?: string[] | string): string[] => {
-//     if (!data) return [];
-//     return Array.isArray(data) ? data : data.split(";").map(s => s.trim()).filter(Boolean);
-//   };
-
-//   if (isLoading) return <p>Loading activities...</p>;
-//   if (isError) return <p>Error fetching activities.</p>;
-
-//   return (
-//     <div className="container mx-auto mt-10">
-//       {/* Header */}
-//       <div className="mb-12">
-//         <div className="flex items-center gap-3 mb-4">
-//           <div className="text-4xl">🎨</div>
-//           <h1 className="text-4xl font-bold text-gray-800">DIY Activities</h1>
-//         </div>
-//         <p className="text-lg text-gray-600">
-//           Explore amazing themed decorations and celebrations for your perfect party
-//         </p>
-//       </div>
-
-//       {/* Activities Grid */}
-//       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-//         {paginated.map((activity) => (
-//           <div
-//             key={activity.id}
-//             className="flex flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-md hover:shadow-lg transition-all"
-//           >
-//             <div className="relative h-56 w-full overflow-hidden rounded-t-lg">
-//               {activity.video ? (
-//                 <video
-//                   src={activity.video}
-//                   className="w-full h-full object-cover"
-//                   autoPlay
-//                   muted
-//                   loop
-//                   playsInline
-//                 />
-//               ) : (
-//                 <img
-//                   src={activity.images?.[0] || "/placeholder.png"}
-//                   alt={activity.title}
-//                   className="w-full h-full object-cover"
-//                 />
-//               )}
-//               {activity.video && (
-//                 <button
-//                   onClick={() => setSelectedVideo(activity.video!)}
-//                   className="absolute inset-0 flex items-center justify-center hover:cursor-pointer bg-black/30 hover:bg-black/40 transition"
-//                 >
-//                   <div className="bg-red-500 text-white rounded-full p-4 shadow-lg hover:bg-red-600 transition">
-//                     <Play size={22} fill="white" />
-//                   </div>
-//                 </button>
-//               )}
-//             </div>
-//             <div className="flex-1 p-4 flex flex-col">
-//               <h3 className="mb-2 line-clamp-2 text-lg font-medium">{activity.title}</h3>
-//               <p className="mb-4 line-clamp-3 text-sm text-[#5A5C5F]">{activity.description}</p>
-//               <button
-//                 onClick={() => setSelectedActivity(activity)}
-//                 className="mt-auto flex w-full items-center justify-center hover:cursor-pointer gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
-//               >
-//                 View Details <ChevronRight size={16} />
-//               </button>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-
-//       {/* Pagination */}
-//       {totalPages > 1 && (
-//         <div className="flex z-99999 justify-center items-center gap-2 mb-10">
-//           <button
-//             onClick={() => handlePageChange(page - 1)}
-//             disabled={page === 1}
-//             className="px-3 py-1.5 border rounded-lg hover:cursor-pointer text-gray-600 hover:bg-gray-100 disabled:opacity-50"
-//           >
-//             Prev
-//           </button>
-//           {Array.from({ length: totalPages }, (_, i) => (
-//             <button
-//               key={i + 1}
-//               onClick={() => handlePageChange(i + 1)}
-//               className={`px-3 py-1.5 border rounded-lg hover:cursor-pointer text-gray-600 hover:bg-gray-100 ${
-//                 page === i + 1 ? "bg-gray-200 font-bold" : ""
-//               }`}
-//             >
-//               {i + 1}
-//             </button>
-//           ))}
-//           <button
-//             onClick={() => handlePageChange(page + 1)}
-//             disabled={page === totalPages}
-//             className="px-3 py-1.5 border rounded-lg hover:cursor-pointer text-gray-600 hover:bg-gray-100 disabled:opacity-50"
-//           >
-//             Next
-//           </button>
-//         </div>
-//       )}
-
-//       {/* Video Modal */}
-//       {selectedVideo && (
-//         <div
-//           className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
-//           onClick={() => setSelectedVideo(null)}
-//         >
-//           <div
-//             className="relative bg-black rounded-lg overflow-hidden max-w-3xl w-full"
-//             onClick={(e) => e.stopPropagation()}
-//           >
-//             <video src={selectedVideo} controls autoPlay className="w-full h-auto rounded-lg" />
-//             <button
-//               onClick={() => setSelectedVideo(null)}
-//               className="absolute top-2 right-2 text-white hover:cursor-pointer bg-black/60 hover:bg-black/80 rounded-full p-2 transition"
-//             >
-//               ✕
-//             </button>
-//           </div>
-//         </div>
-//       )}
-
-//       {/* Activity Details Modal */}
-//       {selectedActivity && (
-//         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-//           <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative">
-//             <h2 className="text-2xl p-6 font-bold text-gray-800 tracking-wide">
-//               {selectedActivity.title}
-//             </h2>
-//             <button
-//               onClick={handleCloseModal}
-//               className="absolute top-4 right-4 hover:cursor-pointer text-white bg-black/30 hover:bg-black/50 rounded-full p-2 transition"
-//             >
-//               ✕
-//             </button>
-
-//             <div className="relative  w-full mt-4 p-3 h-72 md:h-80 rounded-t-2xl overflow-hidden">
-//               {selectedActivity.video ? (
-//                 <video
-//                   src={selectedActivity.video}
-//                   controls
-//                   autoPlay
-//                   className="w-full h-full rounded-2xl object-cover"
-//                 />
-//               ) : (
-//                 <img
-//                   src={selectedActivity.images?.[0] || "/placeholder.png"}
-//                   alt={selectedActivity.title}
-//                   className="w-full h-full rounded-2xl object-cover"
-//                 />
-//               )}
-//             </div>
-
-//             <div className="p-6 space-y-6">
-//               <div className="flex gap-2 flex-wrap text-sm">
-//                 {selectedActivity.difficulty && (
-//                   <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">
-//                     {selectedActivity.difficulty}
-//                   </span>
-//                 )}
-//                 {selectedActivity.time && (
-//                   <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">
-//                     ⏱ {selectedActivity.time}
-//                   </span>
-//                 )}
-//               </div>
-
-//               {selectedActivity.description && (
-//                 <div>
-//                   <h3 className="text-lg font-semibold text-gray-800 mb-2">About this Activity</h3>
-//                   <div
-//                     className="text-gray-700 prose"
-//                     dangerouslySetInnerHTML={{ __html: selectedActivity.description }}
-//                   />
-//                 </div>
-//               )}
-
-//               {toArray(selectedActivity.materials).length > 0 && (
-//                 <div>
-//                   <h3 className="text-lg font-semibold text-gray-800 mb-3">🧺 Materials Needed</h3>
-//                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-//                     {toArray(selectedActivity.materials).map((m, i) => (
-//                       <li
-//                         key={i}
-//                         className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 text-gray-700 transition hover:bg-indigo-50"
-//                       >
-//                         <span className="font-bold text-indigo-600">✓</span> {m}
-//                       </li>
-//                     ))}
-//                   </ul>
-//                 </div>
-//               )}
-
-
-
-
-
-
-
-//               {selectedActivity.instruction_sheet &&
-//                 typeof selectedActivity.instruction_sheet === "string" && (
-//                   <div>
-//                     <h3 className="text-lg font-semibold text-gray-800 mb-3">
-//                       🪄 Step-by-Step Instructions
-//                     </h3>
-//                     <div
-//                       dangerouslySetInnerHTML={{ __html: selectedActivity.instruction_sheet }}
-//                       className="prose mt-4"
-//                     />
-//                   </div>
-//                 )}
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default DiyActivities;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import { useState, useMemo } from "react";
-// import { ChevronRight, Play } from "lucide-react";
-// import { useGetActivitiesQuery } from "@/redux/features/AdminDiyActivity/activityApi";
-
-// interface Activity {
-//   id: number;
-//   title: string;
-//   theme: string;
-//   images?: string[];
-//   video?: string;
-//   time?: string;
-//   difficulty?: string;
-//   materials?: string[] | string;
-//   instruction_sheet?: string[] | string;
-//   description?: string;
-// }
-
-// const DiyActivities: React.FC = () => {
-//   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-//   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-//   const [page, setPage] = useState<number>(1);
-//   const activitiesPerPage = 9;
-
-//   const { data: activitiesData, isLoading, isError } = useGetActivitiesQuery();
-
-//   console.log(activitiesData)
-//   const activities: Activity[] = activitiesData?.data || [];
-
-//   const filtered = useMemo(() => activities, [activities]);
-
-//   const totalPages = Math.ceil(filtered.length / activitiesPerPage);
-
-//   // Get activities for current page
-//   const paginated = useMemo(() => {
-//     const start = (page - 1) * activitiesPerPage;
-//     return filtered.slice(start, start + activitiesPerPage);
-//   }, [page, filtered]);
-
-//   const handlePageChange = (newPage: number) => {
-//     if (newPage >= 1 && newPage <= totalPages) setPage(newPage);
-//   };
-
-//   const handleCloseModal = () => setSelectedActivity(null);
-
-//   // Helper to convert string or array to array
-//   const toArray = (data?: string[] | string): string[] => {
-//     if (!data) return [];
-//     return Array.isArray(data) ? data : data.split(";").map(s => s.trim()).filter(Boolean);
-//   };
-
-//   if (isLoading) return <p>Loading activities...</p>;
-//   if (isError) return <p>Error fetching activities.</p>;
-
-//   return (
-//     <div className="container mx-auto mt-10">
-//       {/* Header */}
-//       <div className="mb-12">
-//         <div className="flex items-center gap-3 mb-4">
-//           <div className="text-4xl">🎨</div>
-//           <h1 className="text-4xl font-bold text-gray-800">DIY Activities</h1>
-//         </div>
-//         <p className="text-lg text-gray-600">
-//           Explore amazing themed decorations and celebrations for your perfect party
-//         </p>
-//       </div>
-
-//       {/* Activities Grid */}
-//       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-//         {paginated.map((activity) => (
-//           <div
-//             key={activity.id}
-//             className="flex flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-md hover:shadow-lg transition-all"
-//           >
-//             <div className="relative h-56 w-full overflow-hidden rounded-t-lg">
-//               {activity.video ? (
-//                 <video
-//                   src={activity.video}
-//                   className="w-full h-full object-cover"
-//                   autoPlay
-//                   muted
-//                   loop
-//                   playsInline
-//                 />
-//               ) : (
-//                 <img
-//                   src={activity.images?.[0] || "/placeholder.png"}
-//                   alt={activity.title}
-//                   className="w-full h-full object-cover"
-//                 />
-//               )}
-//               {activity.video && (
-//                 <button
-//                   onClick={() => setSelectedVideo(activity.video!)}
-//                   className="absolute  inset-0 flex items-center justify-center hover:cursor-pointer bg-black/30 hover:bg-black/40 transition"
-//                 >
-//                   <div className="bg-red-500 text-white rounded-full p-4 shadow-lg hover:bg-red-600 transition">
-//                     <Play size={22} fill="white" />
-//                   </div>
-//                 </button>
-//               )}
-//             </div>
-//             <div className="flex-1 p-4 flex flex-col">
-//               <h3 className="mb-2 line-clamp-2 text-lg font-medium">{activity.title}</h3>
-//               <p className="mb-4 line-clamp-3 text-sm text-[#5A5C5F]">{activity.description}</p>
-//               <button
-//                 onClick={() => setSelectedActivity(activity)}
-//                 className="mt-auto flex w-full items-center hover:cursor-pointer justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
-//               >
-//                 View Details <ChevronRight size={16} />
-//               </button>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-
-//       {/* Pagination */}
-//       {totalPages > 1 && (
-//         <div className="flex z-99999 justify-center items-center gap-2 mb-10">
-//           <button
-//             onClick={() => handlePageChange(page - 1)}
-//             disabled={page === 1}
-//             className="px-3 py-1.5 border rounded-lg hover:cursor-pointer text-gray-600 hover:bg-gray-100 disabled:opacity-50"
-//           >
-//             Prev
-//           </button>
-
-//           {Array.from({ length: totalPages }, (_, i) => (
-//             <button
-//               key={i + 1}
-//               onClick={() => handlePageChange(i + 1)}
-//               className={`px-3 py-1.5 border rounded-lg hover:cursor-pointer text-gray-600 hover:bg-gray-100 ${
-//                 page === i + 1 ? "bg-gray-200 font-bold" : ""
-//               }`}
-//             >
-//               {i + 1}
-//             </button>
-//           ))}
-
-//           <button
-//             onClick={() => handlePageChange(page + 1)}
-//             disabled={page === totalPages}
-//             className="px-3 py-1.5 border rounded-lg hover:cursor-pointer text-gray-600 hover:bg-gray-100 disabled:opacity-50"
-//           >
-//             Next
-//           </button>
-//         </div>
-//       )}
-
-//       {/* Video Modal */}
-//       {selectedVideo && (
-//         <div
-//           className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
-//           onClick={() => setSelectedVideo(null)}
-//         >
-//           <div
-//             className="relative bg-black rounded-lg overflow-hidden max-w-3xl w-full"
-//             onClick={(e) => e.stopPropagation()}
-//           >
-//             <video src={selectedVideo} controls autoPlay className="w-full h-auto rounded-lg" />
-//             <button
-//               onClick={() => setSelectedVideo(null)}
-//               className="absolute top-2 right-2 text-white hover:cursor-pointer bg-black/60 hover:bg-black/80 rounded-full p-2 transition"
-//             >
-//               ✕
-//             </button>
-//           </div>
-//         </div>
-//       )}
-
-//       {/* Activity Details Modal */}
-//       {selectedActivity && (
-//         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-//           <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto relative">
-//             <h2 className="text-2xl p-6 font-bold text-gray-800 tracking-wide">
-//               {selectedActivity.title}
-//             </h2>
-//             <button
-//               onClick={handleCloseModal}
-//               className="absolute top-4 right-4 hover:cursor-pointer text-white bg-black/30 hover:bg-black/50 rounded-full p-2 transition"
-//             >
-//               ✕
-//             </button>
-
-//             <div className="relative w-full mt-4 p-3 h-72 md:h-80 rounded-t-2xl overflow-hidden">
-//               {selectedActivity.video ? (
-//                 <video
-//                   src={selectedActivity.video}
-//                   controls
-//                   autoPlay
-//                   className="w-full h-full object-cover"
-//                 />
-//               ) : (
-//                 <img
-//                   src={selectedActivity.images?.[0] || "/placeholder.png"}
-//                   alt={selectedActivity.title}
-//                   className="w-full h-full object-cover"
-//                 />
-//               )}
-//             </div>
-
-//             <div className="p-6 space-y-6">
-//               {/* Difficulty & Time */}
-//               <div className="flex gap-2 flex-wrap text-sm">
-//                 {selectedActivity.difficulty && (
-//                   <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">
-//                     {selectedActivity.difficulty}
-//                   </span>
-//                 )}
-//                 {selectedActivity.time && (
-//                   <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">
-//                     ⏱ {selectedActivity.time}
-//                   </span>
-//                 )}
-//               </div>
-
-//               {/* Description */}
-//               {selectedActivity.description && (
-//                 <div>
-//                   <h3 className="text-lg font-semibold text-gray-800 mb-2">About this Activity</h3>
-//                   <div
-//                     className="text-gray-700 prose"
-//                     dangerouslySetInnerHTML={{ __html: selectedActivity.description }}
-//                   />
-//                 </div>
-//               )}
-
-//               {/* Materials */}
-//               {toArray(selectedActivity.materials).length > 0 && (
-//                 <div>
-//                   <h3 className="text-lg font-semibold text-gray-800 mb-3">🧺 Materials Needed</h3>
-//                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-//                     {toArray(selectedActivity.materials).map((m, i) => (
-//                       <li
-//                         key={i}
-//                         className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg text-gray-700 hover:bg-indigo-50 transition"
-//                       >
-//                         <span className="text-indigo-600 font-bold">✓</span> {m}
-//                       </li>
-//                     ))}
-//                   </ul>
-//                 </div>
-//               )}
-
-            
-
-
-// {selectedActivity.instruction_sheet && typeof selectedActivity.instruction_sheet === "string" && (
-//   <div>
-//     <h3 className="text-lg font-semibold text-gray-800 mb-3">🪄 Step-by-Step Instructions</h3>
-
-//    <div dangerouslySetInnerHTML={{ __html: selectedActivity.instruction_sheet }} className="prose mt-4" />
-
-//   </div>
-// )}
-
- 
-
-
-
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default DiyActivities;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import { useState, useMemo } from "react";
-// import { ChevronRight, Play } from "lucide-react";
-// import { useGetActivitiesQuery } from "@/redux/features/AdminDiyActivity/activityApi";
-
-// interface Activity {
-//   id: number;
-//   title: string;
-//   theme: string;
-//   images?: string[];
-//   video?: string;
-//   time?: string;
-//   difficulty?: string;
-//   materials?: string[] | string;
-//   instruction_sheet?: string[] | string;
-//   description?: string;
-// }
-
-// const DiyActivities: React.FC = () => {
-//   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-//   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-//   const [page, setPage] = useState<number>(1);
-//   const activitiesPerPage = 9;
-
-//   const { data: activitiesData, isLoading, isError } = useGetActivitiesQuery();
-//   const activities: Activity[] = activitiesData?.data || [];
-
-//   const filtered = useMemo(() => activities, [activities]);
-
-//   const indexOfLastActivity = page * activitiesPerPage;
-//   const indexOfFirstActivity = indexOfLastActivity - activitiesPerPage;
-//   const paginated = filtered.slice(indexOfFirstActivity, indexOfLastActivity);
-//   const totalPages = Math.ceil(filtered.length / activitiesPerPage);
-
-//   const handlePageChange = (newPage: number) => {
-//     if (newPage >= 1 && newPage <= totalPages) setPage(newPage);
-//   };
-
-//   if (isLoading) return <p>Loading activities...</p>;
-//   if (isError) return <p>Error fetching activities.</p>;
-
-//   const handleCloseModal = () => setSelectedActivity(null);
-
-//   // Helper to convert string or array to array
-//   const toArray = (data?: string[] | string): string[] => {
-//     if (!data) return [];
-//     return Array.isArray(data) ? data : data.split(";").map(s => s.trim()).filter(Boolean);
-//   };
-
-//   return (
-//     <div className="container mx-auto mt-10">
-//       <div className="mb-12">
-//         <div className="flex items-center gap-3 mb-4">
-//           <div className="text-4xl">🎨</div>
-//           <h1 className="text-4xl font-bold text-gray-800">DIY Activities</h1>
-//         </div>
-//         <p className="text-lg text-gray-600">
-//           Explore amazing themed decorations and celebrations for your perfect party
-//         </p>
-//       </div>
-
-//       {/* Activities Grid */}
-//       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-//         {paginated.map((activity) => (
-//           <div
-//             key={activity.id}
-//             className="flex flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-md hover:shadow-lg transition-all"
-//           >
-//             <div className="relative h-56 w-full overflow-hidden rounded-t-lg">
-//               {activity.video ? (
-//                 <video
-//                   src={activity.video}
-//                   className="w-full h-full object-cover"
-//                   autoPlay
-//                   muted
-//                   loop
-//                   playsInline
-//                 />
-//               ) : (
-//                 <img
-//                   src={activity.images?.[0] || "/placeholder.png"}
-//                   alt={activity.title}
-//                   className="w-full h-full object-cover"
-//                 />
-//               )}
-//               {activity.video && (
-//                 <button
-//                   onClick={() => setSelectedVideo(activity.video!)}
-//                   className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition"
-//                 >
-//                   <div className="bg-red-500 text-white rounded-full p-4 shadow-lg hover:bg-red-600 transition">
-//                     <Play size={22} fill="white" />
-//                   </div>
-//                 </button>
-//               )}
-//             </div>
-
-//             <div className="flex-1 p-4 flex flex-col">
-//               <h3 className="mb-2 line-clamp-2 text-lg font-medium">{activity.title}</h3>
-//               <p className="mb-4 line-clamp-3 text-sm text-[#5A5C5F]">{activity.description}</p>
-//               <button
-//                 onClick={() => setSelectedActivity(activity)}
+//               <Link
+//                 to={`/diyboxeactivity/activity/${activity.id}`}
 //                 className="mt-auto flex w-full items-center justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
 //               >
 //                 View Details <ChevronRight size={16} />
-//               </button>
+//               </Link>
 //             </div>
 //           </div>
 //         ))}
 //       </div>
 
-//       Pagination
-//       {filtered.length > 0 && (
-//         <div className="mt-6 flex items-center justify-center gap-3">
+//       {totalPages > 1 && (
+//         <div className="flex justify-center items-center gap-2 mb-10">
 //           <button
-//             onClick={() => handlePageChange(page - 1)}
-//             disabled={page <= 1}
-//             className="rounded-lg border px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+//             onClick={() => setPage(page - 1)}
+//             disabled={page === 1}
+//             className="px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-50"
 //           >
 //             Prev
 //           </button>
-//           <span className="text-sm text-gray-700 font-medium">{page} / {totalPages}</span>
+//           {Array.from({ length: totalPages }, (_, i) => (
+//             <button
+//               key={i + 1}
+//               onClick={() => setPage(i + 1)}
+//               className={`px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 ${
+//                 page === i + 1 ? "bg-gray-200 font-bold" : ""
+//               }`}
+//             >
+//               {i + 1}
+//             </button>
+//           ))}
 //           <button
-//             onClick={() => handlePageChange(page + 1)}
-//             disabled={page >= totalPages}
-//             className="rounded-lg border px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+//             onClick={() => setPage(page + 1)}
+//             disabled={page === totalPages}
+//             className="px-3 py-1.5 border rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-50"
 //           >
 //             Next
 //           </button>
 //         </div>
 //       )}
-
-
-
-// {filtered.length > 0 && (
-//         <div className="mt-6 flex items-center justify-between px-4 py-3">
-//           <div className="text-sm text-gray-600">
-//             Showing <span className="font-medium">{paginatedBlogs.length}</span>{" "}
-//             of <span className="font-medium">{total}</span>
-//           </div>
-//           <div className="flex items-center gap-2">
-//             <button
-//               onClick={() => setPage((p) => Math.max(1, p - 1))}
-//               disabled={page <= 1}
-//               className="rounded-lg border px-3 py-1.5 text-sm text-gray-600 hover:cursor-pointer hover:bg-gray-100 disabled:opacity-50"
-//             >
-//               Prev
-//             </button>
-//             <div className="min-w-[50px] rounded-md border bg-gray-50 px-3 py-1.5 text-center text-sm font-medium text-gray-700">
-//               {page} / {totalPages}
-//             </div>
-//             <button
-//               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-//               disabled={page >= totalPages}
-//               className="rounded-lg border px-3 py-1.5 text-sm text-gray-600 hover:cursor-pointer hover:bg-gray-100 disabled:opacity-50"
-//             >
-//               Next
-//             </button>
-//           </div>
-//         </div>
-//       )}
-
-
-
-
-
-
-
-
-//       {/* Video Modal */}
-//       {selectedVideo && (
-//         <div
-//           className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
-//           onClick={() => setSelectedVideo(null)}
-//         >
-//           <div
-//             className="relative bg-black rounded-lg overflow-hidden max-w-3xl w-full"
-//             onClick={(e) => e.stopPropagation()}
-//           >
-//             <video src={selectedVideo} controls autoPlay className="w-full h-auto rounded-lg" />
-//             <button
-//               onClick={() => setSelectedVideo(null)}
-//               className="absolute top-2 right-2 text-white bg-black/60 hover:bg-black/80 rounded-full p-2 transition"
-//             >
-//               ✕
-//             </button>
-//           </div>
-//         </div>
-//       )}
-
-//       {/* Activity Modal */}
-//       {/* {selectedActivity && (
-//         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-//           <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto relative">
-//             <h2 className="text-2xl p-6 font-bold text-gray-800 tracking-wide">{selectedActivity.title}</h2>
-//             <button
-//               onClick={handleCloseModal}
-//               className="absolute top-4 right-4 text-white bg-black/30 hover:bg-black/50 rounded-full p-2 transition"
-//             >
-//               ✕
-//             </button>
-
-//             <div className="relative w-full mt-4 p-3 h-72 md:h-80 rounded-t-2xl overflow-hidden">
-//               {selectedActivity.video ? (
-//                 <video src={selectedActivity.video} controls autoPlay className="w-full h-full object-cover" />
-//               ) : (
-//                 <img
-//                   src={selectedActivity.images?.[0] || "/placeholder.png"}
-//                   alt={selectedActivity.title}
-//                   className="w-full h-full object-cover"
-//                 />
-//               )}
-//             </div>
-
-//             <div className="p-6 space-y-8">
-//                <div className="flex gap-2 flex-wrap text-sm">
-//                 {selectedActivity.difficulty && (
-//                   <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">{selectedActivity.difficulty}</span>
-//                 )}
-//                 {selectedActivity.time && (
-//                   <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">⏱ {selectedActivity.time}</span>
-//                 )}
-//               </div>
-
-              
-//  {selectedActivity.description && (
-//   <div>
-//     <h3 className="text-lg font-semibold text-gray-800 mb-2">About this Activity</h3>
-//     <div
-//       className="text-gray-700 leading-relaxed prose"
-//       dangerouslySetInnerHTML={{ __html: selectedActivity.description }}
-//     />
-//   </div>
-// )}
-
-//  {selectedActivity.instruction_sheet && (
-//   <div>
-//     <h3 className="text-lg font-semibold text-gray-800 mb-3">🪄 Step-by-Step Instructions</h3>
-//     <div
-//       className="text-gray-700 prose"
-//       dangerouslySetInnerHTML={{ __html: selectedActivity.instruction_sheet }}
-//     />
-//   </div>
-// )}
-
-
-
-
-
-
-//             </div>
-//           </div>
-//         </div>
-//       )} */}
-
-
-// {selectedActivity && (
-//   <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-//     <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto relative">
-      
-//       {/* Title */}
-//       <h2 className="text-2xl p-6 font-bold text-gray-800 tracking-wide">
-//         {selectedActivity.title}
-//       </h2>
-
-//       {/* Close Button */}
-//       <button
-//         onClick={handleCloseModal}
-//         className="absolute top-4 right-4 text-white bg-black/30 hover:bg-black/50 rounded-full p-2 transition"
-//       >
-//         ✕
-//       </button>
-
-//       {/* Video / Image */}
-//       <div className="relative w-full mt-4 p-3 h-72 md:h-80 rounded-t-2xl overflow-hidden">
-//         {selectedActivity.video ? (
-//           <video
-//             src={selectedActivity.video}
-//             controls
-//             autoPlay
-//             className="w-full h-full object-cover"
-//           />
-//         ) : (
-//           <img
-//             src={selectedActivity.images?.[0] || "/placeholder.png"}
-//             alt={selectedActivity.title}
-//             className="w-full h-full object-cover"
-//           />
-//         )}
-//       </div>
-
-//       {/* Details */}
-//       <div className="p-6 space-y-6">
-
-//         {/* Difficulty & Time */}
-//         <div className="flex gap-2 flex-wrap text-sm">
-//           {selectedActivity.difficulty && (
-//             <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">
-//               {selectedActivity.difficulty}
-//             </span>
-//           )}
-//           {selectedActivity.time && (
-//             <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">
-//               ⏱ {selectedActivity.time}
-//             </span>
-//           )}
-//         </div>
-
-//         {/* Description (Rich Text) */}
-//         {selectedActivity.description && (
-//           <div>
-//             <h3 className="text-lg font-semibold text-gray-800 mb-2">About this Activity</h3>
-//             <div
-//               className="text-gray-700 prose"
-//               dangerouslySetInnerHTML={{ __html: selectedActivity.description }}
-//             />
-//           </div>
-//         )}
-
-//         {/* Materials */}
-//         {toArray(selectedActivity.materials).length > 0 && (
-//           <div>
-//             <h3 className="text-lg font-semibold text-gray-800 mb-3">🧺 Materials Needed</h3>
-//             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-//               {toArray(selectedActivity.materials).map((m, i) => (
-//                 <li
-//                   key={i}
-//                   className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg text-gray-700 hover:bg-indigo-50 transition"
-//                 >
-//                   <span className="text-indigo-600 font-bold">✓</span> {m}
-//                 </li>
-//               ))}
-//             </ul>
-//           </div>
-//         )}
-
-//         {/* Instruction Sheet (Rich Text) */}
-//         {selectedActivity.instruction_sheet && (
-//           <div>
-//             <h3 className="text-lg font-semibold text-gray-800 mb-3">🪄 Step-by-Step Instructions</h3>
-//             <div
-//               className="text-gray-700 prose"
-//               dangerouslySetInnerHTML={{ __html: selectedActivity.instruction_sheet }}
-//             />
-//           </div>
-//         )}
-
-//       </div>
-//     </div>
-//   </div>
-// )}
-
-
-
 //     </div>
 //   );
 // };
@@ -1380,7 +1203,3 @@ export default DiyActivities;
 
 
 
-
-
-
- 
