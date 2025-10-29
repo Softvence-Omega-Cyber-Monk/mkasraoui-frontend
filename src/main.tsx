@@ -7,7 +7,6 @@ import "./index.css";
 import DashboardLayout from "./Dashboard/DashboardLayout";
 import DefaultPage from "./Dashboard/dashboardpages/DefaultPage";
 import Earnings from "./Dashboard/dashboardpages/Earnings";
-// import Messages from "./Dashboard/dashboardpages/Messages";
 import Reviews from "./Dashboard/dashboardpages/Reviews";
 import Services from "./Dashboard/dashboardpages/Services";
 import AuthLayout from "./Layout/Auth/AuthLayout";
@@ -19,7 +18,6 @@ import SignUp from "./Pages/Authentication/SignUp";
 import TestComponent from "./Pages/Authentication/TestComponent";
 import BecomeProvider from "./Pages/BecomeProvider";
 import Blog from "./Pages/Blog";
-// import BlogDetails from "./Pages/BlogDetails";
 import DiyBoxDetails from "./Pages/DiyBoxDetails";
 import DiyBoxes from "./Pages/DiyBoxes";
 import LandingPage from "./Pages/LandingPage";
@@ -44,7 +42,6 @@ import Faq from "./Pages/Faq";
 import ContactUs from "./Pages/ContactUs";
 import MyWishlist from "./Pages/MyWishlist";
 import ReduxProviderWrapper from "./redux/readux-provider/reduxProviderWrapper";
-// import BlogDetails from "./Pages/BlogDetails";
 import BlogDetails from "./components/Blog/BlogDetails";
 import AdminLayout from "./Layout/AdminLayout";
 import AdminDashboardPage from "./Pages/Admin/AdminDashboardPage";
@@ -62,13 +59,10 @@ import ProviderUpdateProfile from "./components/Provider/ProviderUpdateProfile";
 import ProviderQuotesPage from "./Pages/Provider/ProviderQuotesPage";
 import AdminOrderPage from "./Pages/Admin/AdminOrderPage";
 import AdminCustomerOrderPage from "./Pages/Admin/AdminCustomerOrderPage";
-// import ChatMessagePage from "./Pages/ChatMessagePage";
 import ProviderPage from "./Pages/Provider/ProviderPage";
 import ProvidersList from "./components/Provider/ProvidersList";
 import DiyBoxChackout from "./Pages/DiyBoxChackout";
-// import ChatMessagePage from "./Pages/ChatMessagePage";
 import AdminAddBlogPage from "./Pages/Admin/AdminAddBlogPage";
-// import ChatMessagePage from "./Pages/ChatMessagePage";
 import ChatContainer from "./components/mychat/ChatContainer";
 import ProviderPaymentPage from "./Pages/Provider/ProviderPaymentPage";
 import PaymentSuccess from "./components/Shared/PaymentSuccess";
@@ -77,9 +71,7 @@ import Earning from "./Dashboard/dashboardpages/Earning";
 import DiyActivities from "./components/DiyActivityes/DiyActivities";
 import DiyBoxActivityDetails from "./components/DiyActivityes/DiyBoxActivityDetails";
 import IAffiliatedProductTable from "./components/AdminAffiliateProducts/IAffiliatedProductTable";
-// import IAffiliatedProductTable from "./components/AdminAffiliateProducts/IAffiliatedProductTable";
-// import { SocketProvider } from "./services/SocketContext";
-// import ChatMessagePage from "./components/mychat/ChatMessagePage";
+import ConfirmInviatationPage from "./components/Admin/AllUsers/ConfirmInviatationPage";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -99,6 +91,10 @@ const router = createBrowserRouter([
       {
         path: "/payment-success",
         element: <PaymentSuccess />,
+      },
+      {
+        path: "/invitations/confirm",
+        element: <ConfirmInviatationPage />,
       },
       {
         path: "userChat",
