@@ -385,7 +385,7 @@ const AdminActivityTable: React.FC = () => {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50">
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6">
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-2 flex items-center justify-between">
               <h3 className="text-xl font-semibold">
                 {editingActivity ? "Edit Activity" : "Add Activity"}
               </h3>
@@ -406,7 +406,7 @@ const AdminActivityTable: React.FC = () => {
               <input
                 {...register("title", { required: true })}
                 placeholder="Title"
-                className="rounded border border-gray-300 p-2"
+                className="rounded-xl border border-gray-300 p-2"
               />
               {errors.title && (
                 <p className="text-sm text-red-500">Title required</p>
@@ -416,7 +416,7 @@ const AdminActivityTable: React.FC = () => {
               <textarea
                 {...register("description", { required: true })}
                 placeholder="Description"
-                className="rounded border border-gray-300 p-2"
+                className="h-18 rounded-xl border border-gray-300 p-2"
                 rows={3}
               />
               {errors.description && (
@@ -484,7 +484,7 @@ const AdminActivityTable: React.FC = () => {
                 >
                   Upload Video
                 </label>
-                <div className="flex h-25 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition hover:border-blue-400">
+                <div className="flex h-20 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition hover:border-blue-400">
                   <input
                     id="video-upload"
                     type="file"
@@ -510,7 +510,7 @@ const AdminActivityTable: React.FC = () => {
                       />
                     </svg>
                     <p className="text-sm text-gray-600">
-                      Click to upload video
+                      Click to upload video(Max-50 MB)
                     </p>
                     {/* <p className="text-xs text-gray-400">MP4, MOV, or AVI (max 100MB)</p> */}
                   </label>
@@ -532,7 +532,7 @@ const AdminActivityTable: React.FC = () => {
                   </p>
                 )}
               </div>
-              <div className="mt-4 flex justify-end gap-2">
+              <div className="flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}

@@ -97,17 +97,21 @@ const router = createBrowserRouter([
         element: <PaymentSuccess />,
       },
       {
+        path: "/payment-success",
+        element: <PaymentSuccess />,
+      },
+      {
         path: "userChat",
         element: <ChatContainer />,
       },
-        {
+      {
         path: "/diyboxeactivity",
-        element: <DiyActivities />
+        element: <DiyActivities />,
       },
 
       {
         path: "/diyboxeactivity/activity/:id",
-        element: <DiyBoxActivityDetails />
+        element: <DiyBoxActivityDetails />,
       },
     ],
   },
@@ -162,7 +166,7 @@ const router = createBrowserRouter([
         path: "diyboxe/details/:id",
         element: <DiyBoxDetails />,
       },
-    
+
       {
         path: "party-invitations",
         element: <PartyInvitations />,
@@ -356,7 +360,7 @@ const router = createBrowserRouter([
       },
       {
         path: "add-IAffiliatedProduct",
-        element: <IAffiliatedProductTable/>,
+        element: <IAffiliatedProductTable />,
       },
       {
         path: "subscription-plan",
