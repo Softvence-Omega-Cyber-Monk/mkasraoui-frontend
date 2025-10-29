@@ -154,7 +154,7 @@ const BecomeProvider = () => {
       const res = await requestProvider(formData).unwrap();
       console.log("✅ Provider request submitted successfully", res);
 
-      navigate("/dashboard");
+      navigate("/home/providers");
     } catch (err: any) {
       console.error("❌ Failed to submit provider request:", err);
     }

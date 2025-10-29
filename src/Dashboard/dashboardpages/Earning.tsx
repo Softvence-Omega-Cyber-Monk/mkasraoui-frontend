@@ -3,6 +3,7 @@ import {
   useGetOnboardingLinkQuery,
   useLoginDashboardQuery,
 } from "@/redux/features/payment/paymentApi";
+import Title from "@/components/Shared/Title";
 
 function Earning() {
   const { data: onboardingLink, isFetching: onboardingLoading } =
@@ -11,80 +12,76 @@ function Earning() {
     useLoginDashboardQuery();
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto">
-        {/* Page Header */}
-        <h1 className="mb-10 text-4xl font-bold text-gray-900">
-          Onboarding & Earnings
-        </h1>
+    <div className="min-h-screen space-y-8 bg-gray-50">
+      <div>
+        <Title title=" Onboarding & Earnings" />
+      </div>
 
-        {/* Cards Grid */}
-        <div className="grid gap-8 sm:grid-cols-2">
-          {/* Onboarding Card */}
-          <div className="flex transform flex-col justify-between rounded-xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-lg">
-            <div>
-              <h2 className="mb-2 text-2xl font-semibold text-gray-800">
-                Onboarding
-              </h2>
-              <p className="text-gray-600">
-                Complete your onboarding process to start managing your
-                earnings.
-                {onboardingLoading && (
-                  <span className="ml-2 animate-pulse text-sm text-blue-500">
-                    Loading...
-                  </span>
-                )}
-              </p>
-            </div>
-            <button
-              className={`mt-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-medium text-white shadow-md transition ${
-                onboardingLink?.url
-                  ? "bg-[#223B7D] hover:bg-[#02195a]"
-                  : "cursor-not-allowed bg-gray-300"
-              }`}
-              onClick={() => {
-                if (onboardingLink?.url)
-                  window.open(onboardingLink.url, "_blank");
-                else alert("✅ Your onboarding is already completed.");
-              }}
-              disabled={!onboardingLink?.url || onboardingLoading}
-            >
-              {onboardingLink?.url ? "Set Onboarding" : "Completed"}
-              <ArrowTopRightOnSquareIcon className="h-5 w-5" />
-            </button>
+      {/* Cards Grid */}
+      <div className="grid gap-8 sm:grid-cols-2">
+        {/* Onboarding Card */}
+        <div className="flex transform flex-col justify-between rounded-xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-lg">
+          <div>
+            <h2 className="mb-2 text-2xl font-semibold text-gray-800">
+              Onboarding
+            </h2>
+            <p className="text-gray-600">
+              Complete your onboarding process to start managing your earnings.
+              {onboardingLoading && (
+                <span className="ml-2 animate-pulse text-sm text-blue-500">
+                  Loading...
+                </span>
+              )}
+            </p>
           </div>
+          <button
+            className={`mt-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-medium text-white shadow-md transition ${
+              onboardingLink?.url
+                ? "bg-[#223B7D] hover:bg-[#02195a]"
+                : "cursor-not-allowed bg-gray-300"
+            }`}
+            onClick={() => {
+              if (onboardingLink?.url)
+                window.open(onboardingLink.url, "_blank");
+              else alert("✅ Your onboarding is already completed.");
+            }}
+            disabled={!onboardingLink?.url || onboardingLoading}
+          >
+            {onboardingLink?.url ? "Set Onboarding" : "Completed"}
+            <ArrowTopRightOnSquareIcon className="h-5 w-5" />
+          </button>
+        </div>
 
-          {/* Earnings Dashboard Card */}
-          <div className="flex transform flex-col justify-between rounded-xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-lg">
-            <div>
-              <h2 className="mb-2 text-2xl font-semibold text-gray-800">
-                Earnings Dashboard
-              </h2>
-              <p className="text-gray-600">
-                Access your dashboard to track and manage your earnings in
-                real-time.
-                {dashboardLoading && (
-                  <span className="ml-2 animate-pulse text-sm text-green-500">
-                    Loading...
-                  </span>
-                )}
-              </p>
-            </div>
-            <button
-              className={`mt-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-medium text-white shadow-md transition ${
-                dashboardLink?.url
-                  ? "bg-[#223B7D] hover:bg-[#02195a]"
-                  : "cursor-not-allowed bg-gray-300"
-              }`}
-              onClick={() =>
-                dashboardLink?.url && window.open(dashboardLink.url, "_blank")
-              }
-              disabled={!dashboardLink?.url || dashboardLoading}
-            >
-              {dashboardLink?.url ? "Manage Earnings" : "Unavailable"}
-              <ArrowTopRightOnSquareIcon className="h-5 w-5" />
-            </button>
+        {/* Earnings Dashboard Card */}
+        <div className="flex transform flex-col justify-between rounded-xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-lg">
+          <div>
+            <h2 className="mb-2 text-2xl font-semibold text-gray-800">
+              Earnings Dashboard
+            </h2>
+            <p className="text-gray-600">
+              Access your dashboard to track and manage your earnings in
+              real-time.
+              {dashboardLoading && (
+                <span className="ml-2 animate-pulse text-sm text-green-500">
+                  Loading...
+                </span>
+              )}
+            </p>
           </div>
+          <button
+            className={`mt-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-medium text-white shadow-md transition ${
+              dashboardLink?.url
+                ? "bg-[#223B7D] hover:bg-[#02195a]"
+                : "cursor-not-allowed bg-gray-300"
+            }`}
+            onClick={() =>
+              dashboardLink?.url && window.open(dashboardLink.url, "_blank")
+            }
+            disabled={!dashboardLink?.url || dashboardLoading}
+          >
+            {dashboardLink?.url ? "Manage Earnings" : "Unavailable"}
+            <ArrowTopRightOnSquareIcon className="h-5 w-5" />
+          </button>
         </div>
       </div>
     </div>

@@ -219,13 +219,13 @@ const AdminProvidersTable: React.FC = () => {
                         </td>
 
                         {/* Actions */}
-                        <td className="flex items-center justify-center space-x-2 py-3">
+                        <td className="flex items-center justify-center space-x-2 py-5">
                           {!p.isApproved && (
                             <>
                               <button
                                 onClick={() => handleApprove(p.id)}
                                 disabled={isApproving || isRejecting}
-                                className="cursor-pointer rounded-md bg-green-600 p-2 text-white transition-colors hover:bg-green-700 disabled:opacity-50"
+                                className="cursor-pointer rounded-md bg-green-600 px-2 py-1 text-white transition-colors hover:bg-green-700 disabled:opacity-50"
                                 title="Approve"
                               >
                                 {isApproving ? "..." : "✓"}
@@ -233,7 +233,7 @@ const AdminProvidersTable: React.FC = () => {
                               <button
                                 onClick={() => handleReject(p.id)}
                                 disabled={isApproving || isRejecting}
-                                className="cursor-pointer rounded-md bg-red-600 p-2 text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+                                className="cursor-pointer rounded-md bg-red-600 px-2 py-1 text-white transition-colors hover:bg-red-700 disabled:opacity-50"
                                 title="Reject"
                               >
                                 {isRejecting ? "..." : "✕"}

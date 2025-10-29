@@ -20,6 +20,7 @@ export interface User {
   profile_image?: string | null; // ✅ Added
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subscription?: any[];
+  total_party_generated: number
 }
 
 export interface CreateUserRequest {
