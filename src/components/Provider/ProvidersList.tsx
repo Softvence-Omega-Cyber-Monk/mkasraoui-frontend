@@ -1,6 +1,3 @@
-
-
-
 "use client";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -72,7 +69,7 @@ const ProvidersList = () => {
                   className="h-12 w-12 rounded-lg object-cover"
                 />
                 <div>
-                  <h2 className="text-2xl font-semibold text-gray-900">
+                  <h2 className="text-2xl font-semibold whitespace-nowrap text-gray-900">
                     {provider.bussinessName}
                   </h2>
                   <p className="text-gray-600">{provider.contactName}</p>
@@ -80,16 +77,20 @@ const ProvidersList = () => {
               </div>
 
               {/* Description */}
-              <p className="mb-4 line-clamp-3 text-gray-700">
-                {provider.description}
+              {/* Description */}
+              <p className="mb-4 text-gray-700">
+                {provider.description.split(" ").slice(0, 6).join(" ")}...
               </p>
 
               {/* Service Area & Price */}
               <div className="mb-4 space-y-2">
                 <div className="flex items-center gap-2 text-gray-600">
                   <MapPin className="h-4.5 w-4.5" />
-                  <span className="text-sm">{provider.serviceArea}</span>
+                  <span className="text-sm">
+                    {provider.serviceArea?.split(" ").slice(0, 6).join(" ")}...
+                  </span>
                 </div>
+
                 <div className="flex items-center gap-2 text-[#5A5C5F]">
                   <CircleDollarSign className="h-4.5 w-4.5" />
                   <span className="text-base">{provider.price}</span>
@@ -119,7 +120,7 @@ const ProvidersList = () => {
             {user?.id === provider.userId && (
               <Link
                 to={`/dashboard/providers/${provider.id}`}
-                className="mt-6 flex items-center justify-center gap-2 rounded-lg bg-[#223B7D]  px-5 py-2 font-medium text-white transition-all hover:bg-[#02195a] hover:shadow-lg"
+                className="mt-6 flex items-center justify-center gap-2 rounded-lg bg-[#223B7D] px-5 py-2 font-medium text-white transition-all hover:bg-[#02195a] hover:shadow-lg"
               >
                 View / Update <ArrowRight className="h-4 w-4" />
               </Link>
@@ -132,15 +133,14 @@ const ProvidersList = () => {
       {providers.length > 0 && (
         <div className="mt-6 flex items-center justify-between px-4 py-3">
           <div className="text-sm text-gray-600">
-            Showing{" "}
-            <span className="font-medium">{providers.length}</span> of{" "}
+            Showing <span className="font-medium">{providers.length}</span> of{" "}
             <span className="font-medium">{total}</span>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="rounded-lg border hover:cursor-pointer px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+              className="rounded-lg border px-3 py-1.5 text-sm text-gray-600 hover:cursor-pointer hover:bg-gray-100 disabled:opacity-50"
             >
               Prev
             </button>
@@ -150,7 +150,7 @@ const ProvidersList = () => {
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
-              className="rounded-lg border px-3 hover:cursor-pointer py-1.5 text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+              className="rounded-lg border px-3 py-1.5 text-sm text-gray-600 hover:cursor-pointer hover:bg-gray-100 disabled:opacity-50"
             >
               Next
             </button>
@@ -162,27 +162,6 @@ const ProvidersList = () => {
 };
 
 export default ProvidersList;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // "use client";
 // import { Link } from "react-router-dom";

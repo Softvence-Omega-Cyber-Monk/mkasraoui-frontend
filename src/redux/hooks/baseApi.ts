@@ -31,7 +31,7 @@ const baseQueryWithErrorHandler: typeof rawBaseQuery = async (
     if (result.error?.status === 401) {
       Cookies.remove("token");
       if (typeof window !== "undefined") {
-        window.location.href = "/login";
+        window.location.href = "/auth/login";
       }
     }
 
@@ -72,9 +72,9 @@ export const baseApi = createApi({
     "Invitations",
     "Blogs",
     "PartyPlans",
-     "Activities",
-     "DiyBoxActivityReviews",
-"AffiliateProducts"
+    "Activities",
+    "DiyBoxActivityReviews",
+    "AffiliateProducts",
   ],
 
   endpoints: () => ({}),
