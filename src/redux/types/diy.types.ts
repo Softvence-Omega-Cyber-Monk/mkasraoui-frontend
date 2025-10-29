@@ -32,6 +32,7 @@ export interface DIYProduct {
   included?: string[];
   activities?: DIYActivity[];
   tutorial?: string;
+   category?: string; 
 }
 
 export interface Activity {

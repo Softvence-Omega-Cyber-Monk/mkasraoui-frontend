@@ -11,10 +11,17 @@ export interface Product {
   imges: string[];
 }
 
+// export interface WishlistItem {
+//   product: any;
+//   id: string;
+//   prodcut: Product; // keeping typo since your backend uses "prodcut"
+// }
+
 export interface WishlistItem {
   id: string;
-  prodcut: Product; // keeping typo since your backend uses "prodcut"
+  prodcut: Product; // keep typo to match backend
 }
+
 
 
 export const wishlistApi = baseApi.injectEndpoints({
