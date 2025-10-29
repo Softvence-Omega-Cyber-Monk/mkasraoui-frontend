@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Title from "@/components/Shared/Title";
 import PageLoader from "@/components/Shared/PageLoader";
 import { toast } from "react-hot-toast";
@@ -8,6 +8,7 @@ import {
   useUpdateOrderStatusMutation,
   adminOrderApi,
 } from "@/redux/features/admin/adminOrder/adminOrderApi";
+import { ChevronDown, Search } from "lucide-react";
 
 const statusText: Record<string, string> = {
   PENDING: "text-blue-600",
@@ -28,7 +29,7 @@ const statusOptions: OrderResponse["status"][] = [
 ];
 
 const AdminOrdersTable: React.FC = () => {
-  const ordersPerPage = 9; // items per page
+  const ordersPerPage = 9;
   const [currentPage, setCurrentPage] = useState(1);
 
   const { data, isLoading, isFetching } = useGetOrdersQuery({
@@ -39,11 +40,30 @@ const AdminOrdersTable: React.FC = () => {
   const [updateStatus] = useUpdateOrderStatusMutation();
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
 
-  const orders = data?.data?.orders || [];
-  const total = orders.length;
-  const totalPages = Math.ceil(total / ordersPerPage);
+  // Search & Filter states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
-  const paginatedOrders = orders.slice(
+  const orders = data?.data?.orders || [];
+  const totalPages = Math.ceil(orders.length / ordersPerPage);
+
+  // Filtered orders based on search & status
+  const filteredOrders = useMemo(() => {
+    return orders.filter((order) => {
+      const matchesSearch =
+        order.user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.items.some((item) =>
+          item.product.title.toLowerCase().includes(searchTerm.toLowerCase()),
+        );
+
+      const matchesStatus = statusFilter ? order.status === statusFilter : true;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [orders, searchTerm, statusFilter]);
+
+  const paginatedOrders = filteredOrders.slice(
     (currentPage - 1) * ordersPerPage,
     currentPage * ordersPerPage,
   );
@@ -55,7 +75,7 @@ const AdminOrdersTable: React.FC = () => {
 
       await updateStatus({ id: orderId, status }).unwrap();
 
-      // Update cache correctly
+      // Update cache
       adminOrderApi.util.updateQueryData(
         "getOrders",
         { page: 1, limit: 100000 },
@@ -79,6 +99,42 @@ const AdminOrdersTable: React.FC = () => {
         <Title title="All Orders" />
       </div>
 
+      {/* Filter Section */}
+      {/* ✅ Filter Section with Updated Design */}
+      <div className="mb-8">
+        <div className="mx-auto flex flex-col items-center space-y-4 rounded-xl bg-white p-4 shadow-sm md:flex-row md:space-y-0 md:space-x-4">
+          {/* Search */}
+          <div className="relative w-full flex-1">
+            <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by customer or product..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 py-2 pr-4 pl-10 text-gray-700 placeholder-gray-400 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+            />
+          </div>
+
+          {/* Status Filter */}
+          <div className="relative w-full md:w-[180px]">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+            >
+              <option value="">All Status</option>
+              {statusOptions.map((status) => (
+                <option key={status} value={status}>
+                  {status.charAt(0) + status.slice(1).toLowerCase()}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 text-gray-700" />
+          </div>
+        </div>
+      </div>
+
+      {/* Orders Table */}
       <div className="overflow-hidden rounded-xl border border-[#DBE0E5] bg-white">
         <div className="w-full overflow-x-auto">
           <table className="w-full min-w-[900px]">
@@ -183,12 +239,12 @@ const AdminOrdersTable: React.FC = () => {
       </div>
 
       {/* Pagination */}
-      {total > 0 && (
+      {filteredOrders.length > 0 && (
         <div className="mt-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
           <div className="text-sm text-gray-600">
             Showing{" "}
             <span className="font-medium">{paginatedOrders.length}</span> of{" "}
-            <span className="font-medium">{total}</span> orders
+            <span className="font-medium">{filteredOrders.length}</span> orders
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-1">
@@ -204,7 +260,11 @@ const AdminOrdersTable: React.FC = () => {
               <button
                 key={num}
                 onClick={() => setCurrentPage(num)}
-                className={`rounded-md border px-3 py-1 text-sm ${num === currentPage ? "bg-secondary-dark text-white" : "text-gray-700 hover:bg-gray-100"}`}
+                className={`rounded-md border px-3 py-1 text-sm ${
+                  num === currentPage
+                    ? "bg-secondary-dark text-white"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
               >
                 {num}
               </button>
@@ -226,7 +286,9 @@ const AdminOrdersTable: React.FC = () => {
 
 export default AdminOrdersTable;
 
+// import { useState } from "react";
 // import Title from "@/components/Shared/Title";
+// import PageLoader from "@/components/Shared/PageLoader";
 // import { toast } from "react-hot-toast";
 // import type { OrderResponse } from "@/redux/types/adminOder.type";
 // import {
@@ -234,10 +296,7 @@ export default AdminOrdersTable;
 //   useUpdateOrderStatusMutation,
 //   adminOrderApi,
 // } from "@/redux/features/admin/adminOrder/adminOrderApi";
-// import PageLoader from "@/components/Shared/PageLoader";
-// import { useState } from "react";
 
-// // Status text and background colors
 // const statusText: Record<string, string> = {
 //   PENDING: "text-blue-600",
 //   DELIVERED: "text-green-600",
@@ -257,26 +316,37 @@ export default AdminOrdersTable;
 // ];
 
 // const AdminOrdersTable: React.FC = () => {
+//   const ordersPerPage = 9; // items per page
+//   const [currentPage, setCurrentPage] = useState(1);
+
 //   const { data, isLoading, isFetching } = useGetOrdersQuery({
 //     page: 1,
-//     limit: 100000,
+//     limit: 1000000, // fetch all for frontend pagination
 //   });
 
 //   const [updateStatus] = useUpdateOrderStatusMutation();
 //   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
+
+//   const orders = data?.data?.orders || [];
+//   const total = orders.length;
+//   const totalPages = Math.ceil(total / ordersPerPage);
+
+//   const paginatedOrders = orders.slice(
+//     (currentPage - 1) * ordersPerPage,
+//     currentPage * ordersPerPage,
+//   );
 
 //   const handleStatusChange = async (orderId: string, status: string) => {
 //     try {
 //       setUpdatingOrderId(orderId);
 //       const toastId = toast.loading("Updating order status...");
 
-//       // Update server
 //       await updateStatus({ id: orderId, status }).unwrap();
 
-//       // Optimistically update cache
+//       // Update cache correctly
 //       adminOrderApi.util.updateQueryData(
 //         "getOrders",
-//         { page: 1, limit: 10 },
+//         { page: 1, limit: 100000 },
 //         (draft) => {
 //           const order = draft.data.orders.find((o) => o.id === orderId);
 //           if (order) order.status = status;
@@ -285,14 +355,11 @@ export default AdminOrdersTable;
 
 //       toast.success("Order status updated successfully!", { id: toastId });
 //     } catch (error: any) {
-//       console.error(error);
 //       toast.error(error?.data?.message || "Failed to update order status");
 //     } finally {
 //       setUpdatingOrderId(null);
 //     }
 //   };
-
-//   const orders = data?.data?.orders || [];
 
 //   return (
 //     <div className="space-y-6">
@@ -330,28 +397,27 @@ export default AdminOrdersTable;
 //               {isLoading || isFetching ? (
 //                 <tr>
 //                   <td
-//                     colSpan={7}
+//                     colSpan={6}
 //                     className="p-6 text-center text-sm text-gray-500"
 //                   >
 //                     <PageLoader />
 //                   </td>
 //                 </tr>
-//               ) : orders.length === 0 ? (
+//               ) : paginatedOrders.length === 0 ? (
 //                 <tr>
 //                   <td
-//                     colSpan={7}
+//                     colSpan={6}
 //                     className="p-6 text-center text-sm text-gray-600"
 //                   >
 //                     No orders found.
 //                   </td>
 //                 </tr>
 //               ) : (
-//                 orders.map((order: OrderResponse) => (
+//                 paginatedOrders.map((order: OrderResponse) => (
 //                   <tr
 //                     key={order.id}
 //                     className="border-b-2 border-gray-100 hover:bg-gray-50"
 //                   >
-//                     {/* Customer */}
 //                     <td className="px-6 py-4 text-xs text-gray-600">
 //                       <div className="text-sm font-medium">
 //                         {order.user.name}
@@ -360,13 +426,9 @@ export default AdminOrdersTable;
 //                         {order.user.email}
 //                       </div>
 //                     </td>
-
-//                     {/* Total */}
 //                     <td className="px-6 py-4 text-sm text-gray-600">
 //                       €{order.total.toFixed(2)}
 //                     </td>
-
-//                     {/* Items */}
 //                     <td className="px-6 py-4 text-xs text-gray-600">
 //                       {order.items
 //                         .map((item) => item.product.title)
@@ -375,21 +437,15 @@ export default AdminOrdersTable;
 //                         .slice(0, 3)
 //                         .join(" ")}
 //                     </td>
-
-//                     {/* Created At */}
 //                     <td className="px-6 py-4 text-xs text-gray-600">
 //                       {new Date(order.createdAt).toLocaleString()}
 //                     </td>
-
-//                     {/* Status Text */}
 //                     <td
 //                       className={`px-6 py-4 text-sm font-semibold ${statusText[order.status]}`}
 //                     >
 //                       {order.status.charAt(0) +
 //                         order.status.slice(1).toLowerCase()}
 //                     </td>
-
-//                     {/* Status Dropdown */}
 //                     <td className="px-6 py-4 text-xs">
 //                       <select
 //                         value={order.status}
@@ -413,6 +469,45 @@ export default AdminOrdersTable;
 //           </table>
 //         </div>
 //       </div>
+
+//       {/* Pagination */}
+//       {total > 0 && (
+//         <div className="mt-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
+//           <div className="text-sm text-gray-600">
+//             Showing{" "}
+//             <span className="font-medium">{paginatedOrders.length}</span> of{" "}
+//             <span className="font-medium">{total}</span> orders
+//           </div>
+
+//           <div className="flex flex-wrap items-center justify-center gap-1">
+//             <button
+//               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+//               disabled={currentPage <= 1}
+//               className="cursor-pointer rounded-md border px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+//             >
+//               Prev
+//             </button>
+
+//             {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+//               <button
+//                 key={num}
+//                 onClick={() => setCurrentPage(num)}
+//                 className={`rounded-md border px-3 py-1 text-sm ${num === currentPage ? "bg-secondary-dark text-white" : "text-gray-700 hover:bg-gray-100"}`}
+//               >
+//                 {num}
+//               </button>
+//             ))}
+
+//             <button
+//               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+//               disabled={currentPage >= totalPages}
+//               className="cursor-pointer rounded-md border px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+//             >
+//               Next
+//             </button>
+//           </div>
+//         </div>
+//       )}
 //     </div>
 //   );
 // };

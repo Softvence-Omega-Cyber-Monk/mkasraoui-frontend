@@ -112,7 +112,6 @@ export default function RequestQuote() {
             Get a personalized quote from{" "}
             <span className="font-semibold">Sweet Dreams Bakery</span>
           </p>
-          <p className="text-gray-500">Typical price range: $50-200</p>
         </div>
 
         <div className="space-y-6 p-6">
@@ -280,8 +279,6 @@ export default function RequestQuote() {
     </div>
   );
 }
-
-
 
 // import { ArrowLeft } from "lucide-react";
 // import { useState } from "react";

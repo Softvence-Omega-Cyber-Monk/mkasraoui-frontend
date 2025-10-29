@@ -191,7 +191,7 @@ const IndividualProvider: React.FC = () => {
 
             <div>
               <label className="block font-medium text-gray-700">
-                Price Range
+                Price
                 <input
                   type="text"
                   name="price"

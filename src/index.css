@@ -101,6 +101,31 @@ body {
   height: 80px;
 }
 
+/* Google TRanslation */
+/* Prevent Google Translate from translating specific parts */
+.notranslate {
+  translate: none !important;
+}
+
+/* Optional: hide the Google Translate toolbar if it appears */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+body {
+  top: 0px !important;
+}
+
+/* Optional: remove outline from select */
+.goog-te-combo {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+
+
 /* Mobile screens only */
 @media (max-width: 640px) {
   .swal2-icon {
@@ -162,9 +187,6 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
-
-
 
 /* Translation design  */
 .goog-te-gadget {
