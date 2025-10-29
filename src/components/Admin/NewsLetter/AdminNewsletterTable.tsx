@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { MdDelete } from "react-icons/md";
+// import { MdDelete } from "react-icons/md";
 import Swal from "sweetalert2";
 
 import PageLoader from "@/components/Shared/PageLoader";
 import Title from "@/components/Shared/Title";
 import {
-  useDeleteNewsletterMutation,
+  // useDeleteNewsletterMutation,
   useGetAllNewslettersQuery,
   useSendPromotionalMailMutation,
 } from "@/redux/features/newsLetter/newsLetterApi";
@@ -26,8 +26,8 @@ const AdminNewsletterTable: React.FC = () => {
     isFetching,
   } = useGetAllNewslettersQuery();
 
-  const [deleteNewsletter, { isLoading: isDeleting }] =
-    useDeleteNewsletterMutation();
+  // const [deleteNewsletter, { isLoading: isDeleting }] =
+  //   useDeleteNewsletterMutation();
   const [sendPromotionalMail, { isLoading: isSending }] =
     useSendPromotionalMailMutation();
 
@@ -43,31 +43,31 @@ const AdminNewsletterTable: React.FC = () => {
       currentPage * newslettersPerPage,
     ) || [];
 
-  // Delete subscriber
-  const handleDelete = async (nl: Newsletter) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: `Delete subscriber ${nl.email}?`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    });
+  // // Delete subscriber
+  // const handleDelete = async (nl: Newsletter) => {
+  //   const result = await Swal.fire({
+  //     title: "Are you sure?",
+  //     text: `Delete subscriber ${nl.email}?`,
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#3085d6",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Yes, delete it!",
+  //   });
 
-    if (result.isConfirmed) {
-      try {
-        await deleteNewsletter(nl.email).unwrap();
-        Swal.fire("Deleted!", `${nl.email} has been deleted.`, "success");
-      } catch (err: any) {
-        Swal.fire(
-          "Error!",
-          err?.data?.message || "Failed to delete subscriber",
-          "error",
-        );
-      }
-    }
-  };
+  //   if (result.isConfirmed) {
+  //     try {
+  //       await deleteNewsletter(nl.email).unwrap();
+  //       Swal.fire("Deleted!", `${nl.email} has been deleted.`, "success");
+  //     } catch (err: any) {
+  //       Swal.fire(
+  //         "Error!",
+  //         err?.data?.message || "Failed to delete subscriber",
+  //         "error",
+  //       );
+  //     }
+  //   }
+  // };
 
   // Send promotional mail
   const handleSendPromotionalMail = async () => {
@@ -122,9 +122,9 @@ const AdminNewsletterTable: React.FC = () => {
                   <th className="px-6 py-5 text-left text-base font-medium text-gray-700">
                     Subscribed At
                   </th>
-                  <th className="px-6 py-5 text-left text-base font-medium text-gray-500">
+                  {/* <th className="px-6 py-5 text-left text-base font-medium text-gray-500">
                     Action
-                  </th>
+                  </th> */}
                 </tr>
               </thead>
               <tbody>
@@ -158,7 +158,7 @@ const AdminNewsletterTable: React.FC = () => {
                       <td className="px-6 py-4 text-sm text-gray-600">
                         {new Date(nl.createdAt).toLocaleString()}
                       </td>
-                      <td className="px-6 py-4 text-sm">
+                      {/* <td className="px-6 py-4 text-sm">
                         <button
                           onClick={() => handleDelete(nl)}
                           className="flex cursor-pointer items-center justify-center rounded-lg bg-red-600 p-2 text-white hover:bg-red-700 disabled:opacity-50"
@@ -169,7 +169,7 @@ const AdminNewsletterTable: React.FC = () => {
                             <MdDelete className="h-4 w-4" />
                           )}
                         </button>
-                      </td>
+                      </td> */}
                     </tr>
                   ))
                 )}
