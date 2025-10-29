@@ -31,7 +31,7 @@ function Reviews() {
   return (
     <div>
       <div className="w-full space-y-6">
-        <Title title="Provider Reviews & Ratings" />
+        <Title title="Reviews & Ratings" />
 
         <div className="space-y-6">
           {reviews.map((review) => (

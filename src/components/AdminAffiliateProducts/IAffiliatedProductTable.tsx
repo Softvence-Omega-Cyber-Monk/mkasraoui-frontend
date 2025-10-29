@@ -105,28 +105,12 @@ const IAffiliatedProductTable: React.FC = () => {
       });
     }
 
-    // // Sorting
-    // if (sortOption) {
-    //   result.sort((a, b) => {
-    //     switch (sortOption) {
-    //       case "priceLowHigh":
-    //         return a.price - b.price;
-    //       case "priceHighLow":
-    //         return b.price - a.price;
-    //       case "ratingHighLow":
-    //         return b.avg_rating - a.avg_rating;
-    //       default:
-    //         return 0;
-    //     }
-    //   });
-    // }
-
     return result;
   }, [products, searchTerm, company, priceRange]);
 
   // --- Pagination ---
   const [page, setPage] = useState(1);
-  const productsPerPage = 10;
+  const productsPerPage = 9;
   const total = filteredProducts.length;
   const totalPages = Math.ceil(total / productsPerPage);
 
@@ -154,11 +138,6 @@ const IAffiliatedProductTable: React.FC = () => {
     setPriceRange(value);
     setPage(1);
   };
-
-  // const handleSortChange = (value: string) => {
-  //   setSortOption(value);
-  //   setPage(1);
-  // };
 
   const openAddModal = () => {
     setEditingProduct(null);
@@ -290,22 +269,6 @@ const IAffiliatedProductTable: React.FC = () => {
             </select>
             <ChevronDown className="pointer-events-none absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 text-gray-700" />
           </div>
-
-          {/* Sort Filter */}
-          {/* <div className="relative w-full sm:w-[180px]">
-            <select
-              value={sortOption}
-              onChange={(e) => handleSortChange(e.target.value)}
-              className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
-            >
-              <option value="">Sort By</option>
-
-              <option value="priceLowHigh">Price: Low to High</option>
-              <option value="priceHighLow">Price: High to Low</option>
-              <option value="ratingHighLow">Top Rated</option>
-            </select>
-            <ChevronDown className="pointer-events-none absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 text-gray-700" />
-          </div> */}
         </div>
       </section>
       {/* Table */}
@@ -418,9 +381,48 @@ const IAffiliatedProductTable: React.FC = () => {
       </div>
 
       {/* Pagination */}
-      {total > 0 && (
+
+      {/* ✅ Simplified Pagination */}
+      {filteredProducts.length > 0 && (
+        <div className="mt-6 flex items-center justify-between px-4 py-3">
+          {/* Info text */}
+          <div className="text-sm text-gray-600">
+            Showing{" "}
+            <span className="font-medium">{paginatedProducts.length}</span> of{" "}
+            <span className="font-medium">{total}</span>
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex items-center gap-2">
+            {/* Prev Button */}
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="cursor-pointer rounded-lg border px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            {/* Page Info */}
+            <div className="min-w-[50px] rounded-md border bg-gray-50 px-3 py-1.5 text-center text-sm font-medium text-gray-700">
+              {page} / {totalPages}
+            </div>
+
+            {/* Next Button */}
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+              className="cursor-pointer rounded-lg border px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* {total > 0 && (
         <div className="mt-8 flex flex-col items-center justify-between gap-4 sm:flex-row">
-          {/* Showing Results Info */}
+       
           <div className="text-sm text-gray-600">
             Showing{" "}
             <span className="font-semibold text-gray-900">
@@ -430,9 +432,9 @@ const IAffiliatedProductTable: React.FC = () => {
             products
           </div>
 
-          {/* Pagination Controls */}
+  
           <div className="flex flex-wrap items-center justify-center gap-2">
-            {/* Prev Button */}
+           
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
@@ -441,29 +443,29 @@ const IAffiliatedProductTable: React.FC = () => {
               ← Prev
             </button>
 
-            {/* Dynamic Page Numbers */}
+           
             {(() => {
               const pages: (number | string)[] = [];
 
               if (totalPages <= 6) {
-                // Show all pages if few total pages
+               
                 for (let i = 1; i <= totalPages; i++) pages.push(i);
               } else {
-                // Always show first page
+              
                 pages.push(1);
 
-                // Show left ellipsis if beyond page 4
+               
                 if (page > 4) pages.push("...");
 
-                // Show pages around current
+              
                 const start = Math.max(2, page - 1);
                 const end = Math.min(totalPages - 1, page + 1);
                 for (let i = start; i <= end; i++) pages.push(i);
 
-                // Show right ellipsis if not near the end
+             
                 if (page < totalPages - 3) pages.push("...");
 
-                // Always show last page
+              
                 pages.push(totalPages);
               }
 
@@ -488,7 +490,7 @@ const IAffiliatedProductTable: React.FC = () => {
               );
             })()}
 
-            {/* Next Button */}
+        
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
@@ -497,8 +499,10 @@ const IAffiliatedProductTable: React.FC = () => {
               Next →
             </button>
           </div>
+
+
         </div>
-      )}
+      )} */}
 
       {/* Add/Edit Modal */}
       {isModalOpen && (
