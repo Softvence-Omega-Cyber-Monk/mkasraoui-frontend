@@ -148,7 +148,7 @@ export default function ForgotPassword() {
                 <button
                   type="submit"
                   disabled={requesting}
-                  className="bg-secondary hover:bg-secondary-dark w-full rounded-lg py-3 text-white shadow-lg transition disabled:opacity-70"
+                  className="bg-secondary cursor-pointer hover:bg-secondary-dark w-full rounded-lg py-3 text-white shadow-lg transition disabled:opacity-70"
                 >
                   {requesting ? "Sending..." : "Send Reset Code"}
                 </button>
@@ -171,7 +171,7 @@ export default function ForgotPassword() {
               <button
                 type="submit"
                 disabled={verifying}
-                className="bg-secondary hover:bg-secondary-dark w-full rounded-lg py-3 text-white shadow-lg transition disabled:opacity-70"
+                className="bg-secondary cursor-pointer hover:bg-secondary-dark w-full rounded-lg py-3 text-white shadow-lg transition disabled:opacity-70"
               >
                 {verifying ? "Verifying..." : "Verify Code"}
               </button>
@@ -200,7 +200,7 @@ export default function ForgotPassword() {
               <button
                 type="submit"
                 disabled={resetting}
-                className="bg-secondary hover:bg-secondary-dark w-full rounded-lg py-3 text-white shadow-lg transition disabled:opacity-70"
+                className="bg-secondary cursor-pointer hover:bg-secondary-dark w-full rounded-lg py-3 text-white shadow-lg transition disabled:opacity-70"
               >
                 {resetting ? "Resetting..." : "Reset Password"}
               </button>
@@ -212,7 +212,7 @@ export default function ForgotPassword() {
             Remembered your password?{" "}
             <Link
               to="/auth/login"
-              className="text-secondary font-medium hover:underline"
+              className="text-secondary cursor-pointer font-medium hover:underline"
             >
               Log In
             </Link>

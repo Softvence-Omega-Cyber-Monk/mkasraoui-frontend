@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useCreatePartyPlanMutation } from "@/redux/features/partyPlan/partyPlanApi";
+import { ShoppingCart, Download, Mail } from "lucide-react";
+import { EmailShareButton } from "react-share";
 import { useSavePartyPlanMutation } from "@/redux/features/partyGeneration/partyGenerationApi";
-import { ShoppingCart } from "lucide-react";
 import toast from "react-hot-toast";
-
 interface PartyPlan {
   [key: string]: string[];
 }
@@ -20,7 +19,7 @@ interface PartyProducts {
   id: string;
   title: string;
   link: string;
-  image_url: string
+  image_url: string;
 }
 
 interface PartyPlanResponse {
@@ -54,9 +53,9 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
   partyPlanData,
   preferencesData
 }) => {
-  const [_createPartyPlan, { isLoading: isSaving }] = useCreatePartyPlanMutation();
-  const [savePartyPlan] = useSavePartyPlanMutation()
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [savePartyPlan] = useSavePartyPlanMutation()
 
   if (!partyPlanData) {
     return (
@@ -72,8 +71,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
   const { party_plan, adventure_song_movie_links, suggested_gifts } = partyPlanData;
   const amazonProducts = suggested_gifts?.products || [];
 
-
-  // Check if party_plan exists and is valid
   if (!party_plan || typeof party_plan !== 'object') {
     return (
       <div className="mx-auto max-w-6xl">
@@ -161,12 +158,244 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
     }
   };
 
+  const generatePDF = async () => {
+    setIsGeneratingPDF(true);
+
+    try {
+      const { default: jsPDF } = await import('jspdf');
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 20;
+      const contentWidth = pageWidth - margin * 2;
+      let yPosition = margin;
+
+      // 🔹 Utility: remove emojis & normalize spaces
+      const cleanText = (text: string) => {
+        if (!text) return "";
+        return text
+          .replace(
+            /([\u2700-\u27BF]|[\uE000-\uF8FF]|[\uD83C-\uDBFF\uDC00-\uDFFF]|[\u2011-\u26FF])/g,
+            ""
+          )
+          .replace(/\s+/g, " ")
+          .trim();
+      };
+
+      // 🔹 Utility: wrap text within content width
+      const wrapText = (text: string, maxWidth: number) => {
+        const clean = cleanText(text);
+        return doc.splitTextToSize(clean, maxWidth);
+      };
+
+      // 🔹 Utility: add new page if needed
+      const checkNewPage = (requiredSpace: number) => {
+        if (yPosition + requiredSpace > pageHeight - margin) {
+          doc.addPage();
+          yPosition = margin;
+        }
+      };
+
+      // ===== HEADER =====
+      doc.setFillColor(34, 59, 125);
+      doc.rect(0, 0, pageWidth, 50, "F");
+
+      doc.setFillColor(100, 120, 180);
+      doc.rect(0, 40, pageWidth, 10, "F");
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(28);
+      doc.setFont("helvetica", "bold");
+      doc.text("Your Perfect Party Plan", pageWidth / 2, 25, { align: "center" });
+
+      yPosition = 65;
+
+      // ===== PARTY DETAILS BOX =====
+      if (preferencesData) {
+        doc.setFillColor(245, 247, 250);
+        doc.roundedRect(margin, yPosition, contentWidth, 45, 3, 3, "F");
+
+        doc.setTextColor(34, 59, 125);
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Party Details", margin + 5, yPosition + 10);
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(60, 60, 60);
+
+        let detailY = yPosition + 20;
+        const details = [
+          preferencesData.person_name && `Guest of Honor: ${preferencesData.person_name}`,
+          preferencesData.theme && `Theme: ${preferencesData.theme}`,
+          preferencesData.num_guests && `Guests: ${preferencesData.num_guests}`,
+          preferencesData.party_date && `Date: ${preferencesData.party_date}`,
+        ].filter(Boolean);
+
+        details.forEach((line) => {
+          doc.text(cleanText(line as string), margin + 5, detailY);
+          detailY += 6;
+        });
+
+        yPosition += 55;
+      }
+
+      // ===== PARTY PLAN SECTIONS =====
+      Object.entries(party_plan).forEach(([sectionTitle, items]) => {
+        checkNewPage(30);
+
+        doc.setFillColor(34, 59, 125);
+        doc.roundedRect(margin, yPosition, contentWidth, 10, 2, 2, "F");
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(13);
+        doc.setFont("helvetica", "bold");
+        doc.text(cleanText(sectionTitle), margin + 5, yPosition + 7);
+        yPosition += 15;
+
+        items.forEach((item: string, itemIndex: number) => {
+          checkNewPage(25);
+
+          const cleanedItem = cleanText(item);
+          const wrapped = wrapText(cleanedItem, contentWidth - 20);
+          const itemHeight = wrapped.length * 5 + 8;
+
+          doc.setFillColor(250, 250, 250);
+          doc.roundedRect(margin + 5, yPosition, contentWidth - 10, itemHeight, 2, 2, "F");
+
+          // Bullet circle
+          doc.setFillColor(34, 59, 125);
+          doc.circle(margin + 12, yPosition + 5, 3, "F");
+
+          // Number
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(8);
+          doc.setFont("helvetica", "bold");
+          doc.text(String(itemIndex + 1), margin + 12, yPosition + 6.5, { align: "center" });
+
+          // Item text
+          doc.setTextColor(60, 60, 60);
+          doc.setFontSize(10);
+          doc.setFont("helvetica", "normal");
+          wrapped.forEach((line: any, i: any) => {
+            doc.text(line, margin + 20, yPosition + 6 + i * 5);
+          });
+
+          yPosition += itemHeight + 3;
+        });
+
+        yPosition += 5;
+      });
+
+      // ===== MUSIC & ENTERTAINMENT =====
+      if (adventure_song_movie_links && adventure_song_movie_links.length > 0) {
+        checkNewPage(30);
+
+        doc.setFillColor(34, 59, 125);
+        doc.roundedRect(margin, yPosition, contentWidth, 10, 2, 2, "F");
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(13);
+        doc.setFont("helvetica", "bold");
+        doc.text("Party Music & Entertainment", margin + 5, yPosition + 7);
+        yPosition += 15;
+
+        adventure_song_movie_links.forEach((video) => {
+          checkNewPage(25);
+
+          const cleanTitle = cleanText(video.title);
+          const titleWrapped = wrapText(cleanTitle, contentWidth - 20);
+
+          doc.setFillColor(250, 250, 250);
+          doc.roundedRect(margin + 5, yPosition, contentWidth - 10, 20, 2, 2, "F");
+
+          doc.setTextColor(34, 59, 125);
+          doc.setFontSize(11);
+          doc.setFont("helvetica", "bold");
+          doc.text(titleWrapped[0], margin + 10, yPosition + 6);
+
+          doc.setTextColor(100, 100, 100);
+          doc.setFontSize(9);
+          doc.setFont("helvetica", "normal");
+          doc.text(cleanText(`Channel: ${video.channel}`), margin + 10, yPosition + 12);
+          doc.text(`Views: ${parseInt(video.views).toLocaleString()}`, margin + 10, yPosition + 17);
+
+          yPosition += 25;
+        });
+      }
+
+      // ===== FOOTER =====
+      const totalPages = doc.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.setFont("helvetica", "italic");
+        doc.text(
+          `Generated by AI Party Planner - Page ${i} of ${totalPages}`,
+          pageWidth / 2,
+          pageHeight - 10,
+          { align: "center" }
+        );
+      }
+
+      // ===== SAVE PDF =====
+      const fileName = `Party_Plan_${cleanText(preferencesData?.person_name || "Guest")}_${new Date()
+        .toISOString()
+        .split("T")[0]}.pdf`;
+      doc.save(fileName);
+
+      setSaveStatus("success");
+      setTimeout(() => setSaveStatus("idle"), 3000);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      setSaveStatus("error");
+      setTimeout(() => setSaveStatus("idle"), 3000);
+      alert("Failed to generate PDF. Please try again.");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
+
+
+  // Generate email content
+  const getEmailContent = () => {
+    const partyTitle = `${preferencesData?.theme || 'Party'} for ${preferencesData?.person_name || 'Guest'}`;
+
+    let emailBody = `Check out this amazing party plan!\n\n`;
+    emailBody += `🎉 ${partyTitle} 🎉\n\n`;
+
+    if (preferencesData?.party_date) {
+      emailBody += `📅 Date: ${preferencesData.party_date}\n`;
+    }
+    if (preferencesData?.num_guests) {
+      emailBody += `👥 Guests: ${preferencesData.num_guests}\n`;
+    }
+    if (preferencesData?.theme) {
+      emailBody += `🎨 Theme: ${preferencesData.theme}\n`;
+    }
+
+    emailBody += `\n--- Party Plan ---\n\n`;
+
+    Object.entries(party_plan).forEach(([sectionTitle, items]) => {
+      emailBody += `\n${sectionTitle}:\n`;
+      items.forEach((item, index) => {
+        emailBody += `${index + 1}. ${item}\n`;
+      });
+    });
+
+    emailBody += `\n\nGenerated by AI Party Planner`;
+
+    return emailBody;
+  };
+
   return (
     <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
       {saveStatus !== 'idle' && (
         <div className={`fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg ${saveStatus === 'success' ? 'bg-green-500' : 'bg-red-500'
           } text-white font-semibold animate-fade-in`}>
-          {saveStatus === 'success' ? '✅ Party saved successfully!' : '❌ Failed to save party'}
+          {saveStatus === 'success' ? '✅ Success!' : '❌ Failed'}
         </div>
       )}
 
@@ -218,7 +447,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
 
       <hr className="my-16 border-gray-200" />
 
-      {/* Amazon Products Section */}
       {amazonProducts.length > 0 && (
         <>
           <div className="mb-16">
@@ -234,7 +462,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
                   key={product.id}
                   className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
                 >
-                  {/* Product Image */}
                   <div className="aspect-square w-full h-[300px] bg-gray-100 overflow-hidden">
                     <img
                       src={product?.image_url}
@@ -246,7 +473,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
                     />
                   </div>
 
-                  {/* Product Content */}
                   <div className="p-6">
                     <h3 className="font-bold text-lg text-gray-900 mb-4 line-clamp-3 leading-snug min-h-[84px]">
                       {product.title?.split(" ").slice(0, 10).join(" ") + (product.title?.split(" ").length > 10 ? "..." : "")}
@@ -266,67 +492,64 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
 
           <hr className="my-16 border-gray-200" />
         </>
-      )
-      }
+      )}
 
-      {
-        adventure_song_movie_links && adventure_song_movie_links.length > 0 && (
-          <div className="mb-16">
-            <h2 className="text-3xl font-bold text-gray-800 border-b pb-3 mb-8">
-              🎵 Party Music & Entertainment
-            </h2>
-            <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-3">
-              {adventure_song_movie_links.map((video, index) => (
-                <div
-                  key={index}
-                  className="bg-white rounded-xl overflow-hidden shadow-2xl hover:shadow-primary transition-all duration-300 transform hover:-translate-y-1"
-                >
-                  <div className="aspect-video w-full bg-gray-200">
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      src={`https://www.youtube.com/embed/${video.url.split('v=')[1]}`}
-                      title={video.title}
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      className="w-full h-full"
-                    ></iframe>
-                  </div>
-
-                  <div className="p-5">
-                    <h3 className="font-extrabold text-lg text-gray-900 mb-2 line-clamp-2">
-                      {video.title}
-                    </h3>
-
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xs bg-red-100 text-red-800 px-2.5 py-1 rounded-full font-medium">
-                        {video.channel}
-                      </span>
-                      <span className="text-xs text-gray-500 font-medium">
-                        👁️ {parseInt(video.views).toLocaleString()} views
-                      </span>
-                    </div>
-
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                      {video.description}
-                    </p>
-
-                    <a
-                      href={video.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block w-full text-center bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-700 transition-colors shadow-md"
-                    >
-                      Watch on YouTube
-                    </a>
-                  </div>
+      {adventure_song_movie_links && adventure_song_movie_links.length > 0 && (
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-800 border-b pb-3 mb-8">
+            🎵 Party Music & Entertainment
+          </h2>
+          <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-3">
+            {adventure_song_movie_links.map((video, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-xl overflow-hidden shadow-2xl hover:shadow-primary transition-all duration-300 transform hover:-translate-y-1"
+              >
+                <div className="aspect-video w-full bg-gray-200">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${video.url.split('v=')[1]}`}
+                    title={video.title}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  ></iframe>
                 </div>
-              ))}
-            </div>
+
+                <div className="p-5">
+                  <h3 className="font-extrabold text-lg text-gray-900 mb-2 line-clamp-2">
+                    {video.title}
+                  </h3>
+
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-xs bg-red-100 text-red-800 px-2.5 py-1 rounded-full font-medium">
+                      {video.channel}
+                    </span>
+                    <span className="text-xs text-gray-500 font-medium">
+                      👁️ {parseInt(video.views).toLocaleString()} views
+                    </span>
+                  </div>
+
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                    {video.description}
+                  </p>
+
+                  <a
+                    href={video.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block w-full text-center bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-700 transition-colors shadow-md"
+                  >
+                    Watch on YouTube
+                  </a>
+                </div>
+              </div>
+            ))}
           </div>
-        )
-      }
+        </div>
+      )}
 
       <hr className="my-16 border-gray-200" />
 
@@ -339,22 +562,42 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
         </button>
 
         <button
-          onClick={handleSaveParty}
-          disabled={isSaving}
-          className={`px-8 py-3 bg-[#223B7D] cursor-pointer text-white rounded-xl font-semibold hover:bg-[#1a2f66] transition-colors shadow-lg ${isSaving ? 'opacity-50 cursor-not-allowed' : ''
+          onClick={generatePDF}
+          disabled={isGeneratingPDF}
+          className={`px-8 py-3 bg-green-600 cursor-pointer text-white rounded-xl font-semibold hover:bg-green-700 transition-colors shadow-lg flex items-center justify-center gap-2 ${isGeneratingPDF ? 'opacity-50 cursor-not-allowed' : ''
             }`}
         >
-          {isSaving ? (
-            <span className="flex items-center justify-center gap-2">
+          {isGeneratingPDF ? (
+            <>
               <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
               </svg>
-              Saving...
-            </span>
+              Generating...
+            </>
           ) : (
-            '💾 Save This Plan'
+            <>
+              <Download className="h-5 w-5" />
+              Download PDF
+            </>
           )}
+        </button>
+
+        <EmailShareButton
+          url={window.location.href}
+          subject={`Party Plan: ${preferencesData?.theme || 'Party'} for ${preferencesData?.person_name || 'Guest'}`}
+          body={getEmailContent()}
+          className="py-3 bg-blue-600 cursor-pointer text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg flex items-center justify-center gap-2"
+        >
+          <Mail className="h-5 w-5" />
+          Share by Email
+        </EmailShareButton>
+
+        <button
+          onClick={handleSaveParty}
+          className="px-8 py-3 bg-[#223B7D] cursor-pointer text-white rounded-xl font-semibold hover:bg-[#1a2f66] transition-colors shadow-lg"
+        >
+          💾 Save This Plan
         </button>
       </div>
 
@@ -389,7 +632,7 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 

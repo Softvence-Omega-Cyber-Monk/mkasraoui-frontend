@@ -8,6 +8,8 @@ import Swal from "sweetalert2";
 import YourPerfectPartyTab from "@/components/AI Party Generator/YourPerfectPartyTab";
 import DatePicker from "react-datepicker";
 import { useCreatePartyPlanMutation } from "@/redux/features/partyPlan/partyPlanApi";
+import { useSavePartyCountMutation } from "@/redux/features/partyGeneration/partyGenerationApi";
+import { useGetMeQuery } from "@/redux/features/user/userApi";
 
 interface FormData {
   childName: string;
@@ -39,6 +41,13 @@ export default function PartyGenerator() {
   const [partyPlanData, setPartyPlanData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [createPartyPlan] = useCreatePartyPlanMutation();
+  const [savePartyCount] = useSavePartyCountMutation()
+  const { data: userData } = useGetMeQuery();
+  const hasPremium = userData?.subscription?.some(plan => plan.plan_name === "PREMIUM");
+  console.log("====",userData?.total_party_generated!)
+  const limitOver = !hasPremium && userData?.total_party_generated! >=1;
+  console.log(hasPremium, limitOver)
+  console.log(userData)
   const [formData, setFormData] = useState<FormData>({
     childName: "",
     childAge: 0,
@@ -137,6 +146,8 @@ export default function PartyGenerator() {
       console.log("Sending API data:", apiData);
 
       const response = await createPartyPlan(apiData).unwrap();
+      await savePartyCount({});
+
       console.log("API Response:", response);
 
       setPartyPlanData(response);
@@ -229,7 +240,7 @@ export default function PartyGenerator() {
   };
 
   const ageOptions = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ,21, 22, 23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80
   ];
 
   const themes = [
@@ -300,7 +311,7 @@ export default function PartyGenerator() {
                       htmlFor="childName"
                       className="mb-2 block text-sm font-medium text-gray-700"
                     >
-                      Child's Name
+                      Name
                     </label>
                     <input
                       type="text"
@@ -321,7 +332,7 @@ export default function PartyGenerator() {
                       htmlFor="childAge"
                       className="mb-2 block text-sm font-medium text-gray-700"
                     >
-                      Child's Age
+                      Age
                     </label>
                     <div className="relative">
                       <select
@@ -554,23 +565,24 @@ export default function PartyGenerator() {
 
                 <button
                   onClick={handleNext}
-                  disabled={!selectedTheme || selectedActivities.length === 0 || isLoading}
-                  className={`flex items-center space-x-2 rounded-lg px-8 py-3 font-medium transition-all duration-200 ${selectedTheme && selectedActivities.length > 0 && !isLoading
-                    ? "cursor-pointer bg-[#223B7D] text-white hover:bg-[#1a2f66] hover:shadow-lg"
-                    : "cursor-not-allowed bg-gray-400 text-gray-200"
+                  disabled={!selectedTheme || selectedActivities.length === 0 || isLoading || limitOver}
+                  className={`flex items-center space-x-2 rounded-lg px-8 py-3 font-medium transition-all duration-200 ${selectedTheme && selectedActivities.length > 0 && !isLoading && !limitOver
+                      ? "cursor-pointer bg-[#223B7D] text-white hover:bg-[#1a2f66] hover:shadow-lg"
+                      : "cursor-not-allowed bg-gray-400 text-gray-200"
                     }`}
                 >
-                  {isLoading ? (
+                  {limitOver ? (
+                    <>Please Subscribe To Generate More Party</>
+                  ) : isLoading ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                       <span>Generating...</span>
                     </>
                   ) : (
-                    <>
-                      ✨ Generate My Party!
-                    </>
+                    <>✨ Generate My Party!</>
                   )}
                 </button>
+
               </div>
             </div>
           </div>

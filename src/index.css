@@ -107,24 +107,60 @@ body {
   translate: none !important;
 }
 
-/* Optional: hide the Google Translate toolbar if it appears */
-.goog-te-banner-frame.skiptranslate {
-  display: none !important;
-}
-
 body {
   top: 0px !important;
 }
 
-/* Optional: remove outline from select */
-.goog-te-combo {
-  border: none !important;
-  box-shadow: none !important;
-  background: transparent !important;
-  padding: 0 !important;
+/* ===============================
+   🌐 GOOGLE TRANSLATE FIX STYLES
+   =============================== */
+
+/* Hide Google Translate top banner */
+/* Hide Google Translate banner completely */
+.goog-te-banner-frame {
+  display: none !important;
+  visibility: hidden !important;
 }
 
+/* Hide the top bar that appears */
+.goog-te-banner {
+  display: none !important;
+}
 
+/* Additional hiding for various Google Translate elements */
+.goog-te-banner-frame,
+.goog-te-ftab-frame,
+.skiptranslate {
+  display: none !important;
+}
+
+/* Ensure body stays in place */
+body {
+  top: 0px !important;
+  position: static !important;
+}
+
+/* Hide the language select tooltip */
+.goog-te-balloon-frame {
+  display: none !important;
+}
+
+/* Hide the Google branding */
+.goog-logo-link {
+  display: none !important;
+}
+
+.goog-te-gadget {
+  font-size: 0 !important;
+}
+
+.goog-te-gadget .goog-te-combo {
+  margin: 0 !important;
+}
+
+/* ===============================
+   🌐 GOOGLE TRANSLATE FIX STYLES
+   =============================== */
 
 /* Mobile screens only */
 @media (max-width: 640px) {
@@ -211,4 +247,10 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .goog-te-combo {
   height: 28px !important; /* smaller height */
+}
+
+.react-share__ShareButton {
+  padding: 10px 20px !important;
+  background-color: #155DFC !important;
+  color: white !important;
 }
