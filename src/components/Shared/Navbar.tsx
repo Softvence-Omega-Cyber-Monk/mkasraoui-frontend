@@ -104,7 +104,7 @@ const Navbar: React.FC = () => {
       </Link>
 
       {/* Desktop nav links */}
-      <ul className="text-secondary hidden gap-6 text-base font-medium lg:flex">
+      <ul className="text-secondary hidden gap-6 text-base font-medium xl:flex">
         {navLinks.map((link) => (
           <li key={link.name}>
             {link.to ? (
@@ -129,9 +129,8 @@ const Navbar: React.FC = () => {
 
       {/* Desktop cart & user */}
       <div className="hidden items-center gap-4 lg:flex">
-       
-          <GoogleTranslate />
-        
+        <GoogleTranslate />
+
         <Link
           to="/home/my-cart"
           className="relative flex items-center gap-1 rounded-lg p-2 transition hover:bg-gray-50"
