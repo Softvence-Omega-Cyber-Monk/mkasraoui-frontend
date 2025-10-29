@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FiChevronDown } from "react-icons/fi";
 
+// ✅ Available languages
 export const LANGUAGES = [
   { code: "en", label: "English", flag: "gb" },
   { code: "fr", label: "French", flag: "fr" },
@@ -13,9 +14,9 @@ const GoogleTranslate: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState("en");
 
-  // Load Google Translate script
+  // ✅ Load Google Translate script once
   useEffect(() => {
-    if ((window as any).googleTranslateLoaded) return;
+    if ((window as any).googleTranslateElementInit) return;
 
     const script = document.createElement("script");
     script.src =
@@ -33,41 +34,37 @@ const GoogleTranslate: React.FC = () => {
         },
         "google_translate_element",
       );
-      (window as any).googleTranslateLoaded = true;
     };
   }, []);
 
-  // Change language reliably
-  const handleChange = (langCode: string) => {
-    setCurrentLang(langCode);
+  // ✅ Read language from cookie on load
+  useEffect(() => {
+    const match = document.cookie.match(/googtrans=\/en\/(\w+)/);
+    const lang = match ? match[1] : "en";
+    setCurrentLang(lang);
+  }, []);
+
+  // ✅ Change language by setting cookie + reload
+  const handleChange = (lang: string) => {
+    setCurrentLang(lang);
     setOpen(false);
 
-    const iframe = document.querySelector<HTMLIFrameElement>(
-      "iframe.goog-te-menu-frame",
-    );
-    if (!iframe) return;
+    // Set Google Translate cookie (works globally)
+    document.cookie = `googtrans=/en/${lang};path=/;domain=${window.location.hostname}`;
+    document.cookie = `googtrans=/en/${lang};path=/;`;
 
-    try {
-      const innerDoc = iframe.contentDocument || iframe.contentWindow?.document;
-      if (!innerDoc) return;
-
-      const langElement = innerDoc.querySelector<HTMLDivElement>(
-        `div.goog-te-menu2-item span.text:contains(${LANGUAGES.find((l) => l.code === langCode)?.label})`,
-      );
-      langElement?.click();
-    } catch (e) {
-      console.warn("Google Translate iframe access blocked (cross-origin).");
-    }
+    // Reload to apply the translation
+    window.location.reload();
   };
 
   const selectedLang = LANGUAGES.find((l) => l.code === currentLang);
 
   return (
-    <div className="translate-dropdown relative">
+    <div className="relative inline-block text-left">
       {/* Dropdown Button */}
       <button
         onClick={() => setOpen(!open)}
-        className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm transition hover:bg-gray-50"
+        className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm transition hover:bg-gray-50"
       >
         {selectedLang && (
           <img
@@ -91,7 +88,7 @@ const GoogleTranslate: React.FC = () => {
             <button
               key={lang.code}
               onClick={() => handleChange(lang.code)}
-              className="flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-sm transition hover:bg-gray-100"
+              className="flex w-full items-center gap-2 px-3 py-2 text-sm transition hover:bg-gray-100"
             >
               <img
                 src={`https://flagcdn.com/w20/${lang.flag}.png`}
