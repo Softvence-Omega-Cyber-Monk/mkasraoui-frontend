@@ -248,3 +248,9 @@ input[type="number"]::-webkit-outer-spin-button {
 .goog-te-combo {
   height: 28px !important; /* smaller height */
 }
+
+.react-share__ShareButton {
+  padding: 10px 20px !important;
+  background-color: #155DFC !important;
+  color: white !important;
+}

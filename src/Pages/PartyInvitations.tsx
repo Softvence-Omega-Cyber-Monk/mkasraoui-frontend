@@ -1,7 +1,3 @@
-import inviteImg3 from "@/assets/box-img-3.jpg";
-import inviteImg1 from "@/assets/inviteimg-1.jpg";
-import inviteImg2 from "@/assets/inviteIMG-2.png";
-import inviteImg4 from "@/assets/inviteImg-4.jpg";
 import allBgImg from "@/assets/party-al-bg.png";
 import MyHeader from "@/components/MyHeader/MyHeader";
 import ManageRSVPsTab from "@/components/Party Invitations/Tab/ManageRSVPsTab";
@@ -239,7 +235,7 @@ export default function PartyInvitations() {
       }).unwrap();
 
       console.log(result)
-      setGeneratedImageUrl(result.images[0].url);
+      setGeneratedImageUrl(result?.images[0]?.url);
       Swal.fire({
         icon: "success",
         title: "Card Generated!",
@@ -297,31 +293,78 @@ export default function PartyInvitations() {
 
   const templates = [
     {
-      id: "superhero",
-      title: "Superhero Adventure",
-      description: "Bold and heroic design with comic elements",
-      imageUrl: inviteImg1,
+      id: "spiderman",
+      title: "Spider-man",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
     },
     {
-      id: "princess",
-      title: "Princess Castle",
-      description: "Elegant and magical with royal elements",
-      imageUrl: inviteImg2,
+      id: "batman",
+      title: "Batman",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
     },
     {
-      id: "dinosaur",
-      title: "Dinosaur Discovery",
-      description: "Prehistoric adventure with fossil patterns",
-      imageUrl: inviteImg3,
+      id: "la_reine_des_neiges",
+      title: "La Reine des Neiges",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
     },
     {
-      id: "space",
-      title: "Space Explorer",
-      description: "Cosmic design with stars and planets",
-      imageUrl: inviteImg4,
+      id: "princesses_disney",
+      title: "Princesses Disney",
+      colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+    },
+    {
+      id: "pokemon",
+      title: "Pokemon",
+      colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+    },
+    {
+      id: "astronomie",
+      title: "Espace / Astronomie",
+      colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+    },
+    {
+      id: "barbie",
+      title: "Barbie",
+      colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+    },
+    {
+      id: "pat_patrouille",
+      title: "Pat' Patrouille",
+      colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+    },
+    {
+      id: "pirates",
+      title: "Pirates and chasse au tresor",
+      colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+    },
+    {
+      id: "marvel",
+      title: "Marvel / Avengers",
+      colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+    },
+    {
+      id: "superheroes",
+      title: "Super-heroes",
+      colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+    },
+    {
+      id: "jungle",
+      title: "Safari / Jungle",
+      colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+    },
+    {
+      id: "dinasaures",
+      title: "Dinasaures",
+      colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+    },
+    {
+      id: "licornes_magiques",
+      title: "Licornes magiques",
+      colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+    },
+    {
+      id: "gabby",
+      title: "Gabby",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
     },
   ];
@@ -348,20 +391,10 @@ export default function PartyInvitations() {
                           }`}
                         onClick={() => setSelectedTemplate(template.id)}
                       >
-                        <div className="aspect-video h-52 w-full overflow-hidden rounded-t-lg">
-                          <img
-                            src={template.imageUrl}
-                            alt={template.title}
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
                         <div className="p-4 pb-6">
                           <h3 className="mb-1 text-xl font-medium text-gray-900">
                             {template.title}
                           </h3>
-                          <p className="mb-3 text-sm text-gray-600">
-                            {template.description}
-                          </p>
                           <div className="flex space-x-1">
                             {template.colors.map((color, index) => (
                               <div
