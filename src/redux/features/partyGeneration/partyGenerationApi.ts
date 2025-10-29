@@ -29,6 +29,10 @@ export interface PartyGenerationRequest {
 }
 
 export interface PartyGenerationResponse {
+  totalPendingInvitaion: number;
+  totalInvitationCancel: number;
+  totalInvitationConfirm: number;
+  totalInvitation: number;
   id: string;
   title: string;
   scheduledDate: string;
@@ -66,6 +70,13 @@ export const partyGenerationApi = baseApi.injectEndpoints({
       providesTags: ["PartyPlans"],
       transformResponse: (response: any) => response.data
     }),
+    savePartyCount: builder.mutation({
+      query: () => ({
+        url: "/part-generation/track-generation",
+        method: "POST",
+      }),
+      invalidatesTags: ["PartyPlans"]
+    })
   }),
 
   overrideExisting: false,
@@ -75,4 +86,5 @@ export const {
   useSavePartyPlanMutation,
   useGetPartyPlanQuery,
   useGetPartyPlansQuery,
+  useSavePartyCountMutation
 } = partyGenerationApi;
