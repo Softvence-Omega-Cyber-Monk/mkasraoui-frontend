@@ -275,9 +275,8 @@ function CheckoutPage() {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className={`w-full rounded-lg border p-3 focus:border-transparent focus:ring-2 focus:ring-[#223B7D] ${
-                      errors.name ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full rounded-lg border p-3 focus:border-transparent focus:ring-2 focus:ring-[#223B7D] ${errors.name ? "border-red-500" : "border-gray-300"
+                      }`}
                     placeholder="Enter your full name"
                   />
                   {errors.name && (
@@ -295,9 +294,8 @@ function CheckoutPage() {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className={`w-full rounded-lg border p-3 focus:border-transparent focus:ring-2 focus:ring-[#223B7D] ${
-                      errors.email ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full rounded-lg border p-3 focus:border-transparent focus:ring-2 focus:ring-[#223B7D] ${errors.email ? "border-red-500" : "border-gray-300"
+                      }`}
                     placeholder="Enter your email"
                   />
                   {errors.email && (
@@ -315,9 +313,8 @@ function CheckoutPage() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className={`w-full rounded-lg border p-3 focus:border-transparent focus:ring-2 focus:ring-[#223B7D] ${
-                      errors.phone ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full rounded-lg border p-3 focus:border-transparent focus:ring-2 focus:ring-[#223B7D] ${errors.phone ? "border-red-500" : "border-gray-300"
+                      }`}
                     placeholder="Enter your phone number"
                   />
                   {errors.phone && (
@@ -335,9 +332,8 @@ function CheckoutPage() {
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    className={`w-full rounded-lg border p-3 focus:border-transparent focus:ring-2 focus:ring-[#223B7D] ${
-                      errors.address ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full rounded-lg border p-3 focus:border-transparent focus:ring-2 focus:ring-[#223B7D] ${errors.address ? "border-red-500" : "border-gray-300"
+                      }`}
                     placeholder="Enter your complete address"
                   />
                   {errors.address && (
@@ -356,9 +352,8 @@ function CheckoutPage() {
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
-                    className={`w-full rounded-lg border p-3 focus:border-transparent focus:ring-2 focus:ring-[#223B7D] ${
-                      errors.city ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full rounded-lg border p-3 focus:border-transparent focus:ring-2 focus:ring-[#223B7D] ${errors.city ? "border-red-500" : "border-gray-300"
+                      }`}
                     placeholder="Enter city"
                   />
                   {errors.city && (
@@ -370,22 +365,14 @@ function CheckoutPage() {
                   <label className="mb-2 block text-sm font-medium text-gray-700">
                     State *
                   </label>
-                  <select
+                  <input
                     name="state"
                     value={formData.state}
                     onChange={handleInputChange}
-                    className={`w-full rounded-lg border p-3 focus:border-transparent focus:ring-2 focus:ring-[#223B7D] ${
-                      errors.state ? "border-red-500" : "border-gray-300"
-                    }`}
-                  >
-                    <option value="">Select State</option>
-                    <option value="AL">Alabama</option>
-                    <option value="CA">California</option>
-                    <option value="FL">Florida</option>
-                    <option value="NY">New York</option>
-                    <option value="TX">Texas</option>
-                    {/* Add more states as needed */}
-                  </select>
+                    className={`w-full rounded-lg border p-3 focus:border-transparent focus:ring-2 focus:ring-[#223B7D] ${errors.state ? "border-red-500" : "border-gray-300"
+                      }`}
+                    type="text"
+                  />
                   {errors.state && (
                     <p className="mt-1 text-sm text-red-500">{errors.state}</p>
                   )}
@@ -400,9 +387,8 @@ function CheckoutPage() {
                     name="zipCode"
                     value={formData.zipCode}
                     onChange={handleInputChange}
-                    className={`w-full rounded-lg border p-3 focus:border-transparent focus:ring-2 focus:ring-[#223B7D] ${
-                      errors.zipCode ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full rounded-lg border p-3 focus:border-transparent focus:ring-2 focus:ring-[#223B7D] ${errors.zipCode ? "border-red-500" : "border-gray-300"
+                      }`}
                     placeholder="Enter ZIP code"
                   />
                   {errors.zipCode && (
@@ -601,11 +587,10 @@ function CheckoutPage() {
               <button
                 onClick={handleCheckout}
                 disabled={isProcessing}
-                className={`w-full cursor-pointer rounded-lg px-4 py-3 font-semibold transition-colors ${
-                  isProcessing
+                className={`w-full cursor-pointer rounded-lg px-4 py-3 font-semibold transition-colors ${isProcessing
                     ? "cursor-not-allowed bg-gray-400"
                     : "bg-[#223B7D] hover:bg-[#0b2672]"
-                } flex items-center justify-center gap-2 text-white`}
+                  } flex items-center justify-center gap-2 text-white`}
               >
                 {isProcessing ? (
                   <>

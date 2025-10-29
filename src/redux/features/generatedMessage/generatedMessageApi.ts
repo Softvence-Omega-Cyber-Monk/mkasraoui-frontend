@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 // Create a standalone API slice
 export const messageApi = createApi({
   reducerPath: 'messageApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://72.60.190.101:8000' }), 
+  baseQuery: fetchBaseQuery({ baseUrl: 'https://ai.mafetefacile.fr' }), 
   endpoints: (builder) => ({
     generateMessage: builder.mutation({
       query: (body) => ({

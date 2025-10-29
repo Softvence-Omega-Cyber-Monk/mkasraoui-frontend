@@ -6,6 +6,7 @@ import FavositesTab from "../DashBoardTabComponent/FavositesTab";
 import ProfileTab from "../DashBoardTabComponent/ProfileTab";
 import { useLocation } from "react-router-dom";
 import UserAllActivity from "../DashBoardTabComponent/UserAllActivity";
+import InvitationsTab from "../DashBoardTabComponent/InvitationsTab";
 export default function PartyInvitations() {
   // const [activeTab, setActiveTab] = useState("Overview");
   const location = useLocation();
@@ -29,6 +30,7 @@ export default function PartyInvitations() {
   const tabs = [
     { id: "Overview", label: "Overview" },
     { id: "My Quotes", label: "My Quotes" },
+    { id: "Invitation History", label: "Invitation History"},
     { id: "Favorite", label: "Favorite" },
     { id: "Profile", label: "Profile" },
     { id: "Pay", label: "Payment" },
@@ -41,6 +43,8 @@ export default function PartyInvitations() {
         return <OverviewTab />;
       case "My Quotes":
         return <MyParties />;
+      case "Invitation History":
+        return <InvitationsTab />
       case "Favorite":
         return <FavositesTab />;
       case "Profile":
