@@ -1,81 +1,159 @@
-import { useEffect, useState } from "react";
+
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+  useConfirmInvitationQuery,
+  useCancelInvitationMutation,
+} from "@/redux/features/invitations/invitationsApi";
+import Swal from "sweetalert2";
 
-type PaymentSession = {
-  id: string;
-  amount_paid?: number;
-  currency?: string;
-};
-
-export default function ConfirmInviatationPage() {
-  const navigate = useNavigate(); // ✅ for navigation
-  const location = useLocation(); // ✅ to get query params
-
-  const [session, setSession] = useState<PaymentSession | null>(null);
-
-  // Get session_id from query string
+export default function ConfirmInvitationPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const session_id = queryParams.get("session_id");
+  const token = queryParams.get("token");
 
-  useEffect(() => {
-    if (session_id) {
-      // Fetch session details from your backend
-      fetch(`/api/payment-session?session_id=${session_id}`)
-        .then((res) => res.json())
-        .then((data) => setSession(data))
-        .catch((err) => console.error("Error fetching payment session:", err));
+  const { data: confirmData } = useConfirmInvitationQuery(
+    token || "",
+    { skip: !token }
+  );
+  const [cancelInvitation, { isLoading: isCancelling }] = useCancelInvitationMutation();
+
+  const handleCancel = async () => {
+    if (!token) return;
+    try {
+      const res = await cancelInvitation(token).unwrap();
+      Swal.fire("Cancelled", res.message, "success");
+      navigate("/"); // go home after cancel
+    } catch (err: any) {
+      Swal.fire("Error", err.data?.message || "Failed to cancel invitation", "error");
     }
-  }, [session_id]);
+  };
+
+  const handleConfirm = () => {
+    Swal.fire("Confirmed", "Your invitation is confirmed!", "success");
+    navigate("/"); // navigate to homepage or orders page
+  };
+
+  if (!token) {
+    return <p className="text-center mt-8">Invalid or missing invitation token.</p>;
+  }
 
   return (
     <div className="container mx-auto p-8 text-center">
-      <h1 className="mb-4 text-3xl font-bold">Thank You for Your Purchase!</h1>
+      <h1 className="mb-4 text-3xl font-bold">Invitation Confirmation</h1>
 
-      {session ? (
-        <div>
-          <p className="mb-2">
-            Your payment was successful and your order is confirmed.
+      {confirmData ? (
+        <div className="space-y-6">
+          <p>
+            Hello <strong>{confirmData.data.guest_name || "Guest"}</strong>,
           </p>
-          <p className="mb-8">
-            We’ve sent a receipt to your email associated with this purchase.
+          <p>
+            You have an invitation for the event. Please confirm or cancel your attendance.
           </p>
 
-          <div className="mb-6 rounded-lg border bg-gray-50 p-4">
-            <p>
-              <strong>Order ID:</strong> {session.id}
-            </p>
-            {session.amount_paid && session.currency && (
-              <p>
-                <strong>Amount Paid:</strong>{" "}
-                {(session.amount_paid / 100).toFixed(2)}{" "}
-                {session.currency.toUpperCase()}
-              </p>
-            )}
-          </div>
-
-          <div className="flex justify-center space-x-4">
+          <div className="flex justify-center gap-4">
             <button
-              onClick={() => navigate("/orders")} // navigate to orders
-              className="rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700"
+              onClick={handleConfirm}
+              className="rounded-lg bg-green-600 px-6 py-3 text-white hover:bg-green-700"
             >
-              View Order
+              Confirm
             </button>
             <button
-              onClick={() => navigate("/")} // navigate home
-              className="rounded-lg border px-6 py-3 hover:bg-gray-100"
+              onClick={handleCancel}
+              disabled={isCancelling}
+              className="rounded-lg bg-red-600 px-6 py-3 text-white hover:bg-red-700 disabled:opacity-50"
             >
-              Continue Shopping
+              Cancel
             </button>
           </div>
         </div>
       ) : (
-        <p>Loading your order details…</p>
+        <p>Loading invitation details…</p>
       )}
-
-      <p className="mt-12 text-sm text-gray-500">
-        If you have any questions, please contact our support at{" "}
-        <a href="mailto:support@mafetefacile.fr">support@mafetefacile.fr</a>.
-      </p>
     </div>
   );
 }
+
+
+
+// import { useEffect, useState } from "react";
+// import { useLocation, useNavigate } from "react-router-dom";
+
+// type PaymentSession = {
+//   id: string;
+//   amount_paid?: number;
+//   currency?: string;
+// };
+
+// export default function ConfirmInviatationPage() {
+//   const navigate = useNavigate(); // ✅ for navigation
+//   const location = useLocation(); // ✅ to get query params
+
+//   const [session, setSession] = useState<PaymentSession | null>(null);
+
+//   // Get session_id from query string
+//   const queryParams = new URLSearchParams(location.search);
+//   const session_id = queryParams.get("session_id");
+
+//   useEffect(() => {
+//     if (session_id) {
+//       // Fetch session details from your backend
+//       fetch(`/api/payment-session?session_id=${session_id}`)
+//         .then((res) => res.json())
+//         .then((data) => setSession(data))
+//         .catch((err) => console.error("Error fetching payment session:", err));
+//     }
+//   }, [session_id]);
+
+//   return (
+//     <div className="container mx-auto p-8 text-center">
+//       <h1 className="mb-4 text-3xl font-bold">Thank You for Your Purchase!</h1>
+
+//       {session ? (
+//         <div>
+//           <p className="mb-2">
+//             Your payment was successful and your order is confirmed.
+//           </p>
+//           <p className="mb-8">
+//             We’ve sent a receipt to your email associated with this purchase.
+//           </p>
+
+//           <div className="mb-6 rounded-lg border bg-gray-50 p-4">
+//             <p>
+//               <strong>Order ID:</strong> {session.id}
+//             </p>
+//             {session.amount_paid && session.currency && (
+//               <p>
+//                 <strong>Amount Paid:</strong>{" "}
+//                 {(session.amount_paid / 100).toFixed(2)}{" "}
+//                 {session.currency.toUpperCase()}
+//               </p>
+//             )}
+//           </div>
+
+//           <div className="flex justify-center space-x-4">
+//             <button
+//               onClick={() => navigate("/orders")} // navigate to orders
+//               className="rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700"
+//             >
+//               View Order
+//             </button>
+//             <button
+//               onClick={() => navigate("/")} // navigate home
+//               className="rounded-lg border px-6 py-3 hover:bg-gray-100"
+//             >
+//               Continue Shopping
+//             </button>
+//           </div>
+//         </div>
+//       ) : (
+//         <p>Loading your order details…</p>
+//       )}
+
+//       <p className="mt-12 text-sm text-gray-500">
+//         If you have any questions, please contact our support at{" "}
+//         <a href="mailto:support@mafetefacile.fr">support@mafetefacile.fr</a>.
+//       </p>
+//     </div>
+//   );
+// }
