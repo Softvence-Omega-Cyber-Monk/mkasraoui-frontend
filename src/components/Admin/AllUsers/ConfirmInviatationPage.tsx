@@ -1,4 +1,3 @@
-
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   useConfirmInvitationQuery,
@@ -12,30 +11,36 @@ export default function ConfirmInvitationPage() {
   const queryParams = new URLSearchParams(location.search);
   const token = queryParams.get("token");
 
-  const { data: confirmData } = useConfirmInvitationQuery(
-    token || "",
-    { skip: !token }
-  );
-  const [cancelInvitation, { isLoading: isCancelling }] = useCancelInvitationMutation();
+  const { data: confirmData } = useConfirmInvitationQuery(token || "", {
+    skip: !token,
+  });
+  const [cancelInvitation, { isLoading: isCancelling }] =
+    useCancelInvitationMutation();
 
   const handleCancel = async () => {
     if (!token) return;
     try {
-      const res = await cancelInvitation(token).unwrap();
-      Swal.fire("Cancelled", res.message, "success");
-      navigate("/"); // go home after cancel
+      const res: any = await cancelInvitation(token).unwrap();
+      Swal.fire("Cancelled", res.data?.message || res.message, "success");
+      navigate("/"); // redirect home
     } catch (err: any) {
-      Swal.fire("Error", err.data?.message || "Failed to cancel invitation", "error");
+      Swal.fire(
+        "Error",
+        err.data?.message || "Failed to cancel invitation",
+        "error",
+      );
     }
   };
 
   const handleConfirm = () => {
     Swal.fire("Confirmed", "Your invitation is confirmed!", "success");
-    navigate("/"); // navigate to homepage or orders page
+    navigate("/"); // navigate home or orders page
   };
 
   if (!token) {
-    return <p className="text-center mt-8">Invalid or missing invitation token.</p>;
+    return (
+      <p className="mt-8 text-center">Invalid or missing invitation token.</p>
+    );
   }
 
   return (
@@ -48,7 +53,8 @@ export default function ConfirmInvitationPage() {
             Hello <strong>{confirmData.data.guest_name || "Guest"}</strong>,
           </p>
           <p>
-            You have an invitation for the event. Please confirm or cancel your attendance.
+            You have an invitation for the event. Please confirm or cancel your
+            attendance.
           </p>
 
           <div className="flex justify-center gap-4">
@@ -73,8 +79,6 @@ export default function ConfirmInvitationPage() {
     </div>
   );
 }
-
-
 
 // import { useEffect, useState } from "react";
 // import { useLocation, useNavigate } from "react-router-dom";
