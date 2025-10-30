@@ -72,6 +72,7 @@ import DiyActivities from "./components/DiyActivityes/DiyActivities";
 import DiyBoxActivityDetails from "./components/DiyActivityes/DiyBoxActivityDetails";
 import IAffiliatedProductTable from "./components/AdminAffiliateProducts/IAffiliatedProductTable";
 import ConfirmInviatationPage from "./components/Admin/AllUsers/ConfirmInviatationPage";
+import ContactUsPage from "./Pages/Admin/ContactUsPage";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -365,6 +366,10 @@ const router = createBrowserRouter([
       {
         path: "news-letter",
         element: <NewsletterPage />,
+      },
+      {
+        path: "contact-us",
+        element: <ContactUsPage />,
       },
       {
         path: "admin-account",

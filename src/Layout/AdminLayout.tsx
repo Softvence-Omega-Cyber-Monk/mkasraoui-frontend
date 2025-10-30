@@ -22,6 +22,7 @@ import { MdHome, MdOutlineAddChart } from "react-icons/md";
 import { RiListOrdered } from "react-icons/ri";
 import { TbActivity } from "react-icons/tb";
 import { FaAffiliatetheme } from "react-icons/fa";
+import { BiSolidContact } from "react-icons/bi";
 
 import {
   Link,
@@ -101,19 +102,22 @@ function AdminLayout() {
     {
       to: "/admin-dashboard/add-diyactivity",
       label: "Add Diy Activity",
-      icon: TbActivity 
-,
+      icon: TbActivity,
     },
     {
       to: "/admin-dashboard/add-IAffiliatedProduct",
       label: "Add Affiliated Product",
-      icon: FaAffiliatetheme 
-,
+      icon: FaAffiliatetheme,
     },
     {
       to: "/admin-dashboard/news-letter",
       label: "News Letter",
       icon: ServicesIcon,
+    },
+    {
+      to: "/admin-dashboard/contact-us",
+      label: "Contact",
+      icon: BiSolidContact,
     },
     // {
     //   to: "/admin-dashboard/reviews",
