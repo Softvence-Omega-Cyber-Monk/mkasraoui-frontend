@@ -219,7 +219,7 @@ const IAffiliatedProductTable: React.FC = () => {
           onClick={openAddModal}
           className="bg-secondary-dark hover:bg-secondary-light flex cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-2 font-semibold text-white shadow-lg transition-transform duration-200 hover:scale-105"
         >
-          Add Affi Product
+          Add Affiliate Product
         </button>
       </div>
 
@@ -263,9 +263,9 @@ const IAffiliatedProductTable: React.FC = () => {
               className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-gray-700 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
             >
               <option value="">All Prices</option>
-              <option value="low">Under $20</option>
-              <option value="mid">$20 - $50</option>
-              <option value="high">Above $50</option>
+              <option value="low">Under €20</option>
+              <option value="mid">€20 - €50</option>
+              <option value="high">Above €50</option>
             </select>
             <ChevronDown className="pointer-events-none absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 text-gray-700" />
           </div>
@@ -323,7 +323,7 @@ const IAffiliatedProductTable: React.FC = () => {
                     >
                       {p.affiliated_company}
                     </td>
-                    <td className="px-6 py-4">${p.price}</td>
+                    <td className="px-6 py-4">€{p.price}</td>
                     <td className="px-6 py-4">
                       {p.image_url ? (
                         <a
@@ -510,7 +510,7 @@ const IAffiliatedProductTable: React.FC = () => {
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-xl font-semibold">
-                {editingProduct ? "Edit Product" : "Add Product"}
+                {editingProduct ? "Edit Product" : "Add Affiliated Products"}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -526,18 +526,27 @@ const IAffiliatedProductTable: React.FC = () => {
             >
               {[
                 { name: "title", label: "Title", type: "text" },
+                // {
+                //   name: "price",
+                //   label: "Price",
+                //   type: "text",
+                //   pattern: {
+                //     value: /^[0-9,]+$/,
+                //     message: "Price must contain only numbers and commas",
+                //   },
+                // },
                 {
                   name: "price",
                   label: "Price",
                   type: "text",
                   pattern: {
-                    value: /^[0-9,]+$/,
-                    message: "Price must contain only numbers and commas",
+                    value: /^[0-9]+(\.[0-9]+)?$/, // only numbers and optional decimal, no commas allowed
+                    message: "Price must be a valid number without commas",
                   },
                 },
                 {
                   name: "avgRating",
-                  label: "Average Rating",
+                  label: "Average Rating(0-5)",
                   type: "number",
                   min: 0,
                   max: 5,
@@ -551,7 +560,7 @@ const IAffiliatedProductTable: React.FC = () => {
                 },
                 { name: "image_url", label: "Image URL", type: "text" },
                 { name: "affiliated_company", label: "Company", type: "text" },
-                { name: "link", label: "Link", type: "text" },
+                { name: "link", label: "Product Link", type: "text" },
               ].map((field) => (
                 <div key={field.name} className="flex flex-col">
                   <label>{field.label}</label>
@@ -567,7 +576,7 @@ const IAffiliatedProductTable: React.FC = () => {
                         pattern: field.pattern,
                       },
                     )}
-                    className="rounded border border-gray-300 p-2"
+                    className="mt-1 rounded-xl border border-gray-300 p-2"
                   />
                   {errors[field.name as keyof AffiliatedProductFormType] && (
                     <span className="text-sm text-red-500">
@@ -630,7 +639,7 @@ const IAffiliatedProductTable: React.FC = () => {
           <div className="max-h-[80vh] max-w-2xl overflow-y-auto rounded-lg bg-white p-6">
             <h3 className="mb-4 text-xl font-semibold">{viewProduct.title}</h3>
             <p>
-              <strong>Price:</strong> ${viewProduct.price}
+              <strong>Price:</strong> €{viewProduct.price}
             </p>
             <p>
               <strong>Avg Rating:</strong> {viewProduct.avg_rating}

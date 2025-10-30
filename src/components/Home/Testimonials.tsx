@@ -16,39 +16,39 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Testimonials() {
   const testimonials = [
     {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+      text: "The platform made everything so simple! Booking and payments were smooth, and the customer support was quick to respond. Highly recommend!",
       name: "Libby Conway",
       location: "Jakarta",
       avatar: libby,
     },
     {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+      text: "I love how user-friendly the interface is. It took me less than five minutes to find what I needed and confirm my booking. Excellent experience overall!",
       name: "Chelsea Parker",
       location: "Jakarta",
       avatar: chelsea,
     },
     {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+      text: "Everything worked perfectly from start to finish. The site feels modern and professional, and the transaction process is completely secure.",
       name: "Tilly Gordon",
       location: "Jakarta",
       avatar: tilly,
     },
     {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
-      name: "Libby Conway",
-      location: "Jakarta",
+      text: "This service saved me so much time! I can easily compare options, check availability, and book instantly. Definitely using it again.",
+      name: "Mark Russell",
+      location: "Bali",
       avatar: libby,
     },
     {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
-      name: "Chelsea Parker",
-      location: "Jakarta",
+      text: "Super convenient and reliable! I especially liked how detailed the information was before confirming. It gave me confidence in my choice.",
+      name: "Ava Thompson",
+      location: "Surabaya",
       avatar: chelsea,
     },
     {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
-      name: "Tilly Gordon",
-      location: "Jakarta",
+      text: "Great experience overall — fast, intuitive, and trustworthy. The design is sleek, and everything works seamlessly even on mobile.",
+      name: "Ethan Patel",
+      location: "Bandung",
       avatar: tilly,
     },
   ];
@@ -241,8 +241,9 @@ export default function Testimonials() {
               <button
                 key={idx}
                 onClick={() => instanceRef.current?.moveToIdx(idx)}
-                className={`rounded-full ${currentSlide === idx ? "bg-primary" : "bg-gray-300"
-                  } h-3 w-3 sm:h-2 sm:w-2`}
+                className={`rounded-full ${
+                  currentSlide === idx ? "bg-primary" : "bg-gray-300"
+                } h-3 w-3 sm:h-2 sm:w-2`}
               />
             ))}
           </div>

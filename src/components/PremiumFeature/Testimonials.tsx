@@ -14,37 +14,37 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Testimonials() {
   const testimonials = [
     {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+      text: "The service was outstanding! Everything went smoothly from start to finish, and the team was incredibly responsive to all my questions.",
       name: "Libby Conway",
       location: "Jakarta",
       avatar: libby,
     },
     {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+      text: "I’m really impressed with the quality and attention to detail. It exceeded my expectations and I would definitely recommend it to others.",
       name: "Chelsea Parker",
       location: "Jakarta",
       avatar: chelsea,
     },
     {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+      text: "Excellent experience overall! The platform is easy to use, the support team is friendly, and the results were exactly what I needed.",
       name: "Tilly Gordon",
       location: "Jakarta",
       avatar: tilly,
     },
     {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+      text: "This was my first time using their service, and I’m beyond satisfied. Everything was handled professionally and delivered on time.",
       name: "Libby Conway",
       location: "Jakarta",
       avatar: libby,
     },
     {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+      text: "I love how intuitive the interface is. It made the whole process seamless, and I could see improvements right away after using it.",
       name: "Chelsea Parker",
       location: "Jakarta",
       avatar: chelsea,
     },
     {
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+      text: "A reliable and trustworthy service. The team truly cares about customer satisfaction and it shows in every interaction.",
       name: "Tilly Gordon",
       location: "Jakarta",
       avatar: tilly,
