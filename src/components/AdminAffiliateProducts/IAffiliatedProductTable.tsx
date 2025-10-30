@@ -442,6 +442,15 @@ const IAffiliatedProductTable: React.FC = () => {
             >
               {[
                 { name: "title", label: "Title", type: "text" },
+                // {
+                //   name: "price",
+                //   label: "Price",
+                //   type: "text",
+                //   pattern: {
+                //     value: /^[0-9,]+$/,
+                //     message: "Price must contain only numbers and commas",
+                //   },
+                // },
                 {
                   name: "price",
                   label: "Price",
