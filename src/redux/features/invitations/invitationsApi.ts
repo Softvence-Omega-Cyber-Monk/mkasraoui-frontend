@@ -48,7 +48,10 @@ export interface ApiResponse<T> {
 export const invitationsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Send Invitation
-    sendInvitation: builder.mutation<ApiResponse<Invitation>, SendInvitationRequest>({
+    sendInvitation: builder.mutation<
+      ApiResponse<Invitation>,
+      SendInvitationRequest
+    >({
       query: (body) => ({
         url: "/invitations/send",
         method: "POST",
@@ -64,11 +67,19 @@ export const invitationsApi = baseApi.injectEndpoints({
     }),
 
     // Cancel Invitation
+    // cancelInvitation: builder.mutation<ApiResponse<Invitation>, string>({
+    //   query: (token) => ({
+    //     url: "/invitations/cancel",
+    //     method: "POST",
+    //     body: { token },
+    //   }),
+    //   invalidatesTags: ["Invitations"],
+    // }),
     cancelInvitation: builder.mutation<ApiResponse<Invitation>, string>({
       query: (token) => ({
-        url: "/invitations/cancel",
+        url: `/invitations/cancel?token=${token}`,
         method: "POST",
-        body: { token },
+        // body can be empty
       }),
       invalidatesTags: ["Invitations"],
     }),
