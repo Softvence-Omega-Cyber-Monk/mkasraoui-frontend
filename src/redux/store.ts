@@ -10,6 +10,7 @@ import userReducer from "./features/user/userSlice";
 import planReducer from "./features/subscribtionPlan/planSlice";
 import adminProviderPlanReducer from "./features/adminProviderPlan/adminProviderPlanSlice";
 import newsLetterReducer from "./features/newsLetter/newsLetterSlice";
+import contactReducer from "./features/contact/contactSlice";
 import chatReducer from "./features/chatmessage/chatSlice";
 import { tShirtApi } from "./features/tShirt/tshirtApi";
 import { partyPlanApi } from "./features/partyPlan/partyPlanApi";
@@ -36,9 +37,9 @@ export const store = configureStore({
     providerPlan: adminProviderPlanReducer,
     newsLetter: newsLetterReducer,
     chat: chatReducer,
-
+    contact: contactReducer,
   },
-  
+
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
@@ -54,6 +55,5 @@ export const store = configureStore({
   // .concat(chatApi.middleware),
 });
 
- 
 export type AppRootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
