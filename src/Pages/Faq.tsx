@@ -77,7 +77,7 @@ function Faq() {
             >
               <button
                 onClick={() => toggleFAQ(index)}
-                className="flex w-full items-center justify-between bg-gray-100 p-4 text-left hover:bg-gray-200 focus:outline-none"
+                className="flex w-full cursor-pointer items-center justify-between bg-gray-100 p-4 text-left hover:bg-gray-200 focus:outline-none"
               >
                 <span className="font-semibold">{faq.question}</span>
                 <span className="ml-2">{openIndex === index ? "−" : "+"}</span>

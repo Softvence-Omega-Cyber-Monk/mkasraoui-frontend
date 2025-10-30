@@ -1,5 +1,3 @@
- 
-
 import bgImage from "@/assets/videobanner.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -71,8 +69,9 @@ const VideoBanner: React.FC = () => {
           </h1>
 
           <p className="video-paragraph mt-4 max-w-xl text-sm sm:text-base">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit
-            tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.
+            Take a moment to celebrate life’s simple joys. Watch our short video
+            and feel the warmth of happiness, inspiration, and positivity flow
+            through your day.
           </p>
 
           {/* Play Button */}
@@ -94,9 +93,9 @@ const VideoBanner: React.FC = () => {
       {/* Video Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
-          <div className="relative w-full max-w-3xl aspect-video">
+          <div className="relative aspect-video w-full max-w-3xl">
             {/* Example YouTube iframe */}
-   <iframe
+            <iframe
               width="100%"
               height="500"
               src="https://www.youtube.com/embed/tCDvOQI3pco?autoplay=1"
@@ -110,7 +109,7 @@ const VideoBanner: React.FC = () => {
             {/* Close Button */}
             <button
               onClick={() => setIsOpen(false)}
-              className="absolute -top-10 right-0 text-white text-2xl"
+              className="absolute -top-10 right-0 text-2xl text-white"
             >
               ✕
             </button>
