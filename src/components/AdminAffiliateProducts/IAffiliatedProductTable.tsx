@@ -282,16 +282,22 @@ const IAffiliatedProductTable: React.FC = () => {
           <table className="w-full min-w-[1000px] table-auto">
             <thead className="border-b border-gray-300 bg-gray-50">
               <tr>
-                {["Title", "Company", "Price", "Image", "Link", "Actions"].map(
-                  (header) => (
-                    <th
-                      key={header}
-                      className="px-6 py-3 text-left font-medium text-gray-700"
-                    >
-                      {header}
-                    </th>
-                  ),
-                )}
+                {[
+                  "Title",
+                  "Company",
+                  "Price",
+                  "Age Range",
+                  "Image",
+                  "Link",
+                  "Actions",
+                ].map((header) => (
+                  <th
+                    key={header}
+                    className="px-6 py-3 text-left font-medium whitespace-nowrap text-gray-700"
+                  >
+                    {header}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -329,6 +335,7 @@ const IAffiliatedProductTable: React.FC = () => {
                       {p.affiliated_company}
                     </td>
                     <td className="px-6 py-4">€{p.price}</td>
+                    <td className="px-6 py-4">{p.age_range}</td>
                     <td className="px-6 py-4">
                       {p.image_url ? (
                         <a
@@ -604,8 +611,6 @@ const IAffiliatedProductTable: React.FC = () => {
 };
 
 export default IAffiliatedProductTable;
-
-
 
 // import { useEffect, useMemo, useState } from "react";
 // import { useForm } from "react-hook-form";
