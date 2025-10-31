@@ -183,16 +183,17 @@ export default function Shop(): JSX.Element {
                 role="button"
                 tabIndex={0}
                 onClick={() => window.open(product.link, "_blank")}
-                className="flex h-full cursor-pointer flex-col overflow-hidden rounded-lg shadow-sm transition-shadow hover:shadow-md"
+                className="flex h-full cursor-pointer flex-col overflow-hidden rounded-lg bg-[#FFFAF5] shadow-sm transition-shadow hover:shadow-md"
               >
-                <div className="relative h-64 w-auto overflow-hidden">
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-t-lg bg-gray-100">
                   <img
                     src={product.image_url}
                     alt={product.title}
-                    className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                    loading="lazy"
                   />
                   <div className="absolute top-3 left-3">
-                    <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
+                    <span className="inline-flex items-center rounded-full bg-[#223B7D] px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
                       {product.affiliated_company || "GIFT"}
                     </span>
                   </div>
@@ -224,7 +225,7 @@ export default function Shop(): JSX.Element {
                       e.stopPropagation();
                       window.open(product.link, "_blank");
                     }}
-                    className="mt-auto w-full cursor-pointer rounded-lg border bg-[#223B7D] px-4 py-3 text-gray-50 transition-colors hover:bg-blue-900"
+                    className="mt-auto w-full cursor-pointer rounded-xl border bg-[#223B7D] px-4 py-3 text-gray-50 transition-colors hover:bg-blue-900"
                   >
                     Buy Now
                   </button>
