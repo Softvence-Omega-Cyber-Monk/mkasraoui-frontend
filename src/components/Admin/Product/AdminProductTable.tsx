@@ -51,8 +51,8 @@ const AdminProductTable: React.FC = () => {
   ];
 
   const [deleteProduct] = useDeleteProductMutation();
-  const [addProduct] = useAddProductMutation();
-  const [updateProduct] = useUpdateProductMutation();
+  const [addProduct, { isLoading: isAdding }] = useAddProductMutation();
+  const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -577,7 +577,7 @@ const AdminProductTable: React.FC = () => {
                 </div>
 
                 {/* Theme */}
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <label className="font-medium">Theme *</label>
                   <select
                     value={formData.theme}
@@ -596,10 +596,40 @@ const AdminProductTable: React.FC = () => {
                   {errors.theme && (
                     <p className="text-xs text-red-500">{errors.theme}</p>
                   )}
+                </div> */}
+
+                {/* Theme */}
+                <div className="space-y-2">
+                  <label className="font-medium">Theme *</label>
+                  <select
+                    value={formData.theme}
+                    onChange={(e) =>
+                      setFormData({ ...formData, theme: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring focus:ring-blue-100"
+                  >
+                    <option value="">Select Theme</option>
+                    <option value="SUPERHERO">Superhero</option>
+                    <option value="SPACE">Space</option>
+                    <option value="ART">Art</option>
+                    <option value="SCIENCE">Science</option>
+                    <option value="MUSIC">Music</option>
+                    <option value="SPORTS">Sports</option>
+                    <option value="PRINCESS">Princess</option>
+                    <option value="DINOSAUR">Dinosaur</option>
+                    <option value="UNICORNS">Unicorns</option>
+                    <option value="PIRATES">Pirates</option>
+                    <option value="JUNGLE">Jungle</option>
+                    <option value="HOLIDAY">Holiday</option>
+                    <option value="CELEBRATION">Celebration</option>
+                  </select>
+                  {errors.theme && (
+                    <p className="text-xs text-red-500">{errors.theme}</p>
+                  )}
                 </div>
 
                 {/* Category */}
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <label className="font-medium">Category *</label>
                   <select
                     value={formData.category}
@@ -615,6 +645,28 @@ const AdminProductTable: React.FC = () => {
                     <option value="EDUCATIONAL">Educational</option>
                     <option value="ARTS_CRAFTS">Arts & Crafts</option>
                     <option value="OUTDOOR">Outdoor</option>
+                  </select>
+                  {errors.category && (
+                    <p className="text-xs text-red-500">{errors.category}</p>
+                  )}
+                </div> */}
+
+                {/* Category */}
+                <div className="space-y-2">
+                  <label className="font-medium">Category *</label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) =>
+                      setFormData({ ...formData, category: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring focus:ring-blue-100"
+                  >
+                    <option value="">Select Category</option>
+                    <option value="DIY_BOX">DIY Box</option>
+                    <option value="BIRTHDAY_DECORATIONS">
+                      Birthday Decorations
+                    </option>
+                    <option value="GENERAL_CRAFTS">General Crafts</option>
                   </select>
                   {errors.category && (
                     <p className="text-xs text-red-500">{errors.category}</p>
@@ -976,7 +1028,7 @@ const AdminProductTable: React.FC = () => {
             </div>
 
             {/* Buttons */}
-            <div className="mt-2 flex justify-end gap-4">
+            {/* <div className="mt-2 flex justify-end gap-4">
               <button
                 onClick={() => setIsModalOpen(false)}
                 className="cursor-pointer rounded-xl bg-gray-200 px-6 py-3 text-base font-medium text-gray-700 hover:bg-gray-300 focus:ring-2 focus:ring-gray-400"
@@ -988,6 +1040,30 @@ const AdminProductTable: React.FC = () => {
                 className="bg-secondary-dark hover:bg-secondary-light cursor-pointer rounded-xl px-6 py-3 text-base font-medium text-white"
               >
                 {editingProduct ? "Update Product" : "Add Product"}
+              </button>
+            </div> */}
+
+            <div className="mt-2 flex justify-end gap-4">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                disabled={isAdding || isUpdating}
+                className="cursor-pointer rounded-xl bg-gray-200 px-6 py-3 text-base font-medium text-gray-700 hover:bg-gray-300 focus:ring-2 focus:ring-gray-400"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleSubmit}
+                disabled={isAdding || isUpdating}
+                className="bg-secondary-dark hover:bg-secondary-light cursor-pointer rounded-xl px-6 py-3 text-base font-medium text-white"
+              >
+                {editingProduct
+                  ? isUpdating
+                    ? "Updating..."
+                    : "Update Product"
+                  : isAdding
+                    ? "Adding..."
+                    : "Add Product"}
               </button>
             </div>
           </div>
