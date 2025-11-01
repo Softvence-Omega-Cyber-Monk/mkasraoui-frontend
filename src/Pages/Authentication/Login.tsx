@@ -85,7 +85,7 @@ export default function Login() {
       if (role === "ADMIN") {
         navigate("/admin-dashboard");
       } else if (role === "PROVIDER") {
-        navigate("/dashboard");
+        navigate("/dashboard/earnings");
       } else {
         navigate("/home/my-account");
       }

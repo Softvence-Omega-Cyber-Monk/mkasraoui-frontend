@@ -60,14 +60,14 @@ export default function ConfirmInvitationPage() {
           <div className="flex justify-center gap-4">
             <button
               onClick={handleConfirm}
-              className="rounded-lg bg-green-600 px-6 py-3 text-white hover:bg-green-700"
+              className="cursor-pointer rounded-lg bg-[#223B7D] px-6 py-3 text-white hover:bg-[#052069]"
             >
               Confirm
             </button>
             <button
               onClick={handleCancel}
               disabled={isCancelling}
-              className="rounded-lg bg-red-600 px-6 py-3 text-white hover:bg-red-700 disabled:opacity-50"
+              className="cursor-pointer rounded-lg bg-red-600 px-6 py-3 text-white hover:bg-red-800 disabled:opacity-50"
             >
               Cancel
             </button>

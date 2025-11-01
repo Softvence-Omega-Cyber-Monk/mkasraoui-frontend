@@ -207,7 +207,9 @@ export default function ProviderDetails() {
           {/* Reviews */}
           {reviews.length > 0 && (
             <div className="rounded-lg bg-white p-6 shadow-sm">
-              <h2 className="mb-4 text-2xl font-bold text-black">Reviews</h2>
+              <h2 className="mb-4 text-2xl font-bold text-black">
+                Our Reviews
+              </h2>
               <div className="space-y-4">
                 {reviews.map((review) => (
                   <div

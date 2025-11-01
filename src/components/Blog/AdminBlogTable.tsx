@@ -63,8 +63,8 @@ const AdminBlogTable: React.FC = () => {
   const { data, isLoading, isFetching } = useGetBlogsQuery();
   const blogs: Blog[] = data?.data ?? [];
 
-  const [addBlog] = useAddBlogMutation();
-  const [updateBlog] = useUpdateBlogMutation();
+  const [addBlog, { isLoading: addLoading }] = useAddBlogMutation();
+  const [updateBlog, { isLoading: updateLoading }] = useUpdateBlogMutation();
   const [deleteBlog] = useDeleteBlogMutation();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -82,7 +82,7 @@ const AdminBlogTable: React.FC = () => {
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitted },
   } = useForm<BlogFormType>({
     defaultValues: {
       title: "",
@@ -372,14 +372,14 @@ const AdminBlogTable: React.FC = () => {
               onSubmit={handleSubmit(onSubmit)}
               className="flex flex-col gap-4"
             >
-              <div className="flex flex-col gap-6">
-                {/* Title + Badge on one line */}
-                <div className="flex items-center gap-4">
-                  <div className="flex-1 space-y-1">
-                    <div>
-                      <label className="">Title</label>
-                    </div>
-
+              <div className="flex flex-col gap-8">
+                {/* Title + Badge (side by side on large screens) */}
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  {/* Title */}
+                  <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Title
+                    </label>
                     <input
                       type="text"
                       placeholder="Title"
@@ -395,13 +395,13 @@ const AdminBlogTable: React.FC = () => {
                     )}
                   </div>
 
-                  <div className="flex flex-1 flex-col space-y-1">
-                    <div>
-                      <label className="">Badge</label>
-                    </div>
-
+                  {/* Badge */}
+                  <div className="relative space-y-1">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Badge
+                    </label>
                     <div
-                      className="relative w-full"
+                      className="relative"
                       onClick={() => setbadgeOpen(!badgeOpen)}
                     >
                       <select
@@ -410,24 +410,21 @@ const AdminBlogTable: React.FC = () => {
                         })}
                         className="w-full cursor-pointer appearance-none rounded-lg border border-[#DBE0E5] p-3 pr-10 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                       >
-                        <div className="border border-[#DBE0E5]">
-                          <option value="">Select Badge</option>
-                          <option value="Inspiration">Inspiration</option>
-                          <option value="PartyTip">Party Tip</option>
-                          <option value="Parent">Parent</option>
-                          <option value="EasyOrganization">
-                            Easy Organization
-                          </option>
-                          <option value="Birthday">Easy Birthday</option>
-                          <option value="Child">Child</option>
-                          <option value="Popular">Popular</option>
-                          <option value="Featured">Featured</option>
-                          <option value="PartyAI">Party AI</option>
-                          <option value="GoodPlan">Good Plan</option>
-                        </div>
+                        <option value="">Select Badge</option>
+                        <option value="Inspiration">Inspiration</option>
+                        <option value="PartyTip">Party Tip</option>
+                        <option value="Parent">Parent</option>
+                        <option value="EasyOrganization">
+                          Easy Organization
+                        </option>
+                        <option value="Birthday">Easy Birthday</option>
+                        <option value="Child">Child</option>
+                        <option value="Popular">Popular</option>
+                        <option value="Featured">Featured</option>
+                        <option value="PartyAI">Party AI</option>
+                        <option value="GoodPlan">Good Plan</option>
                       </select>
 
-                      {/* Chevron Icon (absolute positioned) */}
                       <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                         {badgeOpen ? (
                           <ChevronUp className="h-5 w-5 text-gray-500" />
@@ -444,42 +441,51 @@ const AdminBlogTable: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Image Upload on same line if needed */}
-                <div className="flex items-start gap-4">
-                  <div className="flex flex-1 flex-col space-y-1">
-                    <label className="text-base">Upload Photo File</label>
-                    <div className="flex flex-1 flex-col gap-2">
+                {/* Image Upload + Tags */}
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  {/* Image Upload */}
+                  {/* Image Upload */}
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      Upload Photo File
+                    </label>
+
+                    <div className="flex flex-col gap-2">
                       <input
                         type="file"
                         multiple
                         onChange={handleFileChange}
                         className="rounded-lg border border-[#DBE0E5] px-2 py-3"
                       />
+
+                      {/* Preview thumbnails */}
                       {formData.previewUrls.length > 0 && (
                         <div className="flex flex-wrap gap-2">
                           {formData.previewUrls.map((url, i) => (
                             <img
                               key={i}
                               src={url}
+                              alt={`Preview ${i + 1}`}
                               className="h-16 w-16 rounded object-cover"
                             />
                           ))}
                         </div>
                       )}
                     </div>
-                    {formData.files.length === 0 && (
+
+                    {/* Show error only when user tries to submit and no photo selected */}
+                    {isSubmitted && formData.files.length === 0 && (
                       <p className="mt-1 text-sm text-red-500">
-                        {" "}
                         Photo File required
                       </p>
                     )}
                   </div>
 
-                  {/* Tags on same line if needed */}
-                  <div className="flex-1 space-y-1">
-                    <div>
-                      <label className="">Tag</label>
-                    </div>
+                  {/* Tags */}
+                  <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Tag
+                    </label>
                     <Controller
                       name="tag"
                       control={control}
@@ -488,7 +494,7 @@ const AdminBlogTable: React.FC = () => {
                         <div className="relative cursor-pointer">
                           <div
                             onClick={() => setTagOpen(!tagOpen)}
-                            className="flex cursor-pointer items-center justify-between rounded-lg border border-[#DBE0E5] bg-white p-3"
+                            className="flex items-center justify-between rounded-lg border border-[#DBE0E5] bg-white p-3"
                           >
                             <span>
                               {field.value?.length
@@ -503,7 +509,7 @@ const AdminBlogTable: React.FC = () => {
                           </div>
 
                           {tagOpen && (
-                            <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-lg border border-[#DBE0E5] bg-white shadow">
+                            <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-lg border border-[#DBE0E5] bg-white shadow-lg">
                               {tagOptions.map((tag) => (
                                 <li
                                   key={tag}
@@ -531,7 +537,7 @@ const AdminBlogTable: React.FC = () => {
 
                           {errors.tag && (
                             <p className="mt-1 text-sm text-red-500">
-                              tag required
+                              {errors.tag.message}
                             </p>
                           )}
                         </div>
@@ -542,9 +548,9 @@ const AdminBlogTable: React.FC = () => {
 
                 {/* Description */}
                 <div className="space-y-1">
-                  <div>
-                    <label className="">Description</label>
-                  </div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Description
+                  </label>
                   <textarea
                     placeholder="Description"
                     {...control.register("description", {
@@ -561,9 +567,9 @@ const AdminBlogTable: React.FC = () => {
                 </div>
 
                 {/* Rich Text Editor */}
-                <div>
-                  <label className="">
-                    <h2 className="mb-1 font-semibold">Conclusion</h2>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Conclusion
                   </label>
                   <Controller
                     name="conclusion"
@@ -582,8 +588,8 @@ const AdminBlogTable: React.FC = () => {
                   )}
                 </div>
               </div>
-
-              <div className="mt-2 flex justify-end gap-3">
+              {/* BUtton */}
+              {/* <div className="mt-2 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
@@ -596,6 +602,27 @@ const AdminBlogTable: React.FC = () => {
                   className="bg-secondary-dark hover:bg-secondary-light rounded-xl px-5 py-2 text-white hover:cursor-pointer"
                 >
                   {editingBlog ? "Update Blog" : "Add Blog"}
+                </button>
+              </div> */}
+              <div className="mt-2 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="rounded-xl bg-gray-300 px-5 py-2 hover:cursor-pointer hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-secondary-dark hover:bg-secondary-light rounded-xl px-5 py-2 text-white hover:cursor-pointer"
+                >
+                  {editingBlog
+                    ? addLoading || updateLoading
+                      ? "Updating..."
+                      : "Update Blog"
+                    : addLoading || updateLoading
+                      ? "Adding..."
+                      : "Add Blog"}
                 </button>
               </div>
             </form>
@@ -628,31 +655,32 @@ const AdminBlogTable: React.FC = () => {
       )}
 
       {/* View Modal */}
+      {/* View Modal */}
       {viewBlog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-2xl rounded-xl bg-white shadow-lg">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-6">
+          <div className="w-full max-w-2xl rounded-2xl bg-white shadow-xl ring-1 ring-gray-300">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-[#DBE0E5] px-6 py-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+            <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+              <h3 className="text-xl font-semibold text-gray-900">
                 {viewBlog.title}
               </h3>
               <button
                 onClick={() => setViewBlog(null)}
-                className="cursor-pointer rounded-full p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+                className="cursor-pointer rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
               >
                 ✕
               </button>
             </div>
 
             {/* Scrollable Body */}
-            <div className="max-h-[75vh] overflow-y-auto px-6 py-4">
+            <div className="max-h-[75vh] space-y-5 overflow-y-auto px-6 py-5">
               {/* Main Image */}
               {viewBlog.images && viewBlog.images.length > 0 && (
-                <div className="mb-4 flex justify-center">
+                <div className="flex justify-center">
                   <img
                     src={viewBlog.images[0]}
                     alt="Main blog"
-                    className="h-64 w-full rounded-lg object-cover shadow-md"
+                    className="h-64 w-full rounded-xl object-cover shadow-md"
                   />
                 </div>
               )}
@@ -660,7 +688,7 @@ const AdminBlogTable: React.FC = () => {
               {/* Description */}
               {viewBlog.description && (
                 <div
-                  className="prose prose-sm max-w-none text-gray-700"
+                  className="prose prose-base max-w-none text-gray-800"
                   dangerouslySetInnerHTML={{ __html: viewBlog.description }}
                 />
               )}
@@ -668,30 +696,31 @@ const AdminBlogTable: React.FC = () => {
               {/* Conclusion */}
               {viewBlog.conclusion && (
                 <div
-                  className="prose prose-sm mt-4 max-w-none text-gray-700"
+                  className="prose prose-base max-w-none text-gray-800"
                   dangerouslySetInnerHTML={{ __html: viewBlog.conclusion }}
                 />
               )}
 
               {/* Other Images */}
               {viewBlog.images && viewBlog.images.length > 1 && (
-                <div className="mt-5 flex flex-wrap justify-center gap-3">
+                <div className="mt-4 flex flex-wrap justify-center gap-3">
                   {viewBlog.images.slice(1).map((img, idx) => (
                     <img
                       key={idx}
                       src={img}
                       alt={`blog-img-${idx + 1}`}
-                      className="h-24 w-24 rounded-lg border object-cover shadow-sm transition-transform hover:scale-105"
+                      className="h-28 w-28 rounded-lg border border-gray-200 object-cover shadow-sm transition-transform hover:scale-105"
                     />
                   ))}
                 </div>
               )}
             </div>
 
-            <div className="border-t border-[#DBE0E5] px-6 py-4 text-right">
+            {/* Footer */}
+            <div className="border-t border-gray-200 px-6 py-4 text-right">
               <button
                 onClick={() => setViewBlog(null)}
-                className="bg-secondary-dark hover:bg-secondary-light cursor-pointer rounded-xl px-5 py-2 text-white"
+                className="cursor-pointer rounded-xl bg-gray-900 px-6 py-2 font-medium text-white transition hover:bg-gray-800"
               >
                 Close
               </button>
