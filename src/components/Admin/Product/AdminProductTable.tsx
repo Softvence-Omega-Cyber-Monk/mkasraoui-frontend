@@ -536,10 +536,10 @@ const AdminProductTable: React.FC = () => {
             </h3>
 
             {/* Form Fields */}
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 {/* Title */}
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <label className="font-medium">Title *</label>
                   <input
                     type="text"
@@ -556,7 +556,7 @@ const AdminProductTable: React.FC = () => {
                 </div>
 
                 {/* Product Type */}
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <label className="font-medium">Product Type *</label>
                   <select
                     value={formData.product_type}
@@ -567,7 +567,7 @@ const AdminProductTable: React.FC = () => {
                   >
                     <option value="">Select Product Type</option>
                     <option value="DIY_BOX">DIY Box</option>
-                    <option value="GIFT">Gift</option>
+                    {/* <option value="GIFT">Gift</option> */}
                   </select>
                   {errors.product_type && (
                     <p className="text-xs text-red-500">
@@ -577,7 +577,7 @@ const AdminProductTable: React.FC = () => {
                 </div>
 
                 {/* Theme */}
-                {/* <div className="space-y-2">
+                {/* <div className="space-y-1">
                   <label className="font-medium">Theme *</label>
                   <select
                     value={formData.theme}
@@ -599,7 +599,7 @@ const AdminProductTable: React.FC = () => {
                 </div> */}
 
                 {/* Theme */}
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <label className="font-medium">Theme *</label>
                   <select
                     value={formData.theme}
@@ -629,7 +629,7 @@ const AdminProductTable: React.FC = () => {
                 </div>
 
                 {/* Category */}
-                {/* <div className="space-y-2">
+                {/* <div className="space-y-1">
                   <label className="font-medium">Category *</label>
                   <select
                     value={formData.category}
@@ -652,7 +652,7 @@ const AdminProductTable: React.FC = () => {
                 </div> */}
 
                 {/* Category */}
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <label className="font-medium">Category *</label>
                   <select
                     value={formData.category}
@@ -674,7 +674,7 @@ const AdminProductTable: React.FC = () => {
                 </div>
 
                 {/* Age Range */}
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <label className="font-medium">Age Range *</label>
                   <input
                     type="text"
@@ -691,7 +691,7 @@ const AdminProductTable: React.FC = () => {
                 </div>
 
                 {/* Price */}
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <label className="font-medium">Price *</label>
                   <input
                     type="number"
@@ -710,7 +710,7 @@ const AdminProductTable: React.FC = () => {
               </div>
 
               {/* Included Items */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <label className="font-medium">Included Items *</label>
                 <div className="flex gap-2">
                   <input
@@ -763,7 +763,7 @@ const AdminProductTable: React.FC = () => {
               </div>
 
               {/* Description */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <label className="font-medium">Description *</label>
                 <textarea
                   placeholder="Product Description"
@@ -771,7 +771,7 @@ const AdminProductTable: React.FC = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  className="h-18 w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:ring focus:ring-blue-100"
+                  className="h-14 w-full rounded-lg border border-gray-300 px-2 py-2 text-sm focus:border-blue-500 focus:ring focus:ring-blue-100"
                   rows={4}
                 />
                 {errors.description && (
@@ -799,25 +799,19 @@ const AdminProductTable: React.FC = () => {
                   {formData.activities.map((activity, index) => (
                     <div
                       key={index}
-                      className="rounded-lg border border-gray-200 bg-gray-50 p-4"
+                      className="rounded-lg border border-gray-200 bg-gray-50 p-2"
                     >
-                      <div className="mb-3 flex items-center justify-between">
-                        <h4 className="font-medium text-gray-700">
-                          Activity {index + 1}
-                        </h4>
+                      <div className="mb-1 flex items-center justify-end">
                         <button
                           type="button"
                           onClick={() => removeActivity(index)}
-                          className="text-red-500 hover:text-red-700"
+                          className="cursor-pointer text-red-500 hover:text-red-700"
                         >
                           <X className="h-4 w-4" />
                         </button>
                       </div>
                       <div className="grid grid-cols-1 gap-3">
                         <div>
-                          <label className="text-sm font-medium text-gray-600">
-                            Title *
-                          </label>
                           <input
                             type="text"
                             placeholder="Activity Title"
@@ -834,9 +828,6 @@ const AdminProductTable: React.FC = () => {
                           )}
                         </div>
                         <div>
-                          <label className="text-sm font-medium text-gray-600">
-                            Description *
-                          </label>
                           <textarea
                             placeholder="Activity Description"
                             value={activity.description}
@@ -847,7 +838,7 @@ const AdminProductTable: React.FC = () => {
                                 e.target.value,
                               )
                             }
-                            className="mt-1 h-18 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring focus:ring-blue-100"
+                            className="mt-1 h-12 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring focus:ring-blue-100"
                           />
                           {errors[`activity_description_${index}`] && (
                             <p className="text-xs text-red-500">
@@ -895,7 +886,7 @@ const AdminProductTable: React.FC = () => {
                       <img
                         src={url}
                         alt={`existing-img-${idx}`}
-                        className="h-18 w-full rounded-lg border border-gray-200 object-cover"
+                        className="h-12 w-full rounded-lg border border-gray-200 object-cover"
                       />
                       <button
                         type="button"
@@ -973,7 +964,7 @@ const AdminProductTable: React.FC = () => {
                     <div className="relative">
                       <video
                         controls
-                        className="h-48 w-full rounded-lg border border-gray-200 bg-black"
+                        className="h-18 w-full rounded-lg border border-gray-200 bg-black"
                       >
                         <source
                           src={formData.existingTutorialVideo}
@@ -1001,7 +992,7 @@ const AdminProductTable: React.FC = () => {
                     <div className="relative">
                       <video
                         controls
-                        className="h-48 w-full rounded-lg border border-gray-200 bg-black"
+                        className="h-22 w-66 rounded-lg border border-gray-200 bg-black"
                       >
                         <source
                           src={URL.createObjectURL(formData.tutorialVideo)}
@@ -1017,7 +1008,7 @@ const AdminProductTable: React.FC = () => {
                             tutorialVideo: null,
                           }))
                         }
-                        className="absolute top-2 right-2 rounded-full bg-red-600 p-1 text-white"
+                        className="absolute top-2 ml-60 cursor-pointer rounded-full bg-red-600 p-1 text-white"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -1124,7 +1115,7 @@ const AdminProductTable: React.FC = () => {
               {viewProduct.activities && viewProduct.activities.length > 0 && (
                 <div>
                   <span className="font-semibold">Activities:</span>
-                  <div className="mt-2 space-y-2">
+                  <div className="mt-2 space-y-1">
                     {viewProduct.activities.map((activity, index) => (
                       <div key={index} className="rounded-lg bg-gray-50 p-3">
                         <h4 className="font-medium text-gray-800">
