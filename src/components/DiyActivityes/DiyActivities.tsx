@@ -1,5 +1,3 @@
-
-
 import { useMemo, useState } from "react";
 import { ChevronRight, Search } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -20,7 +18,7 @@ interface Activity {
 const DiyActivities: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState<string>("");
-   
+
   const [ratingFilter, setRatingFilter] = useState<number | "">("");
 
   const activitiesPerPage = 9;
@@ -42,13 +40,12 @@ const DiyActivities: React.FC = () => {
         activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         activity.description?.toLowerCase().includes(searchTerm.toLowerCase());
 
-      
-      
-      const matchesRating = ratingFilter === "" || activity.avg_rating === ratingFilter;
+      const matchesRating =
+        ratingFilter === "" || activity.avg_rating === ratingFilter;
 
       return matchesSearch && matchesRating;
     });
-  }, [activities, searchTerm,  ratingFilter]);
+  }, [activities, searchTerm, ratingFilter]);
 
   // 🎨 Dynamic filter options
   // const availableRatings = useMemo(
@@ -89,53 +86,53 @@ const DiyActivities: React.FC = () => {
   return (
     <div className="container mx-auto mt-1">
       {/* Filters */}
-     <div className=" rounded-lg   px-3  ">
-       <div className="flex flex-col md:flex-row gap-4 mb-5   rounded-lg bg-white p-6 shadow-sm">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-4 text-gray-400" size={20} />
-          <input
-            type="text"
-            placeholder="Search themes, activities, or keywords..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 py-3 pr-4 pl-10 outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div> 
-        <select
-  value={ratingFilter ?? ""}
-  onChange={(e) => {
-    const val = e.target.value;
-    setRatingFilter(val === "" ? "" : Number(val));
-  }}
-  className="cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-3 pr-8 outline-none focus:ring-2 focus:ring-blue-500"
->
-  <option value="">All Ratings</option>
-  {[1, 2, 3, 4, 5].map((r) => (
-    <option key={r} value={r}>
-      {r}
-    </option>
-  ))}
-        </select> 
+      <div className="rounded-lg px-3">
+        <div className="mb-5 flex flex-col gap-4 rounded-lg bg-white p-6 shadow-sm md:flex-row">
+          <div className="relative flex-1">
+            <Search className="absolute top-4 left-3 text-gray-400" size={20} />
+            <input
+              type="text"
+              placeholder="Search themes, activities, or keywords..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 py-3 pr-4 pl-10 outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <select
+            value={ratingFilter ?? ""}
+            onChange={(e) => {
+              const val = e.target.value;
+              setRatingFilter(val === "" ? "" : Number(val));
+            }}
+            className="cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-3 pr-8 outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">All Ratings</option>
+            {[1, 2, 3, 4, 5].map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
-     </div>
 
       {/* Activities Grid */}
       {filtered.length === 0 ? (
-        <p className="text-center text-gray-500 py-10">
+        <p className="py-10 text-center text-gray-500">
           No activities found matching your criteria.
         </p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-3 gap-6 mb-6">
+        <div className="mb-6 grid grid-cols-1 gap-6 px-3 md:grid-cols-2 lg:grid-cols-3">
           {paginated.map((activity) => (
             <div
               key={activity.id}
-              className="flex flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-md hover:shadow-lg transition-all"
+              className="flex flex-col overflow-hidden rounded-lg bg-[#FFFAF5] shadow-md transition-all hover:shadow-lg"
             >
               <div className="relative h-56 w-full overflow-hidden rounded-t-lg">
                 {activity.video ? (
                   <video
                     src={activity.video}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                     autoPlay
                     muted
                     loop
@@ -145,23 +142,25 @@ const DiyActivities: React.FC = () => {
                   <img
                     src="/placeholder.png"
                     alt={activity.title}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                   />
                 )}
               </div>
-              <div className="flex-1 p-4 flex flex-col">
+              <div className="flex flex-1 flex-col p-4">
                 <h3 className="mb-2 line-clamp-2 text-lg font-medium">
                   {activity.title}
                 </h3>
                 <div className="mb-4 flex items-center gap-2">
-                  <div className="flex">{renderStars(activity.avg_rating || 0)}</div>
-        <span className="text-sm font-medium text-gray-900">
-  {activity?.avg_rating != null
-    ? (activity.avg_rating % 1 === 0
-        ? Number(activity.avg_rating)
-        : Number(activity.avg_rating).toFixed(1))
-    : '0'}
-</span>
+                  <div className="flex">
+                    {renderStars(activity.avg_rating || 0)}
+                  </div>
+                  <span className="text-sm font-medium text-gray-900">
+                    {activity?.avg_rating != null
+                      ? activity.avg_rating % 1 === 0
+                        ? Number(activity.avg_rating)
+                        : Number(activity.avg_rating).toFixed(1)
+                      : "0"}
+                  </span>
                   <span className="text-sm text-gray-500">
                     ({activity.total_review} reviews)
                   </span>
@@ -171,7 +170,7 @@ const DiyActivities: React.FC = () => {
                 </p>
                 <Link
                   to={`/diyboxeactivity/activity/${activity.id}`}
-                  className="mt-auto flex w-full items-center justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
+                  className="mt-auto flex w-full items-center justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm font-medium text-white transition-all hover:bg-[#343f5c]"
                 >
                   View Details <ChevronRight size={16} />
                 </Link>
@@ -214,17 +213,6 @@ const DiyActivities: React.FC = () => {
 };
 
 export default DiyActivities;
-
-
-
-
-
-
-
-
-
-
-
 
 // import { useMemo, useState } from "react";
 // import { ChevronRight, Search } from "lucide-react";
@@ -332,10 +320,6 @@ export default DiyActivities;
 //           />
 //         </div>
 
-        
-
-        
-
 //         <select
 //           value={ratingFilter}
 //           onChange={(e) => setRatingFilter(e.target.value === "" ? "" : Number(e.target.value))}
@@ -397,17 +381,6 @@ export default DiyActivities;
 // };
 
 // export default DiyActivities;
-
-
-
-
-
-
-
-
-
-
-
 
 // import { useMemo, useState } from "react";
 // import { ChevronRight, Search, Star } from "lucide-react";
@@ -524,10 +497,6 @@ export default DiyActivities;
 //           />
 //         </div>
 
-        
-
-     
-
 //         {/* Rating filter */}
 //         <select
 //           value={ratingFilter}
@@ -594,10 +563,6 @@ export default DiyActivities;
 //                   {activity.description}
 //                 </p>
 
-
-
-
-
 //                 <Link
 //                   to={`/diyboxeactivity/activity/${activity.id}`}
 //                   className="mt-auto flex w-full items-center justify-center gap-2 rounded-md bg-[#223B7D] px-4 py-3 text-sm text-white font-medium hover:bg-[#343f5c] transition-all"
@@ -645,13 +610,6 @@ export default DiyActivities;
 // };
 
 // export default DiyActivities;
-
-
-
-
-
-
-
 
 // import { useMemo, useState } from "react";
 // import { ChevronRight, Search } from "lucide-react";
@@ -844,20 +802,6 @@ export default DiyActivities;
 
 // export default DiyActivities;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import { useMemo, useState } from "react";
 // import { ChevronRight, Search } from "lucide-react";
 // import { Link } from "react-router-dom";
@@ -963,7 +907,6 @@ export default DiyActivities;
 //         </div>
 
 //         {/* Theme */}
-        
 
 //         {/* Difficulty */}
 //         <select
@@ -1064,12 +1007,6 @@ export default DiyActivities;
 // };
 
 // export default DiyActivities;
-
-
-
-
-
-
 
 // import { useMemo, useState } from "react";
 // import { ChevronRight } from "lucide-react";
@@ -1195,11 +1132,3 @@ export default DiyActivities;
 // };
 
 // export default DiyActivities;
-
-
-
-
-
-
-
-

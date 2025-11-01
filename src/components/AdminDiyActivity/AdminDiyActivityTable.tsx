@@ -89,8 +89,9 @@ const AdminActivityTable: React.FC = () => {
   // Fetch activities
   const { data, isLoading, isFetching, isError, refetch } =
     useGetActivitiesQuery();
-  const [addActivity] = useAddActivityMutation();
-  const [updateActivity] = useUpdateActivityMutation();
+  const [addActivity, { isLoading: isAdding }] = useAddActivityMutation();
+  const [updateActivity, { isLoading: isUpdating }] =
+    useUpdateActivityMutation();
   const [deleteActivity] = useDeleteActivityMutation();
 
   // Map API data to Activity[]
@@ -532,7 +533,7 @@ const AdminActivityTable: React.FC = () => {
                   </p>
                 )}
               </div>
-              <div className="flex justify-end gap-2">
+              {/* <div className="flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
@@ -545,6 +546,29 @@ const AdminActivityTable: React.FC = () => {
                   className="bg-secondary-dark hover:bg-secondary-light cursor-pointer rounded-xl px-5 py-2 text-white"
                 >
                   {editingActivity ? "Update" : "Add Activity"}
+                </button>
+              </div> */}
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  disabled={isAdding || isUpdating} // disable while processing
+                  className="cursor-pointer rounded-xl bg-gray-300 px-5 py-2 disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isAdding || isUpdating} // disable while processing
+                  className="bg-secondary-dark hover:bg-secondary-light cursor-pointer rounded-xl px-5 py-2 text-white disabled:opacity-60"
+                >
+                  {editingActivity
+                    ? isUpdating
+                      ? "Updating..."
+                      : "Update Activity"
+                    : isAdding
+                      ? "Adding..."
+                      : "Add Activity"}
                 </button>
               </div>
             </form>

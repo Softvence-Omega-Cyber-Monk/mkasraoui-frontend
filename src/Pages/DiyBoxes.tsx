@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import {
   Search,
@@ -30,7 +29,9 @@ import {
 import DiyActivities from "../components/DiyActivityes/DiyActivities";
 
 export default function DiyBoxes() {
-  const [activeTab, setActiveTab] = useState<"diy box" | "diy Activity">("diy box");
+  const [activeTab, setActiveTab] = useState<"diy box" | "diy Activity">(
+    "diy box",
+  );
 
   const [searchTerm, setSearchTerm] = useState("");
   const [ageRange, setAgeRange] = useState("");
@@ -48,7 +49,9 @@ export default function DiyBoxes() {
   const [removeFromWishlistApi] = useRemoveFromWishlistApiMutation();
 
   // Loading states for individual items
-  const [wishlistLoadingStates, setWishlistLoadingStates] = useState<{ [key: string]: boolean }>({});
+  const [wishlistLoadingStates, setWishlistLoadingStates] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   // Get DIY boxes data
   const { data: activities = [], isLoading, isError } = useGetDIYBoxesQuery();
@@ -92,10 +95,14 @@ export default function DiyBoxes() {
 
   // 🧠 Helpers
   const checkIsInWishlist = (itemId: string): boolean => {
-    return wishlistItems.some((item) => String(item.prodcut.id) === String(itemId));
+    return wishlistItems.some(
+      (item) => String(item.prodcut.id) === String(itemId),
+    );
   };
-  const isInCart = (itemId: string): boolean => cart.some((c) => String(c.id) === String(itemId));
-  const isWishlistLoading = (itemId: string): boolean => wishlistLoadingStates[itemId] || false;
+  const isInCart = (itemId: string): boolean =>
+    cart.some((c) => String(c.id) === String(itemId));
+  const isWishlistLoading = (itemId: string): boolean =>
+    wishlistLoadingStates[itemId] || false;
 
   // 🎯 Filtering
   const availableAgeRanges = useMemo(() => {
@@ -150,13 +157,13 @@ export default function DiyBoxes() {
         className="text-3xl sm:text-5xl md:text-6xl"
       />
 
-      <div className="container mx-auto mt-10 ">
+      <div className="container mx-auto mt-10">
         <div className="mb-6 flex justify-between">
           {/* Tab Switcher */}
-          <div className="flex w-full rounded-lg bg-white shadow-sm overflow-hidden">
+          <div className="flex w-full overflow-hidden rounded-lg bg-white shadow-sm">
             <button
               onClick={() => setActiveTab("diy box")}
-              className={`flex flex-1 items-center justify-center gap-2 px-4 py-3 cursor-pointer text-base font-medium transition-all ${
+              className={`flex flex-1 cursor-pointer items-center justify-center gap-2 px-4 py-3 text-base font-medium transition-all ${
                 activeTab === "diy box"
                   ? "bg-secondary text-white"
                   : "text-gray-600 hover:bg-gray-100"
@@ -167,7 +174,7 @@ export default function DiyBoxes() {
 
             <button
               onClick={() => setActiveTab("diy Activity")}
-              className={`flex flex-1 items-center justify-center cursor-pointer gap-2 px-4 py-3 text-base font-medium transition-all ${
+              className={`flex flex-1 cursor-pointer items-center justify-center gap-2 px-4 py-3 text-base font-medium transition-all ${
                 activeTab === "diy Activity"
                   ? "bg-secondary text-white"
                   : "text-gray-600 hover:bg-gray-100"
@@ -184,9 +191,9 @@ export default function DiyBoxes() {
         <>
           <div className="container mx-auto">
             {/* Filters */}
-            <div className="  rounded-lg bg-white  ">
-              <div className="flex flex-col md:flex-row gap-4    rounded-lg bg-white p-6 shadow-sm">
-                <div className="relative flex-1 ">
+            <div className="rounded-lg bg-white">
+              <div className="flex flex-col gap-4 rounded-lg bg-white p-6 shadow-sm md:flex-row">
+                <div className="relative flex-1">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <Search className="h-5 w-5 text-gray-400" />
                   </div>
@@ -199,39 +206,41 @@ export default function DiyBoxes() {
                   />
                 </div>
 
-                
-                  <select
-                    value={ageRange}
-                    onChange={(e) => setAgeRange(e.target.value)}
-                    className="cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-3 pr-8 outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">All Ages</option>
-                    {availableAgeRanges.map((range) => (
-                      <option key={range} value={range}>
-                        {range}
-                      </option>
-                    ))}
-                  </select>
-                
+                <select
+                  value={ageRange}
+                  onChange={(e) => setAgeRange(e.target.value)}
+                  className="cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-3 pr-8 outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">All Ages</option>
+                  {availableAgeRanges.map((range) => (
+                    <option key={range} value={range}>
+                      {range}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
             {/* Products Grid */}
             {paginated.length === 0 ? (
               <div className="p-10 text-center">
-                <p className="text-gray-600">No DIY boxes found matching your criteria.</p>
+                <p className="text-gray-600">
+                  No DIY boxes found matching your criteria.
+                </p>
               </div>
             ) : (
-              <div className="mx-auto mt-10 grid grid-cols-1 gap-6   pb-14 md:grid-cols-2 lg:grid-cols-3">
+              <div className="mx-auto mt-10 grid grid-cols-1 gap-6 pb-14 md:grid-cols-2 lg:grid-cols-3">
                 {paginated.map((activity) => {
                   const liked = checkIsInWishlist(String(activity.id));
                   const inCart = isInCart(String(activity.id));
-                  const wishlistLoading = isWishlistLoading(String(activity.id));
+                  const wishlistLoading = isWishlistLoading(
+                    String(activity.id),
+                  );
 
                   return (
                     <div
                       key={activity.id}
-                      className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFF7ED] shadow-sm hover:shadow-md"
+                      className="flex h-full flex-col overflow-hidden rounded-lg bg-[#FFFAF5] shadow-sm hover:shadow-md"
                     >
                       {/* Image */}
                       <div className="relative h-64">
@@ -248,7 +257,7 @@ export default function DiyBoxes() {
 
                         {/* Wishlist Button */}
                         <button
-                          className="absolute top-3 left-3 rounded-full bg-white p-2 shadow-sm transition-colors hover:bg-gray-50 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                          className="absolute top-3 left-3 cursor-pointer rounded-full bg-white p-2 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                           onClick={() => toggleLike(activity)}
                           disabled={wishlistLoading || liked}
                         >
@@ -287,7 +296,9 @@ export default function DiyBoxes() {
 
                         {/* Rating */}
                         <div className="mb-4 flex items-center gap-2">
-                          <div className="flex">{renderStars(activity.avg_rating)}</div>
+                          <div className="flex">
+                            {renderStars(activity.avg_rating)}
+                          </div>
                           <span className="text-sm font-medium text-gray-900">
                             {activity.avg_rating}
                           </span>
@@ -316,7 +327,10 @@ export default function DiyBoxes() {
 
                         {/* Buttons */}
                         <div className="mt-auto flex gap-3">
-                          <Link to={`/home/diyboxe/details/${activity.id}`} className="flex-1">
+                          <Link
+                            to={`/home/diyboxe/details/${activity.id}`}
+                            className="flex-1"
+                          >
                             <button className="hover:bg-secondary-light w-full cursor-pointer rounded-lg bg-[#223B7D] px-4 py-3 font-medium text-white">
                               View Details
                             </button>
@@ -329,14 +343,18 @@ export default function DiyBoxes() {
                                     id: String(activity.id),
                                     title: activity.title,
                                     price: activity.price,
-                                    discounted_price: activity.discounted_price ?? activity.price,
+                                    discounted_price:
+                                      activity.discounted_price ??
+                                      activity.price,
                                     quantity: 1,
                                     image: activity.imges?.[0] || "",
                                     rating: activity.avg_rating,
                                     imges: activity.imges,
-                                  })
+                                  }),
                                 );
-                                toast.success(`${activity.title} added to cart!`);
+                                toast.success(
+                                  `${activity.title} added to cart!`,
+                                );
                               }
                             }}
                             disabled={inCart}
@@ -364,7 +382,8 @@ export default function DiyBoxes() {
             {filteredActivities.length > 0 && (
               <div className="mt-6 flex items-center justify-between px-4 py-3">
                 <div className="text-sm text-gray-600">
-                  Showing <span className="font-medium">{paginated.length}</span> of{" "}
+                  Showing{" "}
+                  <span className="font-medium">{paginated.length}</span> of{" "}
                   <span className="font-medium">{total}</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -399,22 +418,6 @@ export default function DiyBoxes() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import { useState, useMemo } from "react";
 // import { Search, Clock, Users, ShoppingCart, Heart, ListIcon, MapIcon, } from "lucide-react";
@@ -827,4 +830,3 @@ export default function DiyBoxes() {
 //     </div>
 //   );
 // }
-

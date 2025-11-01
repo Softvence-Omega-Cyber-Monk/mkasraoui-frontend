@@ -38,7 +38,7 @@ const Navbar: React.FC = () => {
         { name: "Providers", to: "/home/providers" },
         { name: "Shop", to: "/home/shop" },
         { name: "Custom T-Shirt", to: "/home/custom-t-shirt" },
-        { name: "Blog", to: "/home/blog" },
+        { name: "Blogs", to: "/home/blog" },
       ]
     : [
         { name: "Home", to: "/" },
@@ -47,7 +47,7 @@ const Navbar: React.FC = () => {
         { name: "Testimonial", hash: "/#testimonial" },
         { name: "Providers", to: "/home/providers" },
         { name: "Shop", to: "/home/shop" },
-        { name: "Blog", to: "/home/blog" },
+        { name: "Blogs", to: "/home/blog" },
       ];
 
   const getDashboardUrl = () => {
@@ -97,7 +97,7 @@ const Navbar: React.FC = () => {
     cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <nav className="bg-background relative container mx-auto flex max-w-[1440px] items-center justify-between border-b border-gray-200 px-4 lg:px-5">
+    <nav className="bg-background relative container mx-auto flex max-w-[1640px] items-center justify-between border-b border-gray-200 px-4 lg:px-5">
       {/* Logo */}
       <Link to="/">
         <img src={logo} className="h-20" alt="Logo" />
