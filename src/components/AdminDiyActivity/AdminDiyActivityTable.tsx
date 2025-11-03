@@ -21,6 +21,7 @@ interface ActivityFormType {
   title: string;
   description: string;
   instruction_sheet: string;
+  age_range: string; // ✅ added
   video: File | null;
   videoPreview: string | null;
   pdfFile: File | null;
@@ -33,6 +34,7 @@ interface Activity extends ReduxActivity {
   description?: string;
   images?: string[];
   pdfFile?: string;
+  age_range?: string; // ✅ added
 }
 
 // Utility to strip HTML tags
@@ -48,11 +50,11 @@ const RichTextInput: React.FC<{
   value: string;
   onChange: (v: string) => void;
 }> = ({ value, onChange }) => (
-  <div className="h-[250px] overflow-hidden rounded-lg border border-gray-300 p-2">
+  <div className="h-[190px] overflow-hidden rounded-lg border border-gray-300 p-2">
     <RichTextEditor
       value={value}
       onChange={onChange}
-      className="h-[230px] overflow-y-auto"
+      className="h-[170px] overflow-y-auto"
     />
   </div>
 );
@@ -103,6 +105,7 @@ const AdminActivityTable: React.FC = () => {
       video: a.video ?? "",
       pdfFile: a.pdfFile ?? "",
       images: a.images ?? [],
+      age_range: a.age_range ?? "", // ✅ added
     })) || [];
 
   // Filtered activities
@@ -182,6 +185,7 @@ const AdminActivityTable: React.FC = () => {
     payload.append("title", data.title);
     payload.append("description", data.description);
     payload.append("instruction_sheet", data.instruction_sheet);
+    payload.append("age_range", data.age_range);
     if (data.video) payload.append("video", data.video);
     if (data.pdfFile) payload.append("pdfFile", data.pdfFile);
 
@@ -254,7 +258,9 @@ const AdminActivityTable: React.FC = () => {
                 <th className="px-6 py-3 text-left font-normal">
                   Instruction Sheet
                 </th>
+                <th className="px-6 py-3 text-left font-normal">Age Range</th>
                 <th className="px-6 py-3 text-left font-normal">Video</th>
+
                 <th className="px-6 py-3 text-left font-normal">PDF File</th>
                 <th className="px-6 py-3 text-center font-normal">Actions</th>
               </tr>
@@ -294,6 +300,9 @@ const AdminActivityTable: React.FC = () => {
                       {stripHtml(a.instruction_sheet).slice(0, 20)}...
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
+                      {a.age_range}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {a.video ? (
                         <div className="h-12 w-20 overflow-hidden rounded-md border border-gray-300 bg-gray-100">
                           <video
@@ -308,6 +317,7 @@ const AdminActivityTable: React.FC = () => {
                         <span className="text-sm text-gray-500">No video</span>
                       )}
                     </td>
+
                     <td className="px-6 py-4 whitespace-nowrap">
                       {a.pdfFile ? (
                         <a
@@ -385,7 +395,7 @@ const AdminActivityTable: React.FC = () => {
       {/* ✅ Modals for Add/Edit/View/Delete remain unchanged */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50">
-          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6">
+          <div className="max-h-[94vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white p-4">
             <div className="mb-2 flex items-center justify-between">
               <h3 className="text-xl font-semibold">
                 {editingActivity ? "Edit Activity" : "Add Activity"}
@@ -401,7 +411,7 @@ const AdminActivityTable: React.FC = () => {
             {/* Form */}
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-col gap-4"
+              className="flex flex-col gap-2"
             >
               <label>Title</label>
               <input
@@ -417,11 +427,21 @@ const AdminActivityTable: React.FC = () => {
               <textarea
                 {...register("description", { required: true })}
                 placeholder="Description"
-                className="h-18 rounded-xl border border-gray-300 p-2"
+                className="h-15 rounded-xl border border-gray-300 p-2"
                 rows={3}
               />
               {errors.description && (
                 <p className="text-sm text-red-500">Description required</p>
+              )}
+
+              <label>Age Range</label>
+              <input
+                {...register("age_range", { required: true })}
+                placeholder="e.g., 3-9 years"
+                className="rounded-xl border border-gray-300 p-2"
+              />
+              {errors.age_range && (
+                <p className="text-sm text-red-500">Age range required</p>
               )}
 
               {/* PDF Upload */}
@@ -485,7 +505,7 @@ const AdminActivityTable: React.FC = () => {
                 >
                   Upload Video
                 </label>
-                <div className="flex h-20 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition hover:border-blue-400">
+                <div className="flex h-15 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition hover:border-blue-400">
                   <input
                     id="video-upload"
                     type="file"
@@ -498,7 +518,7 @@ const AdminActivityTable: React.FC = () => {
                     className="flex cursor-pointer flex-col items-center justify-center text-center"
                   >
                     <svg
-                      className="mb-2 h-10 w-10 text-gray-400"
+                      className="mb-2 h-5 w-10 text-gray-400"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
@@ -585,13 +605,13 @@ const AdminActivityTable: React.FC = () => {
             <div className="mt-4 flex justify-end gap-2">
               <button
                 onClick={() => setConfirmDelete(null)}
-                className="w-full cursor-pointer rounded-xl bg-gray-400 px-4 py-3 text-white"
+                className="cursor-pointer rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 transition-all duration-200 hover:bg-gray-100 focus:ring-2 focus:ring-gray-300"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
-                className="w-full cursor-pointer rounded-xl bg-red-600 px-4 py-3 text-white"
+                className="cursor-pointer rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-red-700 focus:ring-2 focus:ring-red-400"
               >
                 Delete
               </button>
@@ -670,7 +690,7 @@ export default AdminActivityTable;
 // import { useEffect, useState, type ChangeEvent } from "react";
 // import { useForm, Controller } from "react-hook-form";
 // import { RichTextEditor } from "@mantine/rte";
-// import { FileText, Plus } from "lucide-react";
+// import { FileText, Plus, Search } from "lucide-react";
 // import { FaRegEdit } from "react-icons/fa";
 // import { MdDelete } from "react-icons/md";
 // import { GrView } from "react-icons/gr";
@@ -704,6 +724,7 @@ export default AdminActivityTable;
 //   pdfFile?: string;
 // }
 
+// // Utility to strip HTML tags
 // const stripHtml = (html?: string) => {
 //   if (!html) return "";
 //   const div = document.createElement("div");
@@ -711,6 +732,7 @@ export default AdminActivityTable;
 //   return div.textContent || div.innerText || "";
 // };
 
+// // RichTextInput component
 // const RichTextInput: React.FC<{
 //   value: string;
 //   onChange: (v: string) => void;
@@ -729,6 +751,8 @@ export default AdminActivityTable;
 //   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
 //   const [viewActivity, setViewActivity] = useState<Activity | null>(null);
 //   const [confirmDelete, setConfirmDelete] = useState<Activity | null>(null);
+
+//   const [searchTerm, setSearchTerm] = useState("");
 
 //   const {
 //     control,
@@ -751,12 +775,15 @@ export default AdminActivityTable;
 
 //   const formData = watch();
 
+//   // Fetch activities
 //   const { data, isLoading, isFetching, isError, refetch } =
 //     useGetActivitiesQuery();
-//   const [addActivity] = useAddActivityMutation();
-//   const [updateActivity] = useUpdateActivityMutation();
+//   const [addActivity, { isLoading: isAdding }] = useAddActivityMutation();
+//   const [updateActivity, { isLoading: isUpdating }] =
+//     useUpdateActivityMutation();
 //   const [deleteActivity] = useDeleteActivityMutation();
 
+//   // Map API data to Activity[]
 //   const activities: Activity[] =
 //     data?.data?.map((a: any) => ({
 //       ...a,
@@ -767,20 +794,33 @@ export default AdminActivityTable;
 //       images: a.images ?? [],
 //     })) || [];
 
-//   // ✅ Pagination setup
+//   // Filtered activities
+//   const filteredActivities = activities.filter((a) => {
+//     return (
+//       stripHtml(a.title).toLowerCase().includes(searchTerm.toLowerCase()) ||
+//       stripHtml(a.description)
+//         .toLowerCase()
+//         .includes(searchTerm.toLowerCase()) ||
+//       stripHtml(a.instruction_sheet)
+//         .toLowerCase()
+//         .includes(searchTerm.toLowerCase())
+//     );
+//   });
+
+//   // Pagination
 //   const [page, setPage] = useState(1);
 //   const activitiesPerPage = 8;
-//   const total = activities.length;
+//   const total = filteredActivities.length;
 //   const totalPages = Math.ceil(total / activitiesPerPage);
 
 //   useEffect(() => setPage(1), [total]);
 
-//   const paginatedactivities = activities.slice(
+//   const paginatedActivities = filteredActivities.slice(
 //     (page - 1) * activitiesPerPage,
 //     page * activitiesPerPage,
 //   );
 
-//   // ✅ Add Modal
+//   // Add / Edit modal handlers
 //   const openAddModal = () => {
 //     setEditingActivity(null);
 //     setValue("title", "");
@@ -793,7 +833,6 @@ export default AdminActivityTable;
 //     setIsModalOpen(true);
 //   };
 
-//   // ✅ Edit Modal
 //   const openEditModal = (activity: Activity) => {
 //     setEditingActivity(activity);
 //     setValue("title", activity.title ?? "");
@@ -806,7 +845,7 @@ export default AdminActivityTable;
 //     setIsModalOpen(true);
 //   };
 
-//   // ✅ File Handlers
+//   // File handlers
 //   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
 //     if (!e.target.files?.length) return;
 //     const file = e.target.files[0];
@@ -822,7 +861,7 @@ export default AdminActivityTable;
 //     setValue("pdfPreview", file.name);
 //   };
 
-//   // ✅ Submit (Add / Edit)
+//   // Submit add/edit
 //   const onSubmit = async (data: ActivityFormType) => {
 //     if (!data.video && !editingActivity) {
 //       return toast.error("Please upload a video");
@@ -853,7 +892,7 @@ export default AdminActivityTable;
 //     }
 //   };
 
-//   // ✅ Delete
+//   // Delete activity
 //   const handleDelete = async () => {
 //     if (!confirmDelete) return;
 //     try {
@@ -877,6 +916,20 @@ export default AdminActivityTable;
 //         >
 //           <Plus className="h-5 w-5" /> Add Activity
 //         </button>
+//       </div>
+
+//       {/* Filter Section */}
+//       <div className="mb-8">
+//         <div className="relative w-full flex-1 md:w-[400px]">
+//           <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+//           <input
+//             type="text"
+//             placeholder="Search by title, description, or instructions..."
+//             value={searchTerm}
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//             className="w-full rounded-xl border border-gray-200 py-2.5 pr-4 pl-10 text-gray-700 placeholder-gray-400 focus:border-gray-300 focus:ring-1 focus:ring-gray-300 focus:outline-none"
+//           />
+//         </div>
 //       </div>
 
 //       {/* Table */}
@@ -908,14 +961,14 @@ export default AdminActivityTable;
 //                     Error fetching activities
 //                   </td>
 //                 </tr>
-//               ) : paginatedactivities.length === 0 ? (
+//               ) : paginatedActivities.length === 0 ? (
 //                 <tr>
 //                   <td colSpan={6} className="p-6 text-center text-gray-500">
 //                     No activities found.
 //                   </td>
 //                 </tr>
 //               ) : (
-//                 paginatedactivities.map((a) => (
+//                 paginatedActivities.map((a) => (
 //                   <tr
 //                     key={a.id}
 //                     className="border-b border-gray-300 hover:bg-gray-50"
@@ -929,7 +982,6 @@ export default AdminActivityTable;
 //                     <td className="px-6 py-4 whitespace-nowrap">
 //                       {stripHtml(a.instruction_sheet).slice(0, 20)}...
 //                     </td>
-
 //                     <td className="px-6 py-4 whitespace-nowrap">
 //                       {a.video ? (
 //                         <div className="h-12 w-20 overflow-hidden rounded-md border border-gray-300 bg-gray-100">
@@ -945,7 +997,6 @@ export default AdminActivityTable;
 //                         <span className="text-sm text-gray-500">No video</span>
 //                       )}
 //                     </td>
-
 //                     <td className="px-6 py-4 whitespace-nowrap">
 //                       {a.pdfFile ? (
 //                         <a
@@ -960,7 +1011,6 @@ export default AdminActivityTable;
 //                         <span className="text-sm text-gray-500">No PDF</span>
 //                       )}
 //                     </td>
-
 //                     <td className="flex justify-center gap-2 px-6 py-4">
 //                       <button
 //                         onClick={() => openEditModal(a)}
@@ -989,12 +1039,12 @@ export default AdminActivityTable;
 //         </div>
 //       </div>
 
-//       {/* ✅ Pagination Controls */}
-//       {activities.length > 0 && (
+//       {/* Pagination */}
+//       {filteredActivities.length > 0 && (
 //         <div className="mt-6 flex items-center justify-between px-4 py-3">
 //           <div className="text-sm text-gray-600">
 //             Showing{" "}
-//             <span className="font-medium">{paginatedactivities.length}</span> of{" "}
+//             <span className="font-medium">{paginatedActivities.length}</span> of{" "}
 //             <span className="font-medium">{total}</span>
 //           </div>
 //           <div className="flex items-center gap-2">
@@ -1019,11 +1069,13 @@ export default AdminActivityTable;
 //         </div>
 //       )}
 
+//       {/* Add/Edit/View/Delete modals remain same as your current implementation */}
+
 //       {/* ✅ Modals for Add/Edit/View/Delete remain unchanged */}
 //       {isModalOpen && (
 //         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50">
-//           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6">
-//             <div className="mb-4 flex items-center justify-between">
+//           <div className="max-h-[94vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white p-6">
+//             <div className="mb-2 flex items-center justify-between">
 //               <h3 className="text-xl font-semibold">
 //                 {editingActivity ? "Edit Activity" : "Add Activity"}
 //               </h3>
@@ -1038,13 +1090,13 @@ export default AdminActivityTable;
 //             {/* Form */}
 //             <form
 //               onSubmit={handleSubmit(onSubmit)}
-//               className="flex flex-col gap-4"
+//               className="flex flex-col gap-2"
 //             >
 //               <label>Title</label>
 //               <input
 //                 {...register("title", { required: true })}
 //                 placeholder="Title"
-//                 className="rounded border border-gray-300 p-2"
+//                 className="rounded-xl border border-gray-300 p-2"
 //               />
 //               {errors.title && (
 //                 <p className="text-sm text-red-500">Title required</p>
@@ -1054,7 +1106,7 @@ export default AdminActivityTable;
 //               <textarea
 //                 {...register("description", { required: true })}
 //                 placeholder="Description"
-//                 className="rounded border border-gray-300 p-2"
+//                 className="h-15 rounded-xl border border-gray-300 p-2"
 //                 rows={3}
 //               />
 //               {errors.description && (
@@ -1122,7 +1174,7 @@ export default AdminActivityTable;
 //                 >
 //                   Upload Video
 //                 </label>
-//                 <div className="flex h-25 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition hover:border-blue-400">
+//                 <div className="flex h-20 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition hover:border-blue-400">
 //                   <input
 //                     id="video-upload"
 //                     type="file"
@@ -1148,7 +1200,7 @@ export default AdminActivityTable;
 //                       />
 //                     </svg>
 //                     <p className="text-sm text-gray-600">
-//                       Click to upload video
+//                       Click to upload video(Max-50 MB)
 //                     </p>
 //                     {/* <p className="text-xs text-gray-400">MP4, MOV, or AVI (max 100MB)</p> */}
 //                   </label>
@@ -1170,58 +1222,7 @@ export default AdminActivityTable;
 //                   </p>
 //                 )}
 //               </div>
-
-//               {/* <label>Instruction (Rich Text)</label>
-//               <Controller
-//                 name="instruction_sheet"
-//                 control={control}
-//                 render={({ field }) => (
-//                   <RichTextInput
-//                     value={field.value ?? ""}
-//                     onChange={field.onChange}
-//                   />
-//                 )}
-//               />
-
-//               <div>
-//                 <label className="block text-base font-medium text-gray-700">
-//                   Upload PDF
-//                 </label>
-//                 <input
-//                   type="file"
-//                   accept="application/pdf"
-//                   onChange={handlePdfChange}
-//                   className="block w-full rounded border border-gray-300 p-2"
-//                 />
-//                 {formData.pdfPreview && (
-//                   <div className="mt-2 text-sm text-gray-700">
-//                     📄 {formData.pdfPreview}
-//                   </div>
-//                 )}
-//               </div>
-
-//               <div>
-//                 <label className="block text-base font-medium text-gray-700">
-//                   Upload Video
-//                 </label>
-//                 <input
-//                   type="file"
-//                   accept="video/*"
-//                   onChange={handleFileChange}
-//                   className="block w-full rounded border border-gray-300 p-2"
-//                 />
-//                 {formData.videoPreview && (
-//                   <div className="mt-4">
-//                     <video
-//                       src={formData.videoPreview}
-//                       controls
-//                       className="max-h-60 w-60 rounded-xl border"
-//                     />
-//                   </div>
-//                 )}
-//               </div> */}
-
-//               <div className="mt-4 flex justify-end gap-2">
+//               {/* <div className="flex justify-end gap-2">
 //                 <button
 //                   type="button"
 //                   onClick={() => setIsModalOpen(false)}
@@ -1234,6 +1235,29 @@ export default AdminActivityTable;
 //                   className="bg-secondary-dark hover:bg-secondary-light cursor-pointer rounded-xl px-5 py-2 text-white"
 //                 >
 //                   {editingActivity ? "Update" : "Add Activity"}
+//                 </button>
+//               </div> */}
+//               <div className="flex justify-end gap-2">
+//                 <button
+//                   type="button"
+//                   onClick={() => setIsModalOpen(false)}
+//                   disabled={isAdding || isUpdating} // disable while processing
+//                   className="cursor-pointer rounded-xl bg-gray-300 px-5 py-2 disabled:opacity-60"
+//                 >
+//                   Cancel
+//                 </button>
+//                 <button
+//                   type="submit"
+//                   disabled={isAdding || isUpdating} // disable while processing
+//                   className="bg-secondary-dark hover:bg-secondary-light cursor-pointer rounded-xl px-5 py-2 text-white disabled:opacity-60"
+//                 >
+//                   {editingActivity
+//                     ? isUpdating
+//                       ? "Updating..."
+//                       : "Update Activity"
+//                     : isAdding
+//                       ? "Adding..."
+//                       : "Add Activity"}
 //                 </button>
 //               </div>
 //             </form>

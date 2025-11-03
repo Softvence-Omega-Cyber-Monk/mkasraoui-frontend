@@ -530,7 +530,7 @@ const AdminProductTable: React.FC = () => {
       {/* Add/Edit Modal */}
       {isModalOpen && (
         <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 backdrop-blur-[0.2px]">
-          <div className="relative my-4 w-full max-w-6xl rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl">
+          <div className="relative my-4 max-h-[94vh] w-full max-w-6xl overflow-y-auto rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl">
             <h3 className="mb-4 text-2xl font-semibold text-gray-900">
               {editingProduct ? "Edit Product" : "Add Product"}
             </h3>
@@ -1153,16 +1153,16 @@ const AdminProductTable: React.FC = () => {
               Are you sure you want to delete{" "}
               <span className="font-semibold">{confirmDelete.title}</span>?
             </p>
-            <div className="mt-6 flex justify-end gap-3">
+            <div className="mt-6 flex justify-end gap-4">
               <button
                 onClick={() => setConfirmDelete(null)}
-                className="cursor-pointer rounded-lg bg-gray-500 px-4 py-2 text-sm font-medium text-white hover:bg-gray-600"
+                className="cursor-pointer rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 transition-all duration-200 hover:bg-gray-100 focus:ring-2 focus:ring-gray-300"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
-                className="cursor-pointer rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                className="cursor-pointer rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-red-700 focus:ring-2 focus:ring-red-400"
               >
                 Delete
               </button>
