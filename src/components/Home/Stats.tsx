@@ -60,10 +60,10 @@ export default function Stats() {
                 if (hasK) {
                   // If the original text had 'K', format it with 'K+'
                   const currentValue = Math.ceil(tweenedValue / 1000);
-                  formattedText = `${currentValue}K+`;
+                  formattedText = `${currentValue}K`;
                 } else {
                   // Otherwise, add a '+' if the original text had it
-                  formattedText = `${tweenedValue}+`;
+                  formattedText = `${tweenedValue}`;
                 }
 
                 this.targets()[0].textContent = formattedText;
@@ -85,20 +85,20 @@ export default function Stats() {
       <div className="bg-secondary rounded-lg px-6 py-10 text-white sm:px-8 sm:py-12">
         <div className="mx-auto grid max-w-6xl grid-cols-2 items-center justify-between gap-x-6 gap-y-10 text-center sm:grid-cols-2 md:grid-cols-4">
           <div className="stat-block">
-            <div className="stat-number font-fredoka mb-2 text-4xl font-semibold sm:text-5xl md:text-6xl">
-              2K+
+            <div className="stat-number font-fredoka mb-2 text-3xl font-semibold sm:text-4xl md:text-5xl">
+              1K
             </div>
             <div className="text-sm font-light sm:text-base">Happy Kids</div>
           </div>
           <div className="stat-block">
             <div className="stat-number font-fredoka mb-2 text-4xl font-semibold sm:text-5xl md:text-6xl">
-              35+
+              35
             </div>
             <div className="text-sm font-light sm:text-base">Expert Team</div>
           </div>
           <div className="stat-block">
             <div className="stat-number font-fredoka mb-2 text-4xl font-semibold sm:text-5xl md:text-6xl">
-              15+
+              15
             </div>
             <div className="text-sm font-light sm:text-base">
               Years Experience
@@ -106,7 +106,7 @@ export default function Stats() {
           </div>
           <div className="stat-block">
             <div className="stat-number font-fredoka mb-2 text-4xl font-semibold sm:text-5xl md:text-6xl">
-              100+
+              100
             </div>
             <div className="text-sm font-light sm:text-base">
               Custom Parties
