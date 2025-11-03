@@ -639,13 +639,13 @@ const AdminBlogTable: React.FC = () => {
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setConfirmDelete(null)}
-                className="rounded bg-gray-300 px-5 py-2 hover:cursor-pointer hover:bg-gray-400"
+                className="cursor-pointer rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 transition-all duration-200 hover:bg-gray-100 focus:ring-2 focus:ring-gray-300"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
-                className="rounded bg-red-600 px-5 py-2 text-white hover:cursor-pointer hover:bg-red-700"
+                className="cursor-pointer rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-red-700 focus:ring-2 focus:ring-red-400"
               >
                 Delete
               </button>

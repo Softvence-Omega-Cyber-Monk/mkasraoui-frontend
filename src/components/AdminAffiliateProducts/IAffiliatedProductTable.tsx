@@ -440,7 +440,7 @@ const IAffiliatedProductTable: React.FC = () => {
       {/* Add/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6">
+          <div className="max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-xl font-semibold">
                 {editingProduct ? "Edit Product" : "Add Affiliated Products"}
@@ -566,13 +566,13 @@ const IAffiliatedProductTable: React.FC = () => {
             <div className="mt-4 flex justify-end gap-2">
               <button
                 onClick={() => setConfirmDelete(null)}
-                className="cursor-pointer rounded-xl bg-gray-400 px-4 py-2 text-white hover:bg-gray-500"
+                className="cursor-pointer rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 transition-all duration-200 hover:bg-gray-100 focus:ring-2 focus:ring-gray-300"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
-                className="cursor-pointer rounded-xl bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+                className="cursor-pointer rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-red-700 focus:ring-2 focus:ring-red-400"
               >
                 Delete
               </button>
@@ -584,7 +584,7 @@ const IAffiliatedProductTable: React.FC = () => {
       {/* View Modal  */}
       {viewProduct && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2"
           role="dialog"
           aria-modal="true"
         >
