@@ -145,8 +145,9 @@ const AdminContactTable: React.FC = () => {
                           (msg.subject.split(" ").length > 4 ? "..." : "")}
                       </td>
                       <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-600">
-                        {msg.message.split(" ").slice(0, 5).join(" ") +
-                          (msg.message.split(" ").length > 5 ? "..." : "")}
+                        {/* {msg.message.split(" ").slice(0, 5).join(" ") +
+                          (msg.message.split(" ").length > 5 ? "..." : "")} */}
+                        {msg.message.slice(0, 20)}
                       </td>
                       <td className="flex gap-2 px-6 py-4">
                         <button
