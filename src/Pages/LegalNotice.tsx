@@ -1,7 +1,7 @@
 function LegalNotice() {
   return (
     <div>
-      <div className="mx-auto max-w-4xl p-6 leading-relaxed text-gray-800">
+      <div className="mx-auto max-w-6xl p-6 leading-relaxed text-gray-800">
         <h1 className="mb-6 text-3xl font-bold">
           Mentions légales – Ma Fête Facile
         </h1>
@@ -9,27 +9,32 @@ function LegalNotice() {
         <section className="mb-6">
           <h2 className="mb-2 text-xl font-semibold">Éditeur du site</h2>
           <p>
-            <strong>Ma Fête Facile</strong> <br />
-            [Nom du responsable légal ou de la société] <br />
-            Adresse : [Adresse du siège social] <br />
-            Email :{" "}
+            <strong>Ma Fête Facile</strong> <br />{" "}
+            <hr className="mb-2 border-[#E5E7EB]" />
+            <strong>Adresse :</strong> 43 rue de la Comédie Française, 95220
+            Herblay sur Seine
+            <br />
+            <strong>Email :</strong>
             <a href="mailto:contact@mafetefacile.fr" className="text-blue-600">
               contact@mafetefacile.fr
-            </a>{" "}
+            </a>
             <br />
-            Téléphone : [numéro] <br />
-            SIRET : [numéro d'immatriculation] <br />
-            Responsable de publication : [Nom]
+            <strong>Téléphone : </strong> 09 82 48 36 84 <br />
+            <strong>SIRET :</strong> 94058995500019 <br />
+            <strong>Responsable de publication :</strong> Mohamed KASRAOUI
           </p>
         </section>
 
         <section className="mb-6">
           <h2 className="mb-2 text-xl font-semibold">Hébergement</h2>
           <p>
-            Le site est hébergé par : <br />
-            [Nom de l'hébergeur] <br />
-            Adresse : [Adresse de l'hébergeur] <br />
-            Téléphone : [numéro]
+            <strong>Le site est hébergé par : </strong> Hostinger International
+            Ltd.
+            <br />
+            <strong>Adresse : </strong> 61 Lordou Vironos Street, 6023 Larnaca,
+            Chypre
+            <br />
+            <strong>Téléphone :</strong> +357 24 03 0586
           </p>
         </section>
 
@@ -56,7 +61,8 @@ function LegalNotice() {
             personnelles.
           </p>
           <p>
-            Pour exercer vos droits, contactez : <strong>[email RGPD]</strong>
+            Pour exercer vos droits, contactez :{" "}
+            <strong className="text-blue-600">contact@mafetefacile.fr</strong>
           </p>
         </section>
       </div>

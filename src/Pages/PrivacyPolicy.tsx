@@ -1,13 +1,13 @@
 function PrivacyPolicy() {
   return (
     <div>
-      <div className="mx-auto max-w-4xl p-6 leading-relaxed text-gray-800">
+      <div className="mx-auto max-w-6xl p-6 leading-relaxed text-gray-800">
         <h1 className="mb-6 text-3xl font-bold">
           Politique de Confidentialité & RGPD – Ma Fête Facile
         </h1>
 
         <p className="mb-6">
-          <strong>Dernière mise à jour :</strong> [Date]
+          <strong>Dernière mise à jour :</strong> 31/10/2025
         </p>
 
         <section className="mb-6">
@@ -27,12 +27,12 @@ function PrivacyPolicy() {
             2. Qui est responsable de vos données ?
           </h2>
           <p>
-            Le responsable du traitement est : <br />
-            Ma Fête Facile <br />
-            [Adresse de l'entreprise] <br />
-            Email :{" "}
+            <strong>Le responsable du traitement est :</strong> Ma Fête Facile{" "}
+            <br />
+            43 rue de la Comédie Française, 95220 Herblay sur Sein <br />
+            <strong>Email : </strong>
             <a href="mailto:[Email de contact]" className="text-blue-600">
-              [Email de contact]
+               contact@mafetefacile.fr
             </a>
           </p>
         </section>
@@ -160,7 +160,10 @@ function PrivacyPolicy() {
           </ul>
           <p className="mt-2">
             Pour exercer vos droits : contactez-nous à{" "}
-            <strong>[Email de contact]</strong>.
+            <strong className="text-[#155DFC]">
+               contact@mafetefacile.fr{" "}
+            </strong>
+            .
           </p>
         </section>
 
@@ -197,8 +200,10 @@ function PrivacyPolicy() {
           <p>
             Pour toute question concernant vos données personnelles ou cette
             politique : <br />
-            Email : <strong>[votre email de contact]</strong> <br />
-            Adresse : [adresse de l'entreprise]
+            <strong>Email : </strong>
+            contact@mafetefacile.fr <br />
+            <strong>Adresse : </strong>
+            43 rue de la Comédie Française, 95220 Herblay sur Seine
           </p>
         </section>
       </div>
