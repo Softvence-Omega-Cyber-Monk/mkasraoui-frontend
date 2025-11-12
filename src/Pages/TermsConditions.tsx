@@ -1,7 +1,7 @@
 function TermsConditions() {
   return (
     <div>
-      <div className="mx-auto max-w-4xl p-6 leading-relaxed text-gray-800">
+      <div className="mx-auto max-w-6xl p-6 leading-relaxed text-gray-800">
         <h1 className="mb-6 text-3xl font-bold">
           Conditions Générales de Vente (CGV) – Ma Fête Facile
         </h1>
@@ -66,8 +66,7 @@ function TermsConditions() {
               modes selon disponibilité.
             </li>
             <li>
-              Le paiement est sécurisé par{" "}
-              <strong>[nom du prestataire de paiement]</strong>.
+              Le paiement est sécurisé par <strong>Stripe.</strong>.
             </li>
           </ul>
         </section>
@@ -114,6 +113,39 @@ function TermsConditions() {
             Ma Fête Facile ne saurait être tenue responsable des dommages
             résultant de l'utilisation du site ou d'une mauvaise exécution par
             un prestataire externe.
+          </p>
+          <br />
+          <p>
+            Certaines pages du site Ma Fête Facile contiennent des liens
+            redirigeant vers des produits ou services proposés par des
+            partenaires commerciaux (programmes d’affiliation).
+          </p>
+          <br />
+          <p>
+            Lorsqu’un utilisateur clique sur ces liens et effectue un achat sur
+            le site partenaire, Ma Fête Facile peut percevoir une commission ou
+            une rémunération sans que cela n’implique de coût supplémentaire
+            pour l’utilisateur.{" "}
+          </p>
+          <br />
+          <p>
+            Les produits ainsi proposés ne sont ni fabriqués ni expédiés par Ma
+            Fête Facile.{" "}
+          </p>
+          <br />
+          <p>
+            Les conditions d’achat, de livraison, de garantie et de retour
+            relèvent exclusivement du vendeur tiers (le site partenaire).{" "}
+          </p>
+          <br />
+          <p>
+            Ma Fête Facile décline toute responsabilité en cas de litige ou de
+            défaillance de ces prestataires.{" "}
+          </p>
+          <br />
+          <p>
+            L’utilisateur est invité à consulter les conditions générales de
+            vente du site partenaire avant tout achat.{" "}
           </p>
         </section>
 
