@@ -404,7 +404,9 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <ReduxProviderWrapper>
+      {/* <div className="mt-20"> */}
       <RouterProvider router={router} />
+      {/* </div> */}
       <Toaster position="top-right" reverseOrder={false} />
     </ReduxProviderWrapper>
   </React.StrictMode>,
