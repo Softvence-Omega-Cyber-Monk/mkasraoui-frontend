@@ -7,6 +7,7 @@ import {
   Copy,
   Download,
   Mail,
+  Package,
   Share2,
   Sparkles,
   X,
@@ -21,10 +22,33 @@ import jsPDF from "jspdf";
 import toast from "react-hot-toast";
 import { useGetPartyPlansQuery } from "@/redux/features/partyGeneration/partyGenerationApi";
 import { useGenerateMessageMutation } from "@/redux/features/generatedMessage/generatedMessageApi";
+import spidermanImage from "../../public/template_images/spiderman.png";
+import batmanImage from "../../public/template_images/batman.png";
+import laReineImage from "../../public/template_images/lareine.png";
+import princessDisneyImage from "../../public/template_images/princess_disney.png";
+import pokemonImage from "../../public/template_images/pokemon.png";
+import astronomyImage from "../../public/template_images/astronomy.webp";
+import barbieImage from "../../public/template_images/barbie.png";
+import patPatrouilleImage from "../../public/template_images/pat.png";
+import piratesImage from "../../public/template_images/pirates.png";
+import marvelImage from "../../public/template_images/marvel.png";
+import superheroesImage from "../../public/template_images/superheroes.png";
+import safariImage from "../../public/template_images/safari.png";
+import dinosaursImage from "../../public/template_images/dinasoures.png";
+import licornesImage from "../../public/template_images/licornes.png";
+import gabbyImage from "../../public/template_images/gabby.png";
+import { ClipLoader } from "react-spinners";
+import { useGetMeQuery } from "@/redux/features/user/userApi";
+
 
 export default function PartyInvitations() {
   const [activeTab, setActiveTab] = useState("Create Invitation");
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+
+  const { data: userData } = useGetMeQuery();
+  const isNotAdmin = userData?.role !== "ADMIN";
+  const hasPremium = userData?.subscription?.some(plan => plan.plan_name === "PREMIUM");
+  const limitOver = !hasPremium && userData?.total_party_generated! >= 1 && isNotAdmin;
 
   // Redux mutation hook
   const [generateCard, { isLoading: isGenerating, error: generateError }] = useGenerateCardMutation();
@@ -82,32 +106,21 @@ export default function PartyInvitations() {
     email: "",
     guest_name: "",
     guest_phone: "",
-    shippingAddress: {
-      firstName: "",
-      lastName: "",
-      addressLine1: "",
-      addressLine2: "",
-      city: "",
-      state: "",
-      postcode: "",
-      country: "",
-    },
   });
 
+  const [shippingFormData, setShippingFormData] = useState({
+    firstName: "",
+    lastName: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    state: "",
+    postcode: "",
+    country: "",
+  })
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  const handleShippingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      shippingAddress: {
-        ...formData.shippingAddress,
-        [e.target.name]: e.target.value,
-      },
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -117,7 +130,6 @@ export default function PartyInvitations() {
         guest_phone: formData.guest_phone,
         imageUrl: generatedImageUrl!,
         party_id: partyDetails.selectedPartyId!,
-        shippingAddress: formData.shippingAddress,
       }).unwrap();
       setShowPopup(false);
       toast.success("Invitation sent successfully!");
@@ -125,17 +137,7 @@ export default function PartyInvitations() {
       setFormData({
         email: "",
         guest_name: "",
-        guest_phone: "",
-        shippingAddress: {
-          firstName: "",
-          lastName: "",
-          addressLine1: "",
-          addressLine2: "",
-          city: "",
-          state: "",
-          postcode: "",
-          country: "",
-        },
+        guest_phone: ""
       });
     } catch (err) {
       console.error(err);
@@ -221,6 +223,16 @@ export default function PartyInvitations() {
       return;
     }
 
+    if (!partyDetails.selectedPartyId) {
+      Swal.fire({
+        icon: "warning",
+        title: "Party Selection Required",
+        html: "Please select a party before generating the card.",
+        confirmButtonColor: "#3085d6",
+      });
+      return;
+    }
+
     try {
       const result = await generateCard({
         theme: selectedTemplate!,
@@ -296,80 +308,102 @@ export default function PartyInvitations() {
       id: "spiderman",
       title: "Spider-man",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+      image: spidermanImage,
     },
     {
       id: "batman",
       title: "Batman",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+      image: batmanImage,
     },
     {
       id: "la_reine_des_neiges",
       title: "La Reine des Neiges",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+      image: laReineImage,
     },
     {
       id: "princesses_disney",
       title: "Princesses Disney",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+      image: princessDisneyImage,
     },
     {
       id: "pokemon",
       title: "Pokemon",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+      image: pokemonImage,
     },
     {
       id: "astronomie",
       title: "Espace / Astronomie",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+      image: astronomyImage,
     },
     {
       id: "barbie",
       title: "Barbie",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+      image: barbieImage,
     },
     {
       id: "pat_patrouille",
       title: "Pat' Patrouille",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+      image: patPatrouilleImage,
     },
     {
       id: "pirates",
       title: "Pirates and chasse au tresor",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+      image: piratesImage,
     },
     {
       id: "marvel",
       title: "Marvel / Avengers",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+      image: marvelImage,
     },
     {
       id: "superheroes",
       title: "Super-heroes",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+      image: superheroesImage,
     },
     {
       id: "jungle",
       title: "Safari / Jungle",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+      image: safariImage,
     },
     {
       id: "dinasaures",
       title: "Dinasaures",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+      image: dinosaursImage,
     },
     {
       id: "licornes_magiques",
       title: "Licornes magiques",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+      image: licornesImage,
     },
     {
       id: "gabby",
       title: "Gabby",
       colors: ["bg-[#80DEEA]", "bg-[#FF5630]", "bg-[#FFD54F]"],
+      image: gabbyImage,
     },
   ];
-
+  const renderLoadingSpinner = () => (
+    <div className="absolute inset-0 flex justify-center items-center z-50 backdrop-shadow-lg bg-white/70 flex-col gap-4 rounded-xl h-full">
+      <ClipLoader size={50} color="red" loading={true} />
+    </div>
+  );
   const renderContent = () => {
+    if (isGenerating || isGeneratingMessage) {
+      return renderLoadingSpinner(); // Show spinner when loading
+    }
     switch (activeTab) {
       case "Create Invitation":
         return (
@@ -377,7 +411,7 @@ export default function PartyInvitations() {
             <div className="mx-auto max-w-7xl">
               <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 {/* Choose Template Section */}
-                <div className="rounded-2xl border-2 border-[#E6E6E6] bg-white p-5">
+                <div className="rounded-2xl border-2 border-[#E6E6E6] bg-white p-5 md:max-h-[105vh] md:overflow-y-auto pb-10">
                   <h2 className="mb-6 text-2xl font-semibold text-[#000000]">
                     Choose Template
                   </h2>
@@ -392,6 +426,13 @@ export default function PartyInvitations() {
                         onClick={() => setSelectedTemplate(template.id)}
                       >
                         <div className="p-4 pb-6">
+                          <div className="flex justify-center items-center">
+                            <img
+                              src={template.image}
+                              alt={template.title}
+                              className="h-36 object-cover rounded-md py-5"
+                            />
+                          </div>
                           <h3 className="mb-1 text-xl font-medium text-gray-900">
                             {template.title}
                           </h3>
@@ -436,15 +477,18 @@ export default function PartyInvitations() {
                         Select Party
                       </label>
                       <select
-                        className="w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className="w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer"
                         value={partyDetails.selectedPartyId || ""}
+                        required
                         onChange={(e) =>
                           handleInputChange("selectedPartyId", e.target.value)
                         }
                       >
-                        <option value="">-- Select a Party --</option>
+                        <option value="" disabled selected>
+                          Select a party
+                        </option>
                         {parties?.map((party) => (
-                          <option key={party.id} value={party.id}>
+                          <option key={party.id} value={party.id} className="cursor-pointer">
                             {party.title} - {new Date(party.scheduledDate).toLocaleDateString()}
                           </option>
                         ))}
@@ -639,10 +683,10 @@ export default function PartyInvitations() {
                     <div className="flex justify-end">
                       <button
                         onClick={handleGenerateCard}
-                        disabled={isGenerating}
-                        className="hover:bg-secondary-light cursor-pointer rounded-md bg-[#223B7D] px-6 py-3 text-white transition-all duration-300"
+                        disabled={isGenerating || limitOver}
+                        className={`rounded-md ${limitOver ? `bg-blue-400` : `bg-[#223B7D] cursor-pointer hover:bg-secondary-light`} px-6 py-3 text-white transition-all duration-300`}
                       >
-                        Next
+                        {limitOver ? "Upgrade to Premium" : isGenerating ? "Generating..." : "Next"}
                       </button>
                     </div>
                   </div>
@@ -688,6 +732,14 @@ export default function PartyInvitations() {
                       Send Via Email
                     </button>
 
+                    <button
+                      onClick={() => setShowPopup(true)}
+                      className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 font-normal text-blue-900 transition-colors hover:bg-gray-50"
+                    >
+                      <Package className="text-sm" />
+                      Deliver Through Zelato
+                    </button>
+
                     <button onClick={handleDownloadPDF} className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white font-normal text-[#223B7D] transition-colors hover:bg-gray-50">
                       <Download className="text-sm" />
                       Download PDF
@@ -725,7 +777,7 @@ export default function PartyInvitations() {
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
                 <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl bg-white p-6 shadow-lg">
                   <button
-                    className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+                    className="absolute right-4 top-4 text-gray-500 hover:text-gray-700 cursor-pointer"
                     onClick={() => setShowPopup(false)}
                   >
                     <X />
@@ -765,7 +817,7 @@ export default function PartyInvitations() {
                     </div>
 
                     {/* Shipping Address */}
-                    <div className="space-y-4 pt-4 border-t border-gray-200">
+                    {/* <div className="space-y-4 pt-4 border-t border-gray-200">
                       <h4 className="text-lg font-medium text-gray-700">Shipping Address</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input
@@ -844,7 +896,7 @@ export default function PartyInvitations() {
                           className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
                         />
                       </div>
-                    </div>
+                    </div> */}
 
                     <button
                       type="submit"

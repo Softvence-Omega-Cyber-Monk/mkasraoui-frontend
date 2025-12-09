@@ -1,7 +1,4 @@
-// src/redux/features/invitations/invitationsApi.ts
 import { baseApi } from "@/redux/hooks/baseApi";
-
-// -------------------- Types --------------------
 export interface Invitation {
   id: string;
   status: string;
@@ -17,24 +14,12 @@ export interface Invitation {
   guest_phone: string | null;
 }
 
-export interface ShippingAddress {
-  firstName: string;
-  lastName: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  postcode: string;
-  country: string;
-}
-
 export interface SendInvitationRequest {
   email: string;
   guest_name: string;
   guest_phone: string;
   party_id: string;
   imageUrl: string;
-  shippingAddress: ShippingAddress;
 }
 
 export interface ApiResponse<T> {

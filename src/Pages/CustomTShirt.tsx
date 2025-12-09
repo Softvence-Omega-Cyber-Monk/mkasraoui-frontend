@@ -69,7 +69,7 @@ function CustomTShirt() {
       ],
       sizes: ["2T", "3T", "4T"],
     },
-    Ultra_Cotton_Unisex_TShirt: {
+    Ultra_Cotton_Unisex_Crewneck_TShirt: {
       colors: [
         { name: "white", bg: "bg-white", border: "border-gray-300" },
         { name: "black", bg: "bg-black", border: "border-black" },
