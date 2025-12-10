@@ -77,10 +77,21 @@ export const invitationsApi = baseApi.injectEndpoints({
     }),
 
     // Get Invitations by User
-    getInvitationsByUser: builder.query<ApiResponse<Invitation[]>, string>({
-      query: (id) => `/invitations/user?id=${id}`,
+    // Get Invitations by User (authenticated user)
+    getInvitationsByUser: builder.query<
+      { meta: any; invitations: Invitation[] }, 
+      { page?: number; limit?: number } | void
+    >({
+      query: (params) => {
+        const page = params?.page ?? 1;
+        const limit = params?.limit ?? 10;
+        return `/invitations?page=${page}&limit=${limit}`;
+      },
       providesTags: ["Invitations"],
+      transformResponse: (response: ApiResponse<{ meta: any; invitations: Invitation[] }>) =>
+        response.data,
     }),
+
 
     // Delete Invitation
     deleteInvitation: builder.mutation<ApiResponse<void>, string>({

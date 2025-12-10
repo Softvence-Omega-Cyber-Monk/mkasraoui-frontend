@@ -12,7 +12,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -39,6 +39,7 @@ import licornesImage from "../../public/template_images/licornes.png";
 import gabbyImage from "../../public/template_images/gabby.png";
 import { ClipLoader } from "react-spinners";
 import { useGetMeQuery } from "@/redux/features/user/userApi";
+import { useCreatePrintOrderMutation } from "@/redux/features/printCard/printCard";
 
 
 export default function PartyInvitations() {
@@ -50,12 +51,15 @@ export default function PartyInvitations() {
   const hasPremium = userData?.subscription?.some(plan => plan.plan_name === "PREMIUM");
   const limitOver = !hasPremium && userData?.total_party_generated! >= 1 && isNotAdmin;
 
+  const [createPrintOrder, { isLoading: isCreatingPrintOrder }] = useCreatePrintOrderMutation();
+
   // Redux mutation hook
   const [generateCard, { isLoading: isGenerating, error: generateError }] = useGenerateCardMutation();
   const [sendInvitation, { isLoading }] = useSendInvitationMutation();
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
 
   const [showPopup, setShowPopup] = useState(false);
+  const [showZelatoPopup, setShowZelatoPopup] = useState(false)
   const [showCopyPopup, setShowCopyPopup] = useState(false);
 
   const { data: parties } = useGetPartyPlansQuery();
@@ -118,6 +122,73 @@ export default function PartyInvitations() {
     postcode: "",
     country: "",
   })
+
+  const handleZelatoSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!generatedImageUrl) {
+      toast.error("Please generate an invitation first");
+      return;
+    }
+
+    // Validate shipping form
+    if (!shippingFormData.firstName || !shippingFormData.lastName ||
+      !shippingFormData.addressLine1 || !shippingFormData.city ||
+      !shippingFormData.state || !shippingFormData.postcode ||
+      !shippingFormData.country) {
+      toast.error("Please fill in all required shipping fields");
+      return;
+    }
+
+    try {
+      const response = await createPrintOrder({
+        imageUrl: generatedImageUrl,
+        packQuantity: 1, // Default to 1 pack (10 cards)
+        total: 20.66, // You can make this dynamic or configurable
+        contactName: `${shippingFormData.firstName} ${shippingFormData.lastName}`,
+        contactPhone: formData.guest_phone || "", // Use guest phone or make a separate field
+        contactEmail: formData.email || "", // Use guest email or make a separate field
+        addressLine1: shippingFormData.addressLine1,
+        addressLine2: shippingFormData.addressLine2,
+        postCode: shippingFormData.postcode,
+        city: shippingFormData.city,
+        state: shippingFormData.state,
+        country: shippingFormData.country,
+      }).unwrap();
+
+      console.log(response)
+      // Redirect to Stripe Checkout
+      if (response.data.checkoutUrl) {
+        window.location.href = response.data.checkoutUrl;
+      }
+
+      setShowZelatoPopup(false);
+      toast.success("Redirecting to checkout...");
+
+      // Reset form
+      setShippingFormData({
+        firstName: "",
+        lastName: "",
+        addressLine1: "",
+        addressLine2: "",
+        city: "",
+        state: "",
+        postcode: "",
+        country: "",
+      });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.data?.message || "Failed to create print order");
+    }
+  };
+
+  // Add handler for shipping form changes
+  const handleShippingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setShippingFormData({
+      ...shippingFormData,
+      [e.target.name]: e.target.value
+    });
+  };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -733,7 +804,7 @@ export default function PartyInvitations() {
                     </button>
 
                     <button
-                      onClick={() => setShowPopup(true)}
+                      onClick={() => setShowZelatoPopup(true)}
                       className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 font-normal text-blue-900 transition-colors hover:bg-gray-50"
                     >
                       <Package className="text-sm" />
@@ -771,6 +842,141 @@ export default function PartyInvitations() {
                 Next
               </button>
             </div>
+
+            {showZelatoPopup && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl bg-white p-6 shadow-lg">
+                  <button
+                    className="absolute right-4 top-4 text-gray-500 hover:text-gray-700 cursor-pointer"
+                    onClick={() => setShowZelatoPopup(false)}
+                  >
+                    <X />
+                  </button>
+                  <h3 className="mb-6 text-2xl font-semibold">Order Physical Cards via Zelato</h3>
+                  <form onSubmit={handleZelatoSubmit} className="space-y-4">
+                    {/* Order Details */}
+                    <div className="space-y-4 p-4 bg-blue-50 rounded-lg">
+                      <h4 className="text-lg font-medium text-gray-700">Order Details</h4>
+                      <p className="text-sm text-gray-600">Pack of 10 cards - €20.66</p>
+                    </div>
+
+                    {/* Contact Information */}
+                    <div className="space-y-4">
+                      <h4 className="text-lg font-medium text-gray-700">Contact Information</h4>
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="Email *"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                      />
+                      <input
+                        type="text"
+                        name="guest_phone"
+                        placeholder="Phone Number *"
+                        value={formData.guest_phone}
+                        onChange={handleChange}
+                        required
+                        className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                      />
+                    </div>
+
+                    {/* Shipping Address */}
+                    <div className="space-y-4 pt-4 border-t border-gray-200">
+                      <h4 className="text-lg font-medium text-gray-700">Shipping Address</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                          type="text"
+                          name="firstName"
+                          placeholder="First Name *"
+                          value={shippingFormData.firstName}
+                          onChange={handleShippingChange}
+                          required
+                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        />
+                        <input
+                          type="text"
+                          name="lastName"
+                          placeholder="Last Name *"
+                          value={shippingFormData.lastName}
+                          onChange={handleShippingChange}
+                          required
+                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        />
+                      </div>
+                      <input
+                        type="text"
+                        name="addressLine1"
+                        placeholder="Address Line 1 *"
+                        value={shippingFormData.addressLine1}
+                        onChange={handleShippingChange}
+                        required
+                        className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                      />
+                      <input
+                        type="text"
+                        name="addressLine2"
+                        placeholder="Address Line 2 (Optional)"
+                        value={shippingFormData.addressLine2}
+                        onChange={handleShippingChange}
+                        className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                      />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                          type="text"
+                          name="city"
+                          placeholder="City *"
+                          value={shippingFormData.city}
+                          onChange={handleShippingChange}
+                          required
+                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        />
+                        <input
+                          type="text"
+                          name="state"
+                          placeholder="State/Province *"
+                          value={shippingFormData.state}
+                          onChange={handleShippingChange}
+                          required
+                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                          type="text"
+                          name="postcode"
+                          placeholder="Postcode *"
+                          value={shippingFormData.postcode}
+                          onChange={handleShippingChange}
+                          required
+                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        />
+                        <input
+                          type="text"
+                          name="country"
+                          placeholder="Country Code (e.g., FR, US) *"
+                          value={shippingFormData.country}
+                          onChange={handleShippingChange}
+                          required
+                          maxLength={2}
+                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 uppercase"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isCreatingPrintOrder}
+                      className="w-full rounded-lg bg-[#223B7D] p-3 text-white hover:bg-blue-900 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+                    >
+                      {isCreatingPrintOrder ? "Processing..." : "Proceed to Checkout (€20.66)"}
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
 
             {/* Popup Form */}
             {showPopup && (
