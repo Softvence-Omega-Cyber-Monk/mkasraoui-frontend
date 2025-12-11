@@ -49,7 +49,7 @@ function CheckoutPage() {
   const cart = cartItems
   console.log(cartItems)
   const { data } = useGetMeQuery();
-  const isSubscribed = data?.subscription?.length ? true : false;
+  const isSubscribed = data?.subscription?.[0]?.plan_name !== "FREE";
   const navigate = useNavigate();
   const [createOrder] = useCreateOrderMutation();
 

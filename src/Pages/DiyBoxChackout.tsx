@@ -45,11 +45,11 @@ export default function DiyBoxChackout() {
   const location = useLocation();
   const directBuy = location.state?.directBuy; // 👈 detect directBuy product
 
-  const cartItems = useAppSelector((state) => state.cart.items);
+  const cartItems = useAppSelector((state) => (state.cart as any).items);
   const cart = directBuy ? [{ ...directBuy, quantity: 1 }] : cartItems; // Use directBuy if available
   console.log(cart, "cart");
   const { data } = useGetMeQuery();
-  const isSubscribed = data?.subscription?.length ? true : false;
+  const isSubscribed = data?.subscription?.[0]?.plan_name !== "FREE";
 
   const [createOrder] = useCreateOrderMutation();
 
@@ -71,7 +71,7 @@ export default function DiyBoxChackout() {
 
   // Subtotal calculations
   const calculateOriginalSubtotal = () => {
-    return cart.reduce((acc, item) => {
+    return cart.reduce((acc: any, item: any) => {
       const price = item.price; // if null/undefined → 0
       const quantity = item.quantity; // if null/undefined → 0
       return acc + price * quantity;
@@ -81,7 +81,7 @@ export default function DiyBoxChackout() {
   };
   console.log(calculateOriginalSubtotal());
   const calculateDiscountedSubtotal = () => {
-    return cart.reduce((acc, item) => {
+    return cart.reduce((acc: any, item: any) => {
       const price = item.discounted_price || item.price;
       return acc + price * item.quantity;
     }, 0);
@@ -165,7 +165,7 @@ export default function DiyBoxChackout() {
 
     try {
       const orderPayload = {
-        items: cart.map((item) => ({
+        items: cart.map((item : any) => ({
           productId: String(item.id),
           quantity: item.quantity,
         })),
@@ -420,7 +420,7 @@ export default function DiyBoxChackout() {
               </h2>
 
               <div className="mb-6 max-h-60 space-y-3 overflow-y-auto">
-                {cart.map((item) => (
+                {cart.map((item : any) => (
                   <div
                     key={item.id}
                     className="flex items-center gap-3 rounded-lg bg-gray-50 p-3"
