@@ -49,7 +49,7 @@ function CheckoutPage() {
   const cart = cartItems
   console.log(cartItems)
   const { data } = useGetMeQuery();
-  const isSubscribed = data?.subscription?.some(plan => plan.plan_name === "PREMIUM");
+  const isSubscribed = data?.subscription?.some(plan => plan.plan_name === "Premium Subscriber");
   const navigate = useNavigate();
   const [createOrder] = useCreateOrderMutation();
 

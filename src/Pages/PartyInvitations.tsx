@@ -48,7 +48,7 @@ export default function PartyInvitations() {
 
   const { data: userData } = useGetMeQuery();
   const isNotAdmin = userData?.role !== "ADMIN";
-  const hasPremium = userData?.subscription?.some(plan => plan.plan_name === "PREMIUM");
+  const hasPremium = userData?.subscription?.some(plan => plan.plan_name === "Premium Subscriber");
   const limitOver = !hasPremium && userData?.total_party_generated! >= 1 && isNotAdmin;
 
   const [createPrintOrder, { isLoading: isCreatingPrintOrder }] = useCreatePrintOrderMutation();

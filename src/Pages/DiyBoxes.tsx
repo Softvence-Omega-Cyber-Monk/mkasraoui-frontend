@@ -39,7 +39,7 @@ export default function DiyBoxes() {
   const [theme, _setTheme] = useState("");
 
   const { data } = useGetMeQuery();
-  const isSubscribed = data?.subscription?.some(plan => plan.plan_name === "PREMIUM");
+  const isSubscribed = data?.subscription?.some(plan => plan.plan_name === "Premium Subscriber");
 
 
 
