@@ -49,7 +49,7 @@ export default function DiyBoxChackout() {
   const cart = directBuy ? [{ ...directBuy, quantity: 1 }] : cartItems; // Use directBuy if available
   console.log(cart, "cart");
   const { data } = useGetMeQuery();
-  const isSubscribed = data?.subscription?.[0]?.plan_name !== "FREE";
+  const isSubscribed = data?.subscription?.some(plan => plan.plan_name === "PREMIUM");
 
   const [createOrder] = useCreateOrderMutation();
 

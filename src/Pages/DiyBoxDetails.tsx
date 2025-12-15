@@ -62,11 +62,8 @@ export default function DiyBoxDetails() {
     return <div className="py-10 text-center">Something went wrong.</div>;
 
   const product = data;
-  const firstUser = userData;
-  const isPremium =
-    firstUser?.subscription?.[0]?.plan_name === "Premium Subscriber";
+  const isPremium = userData?.subscription?.some(plan => plan.plan_name === "PREMIUM");
 
-  console.log(firstUser);
   const handleSubmitReview = async () => {
     if (!comment.trim()) return;
     try {
@@ -336,7 +333,7 @@ export default function DiyBoxDetails() {
                 {/* <span className="text-3xl font-bold text-[#223B7D] md:text-5xl">${ product.discounted_price}</span> */}
 
                 <span className="text-3xl font-bold text-[#223B7D] md:text-5xl">
-                  €{!isPremium ? product.discounted_price : product.price}
+                  €{isPremium ? product.discounted_price : product.price}
                 </span>
               </div>
 

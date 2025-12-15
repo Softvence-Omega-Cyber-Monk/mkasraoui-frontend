@@ -240,7 +240,7 @@ function MyCart() {
   const dispatch = useAppDispatch();
   const { data } = useGetMeQuery();
   const navigate = useNavigate();
-  const isSubscribed = data?.subscription?.[0]?.plan_name !== "FREE";
+  const isSubscribed = data?.subscription?.some(plan => plan.plan_name === "PREMIUM");
 
   const calculateOriginalSubtotal = () => cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const calculateDiscountedSubtotal = () =>
