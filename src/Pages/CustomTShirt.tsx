@@ -33,10 +33,10 @@ function CustomTShirt() {
 
   // T-Shirt Product Options
   const tshirtProducts = [
-    { id: "Recycled_Blend_Kids_Sweatshirt", name: "Recycled Blend Kids Sweatshirt", price: 19.6 },
-    { id: "Toddler_Cotton_Jersey_TShirt", name: "Toddler Cotton Jersey T-Shirt", price: 15.65 },
-    { id: "Ultra_Cotton_Unisex_Crewneck_TShirt", name: "Ultra Cotton Unisex Crewneck T-shirt", price: 15.65 },
-    { id: "Premium_Kids_Crewneck_TShirt", name: "Premium Kids Crewneck T-shirt", price: 17.17 },
+    { id: "Recycled_Blend_Kids_Sweatshirt", name: "Recycled Blend Kids Sweatshirt", price: 30.79 },
+    { id: "Toddler_Cotton_Jersey_TShirt", name: "Toddler Cotton Jersey T-Shirt", price: 24.1 },
+    { id: "Ultra_Cotton_Unisex_Crewneck_TShirt", name: "Ultra Cotton Unisex Crewneck T-shirt", price: 24.1 },
+    { id: "Premium_Kids_Crewneck_TShirt", name: "Premium Kids Crewneck T-shirt", price: 23.02 },
   ];
 
   // Dynamic colors and sizes based on product selection
@@ -69,7 +69,7 @@ function CustomTShirt() {
       ],
       sizes: ["2T", "3T", "4T"],
     },
-    Ultra_Cotton_Unisex_TShirt: {
+    Ultra_Cotton_Unisex_Crewneck_TShirt: {
       colors: [
         { name: "white", bg: "bg-white", border: "border-gray-300" },
         { name: "black", bg: "bg-black", border: "border-black" },
@@ -121,17 +121,26 @@ function CustomTShirt() {
   }, [tshirtProduct]);
 
   const themes = [
-    { id: "UNICORNS", name: "Unicorns", icon: "🦄" },
-    { id: "PIRATES", name: "Pirates", icon: "🏴‍☠️" },
-    { id: "PRINCESS", name: "Princess", icon: "👑" },
-    { id: "SUPERHERO", name: "Superheroes", icon: "🦸" },
-    { id: "JUNGLE", name: "Jungle", icon: "🌿" },
-    { id: "SPACE", name: "Space", icon: "🚀" },
+    { id: "spiderman", name: "Spider-man", icon: "🕷️" },
+    { id: "batman", name: "Batman", icon: "🦇" },
+    { id: "la_reine_des_neiges", name: "La Reine des Neiges", icon: "❄️" },
+    { id: "princesses_disney", name: "Princesses Disney", icon: "👑" },
+    { id: "pokemon", name: "Pokemon", icon: "⚡" },
+    { id: "astronomie", name: "Espace / Astronomie", icon: "🚀" },
+    { id: "barbie", name: "Barbie", icon: "💖" },
+    { id: "pat_patrouille", name: "Pat' Patrouille", icon: "🐾" },
+    { id: "pirates", name: "Pirates and chasse au tresor", icon: "🏴‍☠️" },
+    { id: "marvel", name: "Marvel / Avengers", icon: "🦸" },
+    { id: "superheroes", name: "Super-heroes", icon: "⚡" },
+    { id: "jungle", name: "Safari / Jungle", icon: "🌿" },
+    { id: "dinasaures", name: "Dinasaures", icon: "🦕" },
+    { id: "licornes_magiques", name: "Licornes magiques", icon: "🦄" },
+    { id: "gabby", name: "Gabby", icon: "🐱" },
   ];
 
   // Dynamic gender options based on t-shirt type
-  const genderOptions = tshirtType === "ADULT" 
-    ? ["MALE", "FEMALE"] 
+  const genderOptions = tshirtType === "ADULT"
+    ? ["MALE", "FEMALE"]
     : ["BOY", "GIRL"];
 
   const ages = Array.from({ length: 70 }, (_, i) => String(i + 1));
@@ -157,7 +166,7 @@ function CustomTShirt() {
       toast.error("Please select size, gender, and age before generating.");
       return;
     }
-    
+
     try {
       const response = await generateTShirt({
         t_shirt_type: tshirtType,
@@ -216,8 +225,8 @@ function CustomTShirt() {
                   onClick={() => setShowProductDropdown(!showProductDropdown)}
                   className="w-full rounded-lg border border-gray-300 bg-white p-3 text-left text-sm text-gray-600 hover:border-gray-400"
                 >
-                  {tshirtProduct 
-                    ? tshirtProducts.find(p => p.id === tshirtProduct)?.name 
+                  {tshirtProduct
+                    ? tshirtProducts.find(p => p.id === tshirtProduct)?.name
                     : "Select a product"}
                   <span className="float-right">▼</span>
                 </button>
@@ -255,11 +264,10 @@ function CustomTShirt() {
                     setTshirtType("CHILD");
                     setGender("");
                   }}
-                  className={`flex-1 cursor-pointer rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                    tshirtType === "CHILD" 
-                      ? "bg-[#223B7D] text-white" 
+                  className={`flex-1 cursor-pointer rounded-md px-4 py-2 text-sm font-medium transition-colors ${tshirtType === "CHILD"
+                      ? "bg-[#223B7D] text-white"
                       : "text-gray-600 hover:text-gray-800"
-                  }`}
+                    }`}
                 >
                   Child
                 </button>
@@ -268,11 +276,10 @@ function CustomTShirt() {
                     setTshirtType("ADULT");
                     setGender("");
                   }}
-                  className={`flex-1 cursor-pointer rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                    tshirtType === "ADULT" 
-                      ? "bg-[#223B7D] text-white" 
+                  className={`flex-1 cursor-pointer rounded-md px-4 py-2 text-sm font-medium transition-colors ${tshirtType === "ADULT"
+                      ? "bg-[#223B7D] text-white"
                       : "text-gray-600 hover:text-gray-800"
-                  }`}
+                    }`}
                 >
                   Adult
                 </button>
@@ -363,11 +370,10 @@ function CustomTShirt() {
                     <button
                       key={color.name}
                       onClick={() => setSelectedColor(color.name)}
-                      className={`h-10 w-10 rounded-full border-2 ${color.bg} ${
-                        selectedColor === color.name 
-                          ? "ring-2 ring-[#223B7D] ring-offset-2" 
+                      className={`h-10 w-10 rounded-full border-2 ${color.bg} ${selectedColor === color.name
+                          ? "ring-2 ring-[#223B7D] ring-offset-2"
                           : color.border
-                      }`}
+                        }`}
                       title={color.name}
                     />
                   ))}
@@ -432,11 +438,10 @@ function CustomTShirt() {
                   <button
                     key={theme.id}
                     onClick={() => setSelectedTheme(theme.id)}
-                    className={`rounded-lg border p-4 text-center transition-all ${
-                      selectedTheme === theme.id 
-                        ? "border-blue-500 bg-blue-50 text-blue-700 shadow-md" 
+                    className={`cursor-pointer rounded-lg border p-4 text-center transition-all ${selectedTheme === theme.id
+                        ? "border-blue-500 bg-blue-50 text-blue-700 shadow-md"
                         : "border-gray-300 hover:border-gray-400"
-                    }`}
+                      }`}
                   >
                     <div className="mb-1 text-2xl">{theme.icon}</div>
                     <div className="text-xs font-medium">{theme.name}</div>
@@ -505,7 +510,7 @@ function CustomTShirt() {
           <TShirtPreviewNew
             tShirtDesign={tShirtDesign || tShirtPlaceholder}
             tShirtMockup={tShirtMockup || tShirtPlaceholder}
-            tShirtPrice = {tShirtPrice}
+            tShirtPrice={tShirtPrice}
             colors={currentColors}
             selectedColor={selectedColor}
             uploadedImage={uploadedImage}

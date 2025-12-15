@@ -76,6 +76,7 @@ export const baseApi = createApi({
     "DiyBoxActivityReviews",
     "AffiliateProducts",
     "Contact",
+    "PrintOrders"
   ],
 
   endpoints: () => ({}),

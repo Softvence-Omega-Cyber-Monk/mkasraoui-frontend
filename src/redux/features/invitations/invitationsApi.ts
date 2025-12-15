@@ -1,7 +1,4 @@
-// src/redux/features/invitations/invitationsApi.ts
 import { baseApi } from "@/redux/hooks/baseApi";
-
-// -------------------- Types --------------------
 export interface Invitation {
   id: string;
   status: string;
@@ -17,24 +14,12 @@ export interface Invitation {
   guest_phone: string | null;
 }
 
-export interface ShippingAddress {
-  firstName: string;
-  lastName: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  postcode: string;
-  country: string;
-}
-
 export interface SendInvitationRequest {
   email: string;
   guest_name: string;
   guest_phone: string;
   party_id: string;
   imageUrl: string;
-  shippingAddress: ShippingAddress;
 }
 
 export interface ApiResponse<T> {
@@ -92,10 +77,21 @@ export const invitationsApi = baseApi.injectEndpoints({
     }),
 
     // Get Invitations by User
-    getInvitationsByUser: builder.query<ApiResponse<Invitation[]>, string>({
-      query: (id) => `/invitations/user?id=${id}`,
+    // Get Invitations by User (authenticated user)
+    getInvitationsByUser: builder.query<
+      { meta: any; invitations: Invitation[] }, 
+      { page?: number; limit?: number } | void
+    >({
+      query: (params) => {
+        const page = params?.page ?? 1;
+        const limit = params?.limit ?? 10;
+        return `/invitations?page=${page}&limit=${limit}`;
+      },
       providesTags: ["Invitations"],
+      transformResponse: (response: ApiResponse<{ meta: any; invitations: Invitation[] }>) =>
+        response.data,
     }),
+
 
     // Delete Invitation
     deleteInvitation: builder.mutation<ApiResponse<void>, string>({

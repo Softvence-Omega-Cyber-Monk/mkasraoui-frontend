@@ -27,6 +27,7 @@ import {
   useGetWishlistQuery,
 } from "@/redux/features/wishlist/wishlistApi";
 import DiyActivities from "../components/DiyActivityes/DiyActivities";
+import { useGetMeQuery } from "@/redux/features/user/userApi";
 
 export default function DiyBoxes() {
   const [activeTab, setActiveTab] = useState<"diy box" | "diy Activity">(
@@ -36,6 +37,11 @@ export default function DiyBoxes() {
   const [searchTerm, setSearchTerm] = useState("");
   const [ageRange, setAgeRange] = useState("");
   const [theme, _setTheme] = useState("");
+
+  const { data } = useGetMeQuery();
+  const isSubscribed = data?.subscription?.some(plan => plan.plan_name === "PREMIUM");
+
+
 
   const [page, setPage] = useState<number>(1);
   const boxesPerPage = 9;
@@ -163,22 +169,20 @@ export default function DiyBoxes() {
           <div className="flex w-full overflow-hidden rounded-lg bg-white shadow-sm">
             <button
               onClick={() => setActiveTab("diy box")}
-              className={`flex flex-1 cursor-pointer items-center justify-center gap-2 px-4 py-3 text-base font-medium transition-all ${
-                activeTab === "diy box"
+              className={`flex flex-1 cursor-pointer items-center justify-center gap-2 px-4 py-3 text-base font-medium transition-all ${activeTab === "diy box"
                   ? "bg-secondary text-white"
                   : "text-gray-600 hover:bg-gray-100"
-              }`}
+                }`}
             >
               <ListIcon className="h-4 w-4" /> DIY Box
             </button>
 
             <button
               onClick={() => setActiveTab("diy Activity")}
-              className={`flex flex-1 cursor-pointer items-center justify-center gap-2 px-4 py-3 text-base font-medium transition-all ${
-                activeTab === "diy Activity"
+              className={`flex flex-1 cursor-pointer items-center justify-center gap-2 px-4 py-3 text-base font-medium transition-all ${activeTab === "diy Activity"
                   ? "bg-secondary text-white"
                   : "text-gray-600 hover:bg-gray-100"
-              }`}
+                }`}
             >
               <MapIcon className="h-4 w-4" /> DIY Activity
             </button>
@@ -311,9 +315,9 @@ export default function DiyBoxes() {
                         <div className="mb-4 flex justify-between">
                           <div className="flex items-baseline gap-2">
                             <span className="text-2xl font-bold text-[#223B7D]">
-                              €{activity.discounted_price || activity.price}
+                              €{isSubscribed ? activity.discounted_price : activity.price}
                             </span>
-                            {activity.discounted_price &&
+                            {isSubscribed && activity.discounted_price &&
                               activity.discounted_price < activity.price && (
                                 <span className="text-lg text-gray-500 line-through">
                                   €{activity.price}
@@ -358,16 +362,14 @@ export default function DiyBoxes() {
                               }
                             }}
                             disabled={inCart}
-                            className={`cursor-pointer rounded-lg border border-[#223B7D] p-3 transition-colors ${
-                              inCart
+                            className={`cursor-pointer rounded-lg border border-[#223B7D] p-3 transition-colors ${inCart
                                 ? "cursor-not-allowed bg-gray-100 opacity-50"
                                 : "hover:bg-gray-50"
-                            }`}
+                              }`}
                           >
                             <ShoppingCart
-                              className={`h-5 w-5 ${
-                                inCart ? "text-gray-400" : "text-gray-600"
-                              }`}
+                              className={`h-5 w-5 ${inCart ? "text-gray-400" : "text-gray-600"
+                                }`}
                             />
                           </button>
                         </div>

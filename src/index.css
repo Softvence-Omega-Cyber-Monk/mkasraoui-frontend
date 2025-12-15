@@ -251,6 +251,6 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .react-share__ShareButton {
   padding: 10px 20px !important;
-  background-color: #155DFC !important;
+  background-color: #155dfc !important;
   color: white !important;
 }

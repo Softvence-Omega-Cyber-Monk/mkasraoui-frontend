@@ -43,9 +43,10 @@ export default function PartyGenerator() {
   const [createPartyPlan] = useCreatePartyPlanMutation();
   const [savePartyCount] = useSavePartyCountMutation()
   const { data: userData } = useGetMeQuery();
+  const isNotAdmin = userData?.role !== "ADMIN";
   const hasPremium = userData?.subscription?.some(plan => plan.plan_name === "PREMIUM");
   console.log("====",userData?.total_party_generated!)
-  const limitOver = !hasPremium && userData?.total_party_generated! >=1;
+  const limitOver = !hasPremium && userData?.total_party_generated! >=1 && isNotAdmin;
   console.log(hasPremium, limitOver)
   console.log(userData)
   const [formData, setFormData] = useState<FormData>({

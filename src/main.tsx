@@ -73,6 +73,7 @@ import DiyBoxActivityDetails from "./components/DiyActivityes/DiyBoxActivityDeta
 import IAffiliatedProductTable from "./components/AdminAffiliateProducts/IAffiliatedProductTable";
 import ConfirmInviatationPage from "./components/Admin/AllUsers/ConfirmInviatationPage";
 import ContactUsPage from "./Pages/Admin/ContactUsPage";
+import { LanguageProvider } from "./utils/LanguageContext";
 
 // Define your router with type-safe components
 const router = createBrowserRouter([
@@ -404,10 +405,10 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <ReduxProviderWrapper>
-      {/* <div className="mt-20"> */}
-      <RouterProvider router={router} />
-      {/* </div> */}
-      <Toaster position="top-right" reverseOrder={false} />
+      <LanguageProvider>
+        <RouterProvider router={router} />
+        <Toaster position="top-right" reverseOrder={false} />
+      </LanguageProvider>
     </ReduxProviderWrapper>
   </React.StrictMode>,
 );
