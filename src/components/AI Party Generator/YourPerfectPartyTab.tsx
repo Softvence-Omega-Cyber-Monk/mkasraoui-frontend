@@ -25,9 +25,7 @@ interface PartyProducts {
 interface PartyPlanResponse {
   party_plan: PartyPlan;
   adventure_song_movie_links?: AdventureSongMovie[];
-  suggested_gifts?: {
-    products: PartyProducts[];
-  };
+  suggested_gifts?: PartyProducts[]
 }
 
 interface YourPerfectPartyTabProps {
@@ -69,7 +67,7 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
   }
 
   const { party_plan, adventure_song_movie_links, suggested_gifts } = partyPlanData;
-  const amazonProducts = suggested_gifts?.products || [];
+  const amazonProducts = suggested_gifts || [];
 
   if (!party_plan || typeof party_plan !== 'object') {
     return (
