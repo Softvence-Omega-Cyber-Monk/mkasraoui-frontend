@@ -44,7 +44,7 @@ export default function PartyGenerator() {
   const [savePartyCount] = useSavePartyCountMutation()
   const { data: userData } = useGetMeQuery();
   const isNotAdmin = userData?.role !== "ADMIN";
-  const hasPremium = userData?.subscription?.some(plan => plan.plan_name === "PREMIUM");
+  const hasPremium = userData?.subscription?.some(plan => plan.plan_name === "Premium Subscriber");
   console.log("====",userData?.total_party_generated!)
   const limitOver = !hasPremium && userData?.total_party_generated! >=1 && isNotAdmin;
   console.log(hasPremium, limitOver)

@@ -62,7 +62,7 @@ export default function DiyBoxDetails() {
     return <div className="py-10 text-center">Something went wrong.</div>;
 
   const product = data;
-  const isPremium = userData?.subscription?.some(plan => plan.plan_name === "PREMIUM");
+  const isPremium = userData?.subscription?.some(plan => plan.plan_name === "Premium Subscriber");
 
   const handleSubmitReview = async () => {
     if (!comment.trim()) return;
