@@ -138,13 +138,7 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
         timelineEvents: timelineEvents,
         suggestedGifts: suggestedGifts
       };
-
-      console.log("Sending request:", requestBody);
-
-      const response = await savePartyPlan(requestBody).unwrap();
-
-      console.log("Response:", response);
-
+      await savePartyPlan(requestBody).unwrap();
       setSaveStatus('success');
       setTimeout(() => setSaveStatus('idle'), 3000);
       toast.success("Party saved successfully");
@@ -495,7 +489,7 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
             🎵 Party Music & Entertainment
           </h2>
           <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-3">
-            {adventure_song_movie_links.map((video, index) => (
+            {adventure_song_movie_links.slice(0,5).map((video, index) => (
               <div
                 key={index}
                 className="bg-white rounded-xl overflow-hidden shadow-2xl hover:shadow-primary transition-all duration-300 transform hover:-translate-y-1"

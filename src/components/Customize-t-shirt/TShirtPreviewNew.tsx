@@ -188,7 +188,7 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
           <div className="flex items-center rounded-lg border border-gray-300">
             <button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="px-3 py-2 text-gray-600 hover:text-gray-800"
+              className="px-3 cursor-pointer py-2 text-gray-600 hover:text-gray-800"
             >
               -
             </button>
@@ -197,7 +197,7 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
             </span>
             <button
               onClick={() => setQuantity(quantity + 1)}
-              className="px-3 py-2 text-gray-600 hover:text-gray-800"
+              className="px-3 py-2 cursor-pointer text-gray-600 hover:text-gray-800"
             >
               +
             </button>

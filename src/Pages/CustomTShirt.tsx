@@ -216,14 +216,14 @@ function CustomTShirt() {
             <div>
               <div className="mb-3 flex items-center">
                 <span className="mr-2 text-sm text-gray-600">👕</span>
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm cursor-pointer font-medium text-gray-700">
                   Select T-Shirt Product
                 </span>
               </div>
               <div className="relative">
                 <button
                   onClick={() => setShowProductDropdown(!showProductDropdown)}
-                  className="w-full rounded-lg border border-gray-300 bg-white p-3 text-left text-sm text-gray-600 hover:border-gray-400"
+                  className="w-full cursor-pointer rounded-lg border border-gray-300 bg-white p-3 text-left text-sm text-gray-600 hover:border-gray-400"
                 >
                   {tshirtProduct
                     ? tshirtProducts.find(p => p.id === tshirtProduct)?.name
@@ -240,7 +240,7 @@ function CustomTShirt() {
                           setTShirtPrice(product.price);
                           setShowProductDropdown(false);
                         }}
-                        className="w-full p-3 text-left text-sm text-gray-700 hover:bg-gray-50"
+                        className="w-full cursor-pointer p-3 text-left text-sm text-gray-700 hover:bg-gray-50"
                       >
                         {product.name}
                       </button>
@@ -254,7 +254,7 @@ function CustomTShirt() {
             <div>
               <div className="mb-3 flex items-center">
                 <span className="mr-2 text-sm text-gray-600">👤</span>
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm cursor-pointer font-medium text-gray-700">
                   T-Shirt Type
                 </span>
               </div>
@@ -298,7 +298,7 @@ function CustomTShirt() {
                   <button
                     onClick={() => setShowSizeDropdown(!showSizeDropdown)}
                     disabled={!tshirtProduct}
-                    className="w-full rounded-lg border border-gray-300 bg-white p-3 text-left text-sm text-gray-600 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    className="w-full cursor-pointer rounded-lg border border-gray-300 bg-white p-3 text-left text-sm text-gray-600 disabled:bg-gray-100 disabled:cursor-not-allowed"
                   >
                     {size || (tshirtProduct ? "Select a size" : "Select product first")}
                     <span className="float-right">▼</span>
@@ -312,7 +312,7 @@ function CustomTShirt() {
                             setSize(sizeOption);
                             setShowSizeDropdown(false);
                           }}
-                          className="w-full p-3 text-left text-sm text-gray-700 hover:bg-gray-50 hover:cursor-pointer"
+                          className="w-full cursor-pointer p-3 text-left text-sm text-gray-700 hover:bg-gray-50 hover:cursor-pointer"
                         >
                           {sizeOption}
                         </button>
@@ -326,12 +326,12 @@ function CustomTShirt() {
               <div>
                 <div className="mb-2 flex items-center">
                   <span className="mr-2 text-sm text-gray-600">⚧</span>
-                  <span className="text-sm font-medium text-gray-700">Gender</span>
+                  <span className="text-sm cursor-pointer font-medium text-gray-700">Gender</span>
                 </div>
                 <div className="relative">
                   <button
                     onClick={() => setShowGenderDropdown(!showGenderDropdown)}
-                    className="w-full rounded-lg border border-gray-300 bg-white p-3 text-left text-sm text-gray-600"
+                    className="w-full cursor-pointer rounded-lg border border-gray-300 bg-white p-3 text-left text-sm text-gray-600"
                   >
                     {gender || "Select"}
                     <span className="float-right">▼</span>
@@ -345,7 +345,7 @@ function CustomTShirt() {
                             setGender(genderOption);
                             setShowGenderDropdown(false);
                           }}
-                          className="w-full p-3 text-left text-sm text-gray-700 hover:cursor-pointer hover:bg-gray-50"
+                          className="w-full cursor-pointer p-3 text-left text-sm text-gray-700 hover:cursor-pointer hover:bg-gray-50"
                         >
                           {genderOption}
                         </button>
@@ -370,7 +370,7 @@ function CustomTShirt() {
                     <button
                       key={color.name}
                       onClick={() => setSelectedColor(color.name)}
-                      className={`h-10 w-10 rounded-full border-2 ${color.bg} ${selectedColor === color.name
+                      className={`h-10 cursor-pointer w-10 rounded-full border-2 ${color.bg} ${selectedColor === color.name
                           ? "ring-2 ring-[#223B7D] ring-offset-2"
                           : color.border
                         }`}
@@ -385,13 +385,13 @@ function CustomTShirt() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Child's Name
+                  Name
                 </label>
                 <input
                   type="text"
                   value={childName}
                   onChange={(e) => setChildName(e.target.value)}
-                  placeholder="Enter child's name"
+                  placeholder="Enter name"
                   className="w-full rounded-lg border border-gray-300 p-3 text-sm"
                 />
               </div>
@@ -402,7 +402,7 @@ function CustomTShirt() {
                 <div className="relative">
                   <button
                     onClick={() => setShowAgeDropdown(!showAgeDropdown)}
-                    className="w-full rounded-lg border border-gray-300 bg-white p-3 text-left text-sm text-gray-600"
+                    className="w-full cursor-pointer rounded-lg border border-gray-300 bg-white p-3 text-left text-sm text-gray-600"
                   >
                     {age || "Select age"}
                     <span className="float-right">▼</span>
@@ -416,7 +416,7 @@ function CustomTShirt() {
                             setAge(ageOption);
                             setShowAgeDropdown(false);
                           }}
-                          className="w-full p-3 text-left text-sm text-gray-700 hover:cursor-pointer hover:bg-gray-50"
+                          className="w-full cursor-pointer p-3 text-left text-sm text-gray-700 hover:cursor-pointer hover:bg-gray-50"
                         >
                           {ageOption}
                         </button>
@@ -455,7 +455,7 @@ function CustomTShirt() {
               <p className="mb-3 text-sm text-gray-600">
                 Add a special image, character, or logo to personalize the T-shirt even more.
               </p>
-              <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center hover:border-gray-400 transition-colors">
+              <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center hover:border-gray-400 transition-colors cursor-pointer">
                 <input
                   type="file"
                   accept="image/*"
@@ -499,7 +499,7 @@ function CustomTShirt() {
               <button
                 onClick={handleGenerate}
                 disabled={isLoading}
-                className="w-full rounded-lg bg-[#223B7D] px-6 py-3 font-medium hover:cursor-pointer text-white shadow-md hover:bg-[#1a2d61] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full rounded-lg bg-[#223B7D] cursor-pointer px-6 py-3 font-medium hover:cursor-pointer text-white shadow-md hover:bg-[#1a2d61] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isLoading ? "Generating..." : "✨ Generate T-Shirt"}
               </button>
