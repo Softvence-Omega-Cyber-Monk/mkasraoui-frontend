@@ -26,8 +26,11 @@ const PricingPlans: React.FC = () => {
 
   const handleSubscribe = async (plan: Plan) => {
     try {
+      const priceId = isYearly
+        ? "price_1SQnNiAMwgyWNlYh0Y3pTF2I"  // $29 yearly
+        : "price_1SBoL5AMwgyWNlYhz9NE5eAC";  // $2.9 monthly
       const res = await createSubscription({
-        priceId: "price_1RuIseCiM0crZsfwqv3vZZGj", 
+        priceId: priceId,
         pland_id: plan.id,
       }).unwrap();
 
@@ -67,9 +70,8 @@ const PricingPlans: React.FC = () => {
 
     return (
       <div
-        className={`mx-auto flex w-full max-w-[500px] flex-col rounded-2xl border ${
-          isPremium ? "border-secondary" : "border-[#DFE1E6]"
-        } bg-white p-6 shadow-md sm:p-8`}
+        className={`mx-auto flex w-full max-w-[500px] flex-col rounded-2xl border ${isPremium ? "border-secondary" : "border-[#DFE1E6]"
+          } bg-white p-6 shadow-md sm:p-8`}
       >
         <div className="flex-grow">
           <h3 className="text-2xl font-bold text-gray-800">{plan.name}</h3>
@@ -112,21 +114,19 @@ const PricingPlans: React.FC = () => {
       <div className="container mx-auto max-w-5xl px-4">
         <div className="mb-12 text-center">
           <h2 className="text-secondary font-fredoka text-5xl font-semibold">Choose Your Plan</h2>
-          <p className="mt-4 text-[#63657E]">Only €69/year get 2 months free compared to the monthly plan.</p>
+          <p className="mt-4 text-[#63657E]">Only €29/year get 2 months free compared to the monthly plan.</p>
           <div className="mt-8 inline-flex items-center rounded-lg bg-[#D4D4D8]">
             <button
               onClick={() => setIsYearly(false)}
-              className={`cursor-pointer rounded-lg px-4 py-2 text-sm font-medium ${
-                !isYearly ? "bg-secondary text-white" : "text-[#63657E]"
-              }`}
+              className={`cursor-pointer rounded-lg px-4 py-2 text-sm font-medium ${!isYearly ? "bg-secondary text-white" : "text-[#63657E]"
+                }`}
             >
               monthly
             </button>
             <button
               onClick={() => setIsYearly(true)}
-              className={`cursor-pointer rounded-lg px-4 py-2 text-sm font-medium ${
-                isYearly ? "bg-secondary text-white" : "text-[#63657E]"
-              }`}
+              className={`cursor-pointer rounded-lg px-4 py-2 text-sm font-medium ${isYearly ? "bg-secondary text-white" : "text-[#63657E]"
+                }`}
             >
               yearly
             </button>
