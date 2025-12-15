@@ -75,7 +75,7 @@ function ProfileTab() {
                     {userData?.name || "N/A"}
                   </div>
                   <div className="text-sm text-gray-500">{userData?.email}</div>
-                  <span className="inline-block w-full rounded-md bg-[#C5FFD9] px-2 py-2 text-center text-xs font-medium whitespace-nowrap text-[#39B42E] md:w-1/2">
+                  <span className="inline-block w-full rounded-md bg-[#C5FFD9] px-2 py-2 text-center text-xs font-medium whitespace-nowrap text-[#39B42E]">
                     {userData?.subscription?.[0]?.plan_name || "Free Member"}
                   </span>
                 </div>

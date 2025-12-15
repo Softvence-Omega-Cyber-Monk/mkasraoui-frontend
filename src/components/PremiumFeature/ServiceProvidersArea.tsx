@@ -103,7 +103,7 @@ export default function ServiceProvidersArea() {
 
               {/* Subscribe Button */}
               <button
-                className="mt-6 w-full rounded-lg bg-secondary px-4 py-2 text-white hover:bg-blue-700 transition disabled:opacity-50"
+                className="mt-6 w-full cursor-pointer rounded-lg bg-secondary px-4 py-2 text-white hover:bg-blue-700 transition disabled:opacity-50"
                 onClick={() => handleSubscribe(plan as unknown as Plan)}
                 disabled={isSubscribing}
               >

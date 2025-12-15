@@ -27,7 +27,7 @@ export default function PaymentSuccess() {
         {sessionId && (
           <p className="mt-4 text-sm text-gray-500">
             Transaction ID:{" "}
-            <span className="font-mono text-gray-700">{sessionId}</span>
+            <span className="font-mono text-gray-700 break-all">{sessionId}</span>
           </p>
         )}
 
@@ -37,16 +37,6 @@ export default function PaymentSuccess() {
         >
           Back to Home
         </button>
-
-        <p className="mt-4 text-xs text-gray-400">
-          Need help?{" "}
-          <a
-            href="/support"
-            className="font-medium text-[#223B7D] hover:text-[#031d66]"
-          >
-            Contact Support
-          </a>
-        </p>
       </div>
     </div>
   );
