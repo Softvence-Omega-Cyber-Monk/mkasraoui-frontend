@@ -453,9 +453,6 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
             <h2 className="text-3xl font-bold text-gray-800 border-b border-b-gray-300 pb-3 mb-8">
               🛍️ Recommended Party Supplies
             </h2>
-            <p className="text-lg text-gray-600 mb-8 text-center">
-              Enhance your party with these curated products
-            </p>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {amazonProducts.map((product) => (
                 <div
@@ -474,7 +471,7 @@ const YourPerfectPartyTab: React.FC<YourPerfectPartyTabProps> = ({
                   </div>
 
                   <div className="p-6">
-                    <h3 className="font-bold text-lg text-gray-900 mb-4 line-clamp-3 leading-snug min-h-[84px]">
+                    <h3 className="font-bold text-lg text-gray-900 line-clamp-3 leading-snug mb-5">
                       {product.title?.split(" ").slice(0, 10).join(" ") + (product.title?.split(" ").length > 10 ? "..." : "")}
                     </h3>
                     <a href={product.link}

@@ -85,7 +85,7 @@ const PricingPlans: React.FC = () => {
           <button
             onClick={() => handleSubscribe(plan)}
             disabled={isSubscribing}
-            className="mt-8 block rounded-xl border border-secondary bg-secondary px-5 py-3 text-center text-sm font-medium text-white hover:bg-secondary-dark disabled:opacity-50"
+            className="cursor-pointer mt-8 block rounded-xl border border-secondary bg-secondary px-5 py-3 text-center text-sm font-medium text-white hover:bg-secondary-dark disabled:opacity-50"
           >
             {isSubscribing ? "Redirecting..." : "Subscribe"}
           </button>

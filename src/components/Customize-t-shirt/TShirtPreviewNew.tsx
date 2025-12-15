@@ -40,7 +40,7 @@ const TShirtPreviewNew: React.FC<TShirtPreviewProps> = ({
   tshirtProduct,
   tShirtPrice,
 }) => {
-  const unitPrice = tShirtPrice * 1.5;
+  const unitPrice = tShirtPrice;
   const [address, setAddress] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [city, setCity] = useState("");
