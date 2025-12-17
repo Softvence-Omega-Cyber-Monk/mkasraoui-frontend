@@ -129,7 +129,11 @@ const NeverMissPartyTip: React.FC = () => {
 
               <button
                 type="submit"
-                ref={(el) => buttonRefs.current.push(el)}
+                // ref={(el) => buttonRefs.current.push(el)}
+                ref={(el) => {if (el) { 
+                  buttonRefs.current.push(el);
+                }
+              }}
                 className="hover:bg-secondary-light flex-none cursor-pointer rounded-md bg-[#223B7D] px-4 py-3 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-black"
               >
                 Notify me
