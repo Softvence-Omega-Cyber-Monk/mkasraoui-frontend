@@ -93,11 +93,11 @@ import { FiChevronDown } from "react-icons/fi";
 export const LANGUAGES = [
   { code: "en", label: "English", flag: "gb" },
   { code: "fr", label: "French", flag: "fr" },
-  { code: "es", label: "Spanish", flag: "es" },
-  { code: "de", label: "German", flag: "de" },
-  { code: "it", label: "Italian", flag: "it" },
-  { code: "bn", label: "Bangla", flag: "bd" },
-  { code: "hi", label: "Hindi", flag: "in" },
+  // { code: "es", label: "Spanish", flag: "es" },
+  // { code: "de", label: "German", flag: "de" },
+  // { code: "it", label: "Italian", flag: "it" },
+  // { code: "bn", label: "Bangla", flag: "bd" },
+  // { code: "hi", label: "Hindi", flag: "in" },
 ];
 
 const GoogleTranslate: React.FC = () => {
