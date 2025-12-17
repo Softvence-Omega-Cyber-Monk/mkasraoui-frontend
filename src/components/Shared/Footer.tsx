@@ -1,6 +1,6 @@
 import footerlogo from "@/assets/footerlogo.png";
 import { useSubscribeNewsletterMutation } from "@/redux/features/newsLetter/newsLetterApi";
-import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
+import { Facebook, Instagram, Twitter } from "lucide-react";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -115,7 +115,7 @@ const Footer: React.FC = () => {
               <h3 className="text-2xl font-medium">Let's fun together</h3>
 
               {/* Social icons */}
-              <div className="flex justify-center space-x-3">
+              {/* <div className="flex justify-center space-x-3">
                 <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-white transition-colors hover:bg-gray-100">
                   <Facebook className="text-secondary h-5 w-5" />
                 </div>
@@ -128,6 +128,44 @@ const Footer: React.FC = () => {
                 <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-white transition-colors hover:bg-gray-100">
                   <Youtube className="text-secondary h-5 w-5" />
                 </div>
+              </div> */}
+              {/* Social icons */}
+              <div className="flex justify-center space-x-3">
+                <a
+                  href="https://www.facebook.com/profile.php?id=61583904035127"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-white transition-colors hover:bg-gray-100"
+                >
+                  <Facebook className="text-secondary h-5 w-5" />
+                </a>
+
+                <a
+                  href="https://www.instagram.com/mafetefacile.officiel"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-white transition-colors hover:bg-gray-100"
+                >
+                  <Instagram className="text-secondary h-5 w-5" />
+                </a>
+
+                <a
+                  href="https://x.com/MaFeteFacile"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-white transition-colors hover:bg-gray-100"
+                >
+                  <Twitter className="text-secondary h-5 w-5" />
+                </a>
+
+                {/* <a
+                  href="https://www.youtube.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-white transition-colors hover:bg-gray-100"
+                >
+                  <Youtube className="text-secondary h-5 w-5" />
+                </a> */}
               </div>
             </div>
 
