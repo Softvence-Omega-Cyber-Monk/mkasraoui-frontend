@@ -49,6 +49,7 @@ export default function PartyInvitations() {
   const { data: userData } = useGetMeQuery();
   const isNotAdmin = userData?.role !== "ADMIN";
   const hasPremium = userData?.subscription?.some(plan => plan.plan_name === "Premium Subscriber");
+  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
   const limitOver = !hasPremium && userData?.total_party_generated! >= 1 && isNotAdmin;
 
   const [createPrintOrder, { isLoading: isCreatingPrintOrder }] = useCreatePrintOrderMutation();
@@ -76,6 +77,7 @@ export default function PartyInvitations() {
     location: "",
     rsvpContact: "",
     description: "",
+    language: ""
   });
 
   const handleDownloadPDF = () => {
@@ -274,6 +276,7 @@ export default function PartyInvitations() {
         date: partyDetails.partyDate || "",
         time: partyDetails.partyTime || "",
         contact_info: partyDetails.rsvpContact || "",
+        language: partyDetails.language || "en"
       }).unwrap();
       handleInputChange("description", response.invitation_Message);
 
@@ -314,7 +317,8 @@ export default function PartyInvitations() {
         venue: partyDetails.location,
         date: partyDetails.partyDate,
         time: partyDetails.partyTime,
-        contact_info: partyDetails.rsvpContact
+        contact_info: partyDetails.rsvpContact,
+        language: partyDetails.language || "en"
       }).unwrap();
 
       console.log(result)
@@ -567,7 +571,7 @@ export default function PartyInvitations() {
                     </div>
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-700">
-                        Child's Name
+                        Name
                       </label>
                       <input
                         type="text"
@@ -641,7 +645,7 @@ export default function PartyInvitations() {
                       </div>
                     </div>
 
-                    <div className="flex gap-7">
+                    <div className="flex gap-2">
                       <div className="flex-1">
                         <label className="mb-2 block text-sm font-medium text-gray-700">
                           Party Date
@@ -688,36 +692,52 @@ export default function PartyInvitations() {
                       />
                     </div>
 
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700">
-                        RSVP Contact
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Phone number or email"
-                        className="w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                        value={partyDetails.rsvpContact}
-                        onChange={(e) =>
-                          handleInputChange("rsvpContact", e.target.value)
-                        }
-                        onBlur={() => {
-                          const value = partyDetails.rsvpContact.trim();
-                          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                          const phoneRegex = /^\+?[0-9]{7,15}$/;
-
-                          if (
-                            value &&
-                            !emailRegex.test(value) &&
-                            !phoneRegex.test(value)
-                          ) {
-                            toast.error(
-                              "Please enter a valid phone number or email address.",
-                            );
+                    <div className="flex justify-between gap-2">
+                      <div className="flex-1">
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                          RSVP Contact
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Phone number or email"
+                          className="w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          value={partyDetails.rsvpContact}
+                          onChange={(e) =>
+                            handleInputChange("rsvpContact", e.target.value)
                           }
-                        }}
-                      />
-                    </div>
+                          onBlur={() => {
+                            const value = partyDetails.rsvpContact.trim();
+                            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                            const phoneRegex = /^\+?[0-9]{7,15}$/;
 
+                            if (
+                              value &&
+                              !emailRegex.test(value) &&
+                              !phoneRegex.test(value)
+                            ) {
+                              toast.error(
+                                "Please enter a valid phone number or email address.",
+                              );
+                            }
+                          }}
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                          Language
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="en/fr"
+                          className="w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          value={partyDetails.language}
+                          onChange={(e) =>
+                            handleInputChange("language", e.target.value)
+                          }
+                        />
+                      </div>
+                      
+                    </div>
                     <div>
                       <div className="mb-2 flex items-center justify-between">
                         <label className="block text-sm font-medium text-gray-700">

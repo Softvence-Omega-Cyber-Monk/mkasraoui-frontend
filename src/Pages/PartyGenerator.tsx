@@ -45,8 +45,8 @@ export default function PartyGenerator() {
   const { data: userData } = useGetMeQuery();
   const isNotAdmin = userData?.role !== "ADMIN";
   const hasPremium = userData?.subscription?.some(plan => plan.plan_name === "Premium Subscriber");
-  console.log("====",userData?.total_party_generated!)
-  const limitOver = !hasPremium && userData?.total_party_generated! >=1 && isNotAdmin;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+  const limitOver = !hasPremium && userData?.total_party_generated! >= 1 && isNotAdmin;
   console.log(hasPremium, limitOver)
   console.log(userData)
   const [formData, setFormData] = useState<FormData>({
@@ -241,31 +241,28 @@ export default function PartyGenerator() {
   };
 
   const ageOptions = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ,21, 22, 23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80
   ];
 
   const themes = [
-    {
-      id: "unicorns",
-      name: "🦄 Unicorns",
-    },
+    { id: "unicorns", name: "🦄 Unicorns" },
     { id: "princess", name: "🏰 Princess" },
-    { id: "space", name: "🚀 Space" },
-    {
-      id: "superheroes",
-      name: "🦸 Superheroes",
-    },
-    {
-      id: "art-party",
-      name: "🎨 Art Party",
-    },
+    { id: "space", name: "🚀 Space / Astronomy" },
+    { id: "superheroes", name: "🦸 Superheroes" },
     { id: "animals", name: "🐾 Animals" },
-    { id: "pirates", name: "🏴‍☠️ Pirates" },
-    {
-      id: "fairy-tale",
-      name: "🧚 Fairy Tale",
-    },
-    { id: "other-theme", name: "Other" },
+    { id: "pirates", name: "🏴‍☠️ Pirates & Treasure Hunt" },
+
+    { id: "spiderman", name: "🕷️ Spider-Man" },
+    { id: "batman", name: "🦇 Batman" },
+    { id: "frozen", name: "❄️ Frozen (La Reine des Neiges)" },
+    { id: "disney-princess", name: "👑 Disney Princess" },
+    { id: "pokemon", name: "⚡ Pokémon" },
+    { id: "barbie", name: "💖 Barbie" },
+    { id: "paw-patrol", name: "🐾 Paw Patrol" },
+    { id: "marvel", name: "🦸 Marvel / Avengers" },
+    { id: "jungle", name: "🌿 Safari / Jungle" },
+    { id: "dinosaurs", name: "🦕 Dinosaurs" },
+    { id: "gabby", name: "🐱 Gabby's Dollhouse" },
   ];
 
   const activities = [
@@ -568,8 +565,8 @@ export default function PartyGenerator() {
                   onClick={handleNext}
                   disabled={!selectedTheme || selectedActivities.length === 0 || isLoading || limitOver}
                   className={`flex items-center space-x-2 rounded-lg px-8 py-3 font-medium transition-all duration-200 ${selectedTheme && selectedActivities.length > 0 && !isLoading && !limitOver
-                      ? "cursor-pointer bg-[#223B7D] text-white hover:bg-[#1a2f66] hover:shadow-lg"
-                      : "cursor-not-allowed bg-gray-400 text-gray-200"
+                    ? "cursor-pointer bg-[#223B7D] text-white hover:bg-[#1a2f66] hover:shadow-lg"
+                    : "cursor-not-allowed bg-gray-400 text-gray-200"
                     }`}
                 >
                   {limitOver ? (

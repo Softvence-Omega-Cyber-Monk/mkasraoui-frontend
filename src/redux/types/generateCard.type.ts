@@ -8,6 +8,7 @@ venue: string;
 date: string; // keep as string to match API
 time: string;
 contact_info: string;
+language: string
 }
 
 
