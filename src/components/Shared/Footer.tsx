@@ -62,9 +62,9 @@ const Footer: React.FC = () => {
               <h2 className="text-2xl font-medium">Get in touch</h2>
               <div className="space-y-4">
                 <div className="text-base leading-relaxed">
-                  Jln Cempaka Wangi No 22, Jakarta
+                  43 Rue de la Comédie Française, 95220
                   <br />
-                  Indonesia
+                  Herblay-sur-Seine
                 </div>
                 <div>
                   <ul className="py-2">
