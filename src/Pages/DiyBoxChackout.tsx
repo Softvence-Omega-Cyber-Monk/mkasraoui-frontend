@@ -91,8 +91,8 @@ export default function DiyBoxChackout() {
   const discountedSubtotal = calculateDiscountedSubtotal();
   const subtotal = isSubscribed ? discountedSubtotal : originalSubtotal;
   const shippingFee = isSubscribed ? 0 : subtotal > 50 ? 0 : 5.99;
-  const tax = subtotal * 0.08;
-  const total = subtotal + shippingFee + tax;
+  // const tax = subtotal * 0.08;
+  const total = subtotal + shippingFee;
 
   // if (cart.length === 0) {
   //   return (
@@ -203,7 +203,7 @@ export default function DiyBoxChackout() {
             className="flex items-center gap-2 text-[#223B7D] hover:text-blue-700"
           >
             <ArrowLeft className="h-5 w-5" />
-            <span>{directBuy ? "Back to Home" : "Back to Cart"}</span>
+            <span className="cursor-pointer">{directBuy ? "Back to Home" : "Back to Cart"}</span>
           </button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
@@ -509,12 +509,12 @@ export default function DiyBoxChackout() {
                     Add €{(50 - subtotal).toFixed(2)} more for free shipping!
                   </div>
                 )}
-                <div className="flex justify-between text-sm">
+                {/* <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Tax</span>
                   <span className="font-semibold text-gray-900">
                     ${tax.toFixed(2)}
                   </span>
-                </div>
+                </div> */}
                 <hr className="border-gray-200" />
                 <div className="flex justify-between text-lg font-bold">
                   <span className="text-gray-900">Total</span>
@@ -530,12 +530,12 @@ export default function DiyBoxChackout() {
                           ).toFixed(2)}
                         </span>
                         <span className="text-[#223B7D]">
-                          ${total.toFixed(2)}
+                          €{total.toFixed(2)}
                         </span>
                       </div>
                     ) : (
                       <span className="text-[#223B7D]">
-                        ${total.toFixed(2)}
+                        €{total.toFixed(2)}
                       </span>
                     )}
                   </span>

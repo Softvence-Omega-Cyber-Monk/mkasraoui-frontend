@@ -43,10 +43,14 @@ export default function PartyGenerator() {
   const [createPartyPlan] = useCreatePartyPlanMutation();
   const [savePartyCount] = useSavePartyCountMutation()
   const { data: userData } = useGetMeQuery();
+
+  const [currentSessionGenerations, setCurrentSessionGenerations] = useState(0);
+  const totalGenerations = (userData?.total_party_generated || 0) + currentSessionGenerations;
+  
   const isNotAdmin = userData?.role !== "ADMIN";
   const hasPremium = userData?.subscription?.some(plan => plan.plan_name === "Premium Subscriber");
   // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-  const limitOver = !hasPremium && userData?.total_party_generated! >= 1 && isNotAdmin;
+  const limitOver = !hasPremium && totalGenerations >= 1 && isNotAdmin;
   console.log(hasPremium, limitOver)
   console.log(userData)
   const [formData, setFormData] = useState<FormData>({
@@ -153,6 +157,8 @@ export default function PartyGenerator() {
 
       setPartyPlanData(response);
 
+      setCurrentSessionGenerations(prev => prev + 1);
+
       // Move to next step after successful API call
       const currentIndex = getStepIndex(activeStep);
       const nextIndex = currentIndex + 1;
@@ -241,29 +247,27 @@ export default function PartyGenerator() {
   };
 
   const ageOptions = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
   ];
 
   const themes = [
-    { id: "unicorns", name: "🦄 Unicorns" },
-    { id: "princess", name: "🏰 Princess" },
-    { id: "space", name: "🚀 Space / Astronomy" },
-    { id: "superheroes", name: "🦸 Superheroes" },
-    { id: "animals", name: "🐾 Animals" },
-    { id: "pirates", name: "🏴‍☠️ Pirates & Treasure Hunt" },
-
     { id: "spiderman", name: "🕷️ Spider-Man" },
     { id: "batman", name: "🦇 Batman" },
-    { id: "frozen", name: "❄️ Frozen (La Reine des Neiges)" },
-    { id: "disney-princess", name: "👑 Disney Princess" },
+    { id: "la_reine_des_neiges", name: "❄️ Frozen (La Reine des Neiges)" },
+    { id: "princesses_disney", name: "👑 Disney Princess" },
     { id: "pokemon", name: "⚡ Pokémon" },
+    { id: "astronomie", name: "🚀 Space / Astronomy" },
     { id: "barbie", name: "💖 Barbie" },
-    { id: "paw-patrol", name: "🐾 Paw Patrol" },
+    { id: "pat_patrouille", name: "🐾 Paw Patrol" },
+    { id: "pirates", name: "🏴‍☠️ Pirates & Treasure Hunt" },
     { id: "marvel", name: "🦸 Marvel / Avengers" },
+    { id: "superheroes", name: "⚡ Super-heroes" },
     { id: "jungle", name: "🌿 Safari / Jungle" },
-    { id: "dinosaurs", name: "🦕 Dinosaurs" },
+    { id: "dinasaures", name: "🦕 Dinosaurs" },
+    { id: "licornes_magiques", name: "🦄 Unicorns" },
     { id: "gabby", name: "🐱 Gabby's Dollhouse" },
   ];
+
 
   const activities = [
     {
@@ -321,7 +325,7 @@ export default function PartyGenerator() {
                       }}
                       required
                       placeholder="Child's Name"
-                      className="w-full rounded-xl border border-[#C9C9C9] px-4 py-3 transition-all duration-200 outline-none focus:border-transparent focus:ring-2"
+                      className="w-full rounded-xl border placeholder-gray-950 border-[#C9C9C9] px-4 py-3 transition-all duration-200 outline-none focus:border-transparent focus:ring-2"
                     />
                   </div>
 
@@ -342,7 +346,7 @@ export default function PartyGenerator() {
                         required
                         className="w-full cursor-pointer appearance-none rounded-xl border border-[#C9C9C9] bg-white px-4 py-3 transition-all duration-200 outline-none focus:border-transparent focus:ring-2"
                       >
-                        <option value="" disabled>
+                        <option value="">
                           Select age
                         </option>
                         {ageOptions.map((age) => (
