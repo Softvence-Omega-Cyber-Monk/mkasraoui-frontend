@@ -1,4 +1,3 @@
-import userPlaceholder from "@/assets/profile-user.png";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { useGetMeQuery, useUpdateUserMutation } from "@/redux/features/user/userApi";
@@ -46,7 +45,7 @@ function ProfileTab() {
 
   const profileImage = userData?.profile_image
     ? userData.profile_image
-    : userPlaceholder;
+    : "/default_user.webp";
 
   return (
     <div>
