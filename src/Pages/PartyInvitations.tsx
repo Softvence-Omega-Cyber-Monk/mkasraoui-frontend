@@ -46,11 +46,18 @@ export default function PartyInvitations() {
   const [activeTab, setActiveTab] = useState("Create Invitation");
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
 
+  const [currentSessionGenerations, setCurrentSessionGenerations] = useState(0);
+
   const { data: userData } = useGetMeQuery();
   const isNotAdmin = userData?.role !== "ADMIN";
   const hasPremium = userData?.subscription?.some(plan => plan.plan_name === "Premium Subscriber");
   // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-  const limitOver = !hasPremium && userData?.total_party_generated! >= 1 && isNotAdmin;
+
+  const totalGenerations = (userData?.total_party_generated || 0) + currentSessionGenerations;
+  const limitOver = !hasPremium && totalGenerations >= 1 && isNotAdmin;
+  console.log(hasPremium, "has premium");
+  console.log(userData?.total_party_generated, "total_party_Generate");
+  console.log(isNotAdmin);
 
   const [createPrintOrder, { isLoading: isCreatingPrintOrder }] = useCreatePrintOrderMutation();
 
@@ -226,7 +233,7 @@ export default function PartyInvitations() {
 
   const [isAgeDropdownOpen, setIsAgeDropdownOpen] = useState(false);
 
-  const ages = Array.from({ length: 80 }, (_, i) => i + 1);
+  const ages = Array.from({ length: 20 }, (_, i) => i + 1);
 
   const handleInputChange = (
     field: keyof typeof partyDetails,
@@ -323,6 +330,7 @@ export default function PartyInvitations() {
 
       console.log(result)
       setGeneratedImageUrl(result?.images[0]?.url);
+      setCurrentSessionGenerations(prev => prev + 1)
       Swal.fire({
         icon: "success",
         title: "Card Generated!",
@@ -476,9 +484,6 @@ export default function PartyInvitations() {
     </div>
   );
   const renderContent = () => {
-    if (isGenerating || isGeneratingMessage) {
-      return renderLoadingSpinner(); // Show spinner when loading
-    }
     switch (activeTab) {
       case "Create Invitation":
         return (
@@ -633,16 +638,23 @@ export default function PartyInvitations() {
                         <label className="mb-2 block text-sm font-medium text-gray-700">
                           Gender
                         </label>
-                        <input
-                          type="text"
-                          placeholder="Gender"
-                          className="w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+
+                        <select
                           value={partyDetails.gender}
-                          onChange={(e) =>
-                            handleInputChange("gender", e.target.value)
-                          }
-                        />
+                          onChange={(e) => handleInputChange("gender", e.target.value)}
+                          className={`w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none
+      ${!partyDetails.gender ? "text-gray-900" : "text-gray-900"}
+    `}
+                        >
+                          <option value="" disabled>
+                            Select gender
+                          </option>
+
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                        </select>
                       </div>
+
                     </div>
 
                     <div className="flex gap-2">
@@ -697,46 +709,42 @@ export default function PartyInvitations() {
                         <label className="mb-2 block text-sm font-medium text-gray-700">
                           RSVP Contact
                         </label>
+
                         <input
                           type="text"
-                          placeholder="Phone number or email"
+                          inputMode="numeric"
+                          placeholder="Phone number"
                           className="w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
                           value={partyDetails.rsvpContact}
-                          onChange={(e) =>
-                            handleInputChange("rsvpContact", e.target.value)
-                          }
-                          onBlur={() => {
-                            const value = partyDetails.rsvpContact.trim();
-                            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                            const phoneRegex = /^\+?[0-9]{7,15}$/;
-
-                            if (
-                              value &&
-                              !emailRegex.test(value) &&
-                              !phoneRegex.test(value)
-                            ) {
-                              toast.error(
-                                "Please enter a valid phone number or email address.",
-                              );
-                            }
+                          onChange={(e) => {
+                            const onlyNumbers = e.target.value.replace(/\D/g, "");
+                            handleInputChange("rsvpContact", onlyNumbers);
                           }}
                         />
                       </div>
+
                       <div className="flex-1">
                         <label className="mb-2 block text-sm font-medium text-gray-700">
                           Language
                         </label>
-                        <input
-                          type="text"
-                          placeholder="en/fr"
-                          className="w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+
+                        <select
                           value={partyDetails.language}
-                          onChange={(e) =>
-                            handleInputChange("language", e.target.value)
-                          }
-                        />
+                          onChange={(e) => handleInputChange("language", e.target.value)}
+                          className={`w-full rounded-lg border border-[#CECECE] px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none
+      ${!partyDetails.language ? "text-gray-900" : "text-gray-900"}
+    `}
+                        >
+                          <option value="" disabled>
+                            Select Language
+                          </option>
+
+                          <option value="en">English</option>
+                          <option value="fr">French</option>
+                        </select>
                       </div>
-                      
+
+
                     </div>
                     <div>
                       <div className="mb-2 flex items-center justify-between">
@@ -1208,7 +1216,10 @@ export default function PartyInvitations() {
                 </button>
               ))}
             </div>
-            <div className="mt-10 bg-white">{renderContent()}</div>
+            <div className="mt-10 bg-white relative">
+              {(isGenerating || isGeneratingMessage) && renderLoadingSpinner()}
+              {renderContent()}
+            </div>
           </div>
         </div>
       </div>
